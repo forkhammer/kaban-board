@@ -1,0 +1,25 @@
+<div [formGroup]='searchForm' class='input-group filter-form mb-1' *ngIf='useSearch'>
+  <input type="text" class='form-control filter-form__input' formControlName='search' placeholder='Текст для поиска...'>
+  <div class="input-group-append">
+    <button class="btn btn-default btn-sm btn-clear-filter" (click)='clearFilter($event)'>
+      <fa-icon [icon]='faTimes'></fa-icon>
+    </button>
+  </div>
+</div>
+
+<div ngbDropdownItem *ngIf='useClear' (click)='clear($event)'>
+  <span *ngIf='!nullTitle'>Нет</span>
+  <span *ngIf='nullTitle'>{{nullTitle}}</span>
+</div>
+<div ngbDropdownItem class="text-wrap"
+  *ngFor='let item of valuesModel'
+  [class.active]='value.value.indexOf(item.id) > -1'
+  (click)='select($event, item)'>
+    <div class="check"></div>
+
+    {{getTitle(item)}}
+</div>
+
+<div class="empty" *ngIf='valuesModel.length === 0'>
+    Ничего не найдено
+</div>

@@ -1,0 +1,17 @@
+<div class="team-card d-flex align-items-center pt-1 pb-1 p-1 ps-3 pe-3" [formGroup]="form">
+  <div class="team-title flex-grow-1" *ngIf="!isNew() && !isEdit">{{team.title}}</div>
+
+  <div class="flex-grow-1" *ngIf="isNew() || isEdit">
+    <input type="text" class="form-control" formControlName="title" placeholder="Название">
+  </div>
+
+  <button class="btn btn-link" *ngIf="isNew() || isEdit" (click)="save()">
+    <fa-icon [icon]="faFloppyDisk"></fa-icon>
+  </button>
+  <button class="btn btn-link" *ngIf="!isNew() && !isEdit" (click)="setEdit()">
+    <fa-icon [icon]="faPen"></fa-icon>
+  </button>
+  <button class="btn btn-link" (click)="delete()">
+    <fa-icon [icon]="faTrash"></fa-icon>
+  </button>
+</div>

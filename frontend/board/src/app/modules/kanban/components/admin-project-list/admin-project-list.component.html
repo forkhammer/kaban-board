@@ -1,0 +1,7 @@
+<app-spinner [visible]="isLoading"></app-spinner>
+
+<ng-container *ngFor="let project of projects; trackBy trackByProject">
+  <div class="border-bottom">
+    <app-admin-project-card [project]="project"></app-admin-project-card>
+  </div>
+</ng-container>

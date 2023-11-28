@@ -1,0 +1,28 @@
+@import '../../../../../styles/imports';
+
+.offcanvas {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 50%;
+  background: $white;
+  box-shadow: 0 0 20px rgba($black, 0.15);
+  transition-duration: 0.2s;
+  transform: translateX(100%);
+
+  :host-context([data-bs-theme="dark"]) {
+    .offcanvas {
+      background: $gray-900;
+    }
+  }
+
+  &.open {
+    transform: translateX(0);
+  }
+}
+
+.tab-content {
+  max-height: calc(100vh - 190px);
+  overflow-y: auto;
+}

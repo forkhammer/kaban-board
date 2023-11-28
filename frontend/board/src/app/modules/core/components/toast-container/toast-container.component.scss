@@ -1,0 +1,32 @@
+@import '../../../../../styles/imports.scss';
+
+:host {
+  position: fixed;
+  bottom: $pt4;
+  right: $pt4;
+  z-index: 1200;
+
+}
+
+.toast {
+  margin-bottom: $pt3;
+  @include fs-paragraph-s();
+
+  &::ng-deep > .toast-body {
+    padding: $pt2;
+  }
+
+  &.success {
+    background: $success;
+    color: $white;
+    font-weight: bold;
+  }
+
+  &.error {
+    background: $danger;
+    color: $white;
+    font-weight: bold;
+  }
+}
+
+

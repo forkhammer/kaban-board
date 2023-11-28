@@ -1,0 +1,43 @@
+<div ngbDropdown #dropdown='ngbDropdown' autoClose='outside'>
+  <div class="btn-group dropdown-toggle-group">
+    <div ngbDropdownToggle class='btn btn-outline-primary btn-block'>
+      <span class="caption text-truncate text-gray300" *ngIf='!selectValue && !title'>
+        <span *ngIf='!title && !nullTitle'>Выберите</span>
+        <span *ngIf='nullTitle'>{{nullTitle}}</span>
+        <span *ngIf='!nullTitle && title'>{{title}}</span>
+      </span>
+
+      <span class="caption text-truncate text-gray300" *ngIf='!selectValue && title'>{{title}}</span>
+      <span class="caption text-truncate" *ngIf='selectValue' [innerHTML]="getTitle(selectValue) | safe"></span>
+      <fa-icon class='caret ml-1' [icon]='faAngleDown' *ngIf='dropdown.isOpen() === false'></fa-icon>
+      <fa-icon class='caret ml-1' [icon]='faAngleUp' *ngIf='dropdown.isOpen() === true'></fa-icon>
+    </div>
+  </div>
+  <div ngbDropdownMenu class='shadow'>
+    <div [formGroup]='searchForm' class='input-group filter-form mb-1' *ngIf='useSearch'>
+      <input type="text" class='form-control filter-form__input' formControlName='search' placeholder='Текст для поиска...'>
+      <div class="input-group-append">
+        <button class="btn btn-default btn-sm btn-clear-filter" (click)='clearFilter($event)'>
+          <fa-icon [icon]='faTimes'></fa-icon>
+        </button>
+      </div>
+    </div>
+
+    <div class="scroll">
+      <div ngbDropdownItem *ngIf='useClear'(click)='clear($event)'>
+        <span *ngIf='!nullTitle'>Нет</span>
+        <span *ngIf='nullTitle'>{{nullTitle}}</span>
+      </div>
+      <div ngbDropdownItem
+        *ngFor='let item of values | selectItemsFilter: getSearchText()'
+        [class.active]='item.id === value'
+        (click)='select($event, item)'
+        [innerHTML]="getItemTitle(item) | safe">
+      </div>
+    </div>
+
+    <div class="empty" *ngIf='(values | selectItemsFilter: getSearchText()).length === 0 && !nullTitle'>
+      Ничего не найдено
+    </div>
+  </div>
+</div>

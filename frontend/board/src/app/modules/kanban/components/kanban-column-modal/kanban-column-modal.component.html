@@ -1,0 +1,29 @@
+<div class="modal-header">
+  <h4 class='me-auto'>Колонка</h4>
+  <button type="button" class="btn-close" aria-label="Закрыть" (click)="close()">
+
+  </button>
+</div>
+
+<div class="modal-body"  [formGroup]='form'>
+  <div class="mb-3">
+    <label for="id_name" class="form-label">Название</label>
+    <input type="text" formControlName='name' id="id_name" class="form-control">
+    <app-input-alert *ngIf='form.get("name")?.hasError("required") && form.get("name")?.dirty'>Это поле обязательно</app-input-alert>
+  </div>
+
+  <div class="mb-3">
+    <label for="id_team" class="form-label">Группа</label>
+    <app-select-model [service]="teamService" formControlName="team_id" [useClear]="true"></app-select-model>
+  </div>
+
+  <div class="mb-3 labels">
+    <app-select-model-multiple [service]="labelService" formControlName="labels" [useClear]="true"></app-select-model-multiple>
+  </div>
+</div>
+
+<div class="modal-footer">
+  <button class="btn btn-primary"
+          [class.loading]='isLoading'
+          (click)='save($event)'>Сохранить</button>
+</div>

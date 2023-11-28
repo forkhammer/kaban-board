@@ -1,0 +1,26 @@
+@import 'imports';
+
+body, html {
+  @include font-regular();
+  font-size: 1rem;
+  color: var(--body-color, $body-color);
+}
+
+h1, h2, h3 {
+  @include font-headline();
+}
+
+h1 {
+  line-height: 1.167;
+  margin-bottom: $pt4;
+}
+
+h2 {
+  line-height: 1.25;
+  margin-bottom: $pt2;
+}
+
+h3 {
+  line-height: 1.333;
+  margin-bottom: $pt;
+}

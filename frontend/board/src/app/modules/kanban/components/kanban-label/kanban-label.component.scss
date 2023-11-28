@@ -1,0 +1,10 @@
+@import '../../../../../styles/imports.scss';
+
+.label {
+  font-size: 10px;
+  line-height: 1em;
+  font-weight: bold;
+  padding: 2px $pt;
+  margin-right: $pt;
+  border-radius: .5rem;
+}

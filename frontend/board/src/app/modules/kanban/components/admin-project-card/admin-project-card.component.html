@@ -1,0 +1,7 @@
+<div class="project-card d-flex align-items-center pt-1 pb-1 p-1 ps-3 pe-3" [formGroup]="form">
+  <div class="project-title flex-grow-1">{{project.name}}</div>
+
+  <div>
+    <app-select-model [service]="teamService" formControlName="team_id" [useClear]="true"></app-select-model>
+  </div>
+</div>

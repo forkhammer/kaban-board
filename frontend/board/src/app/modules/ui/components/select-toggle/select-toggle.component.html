@@ -1,0 +1,8 @@
+<div class="d-flex">
+  <ng-container *ngFor="let item of values">
+    <button class="btn me-2"
+      [class.btn-primary]="item.id === value"
+      [class.btn-outline-primary]="item.id !== value"
+      (click)="select($event, item)">{{item.title}}</button>
+  </ng-container>
+</div>

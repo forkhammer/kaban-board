@@ -1,0 +1,36 @@
+@import 'imports';
+
+.dropdown-menu {
+  background: $white;
+}
+
+[data-bs-theme="dark"] {
+  .dropdown-menu {
+    background: $gray-900;
+  }
+}
+
+.dropdown-menu.light {
+  border: none;
+  padding: 0;
+  box-shadow: 0 4px 20px rgba($black, .1);
+  border-radius: .125rem;
+  display: block;
+  visibility: hidden;
+  opacity: 0;
+  transition-duration: .2s;
+  transform: translate(0, 39px);
+  pointer-events: none;
+  inset: 0 0 auto auto;
+
+  &.show {
+    display: block;
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .dropdown-item {
+    padding: .5rem 1rem;
+  }
+}

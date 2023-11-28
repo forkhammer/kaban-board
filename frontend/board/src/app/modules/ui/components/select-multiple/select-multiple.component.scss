@@ -1,0 +1,61 @@
+@use "sass:math";
+@import '../../../../../styles/imports';
+
+$checkbox-size: 20px;
+
+.dropdown-item {
+  padding: 0 0 $pt2 $pt4;
+  cursor: pointer;
+  position: relative;
+
+  &:hover {
+    background: transparent;
+  }
+
+  &:active {
+    color: var(--primary, $primary);
+  }
+
+  &.active {
+    color: var(--primary, $primary);
+
+    .check {
+      &:before {
+        opacity: 1;
+      }
+    }
+  }
+}
+
+.check {
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  order: 1;
+  width: $checkbox-size;
+  height: $checkbox-size;
+  border: 1px solid $border-color;
+  border-radius: 6px;
+  background: $white;
+  margin-right: $pt;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition-duration: .2s;
+  pointer-events: none;
+
+  &:before {
+    content: '';
+    display: block;
+    width: 10px;
+    height: 10px;
+    background: $primary;
+    border-radius: 3px;
+    position: absolute;
+    top: math.div($pt, 2);
+    left: math.div($pt, 2);
+    opacity: 0;
+    transition-duration: .2s;
+  }
+}

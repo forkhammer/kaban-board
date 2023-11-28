@@ -1,0 +1,39 @@
+@import '../../../../../styles/imports.scss';
+
+.column {
+  background: $gray-200;
+  border-radius: 1rem;
+  position: relative;
+
+  :host-context([data-bs-theme="dark"]) {
+    .column {
+      background: $gray-850;
+    }
+  }
+}
+
+.caption {
+  color: $body-color;
+  padding: $pt $pt $pt $pt3;
+
+  :host-context([data-bs-theme="dark"]) {
+    .caption  {
+      color: $gray-600;
+    }
+  }
+}
+
+.column-content {
+  padding: 0 $pt $pt $pt;
+  max-height: calc(100vh - 180px);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.issue {
+  margin-top: $pt2;
+
+  &:first-child {
+    margin-top: 0;
+  }
+}

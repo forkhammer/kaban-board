@@ -1,0 +1,60 @@
+@import "imports";
+
+@keyframes loader-animation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.btn {
+  transition-duration: initial;
+}
+
+@mixin button-loading($background-color, $light-color, $dark-color) {
+  position: relative;
+
+  &.loading {
+    &:before {
+      position: absolute;
+      display: block;
+      content: '';
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      background: $background-color;
+    }
+
+    &:after {
+      content: '';
+      display: block;
+      position: absolute;
+      top: calc(50% - 16px);
+      left: calc(50% - 16px);
+      width: $pt4;
+      height: $pt4;
+      border: 2px solid $light-color;
+      border-top: 2px solid $dark-color;
+      border-radius: 100%;
+      animation-name: loader-animation;
+      animation-duration: 1s;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+    }
+  }
+}
+
+@each $color, $value in $theme-colors {
+  .btn-#{$color} {
+    @include button-loading($value, lighten($value, 15%), darken($value, 15%));
+  }
+}
+
+.btn-ellipsis {
+  &:after {
+    display: none;
+  }
+}

@@ -1,0 +1,16 @@
+<div class="issue">
+  <div class="content pt-1 pb-1 pe-3 ps-3">
+    {{issue?.title}}
+  </div>
+
+  <div class="labels d-flex p-3 pt-1 pb-0 mb-1 flex-wrap">
+    <app-kanban-label [label]="label" *ngFor="let label of issue?.labels?.nodes" class="mb-1"></app-kanban-label>
+  </div>
+
+  <div class="footer pe-3 ps-3 pt-1 pb-1 border-top d-flex align-items-center">
+    <a [href]="issue?.webUrl" target="_blank">{{issue?.projectName}}#{{issue?.iid}}</a>
+
+    <a [href]="issue?.milestone?.webPath" class="ms-3 milestone" target="_blank"
+       *ngIf="issue?.milestone?.id">{{issue?.milestone?.title}}</a>
+  </div>
+</div>

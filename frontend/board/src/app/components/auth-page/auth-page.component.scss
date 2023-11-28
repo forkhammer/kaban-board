@@ -1,0 +1,29 @@
+@import '../../../styles/imports.scss';
+
+:host {
+  display: flex;
+  align-items: center;
+  min-height: calc(100vh - 93px);
+
+  @include media-breakpoint-down(sm) {
+    box-shadow: none;
+    background: $gray-100;
+  }
+}
+
+.form {
+  width: 500px;
+  max-width: 100%;
+  background: $gray-100;
+
+  :host-context([data-bs-theme="dark"]) {
+    .form {
+      background: $gray-850;
+    }
+  }
+
+  @include media-breakpoint-down(sm) {
+    box-shadow: none;
+    background: transparent;
+  }
+}

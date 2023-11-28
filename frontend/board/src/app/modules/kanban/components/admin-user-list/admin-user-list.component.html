@@ -1,0 +1,9 @@
+<app-spinner [visible]="isLoading"></app-spinner>
+
+<div class="scroll">
+  <ng-container *ngFor="let user of users; trackBy trackByUser">
+    <div class="border-bottom">
+      <app-admin-user-card [user]="user"></app-admin-user-card>
+    </div>
+  </ng-container>
+</div>

@@ -1,0 +1,117 @@
+@import '../../../../../styles/imports.scss';
+
+$user-list-width: 320px;
+
+.board {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: $gray-100;
+
+  :host-context([data-bs-theme="dark"]) {
+    .board {
+      background: $gray-800;
+    }
+  }
+}
+
+.user-list {
+  position: absolute;
+  left: 0;
+  width: $user-list-width;
+  top: 0;
+  bottom: 0;
+  background: $white;
+
+  :host-context([data-bs-theme="dark"]) {
+    .user-list  {
+      background: $gray-900;
+    }
+  }
+
+  &-scroll {
+    position: absolute;
+    left: 0;
+    width: $user-list-width;
+    top: 140px;
+    bottom: 0;
+    overflow-y: auto;
+  }
+}
+
+.user-board {
+  position: absolute;
+  left: $user-list-width;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  overflow-x: hidden;
+  overflow-y: hidden;
+
+  &-inner {
+    position: absolute;
+    left: $pt3;
+    right: $pt3;
+    top: $pt3;
+    bottom: $pt3;
+    transition-duration: 0.3s;
+  }
+}
+
+.search-input {
+  border: none;
+  background: $white;
+  padding: $pt/2 $pt3;
+
+  :host-context([data-bs-theme="dark"]) {
+    .search-input   {
+      background: $gray-900;
+    }
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: none;
+  }
+}
+
+.search-clear {
+  background: $white;
+
+  :host-context([data-bs-theme="dark"]) {
+    .search-clear {
+      background: $gray-900;
+    }
+  }
+}
+
+.slide {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100px;
+  background: rgba($black, 0.1);
+  color: $white;
+  border: none;
+  font-size: 2rem;
+  transition-duration: 0.2s;
+  display: none;
+
+  &:hover {
+    background: rgba($black, 0.3);
+  }
+
+  &.left {
+    left: 0;
+  }
+
+  &.right {
+    right: 0;
+  }
+
+  &.visible {
+    display: block;
+  }
+}

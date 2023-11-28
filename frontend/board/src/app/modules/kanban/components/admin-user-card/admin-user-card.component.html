@@ -1,0 +1,12 @@
+<div class="user-card d-flex align-items-center pt-1 pb-1 p-1 ps-3 pe-3">
+  <div class="avatar me-3">
+    <img [src]="user.avatar_url" [alt]="user.name">
+  </div>
+
+  <div class="user-title flex-grow-1">{{user.username}}</div>
+
+  <button class="btn btn-link" (click)="toggleVisible()" title="Вкл/выкл видимость пользователя">
+    <fa-icon [icon]="faEye" *ngIf="user.is_visible" class="text-success"></fa-icon>
+    <fa-icon [icon]="faEyeSlash" *ngIf="!user.is_visible" class="text-secondary"></fa-icon>
+  </button>
+</div>

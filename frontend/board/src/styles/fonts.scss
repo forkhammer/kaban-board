@@ -1,0 +1,90 @@
+$font-regular: 'Source Sans Pro', serif;
+$font-headline: 'Source Sans Pro', serif;
+
+@mixin font-regular() {
+  font-family: $font-regular;
+}
+
+@mixin font-headline() {
+  font-family: var(--font-family-header, $font-headline);
+}
+
+@mixin fs-lead-l2() {
+  font-size: 2.5rem;
+  line-height: 3rem;
+}
+
+@mixin fs-lead-l() {
+  font-size: 2rem;
+  line-height: 2.5rem;
+}
+
+@mixin fs-lead-m() {
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+
+@mixin fs-lead-s() {
+  font-size: 1.25rem;
+  line-height: 1.875rem;
+}
+
+@mixin fs-paragraph-m {
+  font-size: 1.125rem;
+}
+
+@mixin fs-paragraph-s {
+  font-size: 1rem;
+}
+
+@mixin fs-paragraph-xs {
+  font-size: .875rem;
+}
+
+@mixin fs-paragraph-xxs {
+  font-size: .75rem;
+}
+
+@mixin fs-paragraph-xxxs {
+  font-size: .6875rem;
+}
+
+.fs-lead-l2 {
+  @include fs-lead-l2();
+}
+
+.fs-lead-l {
+  @include fs-lead-l();
+}
+
+.fs-lead-m {
+  @include fs-lead-m();
+}
+
+.fs-lead-s {
+  @include fs-lead-s();
+}
+
+.fs-paragraph-m {
+  @include fs-paragraph-m();
+}
+
+.fs-paragraph-s {
+  @include fs-paragraph-s();
+}
+
+.fs-paragraph-xs {
+  @include fs-paragraph-xs();
+}
+
+.fs-paragraph-xxs {
+  @include fs-paragraph-xxs();
+}
+
+.fs-paragraph-xxxs {
+  @include fs-paragraph-xxxs();
+}
+
+.fw-medium {
+  font-weight: 600;
+}

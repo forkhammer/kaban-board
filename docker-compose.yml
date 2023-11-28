@@ -1,0 +1,33 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:15.4
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=board
+      - POSTGRES_USER=board
+      - POSTGRES_PASSWORD=board
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ../docker/backend/Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    env_file:
+      - ./.env
+
+  frontend:
+    build:
+      context: ./frontend/board
+      dockerfile: ../../docker/frontend/Dockerfile
+    ports:
+      - "4200:4200"
+    depends_on:
+      - backend
+    env_file:
+      - ./.env

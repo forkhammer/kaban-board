@@ -1,0 +1,9 @@
+@import '../../../../../styles/imports';
+
+:host-context([data-bs-theme="dark"]) {
+  .project-title {
+    color: $white;
+  }
+}
+
+

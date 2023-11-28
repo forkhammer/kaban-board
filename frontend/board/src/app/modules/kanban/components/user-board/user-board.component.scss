@@ -1,0 +1,19 @@
+@import '../../../../../styles/imports';
+
+.btn-add-column {
+  border-radius: 1rem;
+  background: $gray-200;
+  padding-top: $pt;
+  padding-bottom: $pt;
+  min-width: $pt8;
+
+  :host-context([data-bs-theme="dark"]) {
+    .btn-add-column {
+      background: $gray-900;
+    }
+  }
+}
+
+.issue-col {
+
+}

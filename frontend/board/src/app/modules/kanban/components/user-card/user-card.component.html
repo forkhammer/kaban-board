@@ -1,0 +1,5 @@
+<div class="card p-3 pt-1 pb-1 border-bottom d-flex align-items-center" [class.selected]="selected">
+  <div class="avatar me-3"><img [src]="user.avatarUrl" [alt]="user.name"></div>
+  <div class="username me-auto">{{user.name}}</div>
+  <div class="count fs-paragraph-xxs ms-2">{{getIssuesCount()}}</div>
+</div>

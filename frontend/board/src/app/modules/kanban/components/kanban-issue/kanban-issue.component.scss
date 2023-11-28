@@ -1,0 +1,29 @@
+@import '../../../../../styles/imports';
+
+.issue {
+  border-radius: 1rem;
+  border: 2px solid transparent;
+  background: $white;
+
+  :host-context([data-bs-theme="dark"]) {
+    .issue {
+      background: $gray-900;
+      color: $white;
+    }
+  }
+
+  &:hover {
+    border-color: $primary;
+  }
+}
+
+.milestone {
+  color: $gray-600;
+  text-decoration: underline;
+
+  :host-context([data-bs-theme="dark"]) {
+    .milestone {
+      color: $gray-100;
+    }
+  }
+}

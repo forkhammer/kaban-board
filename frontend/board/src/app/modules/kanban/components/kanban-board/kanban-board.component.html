@@ -1,0 +1,40 @@
+<div class="board">
+  <app-spinner [visible]="isLoading"></app-spinner>
+
+  <div class="user-list" *ngIf="users.length > 0">
+    <div class="filter p-2" [formGroup]="filterForm">
+      <app-select-model [service]="teamService" [useClear]="true" formControlName="team"
+                        nullTitle="Все"></app-select-model>
+    </div>
+
+    <form class="user-search d-flex" [formGroup]="searchForm">
+      <input type="text" class="search-input form-control flex-grow-1" formControlName="search" placeholder="Найти...">
+      <button class="search-clear btn"><fa-icon [icon]="faXmark" (click)="clearSearch($event)"></fa-icon></button>
+    </form>
+
+    <div class="user-list-scroll">
+      <app-user-card [user]="user" *ngFor="let user of users | filterUsersByTeam: (teamId$ | async) | searchUsers:searchForm.get('search')?.value; trackBy trackByUser"
+        (click)="goToUserBoard(user)"
+        [selected]="selectedUser === user"
+        [columns]="getActiveColumns((teamId$ | async))"></app-user-card>
+    </div>
+
+  </div>
+
+  <div class="user-board" *ngIf="selectedUser">
+    <div class="user-board-inner" [ngStyle]="getUserBoardStyles()" #UserBoardInner>
+      <app-user-board [user]="selectedUser" [columns]="getActiveColumns((teamId$ | async))"
+        [columnWidth]="COLUMN_WIDTH"
+        (onAddColumn)="catchAddColumn($event)"
+        (onDeleteColumn)="catchDeleteColumn($event)"></app-user-board>
+    </div>
+
+    <button class="slide left" (click)="slideLeft()" [class.visible]="getScreenStartColumn() > 0">
+      <fa-icon [icon]="faArrowLeft"></fa-icon>
+    </button>
+
+    <button class="slide right" (click)="slideRight()" [class.visible]="getScreenEndColumn() - 1 < getActiveColumns((teamId$ | async)).length">
+      <fa-icon [icon]="faArrowRight"></fa-icon>
+    </button>
+  </div>
+</div>

@@ -1,0 +1,17 @@
+<div class="column me-2">
+  <div class="caption fw-bold d-flex align-items-center">
+    <span class="flex-grow-1">{{column.name}}</span>
+    <div ngbDropdown placement="bottom-end" *ngIf="accountService.isAdmin$ | async">
+      <button ngbDropdownToggle class="btn btn-sm btn-white btn-ellipsis"><fa-icon [icon]="faEllipsis"></fa-icon></button>
+      <div ngbDropdownMenu class="light">
+        <button ngbDropdownItem (click)="openModal($event)">Редактировать</button>
+        <button ngbDropdownItem (click)="delete($event)">Удалить</button>
+      </div>
+    </div>
+  </div>
+  <div class="column-content" *ngIf="(user.issues | filterByLabels:column.labels).length > 0">
+    <div class="issue" *ngFor="let issue of user.issues | filterByLabels:column.labels">
+      <app-kanban-issue [issue]="issue"></app-kanban-issue>
+    </div>
+  </div>
+</div>

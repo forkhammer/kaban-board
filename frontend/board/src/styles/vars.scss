@@ -1,0 +1,106 @@
+$white: #fff;
+$gray-100: #F4F5F9 !default;
+$gray-200: #E9EAED !default;
+$gray-300: #E0E1E4 !default;
+$gray-400: #C9CACD !default;
+$gray-500: #AFAFB2 !default;
+$gray-600: #8D8E90 !default;
+$gray-700: #707072 !default;
+$gray-800: #4F4F50 !default;
+$gray-850: #2f2f2f !default;
+$gray-900: #262526 !default;
+
+$primary: #1151F3;
+$primary-dark: #0C39AB;
+$primary-light: #5784F7;
+$primary-lighten: rgba(17, 81, 243, 0.16);
+
+$success: #009B51;
+$success-dark: #009B51;
+$success-light: #009B51;
+$success-lighten: rgba(0, 155, 81, 0.2);
+
+$danger: #F31155;
+$danger-dark: #AB0C3C;
+$danger-light: #F75787;
+$danger-lighten: rgba(243, 17, 85, 0.1);
+
+$warning: #FFAE11;
+$warning-dark: #FFAE11;
+$warning-light: #FFAE11;
+$warning-lighten: rgba(255, 174, 17, 0.2);
+
+$info: #12A4F5;
+$info-dark: #0D74AD;
+$info-light: #58BFF8;
+$info-lighten: rgba(18, 164, 245, 0.2);
+
+$body-bg: #FFFFFF;
+
+$pt: 8px;
+$pt2: 16px;
+$pt3: 24px;
+$pt4: 32px;
+$pt5: 40px;
+$pt6: 48px;
+$pt7: 56px;
+$pt8: 64px;
+$pt9: 72px;
+$pt10: 80px;
+
+$spacers: (
+  0: 0,
+  1: $pt,
+  2: $pt2,
+  3: $pt3,
+  4: $pt4,
+  5: $pt5,
+  6: $pt6,
+  7: $pt7,
+  8: $pt8,
+  9: $pt9,
+  10: $pt10,
+);
+
+$font-size-base: 1rem;
+
+$body-color: $gray-700;
+
+$h1-font-size: 3rem;
+$h2-font-size: 2rem;
+$h3-font-size: 1.5rem;
+
+$btn-padding-y: 0;
+$btn-padding-y-sm: 0;
+$btn-padding-y-lg: 0;
+$btn-padding-x: $pt2;
+$btn-padding-x-sm: $pt2;
+$btn-padding-x-lg: $pt3;
+$btn-box-shadow: none;
+$btn-focus-box-shadow: none;
+$btn-active-box-shadow: none;
+$btn-focus-width: 0;
+$btn-line-height: $pt6 - 2px;
+$btn-line-height-sm: $pt4 - 2px;
+$btn-line-height-lg: $pt8 -2px;
+$btn-border-width: 1px;
+$btn-font-weight: 600;
+$btn-border-radius: 0.1875rem;
+$btn-border-radius-lg: 0.1875rem;
+$btn-font-size: 1rem;
+$btn-font-size-lg: 1rem;
+
+$input-padding-y: 0;
+$input-line-height: 2.9;
+$input-border-color: $gray-300;
+
+$link-color: $primary-dark;
+$link-decoration: none;
+
+$border-radius: .25rem;
+$border-radius-sm: .2rem;
+$border-radius-lg: .5rem;
+$border-color-dark: $gray-850;
+
+$color-mode-type: data;
+

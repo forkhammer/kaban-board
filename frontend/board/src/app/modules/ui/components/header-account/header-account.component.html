@@ -1,0 +1,19 @@
+<div class="d-flex align-items-center">
+  <div ngbDropdown placement="bottom-end" *ngIf="accountService.user$ | async">
+    <button ngbDropdownToggle class="fw-medium btn btn-link">
+      <fa-icon [icon]="faUser" class="user-icon"></fa-icon>
+      {{(accountService.user$ | async)?.username}}
+    </button>
+    <div ngbDropdownMenu class="light">
+      <a routerLink="/" ngbDropdownItem (click)="openSettings()">Настройки</a>
+      <button ngbDropdownItem (click)="logout()">Выйти</button>
+    </div>
+  </div>
+
+  <button class="btn btn-primary" *ngIf="!(accountService.user$ | async)" routerLink="/auth">Войти</button>
+
+  <button class="btn btn-link" *ngIf="accountService.isAdmin$ | async" (click)="toggleSettings()">
+    <fa-icon [icon]="faGear" *ngIf="!(settingsService.isOpen$ | async)"></fa-icon>
+    <fa-icon [icon]="faXmark" *ngIf="settingsService.isOpen$ | async"></fa-icon>
+  </button>
+</div>

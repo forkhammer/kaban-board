@@ -1,0 +1,32 @@
+<div class="offcanvas p-3" [class.open]="settingsService.isOpen$ | async" data-bs-theme="dark">
+  <ul class="nav-tabs" ngbNav #nav="ngbNav">
+    <li ngbNavItem>
+      <button ngbNavLink>Группы</button>
+      <ng-template ngbNavContent>
+        <div>
+          <app-admin-team-list></app-admin-team-list>
+        </div>
+      </ng-template>
+    </li>
+
+    <li ngbNavItem>
+      <button ngbNavLink>Пользователи</button>
+      <ng-template ngbNavContent>
+        <div>
+          <app-admin-user-list></app-admin-user-list>
+        </div>
+      </ng-template>
+    </li>
+
+    <li ngbNavItem>
+      <button ngbNavLink>Проекты</button>
+      <ng-template ngbNavContent>
+        <div>
+          <app-admin-project-list></app-admin-project-list>
+        </div>
+      </ng-template>
+    </li>
+  </ul>
+
+  <div [ngbNavOutlet]="nav" class="mt-2 position-relative tab-content"></div>
+</div>

@@ -1,0 +1,39 @@
+@import '../../../../../styles/imports.scss';
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 50%;
+
+  img {
+    max-width: 100%;
+    max-height: 100%;
+  }
+}
+
+.card {
+  background: $white;
+  color: $body-color;
+  cursor: pointer;
+
+  :host-context([data-bs-theme="dark"]) {
+    .card {
+      background: $gray-900;
+      color: $white;
+
+      &.selected {
+        background: $gray-850;
+      }
+    }
+  }
+
+  &.selected {
+    background: $primary;
+    color: $white;
+  }
+}
+
+.count {
+}

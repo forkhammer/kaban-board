@@ -1,0 +1,14 @@
+@import '../styles/imports';
+
+.wrapper {
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.page {
+  background: $gray-100;
+}
+
+[data-bs-theme="dark"] .page {
+  background: $gray-800;
+}

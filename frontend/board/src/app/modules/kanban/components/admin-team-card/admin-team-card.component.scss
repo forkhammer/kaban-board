@@ -1,0 +1,8 @@
+@import '../../../../../styles/imports';
+
+
+:host-context([data-bs-theme="dark"]) {
+  .team-title {
+    color: $white;
+  }
+}

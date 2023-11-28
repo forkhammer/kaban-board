@@ -1,0 +1,10 @@
+@import '../../../../../styles/imports';
+
+:host {
+  display: block;
+  min-height: 300px;
+}
+
+.team-card {
+  border-bottom: 1px solid $border-color;
+}

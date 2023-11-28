@@ -1,0 +1,11 @@
+<div class="d-flex flex-column wrapper" [attr.data-bs-theme]="themeService.theme$ | async">
+  <app-header></app-header>
+
+  <div class="page flex-grow-1 position-relative">
+    <router-outlet></router-outlet>
+
+    <app-offcanvas-admin></app-offcanvas-admin>
+  </div>
+</div>
+
+<app-toast-container></app-toast-container>

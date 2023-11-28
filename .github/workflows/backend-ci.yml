@@ -25,8 +25,8 @@ jobs:
 
     - name: Build
       working-directory: ./backend
-      run: go build -v main.go
+      run: go build -v main
 
     - name: Test
       working-directory: ./backend
-      run: go test -v main.go
+      run: go test -v main

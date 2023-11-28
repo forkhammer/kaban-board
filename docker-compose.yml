@@ -5,10 +5,8 @@ services:
     image: postgres:15.4
     ports:
       - "5432:5432"
-    environment:
-      - POSTGRES_DB=board
-      - POSTGRES_USER=board
-      - POSTGRES_PASSWORD=board
+    env_file:
+      - ./.env
 
   backend:
     build:

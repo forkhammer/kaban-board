@@ -18,7 +18,7 @@ type Config struct {
 	PostgresPort int    `env:"POSTGRES_PORT"`
 	PostgresDb   string `env:"POSTGRES_DB"`
 	PostgresUser string `env:"POSTGRES_USER"`
-	PostgresPass string `env:"POSTGRES_PASS"`
+	PostgresPass string `env:"POSTGRES_PASSWORD"`
 
 	JwtTokenLifespanHour uint   `env:"JWT_TOKEN_LIFESPAN_HOUR" envDefault:"24"`
 	ApiSecret            string `env:"API_SECRET"`

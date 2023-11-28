@@ -17,7 +17,7 @@ type Application struct {
 func NewApplication() Application {
 	router := gin.Default()
 	corsConfig := cors.DefaultConfig()
-	corsConfig.AllowOrigins = []string{"http://localhost:4200", "https://0286-94-41-238-118.ngrok-free.app"}
+	corsConfig.AllowOrigins = config.Settings.AllowOrigins
 	corsConfig.AllowHeaders = append(corsConfig.AllowHeaders, "Authorization", "ngrok-skip-browser-warning")
 	router.Use(cors.New(corsConfig))
 	router.Use(account.JwtMiddleware())

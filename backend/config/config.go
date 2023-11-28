@@ -8,11 +8,12 @@ import (
 )
 
 type Config struct {
-	Port        int             `env:"PORT"`
-	Host        string          `env:"HOST"`
-	GitlabUrl   string          `env:"GITLAB_URL"`
-	GitlabToken string          `env:"GITLAB_TOKEN"`
-	LogLevel    logger.LogLevel `env:"LOG_LEVEL" envDefault:"1"`
+	Port         int             `env:"PORT"`
+	Host         string          `env:"HOST"`
+	GitlabUrl    string          `env:"GITLAB_URL"`
+	GitlabToken  string          `env:"GITLAB_TOKEN"`
+	LogLevel     logger.LogLevel `env:"LOG_LEVEL" envDefault:"1"`
+	AllowOrigins []string        `env:"ALLOW_ORIGINS" envSeparator:","`
 
 	PostgresHost string `env:"POSTGRES_HOST"`
 	PostgresPort int    `env:"POSTGRES_PORT"`

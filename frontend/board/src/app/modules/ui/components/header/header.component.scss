@@ -42,3 +42,21 @@
   font-weight: 600;
   color: $gray-700
 }
+
+.caption {
+  width: 308px;
+}
+
+.search {
+  width: auto;
+}
+
+.search-input {
+  width: 400px;
+
+  :host-context([data-bs-theme=dark]) {
+    .search-input {
+      border-color: rgba($white, 0.1);
+    }
+  }
+}

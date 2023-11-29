@@ -9,8 +9,8 @@
       </div>
     </div>
   </div>
-  <div class="column-content" *ngIf="(user.issues | filterByLabels:column.labels).length > 0">
-    <div class="issue" *ngFor="let issue of user.issues | filterByLabels:column.labels">
+  <div class="column-content" *ngIf="(user.issues | filterByLabels:column.labels | filterIssuesByText:search).length > 0">
+    <div class="issue" *ngFor="let issue of user.issues | filterByLabels:column.labels | filterIssuesByText:search">
       <app-kanban-issue [issue]="issue"></app-kanban-issue>
     </div>
   </div>

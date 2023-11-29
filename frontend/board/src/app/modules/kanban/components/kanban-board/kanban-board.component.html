@@ -13,7 +13,7 @@
     </form>
 
     <div class="user-list-scroll">
-      <app-user-card [user]="user" *ngFor="let user of users | filterUsersByTeam: (teamId$ | async) | searchUsers:searchForm.get('search')?.value; trackBy trackByUser"
+      <app-user-card [user]="user" *ngFor="let user of users | filterUsersByTeam: (teamId$ | async) | searchUsers:searchForm.get('search')?.value | filterUsersByText: (search$ | async); trackBy trackByUser"
         (click)="goToUserBoard(user)"
         [selected]="selectedUser === user"
         [columns]="getActiveColumns((teamId$ | async))"></app-user-card>
@@ -25,6 +25,7 @@
     <div class="user-board-inner" [ngStyle]="getUserBoardStyles()" #UserBoardInner>
       <app-user-board [user]="selectedUser" [columns]="getActiveColumns((teamId$ | async))"
         [columnWidth]="COLUMN_WIDTH"
+        [search]="search$ | async"
         (onAddColumn)="catchAddColumn($event)"
         (onDeleteColumn)="catchDeleteColumn($event)"></app-user-board>
     </div>

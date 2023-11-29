@@ -16,6 +16,7 @@ export class UserBoardComponent {
   @Input() user!: KanbanUser
   @Input() columns: KanbanColumn[] = []
   @Input() columnWidth = 350
+  @Input() search: string | null = null
   @Output() onAddColumn: EventEmitter<KanbanColumn> = new EventEmitter<KanbanColumn>()
   @Output() onDeleteColumn: EventEmitter<KanbanColumn> = new EventEmitter<KanbanColumn>()
 

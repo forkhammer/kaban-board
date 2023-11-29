@@ -3,7 +3,7 @@
     <div class="issue-col flex-grow-0" *ngFor="let column of columns; trackBy trackByColumn"
          [style.width.px]="columnWidth"
          [style.min-width.px]="columnWidth">
-      <app-kanban-column [column]="column" [user]="user" (onDelete)="catchDeleteColumn($event)"></app-kanban-column>
+      <app-kanban-column [column]="column" [user]="user" [search]="search" (onDelete)="catchDeleteColumn($event)"></app-kanban-column>
     </div>
 
     <div class="issue-col" *ngIf="accountService.isAdmin$ | async">

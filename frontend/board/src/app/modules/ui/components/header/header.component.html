@@ -1,16 +1,25 @@
 <div class="pt-2 pb-2 shadow header">
   <div class="container-fluid">
     <div class="row">
-      <div class="col d-flex align-items-center">
-        <a routerLink="/" class="logo me-1">
-        </a>
-        <a routerLink="/" class="caption me-auto">KABAN BOARD</a>
+      <div class="col d-flex align-items-center" [formGroup]="form">
+        <div class="caption d-flex align-items-center">
+          <a routerLink="/" class="logo me-1">
+          </a>
+          <a routerLink="/" class="caption">KABAN BOARD</a>
+        </div>
+
+        <div class="search me-auto input-group">
+          <input type="text" class="form-control search-input" formControlName="search" placeholder="Поиск по тексту или номеру тикета (#номер)...">
+          <button class="btn btn-clear-search" (click)="clearSearch()">
+            <fa-icon [icon]="faXmark"></fa-icon>
+          </button>
+        </div>
 
         <div class="update-time me-3">
           Синхронизация с Gitlab: {{syncService.updateTime$ | async | elapsedTime:now}}
         </div>
 
-        <div class="settings me-3" [formGroup]="form">
+        <div class="settings me-3">
           <div class="form-check form-switch mb-0">
             <input class="form-check-input" type="checkbox" role="switch" id="darkMode" formControlName="darkMode">
             <label class="form-check-label" for="darkMode">Темная тема</label>

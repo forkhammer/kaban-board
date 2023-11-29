@@ -16,6 +16,7 @@ import {AccountService} from "../../../core/services/account.service";
 export class KanbanColumnComponent implements OnDestroy{
   @Input() column!: KanbanColumn
   @Input() user!: KanbanUser
+  @Input() search: string | null = null
   @Output() onDelete = new EventEmitter<KanbanColumn>()
 
   faEllipsis = faEllipsis

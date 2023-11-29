@@ -25,6 +25,8 @@ import { AdminUserListComponent } from './components/admin-user-list/admin-user-
 import { AdminUserCardComponent } from './components/admin-user-card/admin-user-card.component';
 import { AdminProjectListComponent } from './components/admin-project-list/admin-project-list.component';
 import { AdminProjectCardComponent } from './components/admin-project-card/admin-project-card.component';
+import { FilterUsersByTextPipe } from './pipes/filter-users-by-text.pipe';
+import { FilterIssuesByTextPipe } from './pipes/filter-issues-by-text.pipe';
 
 
 @NgModule({
@@ -48,7 +50,9 @@ import { AdminProjectCardComponent } from './components/admin-project-card/admin
     AdminUserListComponent,
     AdminUserCardComponent,
     AdminProjectListComponent,
-    AdminProjectCardComponent
+    AdminProjectCardComponent,
+    FilterUsersByTextPipe,
+    FilterIssuesByTextPipe
   ],
   exports: [
     UserBoardComponent,

@@ -43,6 +43,7 @@ export class KanbanBoardComponent implements OnInit, OnDestroy {
   public teamId$: Observable<number | null>
   public slidePosition = 0
   @ViewChild('UserBoardInner') userBoardInner: ElementRef | null = null
+  public search$: Observable<string | null>
 
   constructor(
     private kanbanUserService: KanbanUserService,
@@ -62,6 +63,9 @@ export class KanbanBoardComponent implements OnInit, OnDestroy {
     })
     this.teamId$ = this.route.queryParams.pipe(
       map(params => params['team'] ? Number(params['team']) : null)
+    );
+    this.search$ = this.route.queryParams.pipe(
+      map(params => params['search'] ? params['search'] : null)
     );
   }
 

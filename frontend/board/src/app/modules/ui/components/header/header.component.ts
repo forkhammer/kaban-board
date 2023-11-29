@@ -1,9 +1,11 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {GitlabSyncService} from "../../../kanban/services/gitlab-sync.service";
 import {distinctUntilChanged, interval, Subject} from "rxjs";
-import {takeUntil} from "rxjs/operators";
+import {map, takeUntil} from "rxjs/operators";
 import {ThemeServiceService} from "../../services/theme-service.service";
 import {FormBuilder, FormGroup} from "@angular/forms";
+import { ActivatedRoute, Router } from '@angular/router';
+import { faXmark } from '@fortawesome/free-solid-svg-icons'
 
 @Component({
   selector: 'app-header',
@@ -15,10 +17,14 @@ export class HeaderComponent implements OnDestroy, OnInit {
   private destroy$ = new Subject()
   public form: FormGroup
 
+  faXmark = faXmark
+
   constructor(
     public syncService: GitlabSyncService,
     private themeService: ThemeServiceService,
-    public fb: FormBuilder
+    public fb: FormBuilder,
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     interval(1000).pipe(
       takeUntil(this.destroy$)
@@ -27,11 +33,16 @@ export class HeaderComponent implements OnDestroy, OnInit {
     })
 
     this.form = this.fb.group({
-      darkMode: [false]
+      darkMode: [false],
+      search: [''],
     })
   }
 
   ngOnInit() {
+    const search$ = this.route.queryParams.pipe(
+      map(params => params['search'])
+    );
+
     this.themeService.theme$.pipe(
       distinctUntilChanged(),
       takeUntil(this.destroy$)
@@ -45,10 +56,28 @@ export class HeaderComponent implements OnDestroy, OnInit {
     ).subscribe(value => {
       this.themeService.theme$.next(value ? 'dark' : 'light')
     })
+
+    search$.pipe(
+      distinctUntilChanged(),
+      takeUntil(this.destroy$)
+    ).subscribe(val => {
+      this.form.patchValue({search: val})
+    })
+
+    this.form.get('search')?.valueChanges.pipe(
+      distinctUntilChanged(),
+      takeUntil(this.destroy$)
+    ).subscribe(val => {
+      this.router.navigate([], {queryParams:{search:val}, queryParamsHandling: 'merge'})
+    })
   }
 
   ngOnDestroy() {
     this.destroy$.next(null)
     this.destroy$.complete()
+  }
+
+  clearSearch() {
+    this.form.patchValue({search:''})
   }
 }

@@ -1,11 +1,14 @@
 package account
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
-type AccountController struct{}
+type AccountController struct {
+	accountService AccountService
+}
 
 func (c *AccountController) RegisterRoutes(engine *gin.Engine) {
 	engine.POST("/account/register", c.Register)
@@ -21,7 +24,7 @@ func (c *AccountController) Register(ctx *gin.Context) {
 		return
 	}
 
-	account, err := RegisterAccount(request.Username, request.Password)
+	account, err := c.accountService.RegisterAccount(request.Username, request.Password)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -39,7 +42,7 @@ func (c *AccountController) Login(ctx *gin.Context) {
 		return
 	}
 
-	token, err := GetTokenByCredentials(request.Username, request.Password)
+	token, err := c.accountService.GetTokenByCredentials(request.Username, request.Password)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

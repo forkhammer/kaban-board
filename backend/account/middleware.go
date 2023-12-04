@@ -1,13 +1,16 @@
 package account
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 func JwtMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		account, _ := GetCurrentAccountFromContext(ctx)
+		var accountService AccountService
+
+		account, _ := accountService.GetCurrentAccountFromContext(ctx)
 
 		ctx.Set("account", account)
 

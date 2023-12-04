@@ -3,17 +3,20 @@ package account
 import (
 	"errors"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v4"
-	"golang.org/x/crypto/bcrypt"
 	"html"
 	"main/config"
 	"main/db"
 	"strings"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v4"
+	"golang.org/x/crypto/bcrypt"
 )
 
-func GetPasswordHash(rawPass string) (string, error) {
+type AccountService struct{}
+
+func (s *AccountService) GetPasswordHash(rawPass string) (string, error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(rawPass), bcrypt.DefaultCost)
 
 	if err != nil {
@@ -23,14 +26,14 @@ func GetPasswordHash(rawPass string) (string, error) {
 	return html.EscapeString(strings.TrimSpace(string(hashedPassword))), nil
 }
 
-func RegisterAccount(username, password string) (*Account, error) {
-	_, err := GetAccountByUsername(username)
+func (s *AccountService) RegisterAccount(username, password string) (*Account, error) {
+	_, err := s.GetAccountByUsername(username)
 
 	if err == nil {
 		return nil, errors.New("Такой пользователь уже существует")
 	}
 
-	passwordHash, err := GetPasswordHash(password)
+	passwordHash, err := s.GetPasswordHash(password)
 
 	if err != nil {
 		return &Account{}, err
@@ -47,8 +50,8 @@ func RegisterAccount(username, password string) (*Account, error) {
 	return account, result.Error
 }
 
-func GetTokenByCredentials(username, password string) (string, error) {
-	account, err := GetAccountByUsername(username)
+func (s *AccountService) GetTokenByCredentials(username, password string) (string, error) {
+	account, err := s.GetAccountByUsername(username)
 
 	if err != nil {
 		return "", errors.New("Такой пользователь не найден")
@@ -58,13 +61,13 @@ func GetTokenByCredentials(username, password string) (string, error) {
 		return "", errors.New("Пользователь не активирован")
 	}
 
-	err = VerifyPassword(password, account.Password)
+	err = s.VerifyPassword(password, account.Password)
 
 	if err != nil {
 		return "", errors.New("Неверный пароль")
 	}
 
-	token, err := GenerateToken(account)
+	token, err := s.GenerateToken(account)
 
 	if err != nil {
 		return "", err
@@ -73,11 +76,11 @@ func GetTokenByCredentials(username, password string) (string, error) {
 	return token, nil
 }
 
-func VerifyPassword(password, hashedPassword string) error {
+func (s *AccountService) VerifyPassword(password, hashedPassword string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 }
 
-func GenerateToken(account *Account) (string, error) {
+func (s *AccountService) GenerateToken(account *Account) (string, error) {
 	tokenLifespan := config.Settings.JwtTokenLifespanHour
 	claims := jwt.MapClaims{}
 	claims["authorized"] = true
@@ -87,7 +90,7 @@ func GenerateToken(account *Account) (string, error) {
 	return token.SignedString([]byte(config.Settings.ApiSecret))
 }
 
-func GetAccountByUsername(username string) (*Account, error) {
+func (s *AccountService) GetAccountByUsername(username string) (*Account, error) {
 	var account Account
 
 	result := db.DefaultConnection.Db.Where(Account{Username: username}).First(&account)
@@ -95,7 +98,7 @@ func GetAccountByUsername(username string) (*Account, error) {
 	return &account, result.Error
 }
 
-func GetAccountById(id uint) (*Account, error) {
+func (s *AccountService) GetAccountById(id uint) (*Account, error) {
 	var account Account
 
 	result := db.DefaultConnection.Db.Where(Account{Id: id}).First(&account)
@@ -107,8 +110,8 @@ func GetAccountById(id uint) (*Account, error) {
 	return &account, nil
 }
 
-func ValidateToken(c *gin.Context) error {
-	token, err := GetToken(c)
+func (s *AccountService) ValidateToken(c *gin.Context) error {
+	token, err := s.GetToken(c)
 
 	if err != nil {
 		return err
@@ -122,8 +125,8 @@ func ValidateToken(c *gin.Context) error {
 	return errors.New("Invalid token provided")
 }
 
-func GetToken(c *gin.Context) (*jwt.Token, error) {
-	tokenString := getTokenFromRequest(c)
+func (s *AccountService) GetToken(c *gin.Context) (*jwt.Token, error) {
+	tokenString := s.getTokenFromRequest(c)
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
@@ -134,7 +137,7 @@ func GetToken(c *gin.Context) (*jwt.Token, error) {
 	return token, err
 }
 
-func getTokenFromRequest(c *gin.Context) string {
+func (s *AccountService) getTokenFromRequest(c *gin.Context) string {
 	bearerToken := c.Request.Header.Get("Authorization")
 
 	splitToken := strings.Split(bearerToken, " ")
@@ -144,16 +147,16 @@ func getTokenFromRequest(c *gin.Context) string {
 	return ""
 }
 
-func GetCurrentAccountFromContext(c *gin.Context) (*Account, error) {
-	err := ValidateToken(c)
+func (s *AccountService) GetCurrentAccountFromContext(c *gin.Context) (*Account, error) {
+	err := s.ValidateToken(c)
 	if err != nil {
 		return nil, err
 	}
-	token, _ := GetToken(c)
+	token, _ := s.GetToken(c)
 	claims, _ := token.Claims.(jwt.MapClaims)
 	userId := uint(claims["id"].(float64))
 
-	user, err := GetAccountById(userId)
+	user, err := s.GetAccountById(userId)
 	if err != nil {
 		return nil, err
 	}

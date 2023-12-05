@@ -1,6 +1,9 @@
 <div class="column me-2">
-  <div class="caption fw-bold d-flex align-items-center">
-    <span class="flex-grow-1">{{column.name}}</span>
+  <div class="caption d-flex align-items-center">
+    <span class="flex-grow-1 fw-bold">{{column.name}}</span>
+
+    <span class="counter me-2 fs-paragraph-xs">{{(user.issues | filterByLabels:column.labels).length}}</span>
+
     <div ngbDropdown placement="bottom-end" *ngIf="accountService.isAdmin$ | async">
       <button ngbDropdownToggle class="btn btn-sm btn-white btn-ellipsis"><fa-icon [icon]="faEllipsis"></fa-icon></button>
       <div ngbDropdownMenu class="light">

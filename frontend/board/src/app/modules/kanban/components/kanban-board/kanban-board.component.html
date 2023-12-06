@@ -21,7 +21,7 @@
 
   </div>
 
-  <div class="user-board" *ngIf="selectedUser">
+  <div class="user-board" *ngIf="selectedUser" (swipeLeft)="swipeLeft($event)" (swipeRight)="swipeRight($event)">
     <div class="user-board-inner" [ngStyle]="getUserBoardStyles()" #UserBoardInner>
       <app-user-board [user]="selectedUser" [columns]="getActiveColumns((teamId$ | async))"
         [columnWidth]="COLUMN_WIDTH"
@@ -30,11 +30,11 @@
         (onDeleteColumn)="catchDeleteColumn($event)"></app-user-board>
     </div>
 
-    <button class="slide left" (click)="slideLeft()" [class.visible]="getScreenStartColumn() > 0">
+    <button class="slide left" (click)="slideLeft($event)" [class.visible]="getScreenStartColumn() > 0">
       <fa-icon [icon]="faArrowLeft"></fa-icon>
     </button>
 
-    <button class="slide right" (click)="slideRight()" [class.visible]="getScreenEndColumn() - 1 < getActiveColumns((teamId$ | async)).length">
+    <button class="slide right" (click)="slideRight($event)" [class.visible]="getScreenEndColumn() - 1 < getActiveColumns((teamId$ | async)).length">
       <fa-icon [icon]="faArrowRight"></fa-icon>
     </button>
   </div>

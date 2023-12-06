@@ -5,7 +5,6 @@ import {
   distinctUntilChanged,
   filter,
   finalize,
-  interval,
   Observable,
   Subject,
   switchMap, timer
@@ -175,16 +174,18 @@ export class KanbanBoardComponent implements OnInit, OnDestroy {
     })
   }
 
-  slideLeft() {
+  slideLeft(e: MouseEvent | null) {
     if (this.slidePosition + this.getSlideStep() > 0) {
       this.slidePosition = 0
     } else {
       this.slidePosition += this.getSlideStep()
     }
+    return false
   }
 
-  slideRight() {
+  slideRight(e: MouseEvent | null) {
     this.slidePosition -= this.getSlideStep()
+    return false
   }
 
   getUserBoardStyles(): {[p:string]: any} {
@@ -207,5 +208,13 @@ export class KanbanBoardComponent implements OnInit, OnDestroy {
 
   getSlideStep() {
     return this.getScreenColumnsCount()
+  }
+
+  swipeLeft(e: Event) {
+    this.slideRight(null)
+  }
+
+  swipeRight(e: Event) {
+    this.slideLeft(null)
   }
 }

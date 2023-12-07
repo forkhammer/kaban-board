@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"html"
 	"main/config"
-	"main/db"
 	"strings"
 	"time"
 
@@ -14,7 +13,9 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type AccountService struct{}
+type AccountService struct {
+	accountRespository AccountRepository
+}
 
 func (s *AccountService) GetPasswordHash(rawPass string) (string, error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(rawPass), bcrypt.DefaultCost)
@@ -27,7 +28,7 @@ func (s *AccountService) GetPasswordHash(rawPass string) (string, error) {
 }
 
 func (s *AccountService) RegisterAccount(username, password string) (*Account, error) {
-	_, err := s.GetAccountByUsername(username)
+	_, err := s.accountRespository.GetAccountByUsername(username)
 
 	if err == nil {
 		return nil, errors.New("Такой пользователь уже существует")
@@ -45,13 +46,13 @@ func (s *AccountService) RegisterAccount(username, password string) (*Account, e
 		Password: passwordHash,
 		IsActive: false,
 	}
-	result := db.DefaultConnection.Db.Create(account)
+	account, err = s.accountRespository.CreateAccount(account)
 
-	return account, result.Error
+	return account, err
 }
 
 func (s *AccountService) GetTokenByCredentials(username, password string) (string, error) {
-	account, err := s.GetAccountByUsername(username)
+	account, err := s.accountRespository.GetAccountByUsername(username)
 
 	if err != nil {
 		return "", errors.New("Такой пользователь не найден")
@@ -88,26 +89,6 @@ func (s *AccountService) GenerateToken(account *Account) (string, error) {
 	claims["exp"] = time.Now().Add(time.Hour * time.Duration(tokenLifespan)).Unix()
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString([]byte(config.Settings.ApiSecret))
-}
-
-func (s *AccountService) GetAccountByUsername(username string) (*Account, error) {
-	var account Account
-
-	result := db.DefaultConnection.Db.Where(Account{Username: username}).First(&account)
-
-	return &account, result.Error
-}
-
-func (s *AccountService) GetAccountById(id uint) (*Account, error) {
-	var account Account
-
-	result := db.DefaultConnection.Db.Where(Account{Id: id}).First(&account)
-
-	if result.Error != nil {
-		return nil, result.Error
-	}
-
-	return &account, nil
 }
 
 func (s *AccountService) ValidateToken(c *gin.Context) error {
@@ -156,7 +137,7 @@ func (s *AccountService) GetCurrentAccountFromContext(c *gin.Context) (*Account,
 	claims, _ := token.Claims.(jwt.MapClaims)
 	userId := uint(claims["id"].(float64))
 
-	user, err := s.GetAccountById(userId)
+	user, err := s.accountRespository.GetAccountById(userId)
 	if err != nil {
 		return nil, err
 	}

@@ -17,7 +17,7 @@ type Config struct {
 	LogLevel     logger.LogLevel `env:"LOG_LEVEL" envDefault:"1"`
 	AllowOrigins []string        `env:"ALLOW_ORIGINS" envSeparator:","`
 
-	DbType tools.RepositoryType `env:"DB_TYPE" envDefault:"mysql"`
+	DbType tools.RepositoryType `env:"DB_TYPE" envDefault:"postgresql"`
 
 	PostgresHost string `env:"POSTGRES_HOST"`
 	PostgresPort int    `env:"POSTGRES_PORT"`
@@ -30,6 +30,8 @@ type Config struct {
 	MysqlDb   string `env:"MYSQL_DATABASE"`
 	MysqlUser string `env:"MYSQL_USER"`
 	MysqlPass string `env:"MYSQL_PASSWORD"`
+
+	SqliteDbFile string `env:"SQLITE_DB_FILE"`
 
 	JwtTokenLifespanHour uint   `env:"JWT_TOKEN_LIFESPAN_HOUR" envDefault:"24"`
 	ApiSecret            string `env:"API_SECRET"`

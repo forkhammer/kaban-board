@@ -32,6 +32,8 @@ func GetConnectionByType(repositoryType tools.RepositoryType, settings *config.C
 			settings.MysqlUser,
 			settings.MysqlPass,
 		)
+	case tools.Sqlite:
+		return NewSqliteConnection(settings.SqliteDbFile)
 	}
 
 	return nil, errors.New("Invalid respository type")

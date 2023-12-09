@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"html"
 	"main/config"
+	"main/tools"
 	"strings"
 	"time"
 
@@ -14,7 +15,7 @@ import (
 )
 
 type AccountService struct {
-	accountRespository AccountRepository
+	accountRespository tools.AccountRepositoryInterface `di.inject:"accountRepository"`
 }
 
 func (s *AccountService) GetPasswordHash(rawPass string) (string, error) {
@@ -28,7 +29,7 @@ func (s *AccountService) GetPasswordHash(rawPass string) (string, error) {
 }
 
 func (s *AccountService) RegisterAccount(username, password string) (*Account, error) {
-	_, err := s.accountRespository.GetAccountByUsername(username)
+	err := s.accountRespository.GetAccountByUsername(&Account{}, username)
 
 	if err == nil {
 		return nil, errors.New("Такой пользователь уже существует")
@@ -46,13 +47,14 @@ func (s *AccountService) RegisterAccount(username, password string) (*Account, e
 		Password: passwordHash,
 		IsActive: false,
 	}
-	account, err = s.accountRespository.CreateAccount(account)
+	err = s.accountRespository.CreateAccount(account)
 
 	return account, err
 }
 
 func (s *AccountService) GetTokenByCredentials(username, password string) (string, error) {
-	account, err := s.accountRespository.GetAccountByUsername(username)
+	var account Account
+	err := s.accountRespository.GetAccountByUsername(&account, username)
 
 	if err != nil {
 		return "", errors.New("Такой пользователь не найден")
@@ -68,7 +70,7 @@ func (s *AccountService) GetTokenByCredentials(username, password string) (strin
 		return "", errors.New("Неверный пароль")
 	}
 
-	token, err := s.GenerateToken(account)
+	token, err := s.GenerateToken(&account)
 
 	if err != nil {
 		return "", err
@@ -137,9 +139,10 @@ func (s *AccountService) GetCurrentAccountFromContext(c *gin.Context) (*Account,
 	claims, _ := token.Claims.(jwt.MapClaims)
 	userId := uint(claims["id"].(float64))
 
-	user, err := s.accountRespository.GetAccountById(userId)
+	var user Account
+	err = s.accountRespository.GetAccountById(&user, userId)
 	if err != nil {
 		return nil, err
 	}
-	return user, nil
+	return &user, nil
 }

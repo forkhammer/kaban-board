@@ -8,6 +8,13 @@ services:
     env_file:
       - ./.env
 
+  mysql:
+    image: mysql:8.2
+    ports:
+      - "3306:3306"
+    env_file:
+      - ./.env
+
   backend:
     build:
       context: ./backend
@@ -16,6 +23,7 @@ services:
       - "8080:8080"
     depends_on:
       - db
+      - mysql
     env_file:
       - ./.env
 

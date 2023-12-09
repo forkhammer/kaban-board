@@ -2,22 +2,28 @@ package kanban
 
 import (
 	"errors"
+	"main/tools"
 )
 
 type ColumnService struct {
-	columnRepository ColumnRepository
+	columnRepository tools.ColumnRepositoryInterface `di.inject:"columnRepository"`
 }
 
 func (s *ColumnService) GetAllColumns() ([]Column, error) {
-	return s.columnRepository.GetColumns()
+	var columns []Column
+	err := s.columnRepository.GetColumns(&columns)
+	return columns, err
 }
 
 func (s *ColumnService) GetColumnById(id int) (*Column, error) {
-	return s.columnRepository.GetColumnById(id)
+	var column Column
+	err := s.columnRepository.GetColumnById(&column, id)
+	return &column, err
 }
 
 func (s *ColumnService) UpdateColumn(id int, data *UpdateColumnRequest) (*Column, error) {
-	column, err := s.columnRepository.GetColumnById(id)
+	var column Column
+	err := s.columnRepository.GetColumnById(&column, id)
 
 	if err != nil {
 		return nil, err
@@ -33,7 +39,7 @@ func (s *ColumnService) UpdateColumn(id int, data *UpdateColumnRequest) (*Column
 	if err = s.columnRepository.SaveColumn(column); err != nil {
 		return nil, err
 	} else {
-		return column, nil
+		return &column, nil
 	}
 }
 

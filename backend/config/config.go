@@ -2,9 +2,11 @@ package config
 
 import (
 	"fmt"
+	"log"
+	"main/tools"
+
 	"github.com/caarlos0/env"
 	"gorm.io/gorm/logger"
-	"log"
 )
 
 type Config struct {
@@ -15,11 +17,19 @@ type Config struct {
 	LogLevel     logger.LogLevel `env:"LOG_LEVEL" envDefault:"1"`
 	AllowOrigins []string        `env:"ALLOW_ORIGINS" envSeparator:","`
 
+	DbType tools.RepositoryType `env:"DB_TYPE" envDefault:"mysql"`
+
 	PostgresHost string `env:"POSTGRES_HOST"`
 	PostgresPort int    `env:"POSTGRES_PORT"`
 	PostgresDb   string `env:"POSTGRES_DB"`
 	PostgresUser string `env:"POSTGRES_USER"`
 	PostgresPass string `env:"POSTGRES_PASSWORD"`
+
+	MysqlHost string `env:"MYSQL_HOST"`
+	MysqlPort int    `env:"MYSQL_PORT"`
+	MysqlDb   string `env:"MYSQL_DATABASE"`
+	MysqlUser string `env:"MYSQL_USER"`
+	MysqlPass string `env:"MYSQL_PASSWORD"`
 
 	JwtTokenLifespanHour uint   `env:"JWT_TOKEN_LIFESPAN_HOUR" envDefault:"24"`
 	ApiSecret            string `env:"API_SECRET"`

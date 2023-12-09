@@ -3,28 +3,37 @@ package kanban
 import (
 	"fmt"
 	"log"
+	"main/cache"
 	"main/config"
 	"main/gitlab"
 	"main/tools"
 	"sort"
 	"strings"
 	"time"
+
+	"github.com/goioc/di"
 )
 
 type Kanban struct {
-	cache          tools.Cache
+	cache          cache.Cache
 	client         *gitlab.GitlabClient
-	userService    UserService
-	projectService ProjectService
-	labelService   LabelService
-	columnService  ColumnService
+	userService    *UserService
+	projectService *ProjectService
+	labelService   *LabelService
 }
 
-func NewKanban(cache tools.Cache) *Kanban {
+func NewKanban(cache cache.Cache) *Kanban {
 	return &Kanban{
 		cache:  cache,
 		client: gitlab.GitlabClientInstance,
 	}
+}
+
+func (k *Kanban) PostConstruct() error {
+	k.userService = di.GetInstance("userService").(*UserService)
+	k.projectService = di.GetInstance("projectService").(*ProjectService)
+	k.labelService = di.GetInstance("labelService").(*LabelService)
+	return nil
 }
 
 func (k *Kanban) GetUsers() ([]KanbanUser, *time.Time, error) {

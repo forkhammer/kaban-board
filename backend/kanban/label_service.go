@@ -6,7 +6,7 @@ import (
 )
 
 type LabelService struct {
-	labelRepository LabelRepository
+	labelRepository tools.LabelRepositoryInterface `di.inject:"labelRepository"`
 }
 
 func (s *LabelService) SaveLabels(labels []gitlab.GitlabLabel) ([]Label, error) {
@@ -15,7 +15,8 @@ func (s *LabelService) SaveLabels(labels []gitlab.GitlabLabel) ([]Label, error) 
 	for i := range labels {
 		l := &labels[i]
 
-		label, err := s.labelRepository.GetOrCreate(Label{Id: l.Id}, Label{
+		var label Label
+		err := s.labelRepository.GetOrCreate(&label, Label{Id: l.Id}, Label{
 			Id:        l.Id,
 			Name:      l.Title,
 			Color:     l.Color,
@@ -26,14 +27,15 @@ func (s *LabelService) SaveLabels(labels []gitlab.GitlabLabel) ([]Label, error) 
 			return resultLabels, err
 		}
 
-		resultLabels = append(resultLabels, *label)
+		resultLabels = append(resultLabels, label)
 	}
 
 	return resultLabels, nil
 }
 
 func (s *LabelService) GetAllKanbanLabels() ([]*KanbanLabel, error) {
-	labels, err := s.labelRepository.GetLabels()
+	var labels []Label
+	err := s.labelRepository.GetLabels(&labels)
 	if err != nil {
 		return nil, err
 	}

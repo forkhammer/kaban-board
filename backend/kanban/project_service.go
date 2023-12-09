@@ -1,20 +1,23 @@
 package kanban
 
 import (
-	"github.com/lib/pq"
 	"main/gitlab"
 	"main/tools"
 	"strconv"
 	"strings"
+
+	"gorm.io/datatypes"
 )
 
 type ProjectService struct {
-	projectRepository ProjectRepository
+	projectRepository tools.ProjectRepositoryInterface `di.inject:"projectRepository"`
 	userService       UserService
 }
 
 func (s *ProjectService) GetProjectById(id uint) (*Project, error) {
-	return s.projectRepository.GetProjectById(id)
+	var project Project
+	err := s.projectRepository.GetProjectById(&project, id)
+	return &project, err
 }
 
 func (s *ProjectService) CleanProjectId(gid string) (uint, error) {
@@ -28,7 +31,9 @@ func (s *ProjectService) CleanProjectId(gid string) (uint, error) {
 }
 
 func (s *ProjectService) GetProjects() ([]Project, error) {
-	return s.projectRepository.GetProjects()
+	var projects []Project
+	err := s.projectRepository.GetProjects(&projects)
+	return projects, err
 }
 
 func (s *ProjectService) SaveGitlabProjects(projects []gitlab.GitlabProject) error {
@@ -50,7 +55,7 @@ func (s *ProjectService) SaveGitlabProjects(projects []gitlab.GitlabProject) err
 		existProject, err := s.GetProjectById(projectId)
 		if err == nil {
 			existProject.Name = p.Name
-			existProject.Users = pq.Int64Array(userIds)
+			existProject.Users = datatypes.NewJSONSlice(userIds)
 			if err = s.projectRepository.SaveProject(existProject); err != nil {
 				return err
 			}
@@ -59,7 +64,7 @@ func (s *ProjectService) SaveGitlabProjects(projects []gitlab.GitlabProject) err
 				Id:        projectId,
 				Name:      p.Name,
 				IsVisible: true,
-				Users:     pq.Int64Array(userIds),
+				Users:     datatypes.NewJSONSlice(userIds),
 			}
 			if err = s.projectRepository.CreateProject(&project); err != nil {
 				return err

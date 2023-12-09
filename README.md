@@ -1,13 +1,13 @@
 # Kanban board for self-hosted gitlab
 
-Возможности доски:
- - Быстрая загрузка пользователей и тикетов
- - Фоновая сихронизация с Gitlab
- - Поиск по тикетам и пользователям
- - Тонкая настройка колонок
- - Группы проектов
- - Темная/светлая тема
- - Встроенная административная панель
+Board features:
+  - Fast loading of users and tickets
+  - Background synchronization with Gitlab
+  - Search by tickets and users
+  - Fine-tuning speakers
+  - Project groups
+  - Dark/light theme
+  - Built-in administrative panel
 
 
  ![Kaban board](/board.png)

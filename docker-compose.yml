@@ -1,10 +1,17 @@
 version: "3.9"
 
 services:
-  db:
+  postgresql:
     image: postgres:15.4
     ports:
       - "5432:5432"
+    env_file:
+      - ./.env
+
+  mysql:
+    image: mysql:8.2
+    ports:
+      - "3306:3306"
     env_file:
       - ./.env
 
@@ -15,7 +22,8 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - db
+      - postgresql
+      - mysql
     env_file:
       - ./.env
 

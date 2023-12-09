@@ -2,22 +2,28 @@ package kanban
 
 import (
 	"errors"
+	"main/tools"
 )
 
 type TeamService struct {
-	teamRepository TeamRepository
+	teamRepository tools.TeamRepositoryInterface `di.inject:"teamRepository"`
 }
 
 func (s *TeamService) GetAllTeams() ([]Team, error) {
-	return s.teamRepository.GetTeams()
+	var teams []Team
+	err := s.teamRepository.GetTeams(&teams)
+	return teams, err
 }
 
 func (s *TeamService) GetTeamById(id int) (*Team, error) {
-	return s.teamRepository.GetTeamById(id)
+	var team Team
+	err := s.teamRepository.GetTeamById(&team, id)
+	return &team, err
 }
 
 func (s *TeamService) UpdateTeam(id int, data *UpdateTeamRequest) (*Team, error) {
-	team, err := s.teamRepository.GetTeamById(id)
+	var team Team
+	err := s.teamRepository.GetTeamById(&team, id)
 
 	if err != nil {
 		return nil, err
@@ -32,7 +38,7 @@ func (s *TeamService) UpdateTeam(id int, data *UpdateTeamRequest) (*Team, error)
 	if err = s.teamRepository.SaveTeam(team); err != nil {
 		return nil, err
 	} else {
-		return team, nil
+		return &team, nil
 	}
 }
 

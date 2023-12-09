@@ -1,17 +1,23 @@
 package main
 
 import (
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
 	"main/account"
 	"main/config"
+	"main/db"
 	"main/kanban"
+	"main/repository"
 	"main/tools"
+
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
+	"github.com/goioc/di"
 )
 
 type Application struct {
-	engine      *gin.Engine
-	controllers []Controller
+	engine            *gin.Engine
+	modules           []tools.AppModule
+	connection        tools.ConnectionInterface
+	repositoryFactory tools.RepositoryFactory
 }
 
 func NewApplication() Application {
@@ -22,25 +28,55 @@ func NewApplication() Application {
 	router.Use(cors.New(corsConfig))
 	router.Use(account.JwtMiddleware())
 
-	account.MigrateModels()
-	kanban.MigrateModels()
+	modules := []tools.AppModule{
+		&account.AccountModule{},
+		&kanban.KanbanModule{},
+	}
+	connection, err := db.GetConnectionByType(config.Settings.DbType, config.Settings)
+	di.RegisterBeanInstance("connection", connection)
+
+	if err != nil {
+		panic(err)
+	}
+
+	repositoryFactory, err := repository.GetRepositoryFactory(config.Settings.DbType, connection)
+
+	if err != nil {
+		panic(err)
+	}
+
+	di.RegisterBeanInstance("repositoryFactory", repositoryFactory)
+	di.RegisterBeanInstance("accountRepository", repositoryFactory.GetAccountRepository())
+	di.RegisterBeanInstance("columnRepository", repositoryFactory.GetColumnRepository())
+	di.RegisterBeanInstance("labelRepository", repositoryFactory.GetLabelRepository())
+	di.RegisterBeanInstance("projectRepository", repositoryFactory.GetProjectRepository())
+	di.RegisterBeanInstance("teamRepository", repositoryFactory.GetTeamRepository())
+	di.RegisterBeanInstance("userRepository", repositoryFactory.GetUserRepository())
 
 	return Application{
-		engine: router,
+		engine:            router,
+		modules:           modules,
+		connection:        connection,
+		repositoryFactory: repositoryFactory,
 	}
 }
 
 func (app *Application) Run() {
-	app.controllers = []Controller{
-		&account.AccountController{},
-		&kanban.KanbanController{},
+	for _, m := range app.modules {
+		err := m.Init(app.engine, app.connection, app.repositoryFactory)
+
+		if err != nil {
+			panic(err)
+		}
 	}
 
-	for _, c := range app.controllers {
-		c.RegisterRoutes(app.engine)
+	di.InitializeContainer()
+
+	for _, m := range app.modules {
+		m.RegisterRoutes(app.engine)
 	}
 
-	kb := kanban.NewKanban(tools.MemoryCacheInstance)
+	kb := di.GetInstance("kanban").(*kanban.Kanban)
 	go kb.RunUpdater()
 
 	app.engine.Run(config.Settings.GetHostPort())

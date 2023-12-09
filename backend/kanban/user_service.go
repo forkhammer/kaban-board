@@ -4,12 +4,13 @@ import (
 	"fmt"
 	"main/config"
 	"main/gitlab"
+	"main/tools"
 	"strconv"
 	"strings"
 )
 
 type UserService struct {
-	userRepository UserRepository
+	userRepository tools.UserRepositoryInterface `di.inject:"userRepository"`
 }
 
 func (s *UserService) CleanUserId(gid string) (uint, error) {
@@ -23,8 +24,8 @@ func (s *UserService) CleanUserId(gid string) (uint, error) {
 }
 
 func (s *UserService) GetUsers() ([]User, error) {
-	var repository UserRepository
-	users, err := repository.GetUsers()
+	var users []User
+	err := s.userRepository.GetUsers(&users)
 
 	if err != nil {
 		return users, err
@@ -35,8 +36,9 @@ func (s *UserService) GetUsers() ([]User, error) {
 }
 
 func (s *UserService) GetVisibleUsers() ([]User, error) {
-	var repository UserRepository
-	return repository.GetVisibleUsers()
+	var users []User
+	err := s.userRepository.GetVisibleUsers(&users)
+	return users, err
 }
 
 func (s *UserService) saveGitlabUsers(users []gitlab.GitlabUser) ([]User, error) {
@@ -51,7 +53,8 @@ func (s *UserService) saveGitlabUsers(users []gitlab.GitlabUser) ([]User, error)
 			return resultUsers, err
 		}
 
-		user, err := s.userRepository.GetOrCreate(User{Id: userId}, User{
+		var user User
+		err = s.userRepository.GetOrCreate(&user, User{Id: userId}, User{
 			Id:        userId,
 			Name:      u.Name,
 			Username:  u.Username,
@@ -63,14 +66,15 @@ func (s *UserService) saveGitlabUsers(users []gitlab.GitlabUser) ([]User, error)
 			return resultUsers, err
 		}
 
-		resultUsers = append(resultUsers, *user)
+		resultUsers = append(resultUsers, user)
 	}
 
 	return resultUsers, nil
 }
 
 func (s *UserService) SetUserVisibility(id int, visibility bool) (*User, error) {
-	user, err := s.userRepository.GetUserBydId(id)
+	var user User
+	err := s.userRepository.GetUserBydId(&user, id)
 
 	if err != nil {
 		return nil, err
@@ -78,7 +82,7 @@ func (s *UserService) SetUserVisibility(id int, visibility bool) (*User, error) 
 
 	user.IsVisible = visibility
 	err = s.userRepository.SaveUser(user)
-	return user, err
+	return &user, err
 }
 
 func (s *UserService) cleanUserAvatars(users []User) []User {

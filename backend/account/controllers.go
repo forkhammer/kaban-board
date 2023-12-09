@@ -7,7 +7,7 @@ import (
 )
 
 type AccountController struct {
-	accountService AccountService
+	accountService *AccountService `di.inject:"accountService"`
 }
 
 func (c *AccountController) RegisterRoutes(engine *gin.Engine) {

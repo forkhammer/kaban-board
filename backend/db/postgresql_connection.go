@@ -2,31 +2,30 @@ package db
 
 import (
 	"fmt"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
 	"log"
 	"main/config"
 	"os"
 	"time"
+
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
-type Connection struct {
-	Db     *gorm.DB
-	host   string
-	port   int
-	dbName string
-	user   string
-	pass   string
+type PostgresqlConnection struct {
+	config RDBConnectionConfig
+	db     *gorm.DB
 }
 
-func NewConnection(host string, port int, dbName string, user string, pass string) (*Connection, error) {
-	connection := &Connection{
-		host:   host,
-		port:   port,
-		dbName: dbName,
-		user:   user,
-		pass:   pass,
+func NewPostgresqlConnection(host string, port int, dbName string, user string, pass string) (*PostgresqlConnection, error) {
+	connection := &PostgresqlConnection{
+		config: RDBConnectionConfig{
+			host:   host,
+			port:   port,
+			dbName: dbName,
+			user:   user,
+			pass:   pass,
+		},
 	}
 
 	newLogger := logger.New(
@@ -51,19 +50,19 @@ func NewConnection(host string, port int, dbName string, user string, pass strin
 		panic(err)
 	}
 
-	connection.Db = db
+	connection.db = db
 
 	return connection, nil
 }
 
-func (c *Connection) getDSN() string {
-	return fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable TimeZone=UTC", c.host, c.port, c.user, c.pass, c.dbName)
+func (c *PostgresqlConnection) GetEngine() interface{} {
+	return c.db
 }
 
-var DefaultConnection, _ = NewConnection(
-	config.Settings.PostgresHost,
-	config.Settings.PostgresPort,
-	config.Settings.PostgresDb,
-	config.Settings.PostgresUser,
-	config.Settings.PostgresPass,
-)
+func (c *PostgresqlConnection) Migrate(models ...interface{}) error {
+	return c.db.AutoMigrate(models...)
+}
+
+func (c *PostgresqlConnection) getDSN() string {
+	return fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable TimeZone=UTC", c.config.host, c.config.port, c.config.user, c.config.pass, c.config.dbName)
+}

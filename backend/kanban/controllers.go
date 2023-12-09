@@ -1,19 +1,20 @@
 package kanban
 
 import (
-	"github.com/gin-gonic/gin"
 	"main/account"
-	"main/tools"
 	"net/http"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
+	"github.com/goioc/di"
 )
 
 type KanbanController struct {
-	userService    UserService
-	columnService  ColumnService
-	teamService    TeamService
-	labelService   LabelService
-	projectService ProjectService
+	userService    *UserService    `di.inject:"userService"`
+	columnService  *ColumnService  `di.inject:"columnService"`
+	teamService    *TeamService    `di.inject:"teamService"`
+	labelService   *LabelService   `di.inject:"labelService"`
+	projectService *ProjectService `di.inject:"projectService"`
 }
 
 func (c *KanbanController) RegisterRoutes(engine *gin.Engine) {
@@ -48,7 +49,7 @@ func (c *KanbanController) RegisterRoutes(engine *gin.Engine) {
 }
 
 func (c *KanbanController) getKanbanUsers(ctx *gin.Context) {
-	k := NewKanban(tools.MemoryCacheInstance)
+	k := di.GetInstance("kanban").(*Kanban)
 	users, updateTime, err := k.GetUsers()
 
 	if err != nil {

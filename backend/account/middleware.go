@@ -4,11 +4,12 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/goioc/di"
 )
 
 func JwtMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		var accountService AccountService
+		accountService := di.GetInstance("accountService").(*AccountService)
 
 		account, _ := accountService.GetCurrentAccountFromContext(ctx)
 

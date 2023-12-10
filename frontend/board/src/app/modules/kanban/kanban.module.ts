@@ -28,6 +28,7 @@ import { AdminProjectCardComponent } from './components/admin-project-card/admin
 import { FilterUsersByTextPipe } from './pipes/filter-users-by-text.pipe';
 import { FilterIssuesByTextPipe } from './pipes/filter-issues-by-text.pipe';
 import { FilterUsersByNamePipe } from './pipes/filter-users-by-name.pipe';
+import { FilterProjectsByNamePipe } from './pipes/filter-project-by-name.pipe';
 
 
 @NgModule({
@@ -55,6 +56,7 @@ import { FilterUsersByNamePipe } from './pipes/filter-users-by-name.pipe';
     FilterUsersByTextPipe,
     FilterIssuesByTextPipe,
     FilterUsersByNamePipe,
+    FilterProjectsByNamePipe
   ],
   exports: [
     UserBoardComponent,

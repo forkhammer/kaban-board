@@ -3,6 +3,7 @@ import {finalize, Subject} from "rxjs";
 import {Project} from "../../models/project";
 import {ProjectService} from "../../services/project.service";
 import {takeUntil} from "rxjs/operators";
+import { FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-admin-project-list',
@@ -13,10 +14,15 @@ export class AdminProjectListComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject()
   public projects: Project[] = []
   public isLoading = true
+  public filterForm: FormGroup
 
   constructor(
-    private projectService: ProjectService
+    private projectService: ProjectService,
+    private fb: FormBuilder
   ) {
+    this.filterForm = this.fb.group({
+      search: ['']
+    })
   }
 
   ngOnInit() {

@@ -1,7 +1,13 @@
 <app-spinner [visible]="isLoading"></app-spinner>
 
+<div class="filter-form mb-3" [formGroup]="filterForm">
+  <div>
+    <input type="text" class="form-control" formControlName="search" placeholder="Найти...">
+  </div>
+</div>
+
 <div class="scroll">
-  <ng-container *ngFor="let user of users; trackBy trackByUser">
+  <ng-container *ngFor="let user of users | filterUsersByName: (filterForm.get('search')?.valueChanges | async); trackBy trackByUser">
     <div class="border-bottom">
       <app-admin-user-card [user]="user"></app-admin-user-card>
     </div>

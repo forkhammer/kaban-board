@@ -3,7 +3,7 @@
     <img [src]="user.avatar_url" [alt]="user.name">
   </div>
 
-  <div class="user-title flex-grow-1">{{user.username}}</div>
+  <div class="user-title flex-grow-1">{{user.name}}</div>
 
   <button class="btn btn-link" (click)="toggleVisible()" title="Вкл/выкл видимость пользователя">
     <fa-icon [icon]="faEye" *ngIf="user.is_visible" class="text-success"></fa-icon>

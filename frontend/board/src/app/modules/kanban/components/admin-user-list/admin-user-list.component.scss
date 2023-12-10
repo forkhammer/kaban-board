@@ -1,9 +1,15 @@
 :host {
   display: block;
-  min-height: 300px;
+  min-height: calc(100vh - 200px);
+  overflow-y: hidden;
+  position: relative;
 }
 
 .scroll {
   overflow-y: auto;
-  max-height: 100%;
+  position: absolute;
+  top: 60px;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }

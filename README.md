@@ -12,6 +12,12 @@ Board features:
 
  ![Kaban board](/board.png)
 
+ ![Kaban board](/board-admin-1.png)
+
+ ![Kaban board](/board-admin-2.png)
+
+ ![Kaban board](/board-admin-3.png)
+
 
 ## Start
 

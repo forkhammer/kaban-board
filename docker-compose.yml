@@ -1,31 +1,22 @@
 version: "3.9"
 
+volumes:
+  sqlite_data:
+
 services:
-  postgresql:
-    image: postgres:15.4
-    ports:
-      - "5432:5432"
-    env_file:
-      - ./.env
-
-  mysql:
-    image: mysql:8.2
-    ports:
-      - "3306:3306"
-    env_file:
-      - ./.env
-
   backend:
     build:
       context: ./backend
       dockerfile: ../docker/backend/Dockerfile
     ports:
       - "8080:8080"
-    depends_on:
-      - postgresql
-      - mysql
     env_file:
       - ./.env
+    environment:
+      - DB_TYPE=sqlite
+    volumes:
+      - sqlite_data:/data
+    restart: unless-stopped
 
   frontend:
     build:
@@ -37,3 +28,4 @@ services:
       - backend
     env_file:
       - ./.env
+    restart: unless-stopped

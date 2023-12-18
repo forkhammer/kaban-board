@@ -1,0 +1,29 @@
+version: "3.9"
+
+volumes:
+  sqlite_data:
+  mysql_data:
+
+services:
+  mysql:
+    image: mysql:8.2
+    ports:
+      - "3306:3306"
+    env_file:
+      - ./.env
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  backend:
+    extends:
+      file: docker-compose.yml
+      service: backend
+    depends_on:
+      - mysql
+    environment:
+      - DB_TYPE=mysql
+
+  frontend:
+    extends:
+      file: docker-compose.yml
+      service: frontend

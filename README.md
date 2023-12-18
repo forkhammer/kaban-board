@@ -25,8 +25,22 @@ Board features:
 
 Running through Docker-containers
 
+Start with SQLite
+
 ```
 docker-compose up -d
+```
+
+Start with Postgreqql
+
+```
+docker-compose -f docker-compose.postgresql.yml up -d
+```
+
+Start with Mysql
+
+```
+docker-compose -f docker-compose.mysql.yml up -d
 ```
 
 ### Local environment

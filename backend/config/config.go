@@ -16,6 +16,8 @@ type Config struct {
 	GitlabToken  string          `env:"GITLAB_TOKEN"`
 	LogLevel     logger.LogLevel `env:"LOG_LEVEL" envDefault:"1"`
 	AllowOrigins []string        `env:"ALLOW_ORIGINS" envSeparator:","`
+	Logo         string          `env:"LOGO" envDefault:""`
+	Caption      string          `env:"CAPTION" envDefault:""`
 
 	DbType tools.RepositoryType `env:"DB_TYPE" envDefault:"postgresql"`
 

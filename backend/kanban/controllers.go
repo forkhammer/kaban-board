@@ -10,11 +10,12 @@ import (
 )
 
 type KanbanController struct {
-	userService    *UserService    `di.inject:"userService"`
-	columnService  *ColumnService  `di.inject:"columnService"`
-	teamService    *TeamService    `di.inject:"teamService"`
-	labelService   *LabelService   `di.inject:"labelService"`
-	projectService *ProjectService `di.inject:"projectService"`
+	userService     *UserService     `di.inject:"userService"`
+	columnService   *ColumnService   `di.inject:"columnService"`
+	teamService     *TeamService     `di.inject:"teamService"`
+	labelService    *LabelService    `di.inject:"labelService"`
+	projectService  *ProjectService  `di.inject:"projectService"`
+	settingsService *SettingsService `di.inject:"settingsService"`
 }
 
 func (c *KanbanController) RegisterRoutes(engine *gin.Engine) {
@@ -24,6 +25,7 @@ func (c *KanbanController) RegisterRoutes(engine *gin.Engine) {
 	engine.GET("/teams", c.getTeams)
 	engine.GET("/teams/:id", c.getTeamById)
 	engine.GET("/labels", c.getLabels)
+	engine.GET("/settings", c.getSettings)
 
 	columnRoutes := engine.Group("/")
 	columnRoutes.Use(account.AuthRequiredMiddleware())
@@ -319,4 +321,9 @@ func (c *KanbanController) setProjectTeam(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, project)
+}
+
+func (c *KanbanController) getSettings(ctx *gin.Context) {
+	settings := c.settingsService.GetSettings()
+	ctx.JSON(http.StatusOK, settings)
 }

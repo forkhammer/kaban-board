@@ -66,6 +66,8 @@ PORT=8080   # backend port
 GITLAB_URL=     # set your gitlab url. Examle: https://gitlab.yourdomain.com
 GITLAB_TOKEN=       # set gitlab private token for api access
 DB_TYPE=sqlite      # type of database for storing settings: sqlite, postgresql, mysql
+CAPTION=          # Custom caption
+LOGO=           # Custom logo url
 
 POSTGRES_HOST=localhost
 POSTGRES_PORT=5432

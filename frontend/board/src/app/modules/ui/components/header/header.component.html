@@ -3,9 +3,10 @@
     <div class="row">
       <div class="col d-flex align-items-center" [formGroup]="form">
         <div class="caption d-flex align-items-center">
-          <a routerLink="/" class="logo me-1">
-          </a>
-          <a routerLink="/" class="caption">KABAN BOARD</a>
+          <!-- <a routerLink="/" class="logo me-1" *ngIf="!settings?.logo"></a> -->
+          <a routerLink="/" class="logo me-1" *ngIf="settings?.logo" [style.backgroundImage]="'url(' + settings?.logo + ')'"></a>
+          <a routerLink="/" class="caption" *ngIf="!settings?.caption">KABAN BOARD</a>
+          <a routerLink="/" class="caption" *ngIf="settings?.caption">{{settings?.caption}}</a>
         </div>
 
         <div class="search me-auto input-group">

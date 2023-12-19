@@ -6,6 +6,8 @@ import {ThemeServiceService} from "../../services/theme-service.service";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import { ActivatedRoute, Router } from '@angular/router';
 import { faXmark } from '@fortawesome/free-solid-svg-icons'
+import { KanbanSettings } from 'src/app/modules/kanban/models/settings';
+import { KanbanSettingsService } from 'src/app/modules/kanban/services/kanban-settings.service';
 
 @Component({
   selector: 'app-header',
@@ -16,6 +18,7 @@ export class HeaderComponent implements OnDestroy, OnInit {
   public now: Date = new Date()
   private destroy$ = new Subject()
   public form: FormGroup
+  public settings: KanbanSettings | null = null
 
   faXmark = faXmark
 
@@ -24,7 +27,8 @@ export class HeaderComponent implements OnDestroy, OnInit {
     private themeService: ThemeServiceService,
     public fb: FormBuilder,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private settingsService: KanbanSettingsService
   ) {
     interval(1000).pipe(
       takeUntil(this.destroy$)
@@ -69,6 +73,12 @@ export class HeaderComponent implements OnDestroy, OnInit {
       takeUntil(this.destroy$)
     ).subscribe(val => {
       this.router.navigate([], {queryParams:{search:val}, queryParamsHandling: 'merge'})
+    })
+
+    this.settingsService.getSettings().pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(data => {
+      this.settings = data
     })
   }
 

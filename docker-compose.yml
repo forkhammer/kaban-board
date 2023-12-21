@@ -1,7 +1,7 @@
 version: "3.9"
 
 volumes:
-  sqlite_data:
+  data:
 
 services:
   backend:
@@ -15,7 +15,7 @@ services:
     environment:
       - DB_TYPE=sqlite
     volumes:
-      - sqlite_data:/data
+      - data:/data
     restart: unless-stopped
 
   frontend:

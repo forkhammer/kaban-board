@@ -32,6 +32,7 @@ func (c *KanbanController) RegisterRoutes(engine *gin.Engine) {
 	columnRoutes.POST("/columns", c.addColumn)
 	columnRoutes.PUT("/columns/:id", c.updateColumnById)
 	columnRoutes.DELETE("/columns/:id", c.deleteColumn)
+	columnRoutes.POST("/columns/save_ordering", c.saveColumnOrering)
 
 	teamRoutes := engine.Group("/")
 	teamRoutes.Use(account.AuthRequiredMiddleware())
@@ -185,6 +186,24 @@ func (c *KanbanController) deleteColumn(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusNoContent, gin.H{})
+}
+
+func (c *KanbanController) saveColumnOrering(ctx *gin.Context) {
+	request := make([]SetColumnOrderRequest, 0)
+
+	if err := ctx.ShouldBindJSON(&request); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	columns, err := c.columnService.SaveOrdering(request)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, columns)
 }
 
 func (c *KanbanController) getTeams(ctx *gin.Context) {

@@ -59,7 +59,8 @@ export class KanbanColumnModalComponent implements OnDestroy {
       id: 0,
       name: '',
       labels: [],
-      team_id: null
+      team_id: null,
+      order: 10
     };
     if (this.item) {
       item = Object.assign(item, this.item);

@@ -64,3 +64,28 @@ func (s *ColumnService) CreateColumn(data *CreateColumnRequest) (*Column, error)
 func (s *ColumnService) DeleteColumnById(id int) error {
 	return s.columnRepository.DeleteColumn(id)
 }
+
+func (s *ColumnService) SaveOrdering(request []SetColumnOrderRequest) ([]Column, error) {
+	columns, err := s.GetAllColumns()
+	result := make([]Column, 0)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for _, req := range request {
+		column := tools.Find[Column](columns, func(column Column) bool {
+			return column.Id == req.Id
+		})
+		if column != nil {
+			order := req.Order
+			column.Order = &order
+			if err = s.columnRepository.SaveColumn(column); err != nil {
+				return nil, err
+			}
+			result = append(result, *column)
+		}
+	}
+
+	return result, nil
+}

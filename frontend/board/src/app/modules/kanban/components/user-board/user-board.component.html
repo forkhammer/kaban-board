@@ -1,8 +1,12 @@
 <div class="issues">
-  <div class="d-flex align-items-start flex-nowrap">
+  <div class="d-flex align-items-start flex-nowrap position-relative" cdkDropList cdkDropListOrientation="horizontal"
+    (cdkDropListDropped)='dropColumn($event)'>
     <div class="issue-col flex-grow-0" *ngFor="let column of columns; trackBy trackByColumn"
          [style.width.px]="columnWidth"
-         [style.min-width.px]="columnWidth">
+         [style.min-width.px]="columnWidth" cdkDrag
+         (cdkDragStarted)="dragStart($event)"
+         (cdkDragReleased)="dragEnd($event)"
+         [cdkDragDisabled]="!(accountService.isAdmin$ | async)">
       <app-kanban-column [column]="column" [user]="user" [search]="search" (onDelete)="catchDeleteColumn($event)"></app-kanban-column>
     </div>
 

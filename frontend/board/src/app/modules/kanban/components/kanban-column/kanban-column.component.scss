@@ -2,12 +2,20 @@
 
 .column {
   background: $gray-200;
+  border: 1px solid $gray-200;
   border-radius: 1rem;
   position: relative;
 
   :host-context([data-bs-theme="dark"]) {
     .column {
       background: $gray-850;
+      border-color: $gray-850;
+    }
+  }
+
+  :host-context(.cdk-drag-placeholder) {
+    .column {
+      border-color: $primary;
     }
   }
 }

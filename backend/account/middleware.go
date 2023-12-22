@@ -21,7 +21,8 @@ func JwtMiddleware() gin.HandlerFunc {
 
 func AuthRequiredMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		account, exists := ctx.Get("account")
+		data, exists := ctx.Get("account")
+		account := data.(*Account)
 		if account == nil || !exists {
 			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Authentification required"})
 			ctx.Abort()

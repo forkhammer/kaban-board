@@ -29,6 +29,7 @@ import { FilterUsersByTextPipe } from './pipes/filter-users-by-text.pipe';
 import { FilterIssuesByTextPipe } from './pipes/filter-issues-by-text.pipe';
 import { FilterUsersByNamePipe } from './pipes/filter-users-by-name.pipe';
 import { FilterProjectsByNamePipe } from './pipes/filter-project-by-name.pipe';
+import { DragDropModule } from '@angular/cdk/drag-drop'
 
 
 @NgModule({
@@ -71,6 +72,7 @@ import { FilterProjectsByNamePipe } from './pipes/filter-project-by-name.pipe';
     ReactiveFormsModule,
     FontAwesomeModule,
     RouterLink,
+    DragDropModule,
   ]
 })
 export class KanbanModule { }

@@ -1,6 +1,7 @@
 import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {KanbanUserService} from "../../services/kanban-user.service";
 import {
+  BehaviorSubject,
   combineLatestWith,
   distinctUntilChanged,
   filter,
@@ -43,6 +44,8 @@ export class KanbanBoardComponent implements OnInit, OnDestroy {
   public slidePosition = 0
   @ViewChild('UserBoardInner') userBoardInner: ElementRef | null = null
   public search$: Observable<string | null>
+  private updateColumnSignal$ = new BehaviorSubject(null)
+  private isDrag$ = new BehaviorSubject<boolean>(false)
 
   constructor(
     private kanbanUserService: KanbanUserService,
@@ -100,7 +103,8 @@ export class KanbanBoardComponent implements OnInit, OnDestroy {
       }
     })
 
-    this.kanbanColumnsService.list().pipe(
+    this.updateColumnSignal$.pipe(
+      switchMap(_ => this.kanbanColumnsService.list()),
       takeUntil(this.destroy$)
     ).subscribe(data => {
       this.columns = data as KanbanColumn[]
@@ -154,6 +158,10 @@ export class KanbanBoardComponent implements OnInit, OnDestroy {
 
   catchDeleteColumn(column: KanbanColumn) {
     this.columns.splice(this.columns.findIndex(c => c.id == column.id), 1)
+  }
+
+  catchUpdateColumns(columns: KanbanColumn[]) {
+    this.updateColumnSignal$.next(null)
   }
 
   getActiveColumns(teamId: number | null): KanbanColumn[] {
@@ -211,10 +219,18 @@ export class KanbanBoardComponent implements OnInit, OnDestroy {
   }
 
   swipeLeft(e: Event) {
-    this.slideRight(null)
+    if (!this.isDrag$.value) {
+      this.slideRight(null)
+    }
   }
 
   swipeRight(e: Event) {
-    this.slideLeft(null)
+    if (!this.isDrag$.value) {
+      this.slideLeft(null)
+    }
+  }
+
+  catchDrag(e: boolean) {
+    this.isDrag$.next(e)
   }
 }

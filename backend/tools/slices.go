@@ -48,3 +48,13 @@ func Map[T interface{}, K interface{}](slice []T, mapFunc func(T) K) []K {
 
 	return result
 }
+
+func Find[T interface{}](slice []T, predicate func(T) bool) *T {
+	for _, el := range slice {
+		if predicate(el) {
+			return &el
+		}
+	}
+
+	return nil
+}

@@ -3,5 +3,6 @@ export type KanbanColumn = {
   name: string
   labels: string[]
   team_id: number | null
+  order: number | null
 }
 

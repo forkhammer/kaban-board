@@ -27,7 +27,9 @@
         [columnWidth]="COLUMN_WIDTH"
         [search]="search$ | async"
         (onAddColumn)="catchAddColumn($event)"
-        (onDeleteColumn)="catchDeleteColumn($event)"></app-user-board>
+        (onDeleteColumn)="catchDeleteColumn($event)"
+        (onUpdateColumns)="catchUpdateColumns($event)"
+        (onDrag)="catchDrag($event)"></app-user-board>
     </div>
 
     <button class="slide left" (click)="slideLeft($event)" [class.visible]="getScreenStartColumn() > 0">

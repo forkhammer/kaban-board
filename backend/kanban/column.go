@@ -24,3 +24,8 @@ type CreateColumnRequest struct {
 	Labels []string `json:"labels"`
 	TeamId *int     `json:"team_id"`
 }
+
+type SetColumnOrderRequest struct {
+	Id    int `json:"id"`
+	Order int `json:"order"`
+}

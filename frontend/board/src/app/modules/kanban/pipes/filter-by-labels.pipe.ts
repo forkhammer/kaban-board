@@ -8,8 +8,8 @@ export class FilterByLabelsPipe implements PipeTransform {
 
   transform(issues: KanbanIssue[] | undefined, labels: string[]): KanbanIssue[] {
     return issues ? issues.filter(issue => {
-      return issue.labels.nodes.find(label => {
-        return labels.find(s => label.title.toLowerCase().includes(s.toLowerCase()))
+      return issue.labels.find(label => {
+        return labels.find(s => label.name.toLowerCase().includes(s.toLowerCase()))
       })
     }) : []
   }

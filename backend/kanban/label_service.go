@@ -46,10 +46,17 @@ func (s *LabelService) GetAllKanbanLabels() ([]*KanbanLabel, error) {
 		return t
 	})
 	kanbanLabels := tools.Map(titles, func(t string) *KanbanLabel {
-		return &KanbanLabel{
+		kl := &KanbanLabel{
 			Id:    t,
 			Title: t,
 		}
+		label := tools.Find[Label](labels, func(l Label) bool {
+			return l.Name == t && l.AltName != nil
+		})
+		if label != nil {
+			kl.AltName = label.AltName
+		}
+		return kl
 	})
 	return kanbanLabels, nil
 }

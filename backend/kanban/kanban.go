@@ -51,8 +51,13 @@ func (k *Kanban) GetUsers() ([]KanbanUser, *time.Time, error) {
 		return make([]KanbanUser, 0), nil, err
 	}
 
+	var labels []Label
+	if err := k.labelService.labelRepository.GetLabels(&labels); err != nil {
+		return make([]KanbanUser, 0), nil, err
+	}
+
 	gitlabIssues, err := k.getAllIssues()
-	issues := k.convertIssues(&gitlabIssues, &projects)
+	issues := k.convertIssues(&gitlabIssues, &projects, &labels)
 
 	if err != nil {
 		return make([]KanbanUser, 0), nil, err
@@ -62,7 +67,7 @@ func (k *Kanban) GetUsers() ([]KanbanUser, *time.Time, error) {
 
 	for _, user := range users {
 		userIssues := tools.Filter(issues, func(issue Issue) bool {
-			return tools.IndexOf(issue.Assignees.Nodes, func(a gitlab.GitlabAssignee) bool {
+			return tools.IndexOf(issue.Assignees, func(a gitlab.GitlabAssignee) bool {
 				userId, err := k.userService.CleanUserId(a.UserId)
 				return userId == user.Id && err == nil
 			}) > -1
@@ -184,7 +189,7 @@ func (k *Kanban) cleanUserAvatars(users *[]KanbanUser) *[]KanbanUser {
 	return users
 }
 
-func (k *Kanban) convertIssues(issues *[]gitlab.GitlabIssue, projects *[]Project) []Issue {
+func (k *Kanban) convertIssues(issues *[]gitlab.GitlabIssue, projects *[]Project, labels *[]Label) []Issue {
 	result := make([]Issue, 0)
 
 	for index := range *issues {
@@ -194,9 +199,9 @@ func (k *Kanban) convertIssues(issues *[]gitlab.GitlabIssue, projects *[]Project
 			Iid:         gitlabIssue.Iid,
 			Title:       gitlabIssue.Title,
 			IssueType:   gitlabIssue.IssueType,
-			Assignees:   gitlabIssue.Assignees,
+			Assignees:   gitlabIssue.Assignees.Nodes,
 			WebUrl:      gitlabIssue.WebUrl,
-			Labels:      gitlabIssue.Labels,
+			Labels:      *k.convertLabels(&gitlabIssue.Labels.Nodes, labels),
 			ProjectId:   gitlabIssue.ProjectId,
 			ProjectName: gitlabIssue.ProjectName,
 			Milestone:   gitlabIssue.Milestone,
@@ -219,6 +224,19 @@ func (k *Kanban) convertIssues(issues *[]gitlab.GitlabIssue, projects *[]Project
 	}
 
 	return result
+}
+
+func (k *Kanban) convertLabels(gitlabLabels *[]gitlab.GitlabLabel, labels *[]Label) *[]Label {
+	result := make([]Label, 0)
+	for _, gitlabLabel := range *gitlabLabels {
+		label := tools.Find[Label](*labels, func(label Label) bool {
+			return label.Id == gitlabLabel.Id
+		})
+		if label != nil {
+			result = append(result, *label)
+		}
+	}
+	return &result
 }
 
 func (k *Kanban) syncProjects() {
@@ -303,10 +321,10 @@ func (k *Kanban) extractAllLabels(issues []gitlab.GitlabIssue) ([]gitlab.GitlabL
 	return result, nil
 }
 
-func (k *Kanban) getIssueTaskType(issue *Issue) *gitlab.GitlabLabel {
-	return tools.Find[gitlab.GitlabLabel](issue.Labels.Nodes, func(label gitlab.GitlabLabel) bool {
+func (k *Kanban) getIssueTaskType(issue *Issue) *Label {
+	return tools.Find[Label](issue.Labels, func(label Label) bool {
 		return tools.IndexOf[string](k.kanbanSettings.TaskTypeLabels, func(id string) bool {
-			return id == label.Title
+			return id == label.Name
 		}) > -1
 	})
 }

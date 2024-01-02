@@ -6,9 +6,7 @@ export type KanbanIssue = {
   title: string
   type: string
   webUrl: string
-  labels: {
-    nodes: KanbanLabel[]
-  }
+  labels: KanbanLabel[]
   projectId: number
   projectName: string
   milestone: {

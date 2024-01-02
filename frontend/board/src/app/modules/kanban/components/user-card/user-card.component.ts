@@ -19,8 +19,8 @@ export class UserCardComponent {
     }, [] as string[])
 
     const issues = this.user.issues.filter(issue => {
-      return issue.labels.nodes.find(label => {
-        return labels.find(s => label.title.toLowerCase().includes(s.toLowerCase()))
+      return issue.labels.find(label => {
+        return labels.find(s => label.name.toLowerCase().includes(s.toLowerCase()))
       })
     })
 

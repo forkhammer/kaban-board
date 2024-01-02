@@ -1,7 +1,7 @@
 package kanban
 
 type KanbanSettings struct {
-	TypeTaskLabels []string
+	TypeTaskLabels []string `json:"typeTaskLabels"`
 	kvstore        *KVStore `di.inject:"kvStore"`
 }
 

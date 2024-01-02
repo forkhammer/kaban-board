@@ -16,4 +16,5 @@ export type KanbanIssue = {
     title: string
     webPath: string
   }
+  taskType: KanbanLabel | null
 }

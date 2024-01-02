@@ -1,4 +1,12 @@
 <div class="issue">
+  <div class="header">
+    <div class="task-type fs-paragraph-xxs" *ngIf="issue?.taskType">
+      <div class="task-type-icon" [style.backgroundColor]="issue?.taskType?.color"></div>
+
+      {{issue?.taskType?.title}}
+    </div>
+  </div>
+
   <div class="content pt-1 pb-1 pe-3 ps-3">
     {{issue?.title}}
   </div>

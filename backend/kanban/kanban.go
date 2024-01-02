@@ -20,6 +20,7 @@ type Kanban struct {
 	userService    *UserService
 	projectService *ProjectService
 	labelService   *LabelService
+	kanbanSettings *KanbanSettings
 }
 
 func NewKanban(cache cache.Cache) *Kanban {
@@ -33,6 +34,7 @@ func (k *Kanban) PostConstruct() error {
 	k.userService = di.GetInstance("userService").(*UserService)
 	k.projectService = di.GetInstance("projectService").(*ProjectService)
 	k.labelService = di.GetInstance("labelService").(*LabelService)
+	k.kanbanSettings = di.GetInstance("kanbanSettings").(*KanbanSettings)
 	return nil
 }
 
@@ -49,8 +51,8 @@ func (k *Kanban) GetUsers() ([]KanbanUser, *time.Time, error) {
 		return make([]KanbanUser, 0), nil, err
 	}
 
-	issues, err := k.getAllIssues()
-	issues = *k.cleanIssues(&issues, &projects)
+	gitlabIssues, err := k.getAllIssues()
+	issues := k.convertIssues(&gitlabIssues, &projects)
 
 	if err != nil {
 		return make([]KanbanUser, 0), nil, err
@@ -59,13 +61,13 @@ func (k *Kanban) GetUsers() ([]KanbanUser, *time.Time, error) {
 	result := make([]KanbanUser, 0)
 
 	for _, user := range users {
-		userIssues := tools.Filter(issues, func(issue gitlab.GitlabIssue) bool {
+		userIssues := tools.Filter(issues, func(issue Issue) bool {
 			return tools.IndexOf(issue.Assignees.Nodes, func(a gitlab.GitlabAssignee) bool {
 				userId, err := k.userService.CleanUserId(a.UserId)
 				return userId == user.Id && err == nil
 			}) > -1
 		})
-		projectIds := tools.Map(userIssues, func(issue gitlab.GitlabIssue) int {
+		projectIds := tools.Map(userIssues, func(issue Issue) int {
 			return issue.ProjectId
 		})
 
@@ -182,9 +184,25 @@ func (k *Kanban) cleanUserAvatars(users *[]KanbanUser) *[]KanbanUser {
 	return users
 }
 
-func (k *Kanban) cleanIssues(issues *[]gitlab.GitlabIssue, projects *[]Project) *[]gitlab.GitlabIssue {
+func (k *Kanban) convertIssues(issues *[]gitlab.GitlabIssue, projects *[]Project) []Issue {
+	result := make([]Issue, 0)
+
 	for index := range *issues {
-		issue := &(*issues)[index]
+		gitlabIssue := &(*issues)[index]
+		issue := Issue{
+			Id:          gitlabIssue.Id,
+			Iid:         gitlabIssue.Iid,
+			Title:       gitlabIssue.Title,
+			IssueType:   gitlabIssue.IssueType,
+			Assignees:   gitlabIssue.Assignees,
+			WebUrl:      gitlabIssue.WebUrl,
+			Labels:      gitlabIssue.Labels,
+			ProjectId:   gitlabIssue.ProjectId,
+			ProjectName: gitlabIssue.ProjectName,
+			Milestone:   gitlabIssue.Milestone,
+		}
+		issue.TaskType = k.getIssueTaskType(&issue)
+
 		if issue.Milestone.Id != "" && !strings.HasPrefix(issue.Milestone.WebPath, "https://") {
 			issue.Milestone.WebPath = fmt.Sprintf("%s%s", config.Settings.GitlabUrl, issue.Milestone.WebPath)
 		}
@@ -197,9 +215,10 @@ func (k *Kanban) cleanIssues(issues *[]gitlab.GitlabIssue, projects *[]Project) 
 			project := &(*projects)[projectIndex]
 			issue.ProjectName = &project.Name
 		}
+		result = append(result, issue)
 	}
 
-	return issues
+	return result
 }
 
 func (k *Kanban) syncProjects() {
@@ -282,4 +301,12 @@ func (k *Kanban) extractAllLabels(issues []gitlab.GitlabIssue) ([]gitlab.GitlabL
 	})
 
 	return result, nil
+}
+
+func (k *Kanban) getIssueTaskType(issue *Issue) *gitlab.GitlabLabel {
+	return tools.Find[gitlab.GitlabLabel](issue.Labels.Nodes, func(label gitlab.GitlabLabel) bool {
+		return tools.IndexOf[string](k.kanbanSettings.TaskTypeLabels, func(id string) bool {
+			return id == label.Title
+		}) > -1
+	})
 }

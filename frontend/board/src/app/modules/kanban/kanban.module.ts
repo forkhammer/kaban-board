@@ -29,7 +29,8 @@ import { FilterUsersByTextPipe } from './pipes/filter-users-by-text.pipe';
 import { FilterIssuesByTextPipe } from './pipes/filter-issues-by-text.pipe';
 import { FilterUsersByNamePipe } from './pipes/filter-users-by-name.pipe';
 import { FilterProjectsByNamePipe } from './pipes/filter-project-by-name.pipe';
-import { DragDropModule } from '@angular/cdk/drag-drop'
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { AdminSettingsComponent } from './components/admin-settings/admin-settings.component'
 
 
 @NgModule({
@@ -57,7 +58,8 @@ import { DragDropModule } from '@angular/cdk/drag-drop'
     FilterUsersByTextPipe,
     FilterIssuesByTextPipe,
     FilterUsersByNamePipe,
-    FilterProjectsByNamePipe
+    FilterProjectsByNamePipe,
+    AdminSettingsComponent
   ],
   exports: [
     UserBoardComponent,

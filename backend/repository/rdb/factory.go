@@ -49,3 +49,9 @@ func (f *RDBRepositoryFactory) GetUserRepository() tools.UserRepositoryInterface
 		connection: f.connection,
 	}
 }
+
+func (f *RDBRepositoryFactory) GetKVStoreRepository() tools.KVStoreRepositoryInterface {
+	return &KVStoreRepository{
+		connection: f.connection,
+	}
+}

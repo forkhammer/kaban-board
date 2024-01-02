@@ -10,12 +10,13 @@ import (
 )
 
 type KanbanController struct {
-	userService     *UserService     `di.inject:"userService"`
-	columnService   *ColumnService   `di.inject:"columnService"`
-	teamService     *TeamService     `di.inject:"teamService"`
-	labelService    *LabelService    `di.inject:"labelService"`
-	projectService  *ProjectService  `di.inject:"projectService"`
-	settingsService *SettingsService `di.inject:"settingsService"`
+	userService           *UserService           `di.inject:"userService"`
+	columnService         *ColumnService         `di.inject:"columnService"`
+	teamService           *TeamService           `di.inject:"teamService"`
+	labelService          *LabelService          `di.inject:"labelService"`
+	projectService        *ProjectService        `di.inject:"projectService"`
+	clientSettingsService *ClientSettingsService `di.inject:"clientSettingsService"`
+	kanbanSettings        *KanbanSettings        `di.inject:"kanbanSettings"`
 }
 
 func (c *KanbanController) RegisterRoutes(engine *gin.Engine) {
@@ -49,6 +50,11 @@ func (c *KanbanController) RegisterRoutes(engine *gin.Engine) {
 	projectRoutes.Use(account.AuthRequiredMiddleware())
 	projectRoutes.GET("/projects", c.getProjects)
 	projectRoutes.POST("/projects/:id/set_team", c.setProjectTeam)
+
+	kanbanSettingsRoutes := engine.Group("/")
+	kanbanSettingsRoutes.Use(account.AuthRequiredMiddleware())
+	kanbanSettingsRoutes.GET("/kanban-settings", c.getKanbanSettings)
+	kanbanSettingsRoutes.POST("/kanban-settings/task-type-labels", c.saveTaskTypeLabels)
 }
 
 func (c *KanbanController) getKanbanUsers(ctx *gin.Context) {
@@ -343,6 +349,26 @@ func (c *KanbanController) setProjectTeam(ctx *gin.Context) {
 }
 
 func (c *KanbanController) getSettings(ctx *gin.Context) {
-	settings := c.settingsService.GetSettings()
+	settings := c.clientSettingsService.GetSettings()
 	ctx.JSON(http.StatusOK, settings)
+}
+
+func (c *KanbanController) getKanbanSettings(ctx *gin.Context) {
+	settings := c.kanbanSettings
+	ctx.JSON(http.StatusOK, settings)
+}
+
+func (c *KanbanController) saveTaskTypeLabels(ctx *gin.Context) {
+	var request SaveTaskTypeLabelsRequest
+	if err := ctx.ShouldBindJSON(&request); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := c.kanbanSettings.SetTaskTypeLabels(request.Labels); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{})
 }

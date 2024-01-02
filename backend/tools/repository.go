@@ -16,6 +16,7 @@ type RepositoryFactory interface {
 	GetProjectRepository() ProjectRepositoryInterface
 	GetTeamRepository() TeamRepositoryInterface
 	GetUserRepository() UserRepositoryInterface
+	GetKVStoreRepository() KVStoreRepositoryInterface
 }
 
 type AccountRepositoryInterface interface {
@@ -58,4 +59,11 @@ type UserRepositoryInterface interface {
 	GetOrCreate(to, query, attrs interface{}) error
 	GetUserBydId(to interface{}, id int) error
 	SaveUser(user interface{}) error
+}
+
+type KVStoreRepositoryInterface interface {
+	GetAll(to interface{}) error
+	GetOrCreate(key string, to interface{}) error
+	Save(value interface{}) error
+	Delete(key string) error
 }

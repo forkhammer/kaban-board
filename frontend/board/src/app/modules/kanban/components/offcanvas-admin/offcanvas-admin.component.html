@@ -26,6 +26,15 @@
         </div>
       </ng-template>
     </li>
+
+    <li ngbNavItem>
+      <button ngbNavLink>Настройки</button>
+      <ng-template ngbNavContent>
+        <div>
+          <app-admin-settings></app-admin-settings>
+        </div>
+      </ng-template>
+    </li>
   </ul>
 
   <div [ngbNavOutlet]="nav" class="mt-2 position-relative tab-content"></div>

@@ -1,5 +1,6 @@
 <div class="label"
     [style.color]="label?.textColor"
     [style.backgroundColor]="label?.color">
-  {{label?.title}}
+  <span *ngIf="!label?.altName">{{label?.name}}</span>
+  <span *ngIf="label?.altName">{{label?.altName}}</span>
 </div>

@@ -3,7 +3,8 @@
     <div class="task-type fs-paragraph-xxs" *ngIf="issue?.taskType">
       <div class="task-type-icon" [style.backgroundColor]="issue?.taskType?.color"></div>
 
-      {{issue?.taskType?.title}}
+      <span *ngIf="!issue?.taskType?.altName">{{issue?.taskType?.name}}</span>
+      <span *ngIf="issue?.taskType?.altName">{{issue?.taskType?.altName}}</span>
     </div>
   </div>
 
@@ -12,7 +13,7 @@
   </div>
 
   <div class="labels d-flex p-3 pt-1 pb-0 mb-1 flex-wrap">
-    <app-kanban-label [label]="label" *ngFor="let label of issue?.labels?.nodes" class="mb-1"></app-kanban-label>
+    <app-kanban-label [label]="label" *ngFor="let label of issue?.labels" class="mb-1"></app-kanban-label>
   </div>
 
   <div class="footer pe-3 ps-3 pt-1 pb-1 border-top d-flex align-items-center">

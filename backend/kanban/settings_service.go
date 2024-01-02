@@ -2,9 +2,9 @@ package kanban
 
 import "main/config"
 
-type SettingsService struct{}
+type ClientSettingsService struct{}
 
-func (s *SettingsService) GetSettings() *KanbanSettings {
+func (s *ClientSettingsService) GetSettings() *KanbanSettings {
 	return &KanbanSettings{
 		Logo:    config.Settings.Logo,
 		Caption: config.Settings.Caption,

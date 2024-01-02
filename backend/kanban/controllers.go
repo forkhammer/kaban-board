@@ -10,12 +10,12 @@ import (
 )
 
 type KanbanController struct {
-	userService     *UserService     `di.inject:"userService"`
-	columnService   *ColumnService   `di.inject:"columnService"`
-	teamService     *TeamService     `di.inject:"teamService"`
-	labelService    *LabelService    `di.inject:"labelService"`
-	projectService  *ProjectService  `di.inject:"projectService"`
-	settingsService *SettingsService `di.inject:"settingsService"`
+	userService           *UserService           `di.inject:"userService"`
+	columnService         *ColumnService         `di.inject:"columnService"`
+	teamService           *TeamService           `di.inject:"teamService"`
+	labelService          *LabelService          `di.inject:"labelService"`
+	projectService        *ProjectService        `di.inject:"projectService"`
+	clientSettingsService *ClientSettingsService `di.inject:"clientSettingsService"`
 }
 
 func (c *KanbanController) RegisterRoutes(engine *gin.Engine) {
@@ -343,6 +343,6 @@ func (c *KanbanController) setProjectTeam(ctx *gin.Context) {
 }
 
 func (c *KanbanController) getSettings(ctx *gin.Context) {
-	settings := c.settingsService.GetSettings()
+	settings := c.clientSettingsService.GetSettings()
 	ctx.JSON(http.StatusOK, settings)
 }

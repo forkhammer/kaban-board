@@ -31,7 +31,7 @@ Start with SQLite
 docker-compose up -d
 ```
 
-Start with Postgreqql
+Start with Postgresql
 
 ```
 docker-compose -f docker-compose.postgresql.yml up -d

@@ -1,8 +1,12 @@
 package kanban
 
 type KanbanSettings struct {
-	TypeTaskLabels []string `json:"typeTaskLabels"`
+	TaskTypeLabels []string `json:"taskTypeLabels"`
 	kvstore        *KVStore `di.inject:"kvStore"`
+}
+
+type SaveTaskTypeLabelsRequest struct {
+	Labels []string `json:"labels"`
 }
 
 func (s *KanbanSettings) PostConstruct() error {
@@ -10,9 +14,14 @@ func (s *KanbanSettings) PostConstruct() error {
 }
 
 func (s *KanbanSettings) Init() error {
-	if err := s.kvstore.GetValue("type_task_labels", &s.TypeTaskLabels, []string{}); err != nil {
+	if err := s.kvstore.GetValue("task_type_labels", &s.TaskTypeLabels, []string{}); err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func (s *KanbanSettings) SetTaskTypeLabels(labels []string) error {
+	s.TaskTypeLabels = labels
+	return s.kvstore.SetValue("task_type_labels", s.TaskTypeLabels)
 }

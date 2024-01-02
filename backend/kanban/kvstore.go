@@ -2,6 +2,7 @@ package kanban
 
 import (
 	"encoding/json"
+	"errors"
 	"main/tools"
 
 	"gorm.io/datatypes"
@@ -54,4 +55,24 @@ func (s *KVStore) GetValue(key string, to interface{}, def interface{}) error {
 	}
 
 	return nil
+}
+
+func (s *KVStore) SetValue(key string, value interface{}) error {
+	data, err := json.Marshal(value)
+
+	if err != nil {
+		return err
+	}
+
+	kv := s.Get(key, value)
+
+	if kv != nil {
+		kv.Value = datatypes.JSON(data)
+		s.kvStoreRepository.Save(kv)
+	} else {
+		return errors.New("Key not found")
+	}
+
+	return nil
+
 }

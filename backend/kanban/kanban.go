@@ -305,7 +305,7 @@ func (k *Kanban) extractAllLabels(issues []gitlab.GitlabIssue) ([]gitlab.GitlabL
 
 func (k *Kanban) getIssueTaskType(issue *Issue) *gitlab.GitlabLabel {
 	return tools.Find[gitlab.GitlabLabel](issue.Labels.Nodes, func(label gitlab.GitlabLabel) bool {
-		return tools.IndexOf[string](k.kanbanSettings.TypeTaskLabels, func(id string) bool {
+		return tools.IndexOf[string](k.kanbanSettings.TaskTypeLabels, func(id string) bool {
 			return id == label.Title
 		}) > -1
 	})

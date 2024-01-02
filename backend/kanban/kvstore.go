@@ -14,34 +14,19 @@ type KVElement struct {
 }
 
 type KVStore struct {
-	keys              []KVElement
 	kvStoreRepository tools.KVStoreRepositoryInterface `di.inject:"kvStoreRepository"`
 }
 
-func (s *KVStore) PostConstruct() error {
-	return s.Init()
-}
-
-func (s *KVStore) Init() error {
-	return s.kvStoreRepository.GetAll(&s.keys)
-}
-
 func (s *KVStore) Get(key string, def interface{}) *KVElement {
-	kv := tools.Find[KVElement](s.keys, func(item KVElement) bool {
-		return item.Key == key
-	})
+	data, err := json.Marshal(def)
 
-	if kv == nil {
-		data, err := json.Marshal(def)
+	if err != nil {
+		return nil
+	}
 
-		if err != nil {
-			return nil
-		}
-
-		kv = &KVElement{Key: key, Value: datatypes.JSON(data)}
-		if err := s.kvStoreRepository.Save(kv); err != nil {
-			return nil
-		}
+	kv := &KVElement{Key: key, Value: datatypes.JSON(data)}
+	if err := s.kvStoreRepository.GetOrCreate(key, &kv); err != nil {
+		return nil
 	}
 
 	return kv

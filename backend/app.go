@@ -52,6 +52,7 @@ func NewApplication() Application {
 	di.RegisterBeanInstance("projectRepository", repositoryFactory.GetProjectRepository())
 	di.RegisterBeanInstance("teamRepository", repositoryFactory.GetTeamRepository())
 	di.RegisterBeanInstance("userRepository", repositoryFactory.GetUserRepository())
+	di.RegisterBeanInstance("kvStoreRepository", repositoryFactory.GetKVStoreRepository())
 
 	return Application{
 		engine:            router,

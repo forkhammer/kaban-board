@@ -33,4 +33,14 @@
 }
 
 .task-type {
+  display: flex;
+  align-items: center;
+
+  &-icon {
+    width: $pt;
+    height: $pt;
+    border-radius: 50%;
+    background: $white;
+    margin-right: $pt;
+  }
 }

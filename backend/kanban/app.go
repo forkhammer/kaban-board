@@ -12,7 +12,7 @@ import (
 type KanbanModule struct{}
 
 func (m *KanbanModule) Init(engine *gin.Engine, connection tools.ConnectionInterface, repositoryFactory tools.RepositoryFactory) error {
-	err := connection.Migrate(&Project{}, &User{}, &Team{}, &Label{}, &Column{})
+	err := connection.Migrate(&Project{}, &User{}, &Team{}, &Label{}, &Column{}, &KVElement{})
 
 	if err != nil {
 		return err
@@ -26,6 +26,8 @@ func (m *KanbanModule) Init(engine *gin.Engine, connection tools.ConnectionInter
 	di.RegisterBeanInstance("kanban", NewKanban(cache.MemoryCacheInstance))
 	di.RegisterBean("kanbanController", reflect.TypeOf((*KanbanController)(nil)))
 	di.RegisterBean("clientSettingsService", reflect.TypeOf((*ClientSettingsService)(nil)))
+	di.RegisterBean("kvStore", reflect.TypeOf((*KVStore)(nil)))
+	di.RegisterBean("kanbanSettings", reflect.TypeOf((*KanbanSettings)(nil)))
 	return nil
 }
 

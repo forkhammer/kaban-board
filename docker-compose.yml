@@ -22,6 +22,8 @@ services:
     build:
       context: ./frontend/board
       dockerfile: ../../docker/frontend/Dockerfile
+      args:
+        - API_URL=http://localhost:8080
     ports:
       - "4200:4200"
     depends_on:

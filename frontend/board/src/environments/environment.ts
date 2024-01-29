@@ -1,5 +1,8 @@
+const browserWindow: any = window || {};
+const browserWindowEnv = browserWindow['env'] || {};
+
 export const environment = {
   isProduction: true,
-  apiUrl: 'http://localhost:8080',
+  apiUrl: browserWindowEnv.apiUrl,
   autoUpdateIssuesMin: 2
 };

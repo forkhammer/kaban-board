@@ -55,6 +55,11 @@ func (c *KanbanController) RegisterRoutes(engine *gin.Engine) {
 	kanbanSettingsRoutes.Use(account.AuthRequiredMiddleware())
 	kanbanSettingsRoutes.GET("/kanban-settings", c.getKanbanSettings)
 	kanbanSettingsRoutes.POST("/kanban-settings/task-type-labels", c.saveTaskTypeLabels)
+
+	labelRoutes := engine.Group("/")
+	labelRoutes.Use(account.AuthRequiredMiddleware())
+	labelRoutes.PUT("/labels/:id", c.updateLabelById)
+
 }
 
 func (c *KanbanController) getKanbanUsers(ctx *gin.Context) {
@@ -310,6 +315,24 @@ func (c *KanbanController) getLabels(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, labels)
+}
+
+func (c *KanbanController) updateLabelById(ctx *gin.Context) {
+	var request UpdateKanbanLabelRequest
+
+	if err := ctx.ShouldBindJSON(&request); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	id := ctx.Param("id")
+
+	if err := c.labelService.UpdateKanbanLabel(id, &request); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{})
 }
 
 func (c *KanbanController) getProjects(ctx *gin.Context) {

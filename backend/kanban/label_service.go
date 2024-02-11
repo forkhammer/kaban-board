@@ -60,3 +60,20 @@ func (s *LabelService) GetAllKanbanLabels() ([]*KanbanLabel, error) {
 	})
 	return kanbanLabels, nil
 }
+
+func (s *LabelService) UpdateKanbanLabel(id string, request *UpdateKanbanLabelRequest) error {
+	var labels []Label
+
+	if err := s.labelRepository.GetLabelsByName(&labels, id); err != nil {
+		return err
+	}
+
+	for _, label := range labels {
+		label.AltName = request.AltName
+		if err := s.labelRepository.SaveLabel(label); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}

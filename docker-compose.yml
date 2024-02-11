@@ -23,7 +23,7 @@ services:
       context: ./frontend/board
       dockerfile: ../../docker/frontend/Dockerfile
       args:
-        - API_URL=http://localhost:8080
+        - API_URL=https://api.board.triant.net
     ports:
       - "4200:4200"
     depends_on:

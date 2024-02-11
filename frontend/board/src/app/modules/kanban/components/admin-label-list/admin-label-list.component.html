@@ -1,0 +1,15 @@
+<app-spinner [visible]="isLoading"></app-spinner>
+
+<div class="filter-form mb-3" [formGroup]="filterForm">
+  <div>
+    <input type="text" class="form-control" formControlName="search" placeholder="Найти...">
+  </div>
+</div>
+
+<div class="scroll">
+  <ng-container *ngFor="let label of labels | filterLabelsByName: (filterForm.get('search')?.valueChanges | async); trackBy trackByLabel">
+    <div class="border-bottom">
+      <app-admin-label-card [label]="label"></app-admin-label-card>
+    </div>
+  </ng-container>
+</div>

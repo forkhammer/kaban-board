@@ -5,7 +5,6 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {TeamService} from "../../services/team.service";
 import {takeUntil} from "rxjs/operators";
 import {Subject} from "rxjs";
-import {KanbanColumn} from "../../models/kanban-column";
 import {catchErrorMessages} from "../../../core/tools/catch-error";
 import {ToastService} from "../../../core/services/toast.service";
 

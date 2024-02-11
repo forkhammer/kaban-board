@@ -36,6 +36,8 @@ type ColumnRepositoryInterface interface {
 type LabelRepositoryInterface interface {
 	GetOrCreate(to interface{}, query interface{}, attrs interface{}) error
 	GetLabels(to interface{}) error
+	SaveLabel(label interface{}) error
+	GetLabelsByName(to interface{}, title string) error
 }
 
 type ProjectRepositoryInterface interface {

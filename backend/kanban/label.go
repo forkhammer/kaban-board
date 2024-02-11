@@ -13,3 +13,7 @@ type KanbanLabel struct {
 	Title   string  `json:"title"`
 	AltName *string `json:"altName"`
 }
+
+type UpdateKanbanLabelRequest struct {
+	AltName *string `json:"altName"`
+}

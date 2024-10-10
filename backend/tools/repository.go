@@ -30,7 +30,7 @@ type ColumnRepositoryInterface interface {
 	GetColumnById(to interface{}, id int) error
 	SaveColumn(column interface{}) error
 	CreateColumn(column interface{}) error
-	DeleteColumn(id int) error
+	DeleteColumn(column interface{}) error
 }
 
 type LabelRepositoryInterface interface {
@@ -52,7 +52,7 @@ type TeamRepositoryInterface interface {
 	GetTeamById(to interface{}, id int) error
 	SaveTeam(team interface{}) error
 	CreateTeam(team interface{}) error
-	DeleteTeam(id int) error
+	DeleteTeam(team interface{}) error
 }
 
 type UserRepositoryInterface interface {

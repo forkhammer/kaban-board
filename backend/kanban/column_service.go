@@ -62,7 +62,7 @@ func (s *ColumnService) CreateColumn(data *CreateColumnRequest) (*Column, error)
 }
 
 func (s *ColumnService) DeleteColumnById(id int) error {
-	return s.columnRepository.DeleteColumn(id)
+	return s.columnRepository.DeleteColumn(&Column{Id: id})
 }
 
 func (s *ColumnService) SaveOrdering(request []SetColumnOrderRequest) ([]Column, error) {

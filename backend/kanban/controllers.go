@@ -59,7 +59,6 @@ func (c *KanbanController) RegisterRoutes(engine *gin.Engine) {
 	labelRoutes := engine.Group("/")
 	labelRoutes.Use(account.AuthRequiredMiddleware())
 	labelRoutes.PUT("/labels/:id", c.updateLabelById)
-
 }
 
 func (c *KanbanController) getKanbanUsers(ctx *gin.Context) {

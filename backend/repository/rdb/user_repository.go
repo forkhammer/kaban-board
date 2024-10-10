@@ -11,12 +11,12 @@ type UserRepository struct {
 }
 
 func (r *UserRepository) GetUsers(to interface{}) error {
-	result := r.getDb().Order("name").Find(to)
+	result := r.getDb().Preload("Groups").Order("name").Find(to)
 	return result.Error
 }
 
 func (r *UserRepository) GetVisibleUsers(to interface{}) error {
-	result := r.getDb().Where("is_visible = true").Order("name").Find(to)
+	result := r.getDb().Preload("Groups").Where("is_visible = true").Order("name").Find(to)
 	return result.Error
 }
 
@@ -29,7 +29,7 @@ func (r *UserRepository) GetOrCreate(to, query, attrs interface{}) error {
 }
 
 func (r *UserRepository) GetUserBydId(to interface{}, id int) error {
-	if result := r.getDb().Where("id = ?", id).First(to); result.Error != nil {
+	if result := r.getDb().Where("id = ?", id).Preload("Groups").First(to); result.Error != nil {
 		return result.Error
 	} else {
 		return nil

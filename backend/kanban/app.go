@@ -12,7 +12,7 @@ import (
 type KanbanModule struct{}
 
 func (m *KanbanModule) Init(engine *gin.Engine, connection tools.ConnectionInterface, repositoryFactory tools.RepositoryFactory) error {
-	err := connection.Migrate(&Project{}, &User{}, &Team{}, &Label{}, &Column{}, &KVElement{})
+	err := connection.Migrate(&Project{}, &User{}, &Group{}, &Team{}, &Label{}, &Column{}, &KVElement{})
 
 	if err != nil {
 		return err

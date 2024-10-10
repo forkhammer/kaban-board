@@ -96,6 +96,7 @@ func (k *Kanban) GetUsers() ([]KanbanUser, *time.Time, error) {
 			AvatarUrl: user.AvatarUrl,
 			Issues:    userIssues,
 			Teams:     teams,
+			Groups:    user.Groups,
 		})
 	}
 	sort.Slice(result, func(i int, j int) bool {

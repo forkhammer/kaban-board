@@ -7,6 +7,7 @@ import {
   filter,
   finalize,
   Observable,
+  of,
   Subject,
   switchMap, timer
 } from "rxjs";
@@ -21,6 +22,7 @@ import {TitleService} from "../../../core/services/title.service";
 import {TeamService} from "../../services/team.service";
 import {GitlabSyncService} from "../../services/gitlab-sync.service";
 import {environment} from "../../../../../environments/environment";
+import { Team } from '../../models/team';
 
 @Component({
   selector: 'app-kanban-board',
@@ -41,6 +43,7 @@ export class KanbanBoardComponent implements OnInit, OnDestroy {
   public searchForm: FormGroup
   public filterForm: FormGroup
   public teamId$: Observable<number | null>
+  public team: Team | null = null
   public slidePosition = 0
   @ViewChild('UserBoardInner') userBoardInner: ElementRef | null = null
   public search$: Observable<string | null>
@@ -122,6 +125,13 @@ export class KanbanBoardComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe(value => {
       this.filterForm.patchValue({team: value})
+    })
+
+    this.teamId$.pipe(
+      switchMap(value => value ? this.teamService.get(value) : of(null)),
+      takeUntil(this.destroy$)
+    ).subscribe(data => {
+      this.team = data
     })
   }
 

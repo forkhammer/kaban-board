@@ -11,12 +11,12 @@ type TeamRepository struct {
 }
 
 func (r *TeamRepository) GetTeams(to interface{}) error {
-	result := r.getDb().Find(to)
+	result := r.getDb().Preload("Groups").Find(to)
 	return result.Error
 }
 
 func (r *TeamRepository) GetTeamById(to interface{}, id int) error {
-	if result := r.getDb().Where("id = ?", id).First(to); result.Error != nil {
+	if result := r.getDb().Where("id = ?", id).Preload("Groups").First(to); result.Error != nil {
 		return result.Error
 	} else {
 		return nil
@@ -39,8 +39,8 @@ func (r *TeamRepository) CreateTeam(team interface{}) error {
 	}
 }
 
-func (r *TeamRepository) DeleteTeam(id int) error {
-	result := r.getDb().Delete("id = ?", id)
+func (r *TeamRepository) DeleteTeam(team interface{}) error {
+	result := r.getDb().Delete(team)
 	return result.Error
 }
 

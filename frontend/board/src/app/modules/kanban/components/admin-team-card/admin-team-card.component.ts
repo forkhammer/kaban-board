@@ -64,6 +64,7 @@ export class AdminTeamCardComponent implements OnDestroy, OnInit {
     let item: Team = {
       id: 0,
       title: '',
+      groups: []
     };
     if (this.team) {
       item = Object.assign(item, this.team);

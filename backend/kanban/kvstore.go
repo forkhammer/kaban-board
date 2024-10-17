@@ -3,28 +3,24 @@ package kanban
 import (
 	"encoding/json"
 	"errors"
-	"main/tools"
+	"main/repository"
+	"main/repository/models"
 
 	"gorm.io/datatypes"
 )
 
-type KVElement struct {
-	Key   string         `gorm:"key;primaryKey"`
-	Value datatypes.JSON `gorm:"value"`
-}
-
 type KVStore struct {
-	kvStoreRepository tools.KVStoreRepositoryInterface `di.inject:"kvStoreRepository"`
+	kvStoreRepository repository.KVStoreRepositoryInterface `di.inject:"kvStoreRepository"`
 }
 
-func (s *KVStore) Get(key string, def interface{}) *KVElement {
+func (s *KVStore) Get(key string, def interface{}) *models.KVElement {
 	data, err := json.Marshal(def)
 
 	if err != nil {
 		return nil
 	}
 
-	kv := &KVElement{Key: key, Value: datatypes.JSON(data)}
+	kv := &models.KVElement{Key: key, Value: datatypes.JSON(data)}
 	if err := s.kvStoreRepository.GetOrCreate(key, &kv); err != nil {
 		return nil
 	}

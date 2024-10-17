@@ -1,4 +1,6 @@
-package tools
+package repository
+
+import "main/repository/models"
 
 type RepositoryType string
 
@@ -49,11 +51,11 @@ type ProjectRepositoryInterface interface {
 }
 
 type TeamRepositoryInterface interface {
-	GetTeams(to interface{}) error
-	GetTeamById(to interface{}, id int) error
-	SaveTeam(team interface{}) error
-	CreateTeam(team interface{}) error
-	DeleteTeam(team interface{}) error
+	GetTeams(to *[]models.Team) error
+	GetTeamById(to *models.Team, id int) error
+	SaveTeam(team *models.Team) error
+	CreateTeam(team *models.Team) error
+	DeleteTeam(team *models.Team) error
 }
 
 type UserRepositoryInterface interface {

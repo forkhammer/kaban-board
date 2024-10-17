@@ -4,13 +4,14 @@ import (
 	"fmt"
 	"main/config"
 	"main/gitlab"
-	"main/tools"
+	"main/repository"
+	"main/repository/models"
 	"strconv"
 	"strings"
 )
 
 type UserService struct {
-	userRepository tools.UserRepositoryInterface `di.inject:"userRepository"`
+	userRepository repository.UserRepositoryInterface `di.inject:"userRepository"`
 }
 
 func (s *UserService) CleanUserId(gid string) (uint, error) {
@@ -23,8 +24,8 @@ func (s *UserService) CleanUserId(gid string) (uint, error) {
 	return uint(id), nil
 }
 
-func (s *UserService) GetUsers() ([]User, error) {
-	var users []User
+func (s *UserService) GetUsers() ([]models.User, error) {
+	var users []models.User
 	err := s.userRepository.GetUsers(&users)
 
 	if err != nil {
@@ -35,14 +36,14 @@ func (s *UserService) GetUsers() ([]User, error) {
 	return users, nil
 }
 
-func (s *UserService) GetVisibleUsers() ([]User, error) {
-	var users []User
+func (s *UserService) GetVisibleUsers() ([]models.User, error) {
+	var users []models.User
 	err := s.userRepository.GetVisibleUsers(&users)
 	return users, err
 }
 
-func (s *UserService) saveGitlabUsers(users []gitlab.GitlabUser) ([]User, error) {
-	var resultUsers = make([]User, 0)
+func (s *UserService) saveGitlabUsers(users []gitlab.GitlabUser) ([]models.User, error) {
+	var resultUsers = make([]models.User, 0)
 
 	for i := range users {
 		u := &users[i]
@@ -53,8 +54,8 @@ func (s *UserService) saveGitlabUsers(users []gitlab.GitlabUser) ([]User, error)
 			return resultUsers, err
 		}
 
-		var user User
-		err = s.userRepository.GetOrCreate(&user, User{Id: userId}, User{
+		var user models.User
+		err = s.userRepository.GetOrCreate(&user, models.User{Id: userId}, models.User{
 			Id:        userId,
 			Name:      u.Name,
 			Username:  u.Username,
@@ -72,8 +73,8 @@ func (s *UserService) saveGitlabUsers(users []gitlab.GitlabUser) ([]User, error)
 	return resultUsers, nil
 }
 
-func (s *UserService) SetUserVisibility(id int, visibility bool) (*User, error) {
-	var user User
+func (s *UserService) SetUserVisibility(id int, visibility bool) (*models.User, error) {
+	var user models.User
 	err := s.userRepository.GetUserBydId(&user, id)
 
 	if err != nil {
@@ -85,7 +86,7 @@ func (s *UserService) SetUserVisibility(id int, visibility bool) (*User, error) 
 	return &user, err
 }
 
-func (s *UserService) cleanUserAvatars(users []User) []User {
+func (s *UserService) cleanUserAvatars(users []models.User) []models.User {
 	for index := range users {
 		user := &(users[index])
 		if !strings.HasPrefix(user.AvatarUrl, "https://") {

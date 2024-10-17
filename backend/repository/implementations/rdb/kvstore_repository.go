@@ -1,13 +1,13 @@
 package rdb
 
 import (
-	"main/tools"
+	"main/repository"
 
 	"gorm.io/gorm"
 )
 
 type KVStoreRepository struct {
-	connection tools.ConnectionInterface
+	connection repository.ConnectionInterface
 }
 
 func (r *KVStoreRepository) GetAll(to interface{}) error {

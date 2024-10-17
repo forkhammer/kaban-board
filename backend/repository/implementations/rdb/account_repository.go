@@ -1,13 +1,13 @@
 package rdb
 
 import (
-	"main/tools"
+	"main/repository"
 
 	"gorm.io/gorm"
 )
 
 type AccountRepository struct {
-	connection tools.ConnectionInterface
+	connection repository.ConnectionInterface
 }
 
 func (r *AccountRepository) CreateAccount(account interface{}) error {

@@ -2,27 +2,29 @@ package kanban
 
 import (
 	"errors"
+	"main/repository"
+	"main/repository/models"
 	"main/tools"
 )
 
 type ColumnService struct {
-	columnRepository tools.ColumnRepositoryInterface `di.inject:"columnRepository"`
+	columnRepository repository.ColumnRepositoryInterface `di.inject:"columnRepository"`
 }
 
-func (s *ColumnService) GetAllColumns() ([]Column, error) {
-	var columns []Column
+func (s *ColumnService) GetAllColumns() ([]models.Column, error) {
+	var columns []models.Column
 	err := s.columnRepository.GetColumns(&columns)
 	return columns, err
 }
 
-func (s *ColumnService) GetColumnById(id int) (*Column, error) {
-	var column Column
+func (s *ColumnService) GetColumnById(id int) (*models.Column, error) {
+	var column models.Column
 	err := s.columnRepository.GetColumnById(&column, id)
 	return &column, err
 }
 
-func (s *ColumnService) UpdateColumn(id int, data *UpdateColumnRequest) (*Column, error) {
-	var column Column
+func (s *ColumnService) UpdateColumn(id int, data *UpdateColumnRequest) (*models.Column, error) {
+	var column models.Column
 	err := s.columnRepository.GetColumnById(&column, id)
 
 	if err != nil {
@@ -43,12 +45,12 @@ func (s *ColumnService) UpdateColumn(id int, data *UpdateColumnRequest) (*Column
 	}
 }
 
-func (s *ColumnService) CreateColumn(data *CreateColumnRequest) (*Column, error) {
+func (s *ColumnService) CreateColumn(data *CreateColumnRequest) (*models.Column, error) {
 	if data.Name == "" {
 		return nil, errors.New("Название колонки не может быть пустым")
 	}
 
-	column := Column{
+	column := models.Column{
 		Name:   data.Name,
 		Labels: data.Labels,
 		TeamId: data.TeamId,
@@ -62,19 +64,19 @@ func (s *ColumnService) CreateColumn(data *CreateColumnRequest) (*Column, error)
 }
 
 func (s *ColumnService) DeleteColumnById(id int) error {
-	return s.columnRepository.DeleteColumn(&Column{Id: id})
+	return s.columnRepository.DeleteColumn(&models.Column{Id: id})
 }
 
-func (s *ColumnService) SaveOrdering(request []SetColumnOrderRequest) ([]Column, error) {
+func (s *ColumnService) SaveOrdering(request []SetColumnOrderRequest) ([]models.Column, error) {
 	columns, err := s.GetAllColumns()
-	result := make([]Column, 0)
+	result := make([]models.Column, 0)
 
 	if err != nil {
 		return nil, err
 	}
 
 	for _, req := range request {
-		column := tools.Find[Column](columns, func(column Column) bool {
+		column := tools.Find[models.Column](columns, func(column models.Column) bool {
 			return column.Id == req.Id
 		})
 		if column != nil {

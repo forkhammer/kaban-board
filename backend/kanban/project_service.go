@@ -2,6 +2,8 @@ package kanban
 
 import (
 	"main/gitlab"
+	"main/repository"
+	"main/repository/models"
 	"main/tools"
 	"strconv"
 	"strings"
@@ -10,12 +12,12 @@ import (
 )
 
 type ProjectService struct {
-	projectRepository tools.ProjectRepositoryInterface `di.inject:"projectRepository"`
+	projectRepository repository.ProjectRepositoryInterface `di.inject:"projectRepository"`
 	userService       UserService
 }
 
-func (s *ProjectService) GetProjectById(id uint) (*Project, error) {
-	var project Project
+func (s *ProjectService) GetProjectById(id uint) (*models.Project, error) {
+	var project models.Project
 	err := s.projectRepository.GetProjectById(&project, id)
 	return &project, err
 }
@@ -30,8 +32,8 @@ func (s *ProjectService) CleanProjectId(gid string) (uint, error) {
 	return uint(id), nil
 }
 
-func (s *ProjectService) GetProjects() ([]Project, error) {
-	var projects []Project
+func (s *ProjectService) GetProjects() ([]models.Project, error) {
+	var projects []models.Project
 	err := s.projectRepository.GetProjects(&projects)
 	return projects, err
 }
@@ -60,7 +62,7 @@ func (s *ProjectService) SaveGitlabProjects(projects []gitlab.GitlabProject) err
 				return err
 			}
 		} else {
-			project := Project{
+			project := models.Project{
 				Id:        projectId,
 				Name:      p.Name,
 				IsVisible: true,
@@ -75,7 +77,7 @@ func (s *ProjectService) SaveGitlabProjects(projects []gitlab.GitlabProject) err
 	return nil
 }
 
-func (s *ProjectService) SetTeam(id uint, teamId *int) (*Project, error) {
+func (s *ProjectService) SetTeam(id uint, teamId *int) (*models.Project, error) {
 	project, err := s.GetProjectById(id)
 
 	if err != nil {

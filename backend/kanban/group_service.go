@@ -1,21 +1,22 @@
 package kanban
 
 import (
-	"main/tools"
+	"main/repository"
+	"main/repository/models"
 )
 
 type GroupService struct {
-	groupRepository tools.GroupRepositoryInterface `di.inject:"groupRepository"`
+	groupRepository repository.GroupRepositoryInterface `di.inject:"groupRepository"`
 }
 
-func (s *GroupService) GetGroups() ([]Group, error) {
-	var groups []Group
+func (s *GroupService) GetGroups() ([]models.Group, error) {
+	var groups []models.Group
 	err := s.groupRepository.GetGroups(&groups)
 	return groups, err
 }
 
-func (s *GroupService) GetGroupById(id int) (*Group, error) {
-	var group Group
+func (s *GroupService) GetGroupById(id int) (*models.Group, error) {
+	var group models.Group
 	err := s.groupRepository.GetGroupById(&group, id)
 	return &group, err
 }

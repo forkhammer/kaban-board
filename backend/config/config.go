@@ -3,7 +3,7 @@ package config
 import (
 	"fmt"
 	"log"
-	"main/tools"
+	"main/repository"
 
 	"github.com/caarlos0/env"
 	"gorm.io/gorm/logger"
@@ -19,7 +19,7 @@ type Config struct {
 	Logo         string          `env:"LOGO" envDefault:""`
 	Caption      string          `env:"CAPTION" envDefault:""`
 
-	DbType tools.RepositoryType `env:"DB_TYPE" envDefault:"postgresql"`
+	DbType repository.RepositoryType `env:"DB_TYPE" envDefault:"postgresql"`
 
 	PostgresHost string `env:"POSTGRES_HOST"`
 	PostgresPort int    `env:"POSTGRES_PORT"`

@@ -1,4 +1,4 @@
-package kanban
+package models
 
 type Group struct {
 	Id   uint   `gorm:"id;primaryKey" json:"id"`

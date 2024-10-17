@@ -3,7 +3,7 @@ package db
 import (
 	"log"
 	"main/config"
-	"main/tools"
+	"main/repository"
 	"os"
 	"time"
 
@@ -17,7 +17,7 @@ type SqliteConnection struct {
 	db     *gorm.DB
 }
 
-func NewSqliteConnection(dbfile string) (tools.ConnectionInterface, error) {
+func NewSqliteConnection(dbfile string) (repository.ConnectionInterface, error) {
 	connection := &SqliteConnection{
 		dbfile: dbfile,
 	}

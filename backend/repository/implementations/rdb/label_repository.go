@@ -1,13 +1,13 @@
 package rdb
 
 import (
-	"main/tools"
+	"main/repository"
 
 	"gorm.io/gorm"
 )
 
 type LabelRepository struct {
-	connection tools.ConnectionInterface
+	connection repository.ConnectionInterface
 }
 
 func (r *LabelRepository) GetOrCreate(to, query, attrs interface{}) error {

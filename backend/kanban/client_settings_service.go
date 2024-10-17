@@ -1,11 +1,14 @@
 package kanban
 
-import "main/config"
+import (
+	"main/config"
+	"main/repository/models"
+)
 
 type ClientSettingsService struct{}
 
-func (s *ClientSettingsService) GetSettings() *ClientSettings {
-	return &ClientSettings{
+func (s *ClientSettingsService) GetSettings() *models.ClientSettings {
+	return &models.ClientSettings{
 		Logo:    config.Settings.Logo,
 		Caption: config.Settings.Caption,
 	}

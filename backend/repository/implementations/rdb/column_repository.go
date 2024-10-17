@@ -1,13 +1,13 @@
 package rdb
 
 import (
-	"main/tools"
+	"main/repository"
 
 	"gorm.io/gorm"
 )
 
 type ColumnRepository struct {
-	connection tools.ConnectionInterface
+	connection repository.ConnectionInterface
 }
 
 func (r *ColumnRepository) GetColumns(to interface{}) error {

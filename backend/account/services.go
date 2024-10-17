@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"html"
 	"main/config"
-	"main/tools"
+	"main/repository"
 	"strings"
 	"time"
 
@@ -15,7 +15,7 @@ import (
 )
 
 type AccountService struct {
-	accountRespository tools.AccountRepositoryInterface `di.inject:"accountRepository"`
+	accountRespository repository.AccountRepositoryInterface `di.inject:"accountRepository"`
 }
 
 func (s *AccountService) GetPasswordHash(rawPass string) (string, error) {

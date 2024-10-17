@@ -1,13 +1,13 @@
 package rdb
 
 import (
-	"main/tools"
+	"main/repository"
 
 	"gorm.io/gorm"
 )
 
 type GroupRepository struct {
-	connection tools.ConnectionInterface
+	connection repository.ConnectionInterface
 }
 
 func (r *GroupRepository) GetGroups(to interface{}) error {

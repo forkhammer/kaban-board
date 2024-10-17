@@ -1,4 +1,4 @@
-package kanban
+package models
 
 type ClientSettings struct {
 	Logo    string `json:"logo"`

@@ -55,3 +55,9 @@ func (f *RDBRepositoryFactory) GetKVStoreRepository() tools.KVStoreRepositoryInt
 		connection: f.connection,
 	}
 }
+
+func (f *RDBRepositoryFactory) GetGroupRepository() tools.GroupRepositoryInterface {
+	return &GroupRepository{
+		connection: f.connection,
+	}
+}

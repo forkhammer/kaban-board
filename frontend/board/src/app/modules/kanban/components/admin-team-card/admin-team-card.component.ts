@@ -7,6 +7,7 @@ import {takeUntil} from "rxjs/operators";
 import {Subject} from "rxjs";
 import {catchErrorMessages} from "../../../core/tools/catch-error";
 import {ToastService} from "../../../core/services/toast.service";
+import { GroupService } from '../../services/group.service';
 
 @Component({
   selector: 'app-admin-team-card',
@@ -26,15 +27,17 @@ export class AdminTeamCardComponent implements OnDestroy, OnInit {
   constructor(
     private fb: FormBuilder,
     private teamService: TeamService,
-    private toast: ToastService
+    private toast: ToastService,
+    public groupService: GroupService
   ) {
     this.form = this.fb.group({
-      title: ['', Validators.required]
+      title: ['', Validators.required],
+      groups: [[]],
     })
   }
 
   ngOnInit() {
-    this.form.patchValue(this.team)
+    this.form.patchValue(this.getFormData(this.team))
   }
 
   ngOnDestroy() {
@@ -67,7 +70,7 @@ export class AdminTeamCardComponent implements OnDestroy, OnInit {
       groups: []
     };
     if (this.team) {
-      item = Object.assign(item, this.team);
+      item = Object.assign(item, this.getFormData(this.team));
     }
     item = Object.assign(item, this.form.value);
     this.teamService.save(item)
@@ -77,11 +80,19 @@ export class AdminTeamCardComponent implements OnDestroy, OnInit {
       .subscribe(data => {
         Object.assign(this.team, data)
         this.isEdit = false
-        this.form.patchValue(this.team)
+        this.form.patchValue(this.getFormData(this.team))
       });
   }
 
   setEdit() {
     this.isEdit = true
+  }
+
+  getFormData(team: Team) {
+    return {
+      id: team.id,
+      title: team.title,
+      groups: team.groups.map(g => g.id),
+    }
   }
 }

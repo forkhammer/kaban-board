@@ -26,9 +26,13 @@ func (r *TeamRepository) GetTeamById(to interface{}, id int) error {
 func (r *TeamRepository) SaveTeam(team interface{}) error {
 	if result := r.getDb().Save(team); result.Error != nil {
 		return result.Error
-	} else {
-		return nil
 	}
+
+	if result := r.getDb().Model(team).Association("Groups").Replace(team.Groups); result.Error != nil {
+		return result.Error
+	}
+
+	return nil
 }
 
 func (r *TeamRepository) CreateTeam(team interface{}) error {

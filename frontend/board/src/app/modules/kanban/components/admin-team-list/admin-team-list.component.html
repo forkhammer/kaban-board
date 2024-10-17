@@ -5,7 +5,7 @@
 </div>
 
 <ng-container *ngFor="let team of teams; trackBy trackByTeams">
-  <div class="border-bottom">
+  <div class="mb-3">
     <app-admin-team-card [team]="team" (onDelete)="catchOnDelete($event)"></app-admin-team-card>
   </div>
 </ng-container>

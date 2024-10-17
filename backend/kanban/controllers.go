@@ -15,6 +15,7 @@ type KanbanController struct {
 	teamService           *TeamService           `di.inject:"teamService"`
 	labelService          *LabelService          `di.inject:"labelService"`
 	projectService        *ProjectService        `di.inject:"projectService"`
+	groupService          *GroupService          `di.inject:"groupService"`
 	clientSettingsService *ClientSettingsService `di.inject:"clientSettingsService"`
 	kanbanSettings        *KanbanSettings        `di.inject:"kanbanSettings"`
 }
@@ -27,13 +28,15 @@ func (c *KanbanController) RegisterRoutes(engine *gin.Engine) {
 	engine.GET("/teams/:id", c.getTeamById)
 	engine.GET("/labels", c.getLabels)
 	engine.GET("/settings", c.getSettings)
+	engine.GET("/groups", c.getGroups)
+	engine.GET("/groups/:id", c.getGroupById)
 
 	columnRoutes := engine.Group("/")
 	columnRoutes.Use(account.AuthRequiredMiddleware())
 	columnRoutes.POST("/columns", c.addColumn)
 	columnRoutes.PUT("/columns/:id", c.updateColumnById)
 	columnRoutes.DELETE("/columns/:id", c.deleteColumn)
-	columnRoutes.POST("/columns/save_ordering", c.saveColumnOrering)
+	columnRoutes.POST("/columns/save_ordering", c.saveColumnOrdering)
 
 	teamRoutes := engine.Group("/")
 	teamRoutes.Use(account.AuthRequiredMiddleware())
@@ -198,7 +201,7 @@ func (c *KanbanController) deleteColumn(ctx *gin.Context) {
 	ctx.JSON(http.StatusNoContent, gin.H{})
 }
 
-func (c *KanbanController) saveColumnOrering(ctx *gin.Context) {
+func (c *KanbanController) saveColumnOrdering(ctx *gin.Context) {
 	request := make([]SetColumnOrderRequest, 0)
 
 	if err := ctx.ShouldBindJSON(&request); err != nil {
@@ -393,4 +396,33 @@ func (c *KanbanController) saveTaskTypeLabels(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{})
+}
+
+func (c *KanbanController) getGroups(ctx *gin.Context) {
+	groups, err := c.groupService.GetGroups()
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, groups)
+}
+
+func (c *KanbanController) getGroupById(ctx *gin.Context) {
+	id, err := strconv.ParseInt(ctx.Param("id"), 10, 32)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	group, err := c.groupService.GetGroupById(int(id))
+
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, group)
 }

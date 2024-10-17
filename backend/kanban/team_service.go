@@ -6,7 +6,8 @@ import (
 )
 
 type TeamService struct {
-	teamRepository tools.TeamRepositoryInterface `di.inject:"teamRepository"`
+	teamRepository  tools.TeamRepositoryInterface  `di.inject:"teamRepository"`
+	groupRepository tools.GroupRepositoryInterface `di.inject:"groupRepository"`
 }
 
 func (s *TeamService) GetAllTeams() ([]Team, error) {
@@ -34,6 +35,11 @@ func (s *TeamService) UpdateTeam(id int, data *UpdateTeamRequest) (*Team, error)
 	}
 
 	team.Title = data.Title
+	var groups []*Group
+	if err := s.groupRepository.GetGroupsByIds(&groups, data.Groups); err != nil {
+		return nil, err
+	}
+	team.Groups = groups
 
 	if err = s.teamRepository.SaveTeam(team); err != nil {
 		return nil, err

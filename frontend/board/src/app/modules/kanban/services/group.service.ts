@@ -1,15 +1,15 @@
 import {Injectable, Injector} from '@angular/core';
 import {BaseService} from "../../core/services/base.service";
-import {Team} from "../models/team";
+import { Group } from '../models/group';
 
 @Injectable({
   providedIn: 'root'
 })
-export class TeamService extends BaseService<Team>{
+export class GroupService extends BaseService<Group>{
   public override usePagination = false
 
   constructor(protected override injector: Injector) {
     super(injector)
-    this.apiUrl = this.config.apiUrl + '/teams'
+    this.apiUrl = this.config.apiUrl + '/groups'
   }
 }

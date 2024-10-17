@@ -57,7 +57,7 @@ export class BaseService<T extends BaseModel> implements OnDestroy {
     }
   }
 
-  save(data: T) {
+  save(data: any) {
     if (data.id) {
       return this.http.put(`${this.apiUrl}/${data.id}`, data).pipe(map(res => res as T));
     } else {
@@ -65,7 +65,7 @@ export class BaseService<T extends BaseModel> implements OnDestroy {
     }
   }
 
-  patch(data: T) {
+  patch(data: any) {
     if (data.id) {
       return this.http.patch(`${this.apiUrl}/${data.id}`, data).pipe(map(res => res as T));
     } else {

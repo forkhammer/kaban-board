@@ -4,9 +4,9 @@ type RepositoryType string
 
 const (
 	Postgresql RepositoryType = "postgresql"
-	Mysql                     = "mysql"
-	Sqlite                    = "sqlite"
-	Redis                     = "redis"
+	Mysql      RepositoryType = "mysql"
+	Sqlite     RepositoryType = "sqlite"
+	Redis      RepositoryType = "redis"
 )
 
 type RepositoryFactory interface {
@@ -17,6 +17,7 @@ type RepositoryFactory interface {
 	GetTeamRepository() TeamRepositoryInterface
 	GetUserRepository() UserRepositoryInterface
 	GetKVStoreRepository() KVStoreRepositoryInterface
+	GetGroupRepository() GroupRepositoryInterface
 }
 
 type AccountRepositoryInterface interface {
@@ -68,4 +69,13 @@ type KVStoreRepositoryInterface interface {
 	GetOrCreate(key string, to interface{}) error
 	Save(value interface{}) error
 	Delete(key string) error
+}
+
+type GroupRepositoryInterface interface {
+	GetGroups(to interface{}) error
+	GetGroupById(to interface{}, id int) error
+	GetGroupsByIds(to interface{}, ids []int) error
+	SaveGroup(group interface{}) error
+	CreateGroup(group interface{}) error
+	DeleteGroup(group interface{}) error
 }

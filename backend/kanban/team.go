@@ -7,9 +7,11 @@ type Team struct {
 }
 
 type UpdateTeamRequest struct {
-	Title string `json:"title"`
+	Title  string `json:"title"`
+	Groups []int  `json:"groups"`
 }
 
 type CreateTeamRequest struct {
-	Title string `json:"title"`
+	Title  string `json:"title"`
+	Groups []int  `json:"groups"`
 }

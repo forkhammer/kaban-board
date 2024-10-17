@@ -59,11 +59,11 @@ type TeamRepositoryInterface interface {
 }
 
 type UserRepositoryInterface interface {
-	GetUsers(to interface{}) error
-	GetVisibleUsers(to interface{}) error
-	GetOrCreate(to, query, attrs interface{}) error
-	GetUserBydId(to interface{}, id int) error
-	SaveUser(user interface{}) error
+	GetUsers(to *[]models.User) error
+	GetVisibleUsers(to *[]models.User) error
+	GetOrCreate(to *models.User, query, attrs interface{}) error
+	GetUserBydId(to *models.User, id int) error
+	SaveUser(user *models.User) error
 }
 
 type KVStoreRepositoryInterface interface {

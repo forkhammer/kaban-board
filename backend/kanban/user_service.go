@@ -11,7 +11,8 @@ import (
 )
 
 type UserService struct {
-	userRepository repository.UserRepositoryInterface `di.inject:"userRepository"`
+	userRepository  repository.UserRepositoryInterface  `di.inject:"userRepository"`
+	groupRepository repository.GroupRepositoryInterface `di.inject:"groupRepository"`
 }
 
 func (s *UserService) CleanUserId(gid string) (uint, error) {
@@ -82,7 +83,7 @@ func (s *UserService) SetUserVisibility(id int, visibility bool) (*models.User, 
 	}
 
 	user.IsVisible = visibility
-	err = s.userRepository.SaveUser(user)
+	err = s.userRepository.SaveUser(&user)
 	return &user, err
 }
 
@@ -95,4 +96,22 @@ func (s *UserService) cleanUserAvatars(users []models.User) []models.User {
 	}
 
 	return users
+}
+
+func (s *UserService) SetUserGroups(id int, groupIds []int) (*models.User, error) {
+	var user models.User
+	err := s.userRepository.GetUserBydId(&user, id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	groups := make([]*models.Group, 0)
+	if err := s.groupRepository.GetGroupsByIds(&groups, groupIds); err != nil {
+		return nil, err
+	}
+
+	user.Groups = groups
+	err = s.userRepository.SaveUser(&user)
+	return &user, err
 }

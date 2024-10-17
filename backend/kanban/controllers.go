@@ -48,6 +48,7 @@ func (c *KanbanController) RegisterRoutes(engine *gin.Engine) {
 	userRoutes.Use(account.AuthRequiredMiddleware())
 	userRoutes.GET("/users", c.getUsers)
 	userRoutes.POST("/users/:id/visibility", c.setUserVisibility)
+	userRoutes.POST("/users/:id/groups", c.setUserGroups)
 
 	projectRoutes := engine.Group("/")
 	projectRoutes.Use(account.AuthRequiredMiddleware())
@@ -103,6 +104,31 @@ func (c *KanbanController) setUserVisibility(ctx *gin.Context) {
 	}
 
 	user, err := c.userService.SetUserVisibility(int(id), request.Visible)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, user)
+}
+
+func (c *KanbanController) setUserGroups(ctx *gin.Context) {
+	var request SetUserGroupsRequest
+
+	id, err := strconv.ParseInt(ctx.Param("id"), 10, 32)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err = ctx.ShouldBindJSON(&request); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	user, err := c.userService.SetUserGroups(int(id), request.Groups)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

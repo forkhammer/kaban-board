@@ -2,7 +2,7 @@
 
 :host {
   display: block;
-  border-bottom: 1px solid $border-color;
+  border-bottom: 1px solid var(--bs-border-color);
 
   &:last-child {
     border-bottom: none;

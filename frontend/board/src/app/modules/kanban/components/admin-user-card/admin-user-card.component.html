@@ -1,12 +1,24 @@
-<div class="user-card d-flex align-items-center pt-1 pb-1 p-1 ps-3 pe-3">
+<div class="user-card d-flex align-items-start pt-1 pb-1 p-1 ps-3 pe-3">
   <div class="avatar me-3">
     <img [src]="user.avatar_url" [alt]="user.name">
   </div>
 
-  <div class="user-title flex-grow-1">{{user.name}}</div>
+  <div class="flex-grow-1" [formGroup]="form">
+    <div class="user-title">{{user.name}}</div>
+
+    <div class="mb-3" *ngIf="isEdit">
+      <label for="" class="fw-bold mb-2">Группы пользователей</label>
+      <app-select-model-multiple [service]="groupService" formControlName="groups" [useClear]="false"></app-select-model-multiple>
+    </div>
+  </div>
 
   <button class="btn btn-link" (click)="toggleVisible()" title="Вкл/выкл видимость пользователя">
     <fa-icon [icon]="faEye" *ngIf="user.is_visible" class="text-success"></fa-icon>
     <fa-icon [icon]="faEyeSlash" *ngIf="!user.is_visible" class="text-secondary"></fa-icon>
+  </button>
+
+  <button class="btn btn-link" (click)="toggleEdit()">
+    <fa-icon [icon]="faChevronDown" *ngIf="!isEdit"></fa-icon>
+    <fa-icon [icon]="faChevronUp" *ngIf="isEdit"></fa-icon>
   </button>
 </div>

@@ -7,3 +7,19 @@
   }
 }
 
+:host {
+  display: block;
+  border: 1px solid var(--bs-border-color);
+  border-style: solid solid none solid;
+
+  &:first-child {
+    border-radius: 1rem 1rem 0 0;
+  }
+
+  &:last-child {
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    border-radius: 0 0 1rem 1rem;
+  }
+}
+

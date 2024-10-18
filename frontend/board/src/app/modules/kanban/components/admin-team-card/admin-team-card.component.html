@@ -1,4 +1,4 @@
-<div class="team-card d-flex align-items-start pt-1 pb-1 p-1 ps-3 pe-3 border rounded-3" [formGroup]="form">
+<div class="team-card d-flex align-items-start pt-1 pb-1 p-1 ps-3 pe-3" [formGroup]="form">
   <div class="team-title flex-grow-1 mb-1 mt-1" *ngIf="!isNew() && !isEdit">{{team.title}}</div>
 
   <div class="flex-grow-1" *ngIf="isNew() || isEdit">

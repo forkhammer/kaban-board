@@ -4,8 +4,8 @@
   <button class="btn btn-primary" (click)="addTeam()">Добавить</button>
 </div>
 
-<ng-container *ngFor="let team of teams; trackBy trackByTeams">
-  <div class="border-bottom">
+<div class="list">
+  <ng-container *ngFor="let team of teams; trackBy trackByTeams">
     <app-admin-team-card [team]="team" (onDelete)="catchOnDelete($event)"></app-admin-team-card>
-  </div>
-</ng-container>
+  </ng-container>
+</div>

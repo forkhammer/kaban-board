@@ -1,0 +1,12 @@
+@import '../../../../../styles/imports.scss';
+
+.card {
+  background: $light;
+
+  :host-context([data-bs-theme="dark"]) {
+    .card {
+      background: $gray-900;
+      color: $white;
+    }
+  }
+}

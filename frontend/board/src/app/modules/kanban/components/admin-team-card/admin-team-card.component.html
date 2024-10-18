@@ -1,8 +1,15 @@
-<div class="team-card d-flex align-items-center pt-1 pb-1 p-1 ps-3 pe-3" [formGroup]="form">
-  <div class="team-title flex-grow-1" *ngIf="!isNew() && !isEdit">{{team.title}}</div>
+<div class="team-card d-flex align-items-start pt-1 pb-1 p-1 ps-3 pe-3" [formGroup]="form">
+  <div class="team-title flex-grow-1 mb-1 mt-1" *ngIf="!isNew() && !isEdit">{{team.title}}</div>
 
   <div class="flex-grow-1" *ngIf="isNew() || isEdit">
-    <input type="text" class="form-control" formControlName="title" placeholder="Название">
+    <div class="mb-3">
+      <input type="text" class="form-control" formControlName="title" placeholder="Название">
+    </div>
+
+    <div class="mb-3">
+      <label for="" class="fw-bold mb-2">Группы пользователей</label>
+      <app-select-model-multiple [service]="groupService" formControlName="groups" [useClear]="false"></app-select-model-multiple>
+    </div>
   </div>
 
   <button class="btn btn-link" *ngIf="isNew() || isEdit" (click)="save()">

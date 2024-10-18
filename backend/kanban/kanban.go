@@ -6,6 +6,7 @@ import (
 	"main/cache"
 	"main/config"
 	"main/gitlab"
+	"main/repository/models"
 	"main/tools"
 	"sort"
 	"strings"
@@ -51,7 +52,7 @@ func (k *Kanban) GetUsers() ([]KanbanUser, *time.Time, error) {
 		return make([]KanbanUser, 0), nil, err
 	}
 
-	var labels []Label
+	var labels []models.Label
 	if err := k.labelService.labelRepository.GetLabels(&labels); err != nil {
 		return make([]KanbanUser, 0), nil, err
 	}
@@ -76,7 +77,7 @@ func (k *Kanban) GetUsers() ([]KanbanUser, *time.Time, error) {
 			return issue.ProjectId
 		})
 
-		userProjects := tools.Filter(projects, func(project Project) bool {
+		userProjects := tools.Filter(projects, func(project models.Project) bool {
 			hasUser := tools.IndexOf(projectIds, func(id int) bool {
 				return uint(id) == project.Id
 			}) > -1
@@ -85,7 +86,7 @@ func (k *Kanban) GetUsers() ([]KanbanUser, *time.Time, error) {
 				return uint(id) == user.Id
 			}) > -1 && project.TeamId != nil && hasUser
 		})
-		teams := tools.Unique(tools.Map(userProjects, func(project Project) uint {
+		teams := tools.Unique(tools.Map(userProjects, func(project models.Project) uint {
 			return uint(*project.TeamId)
 		}), func(id uint) uint { return id })
 
@@ -96,6 +97,7 @@ func (k *Kanban) GetUsers() ([]KanbanUser, *time.Time, error) {
 			AvatarUrl: user.AvatarUrl,
 			Issues:    userIssues,
 			Teams:     teams,
+			Groups:    user.Groups,
 		})
 	}
 	sort.Slice(result, func(i int, j int) bool {
@@ -189,7 +191,7 @@ func (k *Kanban) cleanUserAvatars(users *[]KanbanUser) *[]KanbanUser {
 	return users
 }
 
-func (k *Kanban) convertIssues(issues *[]gitlab.GitlabIssue, projects *[]Project, labels *[]Label) []Issue {
+func (k *Kanban) convertIssues(issues *[]gitlab.GitlabIssue, projects *[]models.Project, labels *[]models.Label) []Issue {
 	result := make([]Issue, 0)
 
 	for index := range *issues {
@@ -212,7 +214,7 @@ func (k *Kanban) convertIssues(issues *[]gitlab.GitlabIssue, projects *[]Project
 			issue.Milestone.WebPath = fmt.Sprintf("%s%s", config.Settings.GitlabUrl, issue.Milestone.WebPath)
 		}
 
-		projectIndex := tools.IndexOf(*projects, func(p Project) bool {
+		projectIndex := tools.IndexOf(*projects, func(p models.Project) bool {
 			return p.Id == uint(issue.ProjectId)
 		})
 
@@ -226,10 +228,10 @@ func (k *Kanban) convertIssues(issues *[]gitlab.GitlabIssue, projects *[]Project
 	return result
 }
 
-func (k *Kanban) convertLabels(gitlabLabels *[]gitlab.GitlabLabel, labels *[]Label) *[]Label {
-	result := make([]Label, 0)
+func (k *Kanban) convertLabels(gitlabLabels *[]gitlab.GitlabLabel, labels *[]models.Label) *[]models.Label {
+	result := make([]models.Label, 0)
 	for _, gitlabLabel := range *gitlabLabels {
-		label := tools.Find[Label](*labels, func(label Label) bool {
+		label := tools.Find[models.Label](*labels, func(label models.Label) bool {
 			return label.Id == gitlabLabel.Id
 		})
 		if label != nil {
@@ -321,8 +323,8 @@ func (k *Kanban) extractAllLabels(issues []gitlab.GitlabIssue) ([]gitlab.GitlabL
 	return result, nil
 }
 
-func (k *Kanban) getIssueTaskType(issue *Issue) *Label {
-	return tools.Find[Label](issue.Labels, func(label Label) bool {
+func (k *Kanban) getIssueTaskType(issue *Issue) *models.Label {
+	return tools.Find[models.Label](issue.Labels, func(label models.Label) bool {
 		return tools.IndexOf[string](k.kanbanSettings.TaskTypeLabels, func(id string) bool {
 			return id == label.Name
 		}) > -1

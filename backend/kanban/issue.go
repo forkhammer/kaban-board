@@ -2,6 +2,7 @@ package kanban
 
 import (
 	"main/gitlab"
+	"main/repository/models"
 )
 
 type Issue struct {
@@ -11,9 +12,9 @@ type Issue struct {
 	IssueType   string                  `json:"type"`
 	Assignees   []gitlab.GitlabAssignee `json:"assignees"`
 	WebUrl      string                  `json:"webUrl"`
-	Labels      []Label                 `json:"labels"`
+	Labels      []models.Label          `json:"labels"`
 	ProjectId   int                     `json:"projectId"`
 	ProjectName *string                 `json:"projectName"`
 	Milestone   gitlab.GitlabMilestone  `json:"milestone"`
-	TaskType    *Label                  `json:"taskType"`
+	TaskType    *models.Label           `json:"taskType"`
 }

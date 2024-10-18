@@ -2,6 +2,8 @@ package kanban
 
 import (
 	"main/cache"
+	"main/repository"
+	"main/repository/models"
 	"main/tools"
 	"reflect"
 
@@ -11,8 +13,8 @@ import (
 
 type KanbanModule struct{}
 
-func (m *KanbanModule) Init(engine *gin.Engine, connection tools.ConnectionInterface, repositoryFactory tools.RepositoryFactory) error {
-	err := connection.Migrate(&Project{}, &User{}, &Team{}, &Label{}, &Column{}, &KVElement{})
+func (m *KanbanModule) Init(engine *gin.Engine, connection repository.ConnectionInterface, repositoryFactory repository.RepositoryFactory) error {
+	err := connection.Migrate(&models.Project{}, &models.User{}, &models.Group{}, &models.Team{}, &models.Label{}, &models.Column{}, &models.KVElement{})
 
 	if err != nil {
 		return err
@@ -23,6 +25,7 @@ func (m *KanbanModule) Init(engine *gin.Engine, connection tools.ConnectionInter
 	di.RegisterBean("projectService", reflect.TypeOf((*ProjectService)(nil)))
 	di.RegisterBean("teamService", reflect.TypeOf((*TeamService)(nil)))
 	di.RegisterBean("columnService", reflect.TypeOf((*ColumnService)(nil)))
+	di.RegisterBean("groupService", reflect.TypeOf((*GroupService)(nil)))
 	di.RegisterBeanInstance("kanban", NewKanban(cache.MemoryCacheInstance))
 	di.RegisterBean("kanbanController", reflect.TypeOf((*KanbanController)(nil)))
 	di.RegisterBean("clientSettingsService", reflect.TypeOf((*ClientSettingsService)(nil)))

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 	"main/config"
-	"main/tools"
+	"main/repository"
 	"os"
 	"time"
 
@@ -18,7 +18,7 @@ type MysqlConnection struct {
 	db     *gorm.DB
 }
 
-func NewMysqlConnection(host string, port int, dbName string, user string, pass string) (tools.ConnectionInterface, error) {
+func NewMysqlConnection(host string, port int, dbName string, user string, pass string) (repository.ConnectionInterface, error) {
 	connection := &MysqlConnection{
 		config: RDBConnectionConfig{
 			host:   host,

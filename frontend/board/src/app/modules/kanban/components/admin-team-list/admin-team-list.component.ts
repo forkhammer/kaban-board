@@ -46,7 +46,8 @@ export class AdminTeamListComponent implements OnInit, OnDestroy {
     if (!existNew) {
       this.teams.push({
         id: 0,
-        title: ''
+        title: '',
+        groups: []
       })
     }
   }

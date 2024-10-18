@@ -6,6 +6,7 @@ import (
 	"main/db"
 	"main/kanban"
 	"main/repository"
+	"main/repository/implementations"
 	"main/tools"
 
 	"github.com/gin-contrib/cors"
@@ -16,8 +17,8 @@ import (
 type Application struct {
 	engine            *gin.Engine
 	modules           []tools.AppModule
-	connection        tools.ConnectionInterface
-	repositoryFactory tools.RepositoryFactory
+	connection        repository.ConnectionInterface
+	repositoryFactory repository.RepositoryFactory
 }
 
 func NewApplication() Application {
@@ -39,7 +40,7 @@ func NewApplication() Application {
 		panic(err)
 	}
 
-	repositoryFactory, err := repository.GetRepositoryFactory(config.Settings.DbType, connection)
+	repositoryFactory, err := implementations.GetRepositoryFactory(config.Settings.DbType, connection)
 
 	if err != nil {
 		panic(err)
@@ -53,6 +54,7 @@ func NewApplication() Application {
 	di.RegisterBeanInstance("teamRepository", repositoryFactory.GetTeamRepository())
 	di.RegisterBeanInstance("userRepository", repositoryFactory.GetUserRepository())
 	di.RegisterBeanInstance("kvStoreRepository", repositoryFactory.GetKVStoreRepository())
+	di.RegisterBeanInstance("groupRepository", repositoryFactory.GetGroupRepository())
 
 	return Application{
 		engine:            router,

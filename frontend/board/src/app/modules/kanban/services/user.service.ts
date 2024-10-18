@@ -19,4 +19,10 @@ export class UserService extends BaseService<User>{
       map(data => data as User)
     )
   }
+
+  setGroups(userId: number, groups: number[]) {
+    return this.http.post(`${this.apiUrl}/${userId}/groups`, {groups}).pipe(
+      map(data => data as User)
+    )
+  }
 }

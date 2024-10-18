@@ -1,4 +1,4 @@
-package tools
+package repository
 
 type ConnectionInterface interface {
 	GetEngine() interface{}

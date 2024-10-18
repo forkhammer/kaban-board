@@ -1,13 +1,13 @@
 package rdb
 
 import (
-	"main/tools"
+	"main/repository"
 
 	"gorm.io/gorm"
 )
 
 type ColumnRepository struct {
-	connection tools.ConnectionInterface
+	connection repository.ConnectionInterface
 }
 
 func (r *ColumnRepository) GetColumns(to interface{}) error {
@@ -33,8 +33,8 @@ func (r *ColumnRepository) CreateColumn(column interface{}) error {
 	return result.Error
 }
 
-func (r *ColumnRepository) DeleteColumn(id int) error {
-	result := r.getDb().Delete("id = ?", id)
+func (r *ColumnRepository) DeleteColumn(column interface{}) error {
+	result := r.getDb().Table("columns").Delete(column)
 	return result.Error
 }
 

@@ -3,7 +3,7 @@ package db
 import (
 	"errors"
 	"main/config"
-	"main/tools"
+	"main/repository"
 )
 
 type RDBConnectionConfig struct {
@@ -14,9 +14,9 @@ type RDBConnectionConfig struct {
 	pass   string
 }
 
-func GetConnectionByType(repositoryType tools.RepositoryType, settings *config.Config) (tools.ConnectionInterface, error) {
+func GetConnectionByType(repositoryType repository.RepositoryType, settings *config.Config) (repository.ConnectionInterface, error) {
 	switch repositoryType {
-	case tools.Postgresql:
+	case repository.Postgresql:
 		return NewPostgresqlConnection(
 			settings.PostgresHost,
 			settings.PostgresPort,
@@ -24,7 +24,7 @@ func GetConnectionByType(repositoryType tools.RepositoryType, settings *config.C
 			settings.PostgresUser,
 			settings.PostgresPass,
 		)
-	case tools.Mysql:
+	case repository.Mysql:
 		return NewMysqlConnection(
 			settings.MysqlHost,
 			settings.MysqlPort,
@@ -32,7 +32,7 @@ func GetConnectionByType(repositoryType tools.RepositoryType, settings *config.C
 			settings.MysqlUser,
 			settings.MysqlPass,
 		)
-	case tools.Sqlite:
+	case repository.Sqlite:
 		return NewSqliteConnection(settings.SqliteDbFile)
 	}
 

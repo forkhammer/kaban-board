@@ -1,6 +1,7 @@
 package account
 
 import (
+	"main/repository"
 	"main/tools"
 	"reflect"
 
@@ -10,7 +11,7 @@ import (
 
 type AccountModule struct{}
 
-func (m *AccountModule) Init(engine *gin.Engine, connection tools.ConnectionInterface, repositoryFactory tools.RepositoryFactory) error {
+func (m *AccountModule) Init(engine *gin.Engine, connection repository.ConnectionInterface, repositoryFactory repository.RepositoryFactory) error {
 	err := connection.Migrate(&Account{})
 
 	if err != nil {

@@ -1,4 +1,4 @@
-package kanban
+package models
 
 import (
 	"gorm.io/datatypes"
@@ -13,8 +13,4 @@ type Project struct {
 	TeamId    *int                       `gorm:"team_id" json:"team_id"`
 	Team      Team                       `gorm:"foreignKey:team_id" json:"-"`
 	Users     datatypes.JSONSlice[int64] `gorm:"users" json:"-"`
-}
-
-type SetTeamRequest struct {
-	TeamId *int `json:"team_id"`
 }

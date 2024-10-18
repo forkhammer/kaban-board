@@ -1,5 +1,14 @@
 @import '../../../../../styles/imports.scss';
 
+:host {
+  display: block;
+  border-bottom: 1px solid var(--bs-border-color);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
 .avatar {
   width: 40px;
   height: 40px;

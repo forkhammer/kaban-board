@@ -1,6 +1,5 @@
 import {Injectable, Injector} from '@angular/core';
 import {BaseService} from "../../core/services/base.service";
-import {KanbanColumn} from "../models/kanban-column";
 import {Team} from "../models/team";
 
 @Injectable({

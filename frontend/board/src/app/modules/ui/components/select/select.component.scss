@@ -75,6 +75,7 @@
   border-radius: 0 0 4px 4px;
   transform: translate(0, 47px) !important;
   border-color: $border-color;
+  min-width: 100%;
 }
 
 .dropdown-item {

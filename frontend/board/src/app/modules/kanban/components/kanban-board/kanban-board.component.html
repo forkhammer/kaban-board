@@ -23,7 +23,7 @@
       </ng-container>
 
       <div *ngFor="let group of team?.groups">
-        <ng-container *ngIf="(users | filterUsersByGroup: group.id | filterUsersByTeam: (teamId$ | async)).length > 0">
+        <ng-container *ngIf="(users | filterUsersByGroup: group.id | filterUsersByTeam: (teamId$ | async) | searchUsers:searchForm.get('search')?.value | filterUsersByText: (search$ | async)).length > 0">
 
           <app-user-group-card [group]="group" ></app-user-group-card>
 

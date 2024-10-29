@@ -36,7 +36,6 @@ import { FilterLabelsByNamePipe } from './pipes/filter-labels-by-name.pipe';
 import { AdminLabelCardComponent } from './components/admin-label-card/admin-label-card.component';
 import { UserGroupCardComponent } from './components/user-group-card/user-group-card.component';
 import { FilterUsersByGroupPipe } from './pipes/filter-users-by-group.pipe';
-import { OtherGroupCardComponent } from './components/other-group-card/other-group-card.component';
 
 
 @NgModule({
@@ -71,7 +70,6 @@ import { OtherGroupCardComponent } from './components/other-group-card/other-gro
     AdminLabelCardComponent,
     UserGroupCardComponent,
     FilterUsersByGroupPipe,
-    OtherGroupCardComponent
   ],
   exports: [
     UserBoardComponent,

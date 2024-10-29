@@ -2,11 +2,22 @@
 
 .card {
   background: $light;
+  cursor: pointer;
 
   :host-context([data-bs-theme="dark"]) {
     .card {
       background: $gray-900;
       color: $white;
     }
+  }
+}
+
+.contents {
+  height: 0;
+  transition-duration: .3s;
+  overflow: hidden;
+
+  &.open {
+    height: auto;
   }
 }

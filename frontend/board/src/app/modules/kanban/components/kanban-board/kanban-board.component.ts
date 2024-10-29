@@ -23,6 +23,7 @@ import {TeamService} from "../../services/team.service";
 import {GitlabSyncService} from "../../services/gitlab-sync.service";
 import {environment} from "../../../../../environments/environment";
 import { Team } from '../../models/team';
+import { Group } from '../../models/group';
 
 @Component({
   selector: 'app-kanban-board',
@@ -49,6 +50,10 @@ export class KanbanBoardComponent implements OnInit, OnDestroy {
   public search$: Observable<string | null>
   private updateColumnSignal$ = new BehaviorSubject(null)
   private isDrag$ = new BehaviorSubject<boolean>(false)
+  public otherGroup: Group = {
+    id: 0,
+    title: 'Остальные',
+  }
 
   constructor(
     private kanbanUserService: KanbanUserService,

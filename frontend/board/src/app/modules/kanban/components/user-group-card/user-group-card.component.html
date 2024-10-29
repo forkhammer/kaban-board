@@ -1,3 +1,10 @@
-<div class="card p-3 fw-bold">
-  {{group.title}}
+<div class="card p-3 fw-bold d-flex" (click)="toggleOpen()">
+  <span class="flex-grow-1">{{group.title}}</span>
+  <span>
+    <fa-icon [icon]="faChevronDown" *ngIf="isOpen"></fa-icon>
+    <fa-icon [icon]="faChevronUp" *ngIf="!isOpen"></fa-icon>
+  </span>
+</div>
+<div class="contents" [class.open]="isOpen">
+  <ng-content></ng-content>
 </div>

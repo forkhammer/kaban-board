@@ -14,23 +14,22 @@
 
     <div class="user-list-scroll">
       <ng-container *ngIf="(users | filterUsersByGroup: null | filterUsersByTeam: (teamId$ | async)).length > 0">
-        <app-other-group-card></app-other-group-card>
-
-        <app-user-card [user]="user" *ngFor="let user of users | filterUsersByGroup: null | filterUsersByTeam: (teamId$ | async) | searchUsers:searchForm.get('search')?.value | filterUsersByText: (search$ | async); trackBy trackByUser"
-            (click)="goToUserBoard(user)"
-            [selected]="selectedUser === user"
-            [columns]="getActiveColumns((teamId$ | async))"></app-user-card>
+        <app-user-group-card [group]="otherGroup" [isOpen]="false">
+          <app-user-card [user]="user" *ngFor="let user of users | filterUsersByGroup: null | filterUsersByTeam: (teamId$ | async) | searchUsers:searchForm.get('search')?.value | filterUsersByText: (search$ | async); trackBy trackByUser"
+          (click)="goToUserBoard(user)"
+          [selected]="selectedUser === user"
+          [columns]="getActiveColumns((teamId$ | async))"></app-user-card>
+        </app-user-group-card>
       </ng-container>
 
       <div *ngFor="let group of team?.groups">
         <ng-container *ngIf="(users | filterUsersByGroup: group.id | filterUsersByTeam: (teamId$ | async) | searchUsers:searchForm.get('search')?.value | filterUsersByText: (search$ | async)).length > 0">
-
-          <app-user-group-card [group]="group" ></app-user-group-card>
-
-          <app-user-card [user]="user" *ngFor="let user of users | filterUsersByGroup: group.id | filterUsersByTeam: (teamId$ | async) | searchUsers:searchForm.get('search')?.value | filterUsersByText: (search$ | async); trackBy trackByUser"
-            (click)="goToUserBoard(user)"
-            [selected]="selectedUser === user"
-            [columns]="getActiveColumns((teamId$ | async))"></app-user-card>
+          <app-user-group-card [group]="group" >
+            <app-user-card [user]="user" *ngFor="let user of users | filterUsersByGroup: group.id | filterUsersByTeam: (teamId$ | async) | searchUsers:searchForm.get('search')?.value | filterUsersByText: (search$ | async); trackBy trackByUser"
+              (click)="goToUserBoard(user)"
+              [selected]="selectedUser === user"
+              [columns]="getActiveColumns((teamId$ | async))"></app-user-card>
+          </app-user-group-card>
         </ng-container>
       </div>
     </div>

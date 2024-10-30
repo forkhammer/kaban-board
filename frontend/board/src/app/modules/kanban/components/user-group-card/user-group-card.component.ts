@@ -10,6 +10,7 @@ import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons'
 export class UserGroupCardComponent {
   @Input() group!: Group
   @Input() isOpen = true
+  @Input() userCount = 0
   faChevronDown = faChevronDown
   faChevronUp = faChevronUp
 

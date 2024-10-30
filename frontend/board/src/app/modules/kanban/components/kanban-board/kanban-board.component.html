@@ -13,24 +13,18 @@
     </form>
 
     <div class="user-list-scroll">
-      <ng-container *ngIf="(users | filterUsersByGroup: null | filterUsersByTeam: (teamId$ | async)).length > 0">
-        <app-user-group-card [group]="otherGroup" [isOpen]="false">
-          <app-user-card [user]="user" *ngFor="let user of users | filterUsersByGroup: null | filterUsersByTeam: (teamId$ | async) | searchUsers:searchForm.get('search')?.value | filterUsersByText: (search$ | async); trackBy trackByUser"
-          (click)="goToUserBoard(user)"
-          [selected]="selectedUser === user"
-          [columns]="getActiveColumns((teamId$ | async))"></app-user-card>
-        </app-user-group-card>
-      </ng-container>
+      <ng-container [ngTemplateOutlet]="userGroupTpl" [ngTemplateOutletContext]="{
+        users: users | filterUsersByGroup: null | filterUsersByTeam: (teamId$ | async) | searchUsers:searchForm.get('search')?.value | filterUsersByText: (search$ | async),
+        group: otherGroup,
+        open: false
+      }"></ng-container>
 
       <div *ngFor="let group of team?.groups">
-        <ng-container *ngIf="(users | filterUsersByGroup: group.id | filterUsersByTeam: (teamId$ | async) | searchUsers:searchForm.get('search')?.value | filterUsersByText: (search$ | async)).length > 0">
-          <app-user-group-card [group]="group" >
-            <app-user-card [user]="user" *ngFor="let user of users | filterUsersByGroup: group.id | filterUsersByTeam: (teamId$ | async) | searchUsers:searchForm.get('search')?.value | filterUsersByText: (search$ | async); trackBy trackByUser"
-              (click)="goToUserBoard(user)"
-              [selected]="selectedUser === user"
-              [columns]="getActiveColumns((teamId$ | async))"></app-user-card>
-          </app-user-group-card>
-        </ng-container>
+        <ng-container [ngTemplateOutlet]="userGroupTpl" [ngTemplateOutletContext]="{
+          users: users | filterUsersByGroup: group.id | filterUsersByTeam: (teamId$ | async) | searchUsers:searchForm.get('search')?.value | filterUsersByText: (search$ | async),
+          group: group,
+          open: true
+        }"></ng-container>
       </div>
     </div>
 
@@ -56,3 +50,15 @@
     </button>
   </div>
 </div>
+
+
+<ng-template let-users="users" let-group="group" let-open="open" #userGroupTpl>
+  <ng-container *ngIf="users.length > 0">
+    <app-user-group-card [group]="group" [userCount]="users.length" [isOpen]="open">
+      <app-user-card [user]="user" *ngFor="let user of users; trackBy trackByUser"
+        (click)="goToUserBoard(user)"
+        [selected]="selectedUser === user"
+        [columns]="getActiveColumns((teamId$ | async))"></app-user-card>
+    </app-user-group-card>
+  </ng-container>
+</ng-template>

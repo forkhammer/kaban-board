@@ -17,9 +17,10 @@
   </div>
 
   <div class="footer pe-3 ps-3 pt-1 pb-1 border-top d-flex align-items-center">
-    <a [href]="issue?.webUrl" target="_blank">{{issue?.projectName}}#{{issue?.iid}}</a>
+    <a [href]="issue?.webUrl" target="_blank" class="fs-paragraph-xs text-nowrap">{{issue?.projectName}}#{{issue?.iid}}</a>
 
-    <a [href]="issue?.milestone?.webPath" class="ms-3 milestone" target="_blank"
-       *ngIf="issue?.milestone?.id">{{issue?.milestone?.title}}</a>
+    <a [href]="issue?.milestone?.webPath" class="ms-3 milestone text-truncate" target="_blank"
+      [title]="issue?.milestone?.title"
+      *ngIf="issue?.milestone?.id">{{issue?.milestone?.title}}</a>
   </div>
 </div>

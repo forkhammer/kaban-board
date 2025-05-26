@@ -1,18 +1,16 @@
-FROM golang:1.21 as build
+FROM golang:1.24.3-alpine3.21 as build
 
 WORKDIR /usr/src/app
 
 COPY go.mod go.sum ./
-RUN go mod download && go mod verify
+RUN apk add --no-cache --update git make build-base && go mod download && go mod verify
 
 COPY . .
-RUN go build -ldflags='-s -w -extldflags "-static"' -v -o /usr/local/bin/app
+RUN CGO_ENABLED=1 GOOS=linux go build -ldflags='-s -w -extldflags "-static"' -v -o /usr/local/bin/app
 
-FROM debian:12-slim
+FROM alpine:3.21
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache ca-certificates
 
 COPY --from=build /usr/local/bin/app /usr/local/bin/app
 

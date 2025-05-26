@@ -12,6 +12,7 @@ import { takeUntil, switchMap, map, catchError, tap, shareReplay } from 'rxjs/op
 import { JWTResponse } from '../models/jwt';
 import { JWTService } from './jwt.service';
 import { BaseService } from './base.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
@@ -43,7 +44,7 @@ export class AccountService extends BaseService<Account> {
           );
         }),
         map(data => data.user),
-        takeUntil(this.destroy$)
+        takeUntilDestroyed()
       );
 
     this.userObservable.subscribe((data: Account | null) => {

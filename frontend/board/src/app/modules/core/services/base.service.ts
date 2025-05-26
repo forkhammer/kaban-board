@@ -1,36 +1,25 @@
-import { Injectable, Injector, PLATFORM_ID, OnDestroy } from '@angular/core';
+import { inject, Injectable, Injector, PLATFORM_ID } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { BaseModel, Pagination } from '../models/base';
 import { map } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { isPlatformServer } from '@angular/common';
-import { CoreConfig, CoreConfigService } from '../config';
-import { Subject } from 'rxjs';
+import { CoreConfigService } from '../config';
 import { RestQuery } from '../models/rest';
 
 @Injectable()
-export class BaseService<T extends BaseModel> implements OnDestroy {
-  protected http: HttpClient;
-  protected router: Router;
-  protected platformId: any;
+export class BaseService<T extends BaseModel> {
+  protected http = inject(HttpClient);
+  protected router = inject(Router)
+  protected platformId = inject(PLATFORM_ID);
   protected RESPONSE: any;
-  protected config: CoreConfig;
+  protected config =  inject(CoreConfigService);
   protected apiUrl: string;
-  protected destroy$ = new Subject();
   public usePagination = true;
 
   constructor(protected injector: Injector) {
-    this.http = injector.get(HttpClient);
-    this.router = injector.get(Router);
-    this.platformId = injector.get(PLATFORM_ID);
     this.RESPONSE = injector.get('RESPONSE', null);
-    this.config = injector.get(CoreConfigService);
     this.apiUrl = this.config.apiUrl + '/api/base/';
-  }
-
-  ngOnDestroy() {
-    this.destroy$.next(null);
-    this.destroy$.complete();
   }
 
   list(query?: RestQuery) {

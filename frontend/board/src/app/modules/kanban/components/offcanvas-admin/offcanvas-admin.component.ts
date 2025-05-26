@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import {SettingsService} from "../../../ui/services/settings.service";
 
 @Component({
@@ -8,8 +8,5 @@ import {SettingsService} from "../../../ui/services/settings.service";
     standalone: false
 })
 export class OffcanvasAdminComponent {
-  constructor(
-    public settingsService: SettingsService
-  ) {
-  }
+  public settingsService = inject(SettingsService)
 }

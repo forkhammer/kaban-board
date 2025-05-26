@@ -16,24 +16,13 @@ export class JWTInterceptor implements HttpInterceptor {
     const handle$ = of(this.jwt.access).pipe(
       switchMap(data => {
         if (data) {
-          // if (this.jwt.isTokenExpired() && !this.isBlacklistedRoute(req)) {
-          //   return this.jwt.refreshToken().pipe(
-          //     switchMap(token => {
-          //       return [this.jwt.access];
-          //     }),
-          //   );
-          // } else {
-          //   return [data];
-          // }
           return [data];
         } else {
           return [null];
         }
       }),
       switchMap(accessToken => {
-        let apiReq = req.clone({
-          headers: req.headers.set('ngrok-skip-browser-warning', '123456789'),
-        });
+        let apiReq = req;
 
         if (accessToken && !this.isBlacklistedRoute(req)) {
           apiReq = apiReq.clone({

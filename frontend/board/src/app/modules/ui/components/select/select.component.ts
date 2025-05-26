@@ -1,7 +1,6 @@
-import { Component, forwardRef, Input, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, forwardRef, Input, ViewChild, ElementRef, inject } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR, FormBuilder, FormGroup } from '@angular/forms';
 import { faAngleDown, faAngleUp, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { Subject } from 'rxjs';
 import { SelectValue, SelectValueIdentity } from '../../models/select-value';
 
 
@@ -14,7 +13,8 @@ import { SelectValue, SelectValueIdentity } from '../../models/select-value';
     ],
     standalone: false
 })
-export class SelectComponent implements ControlValueAccessor, OnDestroy {
+export class SelectComponent implements ControlValueAccessor {
+  private fb = inject(FormBuilder)
 
   @Input() values: SelectValue[] = [];
   @Input() title = '';
@@ -31,7 +31,6 @@ export class SelectComponent implements ControlValueAccessor, OnDestroy {
   faAngleUp = faAngleUp;
   faTimes = faTimes;
   searchForm: FormGroup;
-  private destroy$ = new Subject();
 
   get selectValue(): SelectValue | null {
     const result = this.values.filter(item => item.id === this.value);
@@ -46,18 +45,12 @@ export class SelectComponent implements ControlValueAccessor, OnDestroy {
     }
   }
 
-  constructor(
-    private fb: FormBuilder
-  ) {
+  constructor() {
     this.searchForm = this.fb.group({
       search: ['']
     });
   }
 
-  ngOnDestroy() {
-    this.destroy$.next(null);
-    this.destroy$.complete();
-  }
 
   writeValue(value: SelectValueIdentity | null) {
     this.value = value;

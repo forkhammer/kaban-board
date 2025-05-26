@@ -1,9 +1,9 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {finalize, Subject} from "rxjs";
+import {Component, inject} from '@angular/core';
+import {finalize} from "rxjs";
 import {Project} from "../../models/project";
 import {ProjectService} from "../../services/project.service";
-import {takeUntil} from "rxjs/operators";
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
     selector: 'app-admin-project-list',
@@ -11,33 +11,26 @@ import { FormBuilder, FormGroup } from '@angular/forms';
     styleUrls: ['./admin-project-list.component.scss'],
     standalone: false
 })
-export class AdminProjectListComponent implements OnInit, OnDestroy {
-  private destroy$ = new Subject()
+export class AdminProjectListComponent {
+  private projectService = inject(ProjectService)
+  private fb = inject(FormBuilder)
+
   public projects: Project[] = []
   public isLoading = true
   public filterForm: FormGroup
 
   constructor(
-    private projectService: ProjectService,
-    private fb: FormBuilder
   ) {
     this.filterForm = this.fb.group({
       search: ['']
     })
-  }
 
-  ngOnInit() {
     this.projectService.all().pipe(
       finalize(() => this.isLoading = false),
-      takeUntil(this.destroy$)
+      takeUntilDestroyed()
     ).subscribe(data => {
       this.projects = data as Project[]
     })
-  }
-
-  ngOnDestroy() {
-    this.destroy$.next(null)
-    this.destroy$.complete()
   }
 
   trackByProject(_: number, project: Project): number {

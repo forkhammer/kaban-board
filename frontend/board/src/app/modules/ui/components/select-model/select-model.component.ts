@@ -1,11 +1,12 @@
-import { Component, OnInit, Input, ViewChild, ElementRef, forwardRef, OnDestroy } from '@angular/core';
+import { Component, Input, ViewChild, ElementRef, forwardRef, inject, OnInit, DestroyRef } from '@angular/core';
 import { faAngleDown, faAngleUp, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormGroup, FormBuilder } from '@angular/forms';
-import {Subject, BehaviorSubject, of, EMPTY, distinctUntilChanged} from 'rxjs';
+import { BehaviorSubject, of, EMPTY, distinctUntilChanged} from 'rxjs';
 import { BaseService } from '../../../core/services/base.service';
 import { BaseTitleModel, Pagination } from '../../../core/models/base';
-import { takeUntil, switchMap, pluck, debounceTime, catchError, map } from 'rxjs/operators';
+import { switchMap, pluck, debounceTime, catchError, map } from 'rxjs/operators';
 import { HttpErrorResponse } from '@angular/common/http';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
     selector: 'app-select-model',
@@ -21,7 +22,9 @@ import { HttpErrorResponse } from '@angular/common/http';
     exportAs: 'selectModel',
     standalone: false
 })
-export class SelectModelComponent implements ControlValueAccessor, OnInit, OnDestroy {
+export class SelectModelComponent implements ControlValueAccessor, OnInit {
+  protected fb = inject(FormBuilder)
+  destroyRef = inject(DestroyRef)
 
   @Input() useSearch: boolean = false;
   @Input() useClear: boolean = false;
@@ -42,7 +45,6 @@ export class SelectModelComponent implements ControlValueAccessor, OnInit, OnDes
   faAngleUp = faAngleUp;
   faTimes = faTimes;
   searchForm: FormGroup;
-  private destroy$ = new Subject();
   protected errorValuesMessage: string | null = null;
 
   get selectValue(): BaseTitleModel | null {
@@ -63,11 +65,11 @@ export class SelectModelComponent implements ControlValueAccessor, OnInit, OnDes
   }
 
   constructor(
-    protected fb: FormBuilder
   ) {
     this.searchForm = this.fb.group({
       search: ['']
     });
+
   }
 
   ngOnInit() {
@@ -96,7 +98,7 @@ export class SelectModelComponent implements ControlValueAccessor, OnInit, OnDes
             return (data as BaseTitleModel[]);
           }
         }),
-        takeUntil(this.destroy$),
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(data => {
         this.valuesModel = data;
@@ -105,21 +107,21 @@ export class SelectModelComponent implements ControlValueAccessor, OnInit, OnDes
     // поиск
     this.searchForm.valueChanges
       .pipe(
-          takeUntil(this.destroy$),
-          pluck('search'),
-          debounceTime(500),
-          switchMap(data => {
-            this.errorValuesMessage = null;
-            const query = Object.assign({}, this.valuesFilter.value, {search: data, all: this.all});
-            return this.service.list(query)
-              .pipe(catchError((err: HttpErrorResponse) => {
-                this.errorValuesMessage = err.statusText;
-                return EMPTY;
-              }));
-          }),
-          map((data: any) => {
-            return (data as Pagination<BaseTitleModel>).results;
-          }),
+        pluck('search'),
+        debounceTime(500),
+        switchMap(data => {
+          this.errorValuesMessage = null;
+          const query = Object.assign({}, this.valuesFilter.value, {search: data, all: this.all});
+          return this.service.list(query)
+          .pipe(catchError((err: HttpErrorResponse) => {
+            this.errorValuesMessage = err.statusText;
+            return EMPTY;
+          }));
+        }),
+        map((data: any) => {
+          return (data as Pagination<BaseTitleModel>).results;
+        }),
+        takeUntilDestroyed(this.destroyRef),
       )
       .subscribe(data => {
         this.valuesModel = data;
@@ -128,23 +130,18 @@ export class SelectModelComponent implements ControlValueAccessor, OnInit, OnDes
     this.value
       .pipe(
         distinctUntilChanged(),
-        takeUntil(this.destroy$),
         switchMap(data => {
           if (data) {
             return this.service.get(data);
           } else {
             return [null];
           }
-        })
+        }),
+        takeUntilDestroyed(this.destroyRef),
       )
       .subscribe(data => {
         this.valueModel$.next(data);
       });
-  }
-
-  ngOnDestroy() {
-    this.destroy$.next(null);
-    this.destroy$.complete();
   }
 
   writeValue(value: string | number | null) {

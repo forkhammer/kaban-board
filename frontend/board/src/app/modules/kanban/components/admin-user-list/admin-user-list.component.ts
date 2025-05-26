@@ -1,9 +1,9 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {finalize, Subject} from "rxjs";
-import {takeUntil} from "rxjs/operators";
+import {Component, inject} from '@angular/core';
+import {finalize} from "rxjs";
 import {User} from "../../models/user";
 import {UserService} from "../../services/user.service";
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
     selector: 'app-admin-user-list',
@@ -11,33 +11,24 @@ import { FormBuilder, FormGroup } from '@angular/forms';
     styleUrls: ['./admin-user-list.component.scss'],
     standalone: false
 })
-export class AdminUserListComponent implements OnInit, OnDestroy {
-  private destroy$ = new Subject()
+export class AdminUserListComponent {
+  private userService = inject(UserService)
+  private fb = inject(FormBuilder)
+
   public users: User[] = []
   public isLoading = true
   public filterForm: FormGroup
 
-  constructor(
-    private userService: UserService,
-    private fb: FormBuilder
-  ) {
+  constructor() {
     this.filterForm = this.fb.group({
       search: [''],
     })
-  }
-
-  ngOnInit() {
     this.userService.all().pipe(
       finalize(() => this.isLoading = false),
-      takeUntil(this.destroy$)
+      takeUntilDestroyed()
     ).subscribe(data => {
       this.users = data as User[]
     })
-  }
-
-  ngOnDestroy() {
-    this.destroy$.next(null)
-    this.destroy$.complete()
   }
 
   trackByUser(_: number, user: User): number {

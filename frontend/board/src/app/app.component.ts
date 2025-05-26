@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import {ThemeServiceService} from "./modules/ui/services/theme-service.service";
 
 @Component({
@@ -8,8 +8,5 @@ import {ThemeServiceService} from "./modules/ui/services/theme-service.service";
     standalone: false
 })
 export class AppComponent {
-  constructor(
-    public themeService: ThemeServiceService
-  ) {
-  }
+  public themeService = inject(ThemeServiceService)
 }

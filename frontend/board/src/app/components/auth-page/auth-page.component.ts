@@ -1,10 +1,9 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Subject} from "rxjs";
+import {Component, DestroyRef, inject} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {TitleService} from "../../modules/core/services/title.service";
 import {AccountService} from "../../modules/core/services/account.service";
 import {Router} from "@angular/router";
-import {takeUntil} from "rxjs/operators";
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
 @Component({
     selector: 'app-auth-page',
@@ -12,40 +11,32 @@ import {takeUntil} from "rxjs/operators";
     styleUrls: ['./auth-page.component.scss'],
     standalone: false
 })
-export class AuthPageComponent implements OnInit, OnDestroy {
-  destroy$ = new Subject();
+export class AuthPageComponent {
+  title = inject(TitleService);
+  accountService = inject(AccountService)
+  fb = inject(FormBuilder)
+  router = inject(Router)
+  destroyRef = inject(DestroyRef)
+
   form: FormGroup;
   isLoading = false;
   authErrorMessage: string = '';
 
-  constructor(
-    private title: TitleService,
-    private userService: AccountService,
-    private fb: FormBuilder,
-    private router: Router,
-  ) {
+  constructor() {
+    this.title.setTitle('Auth');
     this.form = this.fb.group({
       username: ['', [Validators.required]],
       password: ['', Validators.required],
     });
   }
 
-  ngOnInit(): void {
-    this.title.setTitle('Auth');
-  }
-
-  ngOnDestroy() {
-    this.destroy$.next(null);
-    this.destroy$.complete();
-  }
-
   submit(e: SubmitEvent) {
     this.isLoading = true;
     this.authErrorMessage = '';
 
-    this.userService
+    this.accountService
       .login(this.form.get('username')?.value, this.form.get('password')?.value)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(data => {
         this.isLoading = false;
         if (!data.user) {

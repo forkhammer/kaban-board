@@ -1,13 +1,12 @@
-import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
+import {Component, DestroyRef, EventEmitter, inject, Input, OnInit, Output} from '@angular/core';
 import {Team} from "../../models/team";
 import {faPen, faTrash, faFloppyDisk} from "@fortawesome/free-solid-svg-icons";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {TeamService} from "../../services/team.service";
-import {takeUntil} from "rxjs/operators";
-import {Subject} from "rxjs";
 import {catchErrorMessages} from "../../../core/tools/catch-error";
 import {ToastService} from "../../../core/services/toast.service";
 import { GroupService } from '../../services/group.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
     selector: 'app-admin-team-card',
@@ -15,7 +14,13 @@ import { GroupService } from '../../services/group.service';
     styleUrls: ['./admin-team-card.component.scss'],
     standalone: false
 })
-export class AdminTeamCardComponent implements OnDestroy, OnInit {
+export class AdminTeamCardComponent implements OnInit {
+  private fb = inject(FormBuilder)
+  private teamService = inject(TeamService)
+  private toast = inject(ToastService)
+  public groupService = inject(GroupService)
+  private destroyRef = inject(DestroyRef)
+
   @Input() team!: Team
   public isEdit = false
   public form: FormGroup
@@ -23,14 +28,8 @@ export class AdminTeamCardComponent implements OnDestroy, OnInit {
   protected readonly faPen = faPen
   protected readonly faTrash = faTrash
   protected readonly faFloppyDisk = faFloppyDisk
-  private destroy$ = new Subject()
 
-  constructor(
-    private fb: FormBuilder,
-    private teamService: TeamService,
-    private toast: ToastService,
-    public groupService: GroupService
-  ) {
+  constructor() {
     this.form = this.fb.group({
       title: ['', Validators.required],
       groups: [[]],
@@ -41,11 +40,6 @@ export class AdminTeamCardComponent implements OnDestroy, OnInit {
     this.form.patchValue(this.getFormData(this.team))
   }
 
-  ngOnDestroy() {
-    this.destroy$.next(null)
-    this.destroy$.complete()
-  }
-
   isNew() {
     return !Boolean(this.team.id)
   }
@@ -54,7 +48,8 @@ export class AdminTeamCardComponent implements OnDestroy, OnInit {
     if (this.team.id) {
       if (confirm('Удалить группу?')) {
         this.teamService.delete(this.team).pipe(
-          takeUntil(this.destroy$)
+          catchErrorMessages(this.toast),
+          takeUntilDestroyed(this.destroyRef),
         ).subscribe(_ => {
           this.onDelete.emit(this.team)
         })
@@ -77,6 +72,7 @@ export class AdminTeamCardComponent implements OnDestroy, OnInit {
     this.teamService.save(item)
       .pipe(
         catchErrorMessages(this.toast),
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(data => {
         Object.assign(this.team, data)

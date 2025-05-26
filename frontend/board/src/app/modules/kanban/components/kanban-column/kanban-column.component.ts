@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnDestroy, Output} from '@angular/core';
+import {Component, DestroyRef, EventEmitter, inject, Input, OnDestroy, Output} from '@angular/core';
 import {KanbanColumn} from "../../models/kanban-column";
 import {KanbanUser} from "../../models/kanban-user";
 import { faEllipsis } from '@fortawesome/free-solid-svg-icons'
@@ -7,6 +7,7 @@ import {KanbanColumnService} from "../../services/kanban-column.service";
 import {takeUntil} from "rxjs/operators";
 import {Subject} from "rxjs";
 import {AccountService} from "../../../core/services/account.service";
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
     selector: 'app-kanban-column',
@@ -14,7 +15,12 @@ import {AccountService} from "../../../core/services/account.service";
     styleUrls: ['./kanban-column.component.scss'],
     standalone: false
 })
-export class KanbanColumnComponent implements OnDestroy{
+export class KanbanColumnComponent{
+  private columnModal = inject(KanbanColumnModalService)
+  private columnService = inject(KanbanColumnService)
+  public accountService = inject(AccountService)
+  private destroyRef = inject(DestroyRef)
+
   @Input() column!: KanbanColumn
   @Input() user!: KanbanUser
   @Input() search: string | null = null
@@ -22,19 +28,6 @@ export class KanbanColumnComponent implements OnDestroy{
 
   faEllipsis = faEllipsis
 
-  private destroy$ = new Subject()
-
-  constructor(
-    private columnModal: KanbanColumnModalService,
-    private columnService: KanbanColumnService,
-    public accountService: AccountService
-  ) {
-  }
-
-  ngOnDestroy() {
-    this.destroy$.next(null)
-    this.destroy$.complete()
-  }
 
   openModal(e: MouseEvent) {
     this.columnModal.show(this.column).then(value => this.column = value as KanbanColumn)
@@ -45,7 +38,7 @@ export class KanbanColumnComponent implements OnDestroy{
   delete(e: MouseEvent) {
     if (confirm('Удалить эту колонку?')) {
       this.columnService.delete(this.column).pipe(
-        takeUntil(this.destroy$)
+        takeUntilDestroyed(this.destroyRef)
       ).subscribe(_ => {
         this.onDelete.emit(this.column)
       })

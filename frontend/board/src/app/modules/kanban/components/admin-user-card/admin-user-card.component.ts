@@ -1,11 +1,11 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {Subject} from "rxjs";
+import {Component, DestroyRef, inject, Input, OnInit} from '@angular/core';
 import { faEye, faEyeSlash, faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons'
 import {User} from "../../models/user";
 import {UserService} from "../../services/user.service";
-import {distinctUntilChanged, switchMap, takeUntil} from "rxjs/operators";
+import {distinctUntilChanged, switchMap} from "rxjs/operators";
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { GroupService } from '../../services/group.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
     selector: 'app-admin-user-card',
@@ -13,9 +13,13 @@ import { GroupService } from '../../services/group.service';
     styleUrls: ['./admin-user-card.component.scss'],
     standalone: false
 })
-export class AdminUserCardComponent implements OnDestroy, OnInit {
+export class AdminUserCardComponent implements OnInit {
+  private userService = inject(UserService)
+  private fb = inject(FormBuilder)
+  public groupService = inject(GroupService)
+  private destoryRef = inject(DestroyRef)
+
   @Input() user!: User
-  private destroy$ = new Subject()
   form: FormGroup
   isEdit = false
 
@@ -24,11 +28,7 @@ export class AdminUserCardComponent implements OnDestroy, OnInit {
   faChevronDown = faChevronDown
   faChevronUp = faChevronUp
 
-  constructor(
-    private userService: UserService,
-    private fb: FormBuilder,
-    public groupService: GroupService
-  ) {
+  constructor() {
     this.form = this.fb.group({
       groups: [[]],
     })
@@ -40,21 +40,17 @@ export class AdminUserCardComponent implements OnDestroy, OnInit {
       this.form.get('groups')?.valueChanges.pipe(
         distinctUntilChanged((x, y) => this.arrayEquals(x, y)),
         switchMap(data => this.userService.setGroups(this.user.id, data)),
-        takeUntil(this.destroy$)
+        takeUntilDestroyed(this.destoryRef)
       ).subscribe(user => {
         Object.assign(this.user, user)
         this.form.patchValue(this.getFormData(this.user))
       })
   }
 
-  ngOnDestroy() {
-    this.destroy$.next(null)
-    this.destroy$.complete()
-  }
 
   toggleVisible() {
     this.userService.setVisibility(this.user.id, !this.user.is_visible).pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destoryRef)
     ).subscribe(user => {
       Object.assign(this.user, user)
     })

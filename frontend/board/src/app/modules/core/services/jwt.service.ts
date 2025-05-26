@@ -1,9 +1,9 @@
-import {Injectable, Inject, PLATFORM_ID} from '@angular/core';
+import {Injectable, PLATFORM_ID, inject} from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { JWTResponse } from '../models/jwt';
 import { HttpClient } from '@angular/common/http';
 import {catchError, tap, shareReplay, map} from 'rxjs/operators';
-import { CoreConfigService, CoreConfig } from '../config';
+import { CoreConfigService } from '../config';
 import {Observable, of} from 'rxjs';
 
 
@@ -11,16 +11,15 @@ import {Observable, of} from 'rxjs';
   providedIn: 'root',
 })
 export class JWTService {
+  private http = inject(HttpClient)
+  private platfromId = inject(PLATFORM_ID);
+  private config = inject(CoreConfigService);
   public access = '';
   // public refresh = '';
   protected tokenUrl = this.config.apiUrl + '/account/login';
   private refresh$: Observable<JWTResponse | null> | null  = null;
 
-  constructor(
-    private http: HttpClient,
-    @Inject(PLATFORM_ID) private platfromId: object,
-    @Inject(CoreConfigService) private config: CoreConfig,
-  ) {
+  constructor() {
     this.loadFromStorage();
     this.loadQueryTokens();
   }

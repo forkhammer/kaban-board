@@ -1,8 +1,9 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { KanbanSettingsService } from '../../services/kanban-settings.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { LabelService } from '../../services/label.service';
-import { Subject, distinctUntilChanged, filter, switchMap, takeUntil } from 'rxjs';
+import { distinctUntilChanged, filter, switchMap } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
     selector: 'app-admin-settings',
@@ -10,24 +11,21 @@ import { Subject, distinctUntilChanged, filter, switchMap, takeUntil } from 'rxj
     styleUrls: ['./admin-settings.component.scss'],
     standalone: false
 })
-export class AdminSettingsComponent implements OnInit, OnDestroy {
+export class AdminSettingsComponent {
+  private settingsServie = inject(KanbanSettingsService)
+  private fb = inject(FormBuilder)
+  public labelService = inject(LabelService)
 
   form: FormGroup
-  private destroy$ = new Subject()
   private isUpdate = false
-  constructor(
-    private settingsServie: KanbanSettingsService,
-    private fb: FormBuilder,
-    public labelService: LabelService
-  ) {
+
+  constructor() {
     this.form = this.fb.group({
       taskTypeLabels: [[]]
     })
-  }
 
-  ngOnInit(): void {
     this.settingsServie.getKanbanSettings().pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed()
     ).subscribe(data => {
       this.isUpdate = true
       this.form.patchValue(data)
@@ -38,12 +36,8 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
       filter(_ => !this.isUpdate),
       distinctUntilChanged(),
       switchMap(data => this.settingsServie.saveTaskTypeLabels(data as string[])),
-      takeUntil(this.destroy$)
+      takeUntilDestroyed()
     ).subscribe(data => {})
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next(null)
-    this.destroy$.complete()
-  }
 }

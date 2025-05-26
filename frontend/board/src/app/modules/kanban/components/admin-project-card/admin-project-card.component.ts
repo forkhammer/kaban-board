@@ -1,10 +1,10 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, DestroyRef, inject, Input, OnInit} from '@angular/core';
 import {Project} from "../../models/project";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {TeamService} from "../../services/team.service";
-import {distinctUntilChanged, Subject, switchMap} from "rxjs";
-import {takeUntil} from "rxjs/operators";
+import {distinctUntilChanged, switchMap} from "rxjs";
 import {ProjectService} from "../../services/project.service";
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
     selector: 'app-admin-project-card',
@@ -12,16 +12,16 @@ import {ProjectService} from "../../services/project.service";
     styleUrls: ['./admin-project-card.component.scss'],
     standalone: false
 })
-export class AdminProjectCardComponent implements OnInit, OnDestroy {
+export class AdminProjectCardComponent implements OnInit {
+  private fb = inject(FormBuilder)
+  public teamService = inject(TeamService)
+  public projectService = inject(ProjectService)
+  private destroyRef = inject(DestroyRef)
+
   @Input() project!:Project
   form: FormGroup
-  private destroy$ = new Subject()
 
-  constructor(
-    private fb: FormBuilder,
-    public teamService: TeamService,
-    public projectService: ProjectService
-  ) {
+  constructor() {
     this.form = this.fb.group({
       team_id: [null]
     })
@@ -33,14 +33,10 @@ export class AdminProjectCardComponent implements OnInit, OnDestroy {
     this.form.get('team_id')?.valueChanges.pipe(
       distinctUntilChanged(),
       switchMap(data => this.projectService.setTeam(this.project.id, data)),
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(project => {
       Object.assign(this.project, project)
     })
   }
 
-  ngOnDestroy() {
-    this.destroy$.next(null);
-    this.destroy$.complete()
-  }
 }

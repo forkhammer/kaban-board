@@ -1,11 +1,11 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, Input, OnInit } from '@angular/core';
 import { Label } from '../../models/kanban-label';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { Subject } from 'rxjs';
 import { LabelService } from '../../services/label.service';
 import {faPen, faTrash, faFloppyDisk} from "@fortawesome/free-solid-svg-icons";
 import { catchErrorMessages } from 'src/app/modules/core/tools/catch-error';
 import { ToastService } from 'src/app/modules/core/services/toast.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
     selector: 'app-admin-label-card',
@@ -13,20 +13,20 @@ import { ToastService } from 'src/app/modules/core/services/toast.service';
     styleUrls: ['./admin-label-card.component.scss'],
     standalone: false
 })
-export class AdminLabelCardComponent implements OnInit, OnDestroy {
+export class AdminLabelCardComponent implements OnInit {
+  private fb = inject(FormBuilder)
+  public labelService = inject(LabelService)
+  private toast = inject(ToastService)
+  private destroyRef = inject(DestroyRef)
+
   @Input() label!: Label
   form: FormGroup
-  private destroy$ = new Subject()
   protected readonly faPen = faPen
   protected readonly faTrash = faTrash
   protected readonly faFloppyDisk = faFloppyDisk
   public isEdit = false
 
-  constructor(
-    private fb: FormBuilder,
-    public labelService: LabelService,
-    private toast: ToastService
-  ) {
+  constructor() {
     this.form = this.fb.group({
       altName: [null]
     })
@@ -34,11 +34,6 @@ export class AdminLabelCardComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.form.patchValue(this.label)
-  }
-
-  ngOnDestroy() {
-    this.destroy$.next(null);
-    this.destroy$.complete()
   }
 
   setEdit() {
@@ -50,6 +45,7 @@ export class AdminLabelCardComponent implements OnInit, OnDestroy {
     this.labelService.save(item)
       .pipe(
         catchErrorMessages(this.toast),
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(data => {
         this.isEdit = false

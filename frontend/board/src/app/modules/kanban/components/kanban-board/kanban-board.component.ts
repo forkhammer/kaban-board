@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, DestroyRef, ElementRef, inject, OnInit, ViewChild} from '@angular/core';
 import {KanbanUserService} from "../../services/kanban-user.service";
 import {
   BehaviorSubject,
@@ -8,11 +8,10 @@ import {
   finalize,
   Observable,
   of,
-  Subject,
   switchMap, timer
 } from "rxjs";
 import {KanbanUser} from "../../models/kanban-user";
-import {map, takeUntil} from "rxjs/operators";
+import {map} from "rxjs/operators";
 import {KanbanColumn} from "../../models/kanban-column";
 import {KanbanColumnService} from "../../services/kanban-column.service";
 import {ActivatedRoute, Router} from "@angular/router";
@@ -24,6 +23,7 @@ import {GitlabSyncService} from "../../services/gitlab-sync.service";
 import {environment} from "../../../../../environments/environment";
 import { Team } from '../../models/team';
 import { Group } from '../../models/group';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
     selector: 'app-kanban-board',
@@ -31,13 +31,22 @@ import { Group } from '../../models/group';
     styleUrls: ['./kanban-board.component.scss'],
     standalone: false
 })
-export class KanbanBoardComponent implements OnInit, OnDestroy {
+export class KanbanBoardComponent implements OnInit {
+  private kanbanUserService = inject(KanbanUserService)
+  private kanbanColumnsService = inject(KanbanColumnService)
+  private route = inject(ActivatedRoute)
+  private router = inject(Router)
+  private builder = inject(FormBuilder)
+  private title = inject(TitleService)
+  public teamService = inject(TeamService)
+  private syncService = inject(GitlabSyncService)
+  private destroyRef = inject(DestroyRef)
+
   faXmark = faXmark
   faArrowLeft = faArrowLeft
   faArrowRight = faArrowRight
   COLUMN_WIDTH = 340
 
-  private destroy$ = new Subject()
   public users: KanbanUser[] = []
   public columns: KanbanColumn[] = []
   public isLoading = false
@@ -56,16 +65,7 @@ export class KanbanBoardComponent implements OnInit, OnDestroy {
     title: 'Остальные',
   }
 
-  constructor(
-    private kanbanUserService: KanbanUserService,
-    private kanbanColumnsService: KanbanColumnService,
-    private route: ActivatedRoute,
-    private router: Router,
-    private builder: FormBuilder,
-    private title: TitleService,
-    public teamService: TeamService,
-    private syncService: GitlabSyncService,
-  ) {
+  constructor() {
     this.searchForm = this.builder.group({
       search: [''],
     })
@@ -92,12 +92,12 @@ export class KanbanBoardComponent implements OnInit, OnDestroy {
       switchMap(_ => this.kanbanUserService.listUsers().pipe(
         finalize(() => this.isLoading = false),
       )),
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     )
 
     userId$.pipe(
       combineLatestWith(users$),
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef),
     ).subscribe(([userId, resp]) => {
       this.users = resp.users
       this.syncService.updateTime$.next(resp.updateTime ? new Date(resp.updateTime) : null)
@@ -114,36 +114,31 @@ export class KanbanBoardComponent implements OnInit, OnDestroy {
 
     this.updateColumnSignal$.pipe(
       switchMap(_ => this.kanbanColumnsService.list()),
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(data => {
       this.columns = data as KanbanColumn[]
     })
 
     this.filterForm.get('team')?.valueChanges.pipe(
       distinctUntilChanged(),
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(value => {
       this.router.navigate(['/'], {queryParams:{team: value ? value : ''}, queryParamsHandling: 'merge'})
     })
 
     this.teamId$.pipe(
       filter(value => value != undefined),
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(value => {
       this.filterForm.patchValue({team: value})
     })
 
     this.teamId$.pipe(
       switchMap(value => value ? this.teamService.get(value) : of(null)),
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(data => {
       this.team = data
     })
-  }
-
-  ngOnDestroy() {
-    this.destroy$.next(null)
-    this.destroy$.complete()
   }
 
   goToUserBoard(user: KanbanUser) {

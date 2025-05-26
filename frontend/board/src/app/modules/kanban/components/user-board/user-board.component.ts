@@ -1,12 +1,12 @@
-import {Component, EventEmitter, Input, OnDestroy, Output} from '@angular/core';
+import {Component, DestroyRef, EventEmitter, inject, Input, Output} from '@angular/core';
 import {KanbanUser} from "../../models/kanban-user";
 import {KanbanColumn} from "../../models/kanban-column";
 import {KanbanColumnModalService} from "../../services/kanban-column-modal.service";
 import {AccountService} from "../../../core/services/account.service";
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
-import { CdkDragDrop, CdkDragEnd, CdkDragEnter, CdkDragExit, CdkDragRelease, CdkDragStart, moveItemInArray } from '@angular/cdk/drag-drop';
+import { CdkDragDrop, CdkDragRelease, CdkDragStart, moveItemInArray } from '@angular/cdk/drag-drop';
 import { KanbanColumnService } from '../../services/kanban-column.service';
-import { Subject, takeUntil } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
     selector: 'app-user-board',
@@ -14,7 +14,12 @@ import { Subject, takeUntil } from 'rxjs';
     styleUrls: ['./user-board.component.scss'],
     standalone: false
 })
-export class UserBoardComponent implements OnDestroy {
+export class UserBoardComponent {
+  private columnModal = inject(KanbanColumnModalService)
+  public accountService = inject(AccountService)
+  private columnService = inject(KanbanColumnService)
+  private destroyRef = inject(DestroyRef)
+
   faPlus = faPlus
 
   @Input() user!: KanbanUser
@@ -25,19 +30,6 @@ export class UserBoardComponent implements OnDestroy {
   @Output() onDeleteColumn: EventEmitter<KanbanColumn> = new EventEmitter<KanbanColumn>()
   @Output() onUpdateColumns: EventEmitter<KanbanColumn[]> = new EventEmitter<KanbanColumn[]>()
   @Output() onDrag: EventEmitter<boolean> = new EventEmitter<boolean>()
-  private destroy$ = new Subject()
-
-  constructor(
-    private columnModal: KanbanColumnModalService,
-    public accountService: AccountService,
-    private columnService: KanbanColumnService,
-  ) {
-  }
-
-  ngOnDestroy(): void {
-      this.destroy$.next(null)
-      this.destroy$.complete()
-  }
 
   trackByColumn(index: number, column: KanbanColumn) {
     return column.id
@@ -63,7 +55,7 @@ export class UserBoardComponent implements OnDestroy {
       column.order = index
     })
     this.columnService.saveOrdering(this.columns).pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(items => {
       this.onUpdateColumns.emit(items)
     })

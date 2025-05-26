@@ -1,8 +1,9 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subject, finalize, takeUntil } from 'rxjs';
+import { Component, inject } from '@angular/core';
+import { finalize  } from 'rxjs';
 import { Label } from '../../models/kanban-label';
 import { LabelService } from '../../services/label.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
     selector: 'app-admin-label-list',
@@ -10,33 +11,24 @@ import { FormBuilder, FormGroup } from '@angular/forms';
     styleUrls: ['./admin-label-list.component.scss'],
     standalone: false
 })
-export class AdminLabelListComponent implements OnInit, OnDestroy {
-  private destroy$ = new Subject()
+export class AdminLabelListComponent {
+  private labelService = inject(LabelService)
+  private fb = inject(FormBuilder)
+
   public labels: Label[] = []
   public isLoading = true
   public filterForm: FormGroup
 
-  constructor(
-    private labelService: LabelService,
-    private fb: FormBuilder
-  ) {
+  constructor() {
     this.filterForm = this.fb.group({
       search: ['']
     })
-  }
-
-  ngOnInit() {
     this.labelService.all().pipe(
       finalize(() => this.isLoading = false),
-      takeUntil(this.destroy$)
+      takeUntilDestroyed()
     ).subscribe(data => {
       this.labels = data as Label[]
     })
-  }
-
-  ngOnDestroy() {
-    this.destroy$.next(null)
-    this.destroy$.complete()
   }
 
   trackByLabel(_: number, label: Label): string {

@@ -7,8 +7,6 @@ import { Toast } from "../models/toast";
 export class ToastService {
   toasts: Toast[] = [];
 
-  constructor() { }
-
   /**
    * Создает уведомление
    * @param text

@@ -1,8 +1,5 @@
-import { Component, OnInit, forwardRef, Input, OnDestroy, ViewChild, ElementRef } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR, FormBuilder, FormGroup } from '@angular/forms';
-import { faAngleDown, faAngleUp, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { Subject } from 'rxjs';
-import { SelectValue } from '../../models/select-value';
+import { Component, forwardRef} from '@angular/core';
+import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import { SelectComponent } from "../select/select.component";
 
 

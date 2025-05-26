@@ -1,9 +1,9 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {TeamService} from "../../services/team.service";
-import {finalize, Subject} from "rxjs";
-import {takeUntil} from "rxjs/operators";
+import {finalize} from "rxjs";
 import {Team} from "../../models/team";
 import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
     selector: 'app-admin-team-list',
@@ -11,31 +11,22 @@ import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons'
     styleUrls: ['./admin-team-list.component.scss'],
     standalone: false
 })
-export class AdminTeamListComponent implements OnInit, OnDestroy {
+export class AdminTeamListComponent {
+  private teamService = inject(TeamService)
+
   faPen = faPen
   faTrash = faTrash
 
-  private destroy$ = new Subject()
   public teams: Team[] = []
   public isLoading = true
 
-  constructor(
-    private teamService: TeamService
-  ) {
-  }
-
-  ngOnInit() {
+  constructor() {
     this.teamService.all().pipe(
       finalize(() => this.isLoading = false),
-      takeUntil(this.destroy$)
+      takeUntilDestroyed()
     ).subscribe(data => {
       this.teams = data as Team[]
     })
-  }
-
-  ngOnDestroy() {
-    this.destroy$.next(null)
-    this.destroy$.complete()
   }
 
   trackByTeams(_: number, team: Team): number {

@@ -1,17 +1,16 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Title, Meta } from '@angular/platform-browser';
 import { Router } from '@angular/router';
-import { takeUntil } from 'rxjs/operators';
-import { BehaviorSubject, Subject, combineLatest } from 'rxjs';
+import { BehaviorSubject, combineLatest } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
 })
-export class TitleService implements OnDestroy {
+export class TitleService {
   public titleSuffix$ = new BehaviorSubject<string>('');
   private titleText$ = new BehaviorSubject<string>('');
   private descriptionText$ = new BehaviorSubject<string>('');
-  private destroy$ = new Subject();
 
   get suffix() {
     return this.titleSuffix$.value;
@@ -23,7 +22,7 @@ export class TitleService implements OnDestroy {
 
   constructor(private title: Title, private meta: Meta, private router: Router) {
     combineLatest([this.titleText$, this.titleSuffix$])
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed())
       .subscribe(data => {
         let t = data[0];
         if (data[1]) {
@@ -37,11 +36,6 @@ export class TitleService implements OnDestroy {
       this.meta.updateTag({ name: 'description', content: data });
       this.meta.updateTag({ property: 'og:description', content: data });
     });
-  }
-
-  ngOnDestroy() {
-    this.destroy$.next(null);
-    this.destroy$.complete();
   }
 
   setTitle(title: string) {

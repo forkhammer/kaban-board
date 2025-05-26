@@ -1,4 +1,4 @@
-import {Component, OnDestroy} from '@angular/core';
+import {Component, DestroyRef, inject, OnDestroy} from '@angular/core';
 import {Subject} from "rxjs";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
@@ -9,6 +9,7 @@ import {ToastService} from "../../../core/services/toast.service";
 import {catchErrorMessages} from "../../../core/tools/catch-error";
 import {LabelService} from "../../services/label.service";
 import {TeamService} from "../../services/team.service";
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
     selector: 'app-kanban-column-modal',
@@ -16,20 +17,20 @@ import {TeamService} from "../../services/team.service";
     styleUrls: ['./kanban-column-modal.component.scss'],
     standalone: false
 })
-export class KanbanColumnModalComponent implements OnDestroy {
-  private destroy$ = new Subject();
+export class KanbanColumnModalComponent {
+  public modal = inject(NgbActiveModal)
+  private fb = inject(FormBuilder)
+  private columnService = inject(KanbanColumnService)
+  private toast = inject(ToastService)
+  public labelService = inject(LabelService)
+  public teamService = inject(TeamService)
+  private destroyRef = inject(DestroyRef)
+
   public isLoading = false;
   public form: FormGroup;
   public item: KanbanColumn | null = null;
 
-  constructor(
-    public modal: NgbActiveModal,
-    private fb: FormBuilder,
-    private columnService: KanbanColumnService,
-    private toast: ToastService,
-    public labelService: LabelService,
-    public teamService: TeamService
-  ) {
+  constructor() {
     this.form = this.fb.group({
       id: [null, Validators.required],
       name: ['', Validators.required],
@@ -38,10 +39,6 @@ export class KanbanColumnModalComponent implements OnDestroy {
     })
   }
 
-  ngOnDestroy() {
-    this.destroy$.next(null);
-    this.destroy$.complete();
-  }
 
   init(column: KanbanColumn | null = null) {
     this.item = column
@@ -71,6 +68,7 @@ export class KanbanColumnModalComponent implements OnDestroy {
     this.columnService.save(item)
       .pipe(
         catchErrorMessages(this.toast, () => this.isLoading = false),
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(data => {
         this.modal.close(data);

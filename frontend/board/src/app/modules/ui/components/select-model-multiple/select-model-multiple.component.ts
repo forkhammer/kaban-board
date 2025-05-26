@@ -148,11 +148,6 @@ export class SelectModelMultipleComponent implements ControlValueAccessor, OnIni
 
   }
 
-  getSearchText(): string {
-    const searchControl = this.searchForm.get('search')
-    return searchControl ? searchControl.value : null;
-  }
-
   clearFilter(e: MouseEvent) {
     this.searchForm.patchValue({
       search: ''

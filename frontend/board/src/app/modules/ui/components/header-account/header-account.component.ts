@@ -5,9 +5,10 @@ import { faCircleUser } from '@fortawesome/free-regular-svg-icons';
 import {SettingsService} from "../../services/settings.service";
 
 @Component({
-  selector: 'app-header-account',
-  templateUrl: './header-account.component.html',
-  styleUrls: ['./header-account.component.scss']
+    selector: 'app-header-account',
+    templateUrl: './header-account.component.html',
+    styleUrls: ['./header-account.component.scss'],
+    standalone: false
 })
 export class HeaderAccountComponent {
   faGear = faGear

@@ -8,17 +8,18 @@ import { takeUntil, switchMap, pluck, debounceTime, catchError, map } from 'rxjs
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
-  selector: 'app-select-model',
-  templateUrl: './select-model.component.html',
-  styleUrls: [
-    './select-model.component.scss',
-    '../select/select.component.scss',
-    '../select/filter-form.scss'
-  ],
-  providers: [
-    { provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => SelectModelComponent), multi: true },
-  ],
-  exportAs: 'selectModel'
+    selector: 'app-select-model',
+    templateUrl: './select-model.component.html',
+    styleUrls: [
+        './select-model.component.scss',
+        '../select/select.component.scss',
+        '../select/filter-form.scss'
+    ],
+    providers: [
+        { provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => SelectModelComponent), multi: true },
+    ],
+    exportAs: 'selectModel',
+    standalone: false
 })
 export class SelectModelComponent implements ControlValueAccessor, OnInit, OnDestroy {
 

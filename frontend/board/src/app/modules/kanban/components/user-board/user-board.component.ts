@@ -9,9 +9,10 @@ import { KanbanColumnService } from '../../services/kanban-column.service';
 import { Subject, takeUntil } from 'rxjs';
 
 @Component({
-  selector: 'app-user-board',
-  templateUrl: './user-board.component.html',
-  styleUrls: ['./user-board.component.scss']
+    selector: 'app-user-board',
+    templateUrl: './user-board.component.html',
+    styleUrls: ['./user-board.component.scss'],
+    standalone: false
 })
 export class UserBoardComponent implements OnDestroy {
   faPlus = faPlus

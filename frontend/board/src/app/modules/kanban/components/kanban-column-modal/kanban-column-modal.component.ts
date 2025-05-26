@@ -11,9 +11,10 @@ import {LabelService} from "../../services/label.service";
 import {TeamService} from "../../services/team.service";
 
 @Component({
-  selector: 'app-kanban-column-modal',
-  templateUrl: './kanban-column-modal.component.html',
-  styleUrls: ['./kanban-column-modal.component.scss'],
+    selector: 'app-kanban-column-modal',
+    templateUrl: './kanban-column-modal.component.html',
+    styleUrls: ['./kanban-column-modal.component.scss'],
+    standalone: false
 })
 export class KanbanColumnModalComponent implements OnDestroy {
   private destroy$ = new Subject();

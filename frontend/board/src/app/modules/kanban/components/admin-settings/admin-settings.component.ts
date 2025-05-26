@@ -5,9 +5,10 @@ import { LabelService } from '../../services/label.service';
 import { Subject, distinctUntilChanged, filter, switchMap, takeUntil } from 'rxjs';
 
 @Component({
-  selector: 'app-admin-settings',
-  templateUrl: './admin-settings.component.html',
-  styleUrls: ['./admin-settings.component.scss']
+    selector: 'app-admin-settings',
+    templateUrl: './admin-settings.component.html',
+    styleUrls: ['./admin-settings.component.scss'],
+    standalone: false
 })
 export class AdminSettingsComponent implements OnInit, OnDestroy {
 

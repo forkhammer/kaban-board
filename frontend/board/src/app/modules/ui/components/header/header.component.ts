@@ -10,9 +10,10 @@ import { ClientSettings } from 'src/app/modules/kanban/models/settings';
 import { KanbanSettingsService } from 'src/app/modules/kanban/services/kanban-settings.service';
 
 @Component({
-  selector: 'app-header',
-  templateUrl: './header.component.html',
-  styleUrls: ['./header.component.scss']
+    selector: 'app-header',
+    templateUrl: './header.component.html',
+    styleUrls: ['./header.component.scss'],
+    standalone: false
 })
 export class HeaderComponent implements OnDestroy, OnInit {
   public now: Date = new Date()

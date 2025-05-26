@@ -26,9 +26,10 @@ import { Team } from '../../models/team';
 import { Group } from '../../models/group';
 
 @Component({
-  selector: 'app-kanban-board',
-  templateUrl: './kanban-board.component.html',
-  styleUrls: ['./kanban-board.component.scss']
+    selector: 'app-kanban-board',
+    templateUrl: './kanban-board.component.html',
+    styleUrls: ['./kanban-board.component.scss'],
+    standalone: false
 })
 export class KanbanBoardComponent implements OnInit, OnDestroy {
   faXmark = faXmark

@@ -2,7 +2,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { SelectValue } from '../models/select-value';
 
 @Pipe({
-  name: 'selectItemsFilter',
+    name: 'selectItemsFilter',
+    standalone: false
 })
 export class SelectItemsPipe implements PipeTransform {
   transform(values: SelectValue[], search: string | null): any {

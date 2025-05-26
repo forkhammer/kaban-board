@@ -2,7 +2,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 import {KanbanIssue} from "../models/kanban-issue";
 
 @Pipe({
-  name: 'filterByLabels'
+    name: 'filterByLabels',
+    standalone: false
 })
 export class FilterByLabelsPipe implements PipeTransform {
 

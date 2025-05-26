@@ -7,9 +7,10 @@ import {Router} from "@angular/router";
 import {takeUntil} from "rxjs/operators";
 
 @Component({
-  selector: 'app-auth-page',
-  templateUrl: './auth-page.component.html',
-  styleUrls: ['./auth-page.component.scss']
+    selector: 'app-auth-page',
+    templateUrl: './auth-page.component.html',
+    styleUrls: ['./auth-page.component.scss'],
+    standalone: false
 })
 export class AuthPageComponent implements OnInit, OnDestroy {
   destroy$ = new Subject();

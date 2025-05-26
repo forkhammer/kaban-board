@@ -8,9 +8,10 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { GroupService } from '../../services/group.service';
 
 @Component({
-  selector: 'app-admin-user-card',
-  templateUrl: './admin-user-card.component.html',
-  styleUrls: ['./admin-user-card.component.scss']
+    selector: 'app-admin-user-card',
+    templateUrl: './admin-user-card.component.html',
+    styleUrls: ['./admin-user-card.component.scss'],
+    standalone: false
 })
 export class AdminUserCardComponent implements OnDestroy, OnInit {
   @Input() user!: User

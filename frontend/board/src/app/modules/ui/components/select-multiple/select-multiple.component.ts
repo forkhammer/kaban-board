@@ -6,12 +6,13 @@ import { SelectValue, SelectValueIdentity } from '../../models/select-value';
 
 
 @Component({
-  selector: 'app-select-multiple',
-  templateUrl: './select-multiple.component.html',
-  styleUrls: ['./select-multiple.component.scss'],
-  providers: [
-    { provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => SelectMultipleComponent), multi: true },
-  ]
+    selector: 'app-select-multiple',
+    templateUrl: './select-multiple.component.html',
+    styleUrls: ['./select-multiple.component.scss'],
+    providers: [
+        { provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => SelectMultipleComponent), multi: true },
+    ],
+    standalone: false
 })
 export class SelectMultipleComponent implements ControlValueAccessor, OnDestroy {
 

@@ -6,9 +6,10 @@ import {Team} from "../../models/team";
 import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons'
 
 @Component({
-  selector: 'app-admin-team-list',
-  templateUrl: './admin-team-list.component.html',
-  styleUrls: ['./admin-team-list.component.scss']
+    selector: 'app-admin-team-list',
+    templateUrl: './admin-team-list.component.html',
+    styleUrls: ['./admin-team-list.component.scss'],
+    standalone: false
 })
 export class AdminTeamListComponent implements OnInit, OnDestroy {
   faPen = faPen

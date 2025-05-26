@@ -10,9 +10,10 @@ import {ToastService} from "../../../core/services/toast.service";
 import { GroupService } from '../../services/group.service';
 
 @Component({
-  selector: 'app-admin-team-card',
-  templateUrl: './admin-team-card.component.html',
-  styleUrls: ['./admin-team-card.component.scss']
+    selector: 'app-admin-team-card',
+    templateUrl: './admin-team-card.component.html',
+    styleUrls: ['./admin-team-card.component.scss'],
+    standalone: false
 })
 export class AdminTeamCardComponent implements OnDestroy, OnInit {
   @Input() team!: Team

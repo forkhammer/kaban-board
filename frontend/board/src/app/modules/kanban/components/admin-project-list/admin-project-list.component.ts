@@ -6,9 +6,10 @@ import {takeUntil} from "rxjs/operators";
 import { FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
-  selector: 'app-admin-project-list',
-  templateUrl: './admin-project-list.component.html',
-  styleUrls: ['./admin-project-list.component.scss']
+    selector: 'app-admin-project-list',
+    templateUrl: './admin-project-list.component.html',
+    styleUrls: ['./admin-project-list.component.scss'],
+    standalone: false
 })
 export class AdminProjectListComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject()

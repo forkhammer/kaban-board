@@ -8,9 +8,10 @@ import { catchErrorMessages } from 'src/app/modules/core/tools/catch-error';
 import { ToastService } from 'src/app/modules/core/services/toast.service';
 
 @Component({
-  selector: 'app-admin-label-card',
-  templateUrl: './admin-label-card.component.html',
-  styleUrls: ['./admin-label-card.component.scss']
+    selector: 'app-admin-label-card',
+    templateUrl: './admin-label-card.component.html',
+    styleUrls: ['./admin-label-card.component.scss'],
+    standalone: false
 })
 export class AdminLabelCardComponent implements OnInit, OnDestroy {
   @Input() label!: Label

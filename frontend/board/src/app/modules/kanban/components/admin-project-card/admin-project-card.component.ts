@@ -7,9 +7,10 @@ import {takeUntil} from "rxjs/operators";
 import {ProjectService} from "../../services/project.service";
 
 @Component({
-  selector: 'app-admin-project-card',
-  templateUrl: './admin-project-card.component.html',
-  styleUrls: ['./admin-project-card.component.scss']
+    selector: 'app-admin-project-card',
+    templateUrl: './admin-project-card.component.html',
+    styleUrls: ['./admin-project-card.component.scss'],
+    standalone: false
 })
 export class AdminProjectCardComponent implements OnInit, OnDestroy {
   @Input() project!:Project

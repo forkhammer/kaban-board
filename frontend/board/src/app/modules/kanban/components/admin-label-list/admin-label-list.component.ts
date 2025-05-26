@@ -5,9 +5,10 @@ import { LabelService } from '../../services/label.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
-  selector: 'app-admin-label-list',
-  templateUrl: './admin-label-list.component.html',
-  styleUrls: ['./admin-label-list.component.scss']
+    selector: 'app-admin-label-list',
+    templateUrl: './admin-label-list.component.html',
+    styleUrls: ['./admin-label-list.component.scss'],
+    standalone: false
 })
 export class AdminLabelListComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject()

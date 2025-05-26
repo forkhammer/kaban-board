@@ -2,8 +2,9 @@ import { Pipe, PipeTransform } from '@angular/core';
 import {KanbanColumn} from "../models/kanban-column";
 
 @Pipe({
-  name: 'filterColumnsByTeam',
-  pure: false
+    name: 'filterColumnsByTeam',
+    pure: false,
+    standalone: false
 })
 export class FilterColumnsByTeamPipe implements PipeTransform {
 

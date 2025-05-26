@@ -2,7 +2,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { User } from '../models/user';
 
 @Pipe({
-  name: 'filterUsersByName'
+    name: 'filterUsersByName',
+    standalone: false
 })
 export class FilterUsersByNamePipe implements PipeTransform {
 

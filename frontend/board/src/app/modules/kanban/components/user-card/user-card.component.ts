@@ -3,9 +3,10 @@ import {KanbanUser} from "../../models/kanban-user";
 import {KanbanColumn} from "../../models/kanban-column";
 
 @Component({
-  selector: 'app-user-card',
-  templateUrl: './user-card.component.html',
-  styleUrls: ['./user-card.component.scss']
+    selector: 'app-user-card',
+    templateUrl: './user-card.component.html',
+    styleUrls: ['./user-card.component.scss'],
+    standalone: false
 })
 export class UserCardComponent {
   @Input() user!: KanbanUser

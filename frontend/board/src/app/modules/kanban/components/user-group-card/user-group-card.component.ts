@@ -3,9 +3,10 @@ import { Group } from '../../models/group';
 import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons'
 
 @Component({
-  selector: 'app-user-group-card',
-  templateUrl: './user-group-card.component.html',
-  styleUrls: ['./user-group-card.component.scss'],
+    selector: 'app-user-group-card',
+    templateUrl: './user-group-card.component.html',
+    styleUrls: ['./user-group-card.component.scss'],
+    standalone: false
 })
 export class UserGroupCardComponent {
   @Input() group!: Group

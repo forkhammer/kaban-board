@@ -2,7 +2,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { Project } from '../models/project';
 
 @Pipe({
-  name: 'filterProjectsByName'
+    name: 'filterProjectsByName',
+    standalone: false
 })
 export class FilterProjectsByNamePipe implements PipeTransform {
 

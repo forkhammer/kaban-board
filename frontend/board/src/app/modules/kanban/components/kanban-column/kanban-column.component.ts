@@ -9,9 +9,10 @@ import {Subject} from "rxjs";
 import {AccountService} from "../../../core/services/account.service";
 
 @Component({
-  selector: 'app-kanban-column',
-  templateUrl: './kanban-column.component.html',
-  styleUrls: ['./kanban-column.component.scss']
+    selector: 'app-kanban-column',
+    templateUrl: './kanban-column.component.html',
+    styleUrls: ['./kanban-column.component.scss'],
+    standalone: false
 })
 export class KanbanColumnComponent implements OnDestroy{
   @Input() column!: KanbanColumn

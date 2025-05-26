@@ -2,9 +2,10 @@ import {Component, Input} from '@angular/core';
 import {KanbanLabel} from "../../models/kanban-label";
 
 @Component({
-  selector: 'app-kanban-label',
-  templateUrl: './kanban-label.component.html',
-  styleUrls: ['./kanban-label.component.scss']
+    selector: 'app-kanban-label',
+    templateUrl: './kanban-label.component.html',
+    styleUrls: ['./kanban-label.component.scss'],
+    standalone: false
 })
 export class KanbanLabelComponent {
   @Input() label: KanbanLabel | null = null

@@ -8,16 +8,17 @@ import { BaseService } from "../../../core/services/base.service";
 import { BaseTitleModel, Pagination } from "../../../core/models/base";
 
 @Component({
-  selector: 'app-select-model-multiple',
-  templateUrl: './select-model-multiple.component.html',
-  styleUrls: [
-    '../select-multiple/select-multiple.component.scss',
-    './select-model-multiple.component.scss',
-  ],
-  providers: [
-    { provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => SelectModelMultipleComponent), multi: true },
-  ],
-  exportAs: 'selectModel'
+    selector: 'app-select-model-multiple',
+    templateUrl: './select-model-multiple.component.html',
+    styleUrls: [
+        '../select-multiple/select-multiple.component.scss',
+        './select-model-multiple.component.scss',
+    ],
+    providers: [
+        { provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => SelectModelMultipleComponent), multi: true },
+    ],
+    exportAs: 'selectModel',
+    standalone: false
 })
 export class SelectModelMultipleComponent implements ControlValueAccessor, OnInit, OnDestroy {
 

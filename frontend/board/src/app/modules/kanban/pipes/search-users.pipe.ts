@@ -2,7 +2,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 import {KanbanUser} from "../models/kanban-user";
 
 @Pipe({
-  name: 'searchUsers'
+    name: 'searchUsers',
+    standalone: false
 })
 export class SearchUsersPipe implements PipeTransform {
 

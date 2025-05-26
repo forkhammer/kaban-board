@@ -6,9 +6,10 @@ import {UserService} from "../../services/user.service";
 import { FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
-  selector: 'app-admin-user-list',
-  templateUrl: './admin-user-list.component.html',
-  styleUrls: ['./admin-user-list.component.scss']
+    selector: 'app-admin-user-list',
+    templateUrl: './admin-user-list.component.html',
+    styleUrls: ['./admin-user-list.component.scss'],
+    standalone: false
 })
 export class AdminUserListComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject()

@@ -1,3 +1,4 @@
+@use 'sass:color';
 @import "imports";
 
 @keyframes loader-animation {
@@ -49,7 +50,7 @@
 
 @each $color, $value in $theme-colors {
   .btn-#{$color} {
-    @include button-loading($value, lighten($value, 15%), darken($value, 15%));
+    @include button-loading($value, color.scale($value, $lightness: 15%), color.scale($value, $lightness: -15%));
   }
 }
 

@@ -27,18 +27,6 @@ func (r *ProjectRepository) Get(id domain.ProjectId) (*domain.Project, error) {
 	return model, nil
 }
 
-func (r *ProjectRepository) GetByUsername(username string) (*domain.Project, error) {
-	project := &models.Project{}
-	if err := r.conn.GetEngine().Where("username = ?", username).First(project).Error; err != nil {
-		return nil, err
-	}
-	model, err := r.toDomainProject(project)
-	if err != nil {
-		return nil, err
-	}
-	return model, nil
-}
-
 func (r *ProjectRepository) List(spec repo.QuerySpec) (*[]domain.Project, error) {
 	projects := make([]models.Project, 0)
 	query := r.conn.GetEngine().Model(&models.Project{})

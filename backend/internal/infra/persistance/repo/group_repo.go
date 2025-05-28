@@ -21,14 +21,6 @@ func (r *GroupRepository) Get(id domain.GroupId) (*domain.Group, error) {
 	return r.toDomainGroup(group), nil
 }
 
-func (r *GroupRepository) GetByUsername(username string) (*domain.Group, error) {
-	group := &models.Group{}
-	if err := r.conn.GetEngine().Where("username = ?", username).First(group).Error; err != nil {
-		return nil, err
-	}
-	return r.toDomainGroup(group), nil
-}
-
 func (r *GroupRepository) List(spec repo.QuerySpec) (*[]domain.Group, error) {
 	groups := make([]models.Group, 0)
 	query := r.conn.GetEngine().Model(&models.Group{})

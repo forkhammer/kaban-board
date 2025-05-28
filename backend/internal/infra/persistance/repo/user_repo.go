@@ -22,14 +22,6 @@ func (r *UserRepository) Get(id domain.UserId) (*domain.User, error) {
 	return r.toDomainUser(user), nil
 }
 
-func (r *UserRepository) GetByUsername(username string) (*domain.User, error) {
-	user := &models.User{}
-	if err := r.getQuery().Where("username = ?", username).First(user).Error; err != nil {
-		return nil, err
-	}
-	return r.toDomainUser(user), nil
-}
-
 func (r *UserRepository) List(spec repo.QuerySpec) (*[]domain.User, error) {
 	users := make([]models.User, 0)
 	query := r.getQuery()

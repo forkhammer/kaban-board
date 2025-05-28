@@ -21,14 +21,6 @@ func (r *LabelRepository) Get(id domain.LabelId) (*domain.Label, error) {
 	return r.toDomainLabel(label), nil
 }
 
-func (r *LabelRepository) GetByUsername(username string) (*domain.Label, error) {
-	label := &models.Label{}
-	if err := r.conn.GetEngine().Where("username = ?", username).First(label).Error; err != nil {
-		return nil, err
-	}
-	return r.toDomainLabel(label), nil
-}
-
 func (r *LabelRepository) List(spec repo.QuerySpec) (*[]domain.Label, error) {
 	labels := make([]models.Label, 0)
 	query := r.conn.GetEngine().Model(&models.Label{})

@@ -21,14 +21,6 @@ func (r *ReleaseRepository) Get(id domain.ReleaseId) (*domain.Release, error) {
 	return r.toDomainRelease(release), nil
 }
 
-func (r *ReleaseRepository) GetByUsername(username string) (*domain.Release, error) {
-	release := &models.Release{}
-	if err := r.getQuery().Where("username = ?", username).First(release).Error; err != nil {
-		return nil, err
-	}
-	return r.toDomainRelease(release), nil
-}
-
 func (r *ReleaseRepository) List(spec repo.QuerySpec) (*[]domain.Release, error) {
 	releases := make([]models.Release, 0)
 	query := r.getQuery()

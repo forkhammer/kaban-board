@@ -22,14 +22,6 @@ func (r *IssueRepository) Get(id domain.IssueId) (*domain.Issue, error) {
 	return r.toDomainIssue(issue), nil
 }
 
-func (r *IssueRepository) GetByIssuename(issuename string) (*domain.Issue, error) {
-	issue := &models.Issue{}
-	if err := r.getQuery().Where("issuename = ?", issuename).First(issue).Error; err != nil {
-		return nil, err
-	}
-	return r.toDomainIssue(issue), nil
-}
-
 func (r *IssueRepository) List(spec repo.QuerySpec) (*[]domain.Issue, error) {
 	issues := make([]models.Issue, 0)
 	query := r.getQuery()

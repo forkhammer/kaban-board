@@ -12,24 +12,13 @@ import (
 )
 
 type ColumnRepository struct {
-	conn interfaces.ConnectionInterface `di.inject:"db"`
+	conn     interfaces.ConnectionInterface `di.inject:"db"`
+	teamRepo *TeamRepository                `di.inject:"TeamRepository"`
 }
 
 func (r *ColumnRepository) Get(id domain.ColumnId) (*domain.Column, error) {
 	сolumn := &models.Column{}
-	if err := r.conn.GetEngine().Where("id = ?", id).First(сolumn).Error; err != nil {
-		return nil, err
-	}
-	model, err := r.toDomainColumn(сolumn)
-	if err != nil {
-		return nil, err
-	}
-	return model, nil
-}
-
-func (r *ColumnRepository) GetByUsername(username string) (*domain.Column, error) {
-	сolumn := &models.Column{}
-	if err := r.conn.GetEngine().Where("username = ?", username).First(сolumn).Error; err != nil {
+	if err := r.getQuery().Where("id = ?", id).First(сolumn).Error; err != nil {
 		return nil, err
 	}
 	model, err := r.toDomainColumn(сolumn)
@@ -41,7 +30,7 @@ func (r *ColumnRepository) GetByUsername(username string) (*domain.Column, error
 
 func (r *ColumnRepository) List(spec repo.QuerySpec) (*[]domain.Column, error) {
 	сolumns := make([]models.Column, 0)
-	query := r.conn.GetEngine().Model(&models.Column{})
+	query := r.getQuery().Model(&models.Column{})
 
 	if spec != nil {
 		if result, err := spec.Apply(query); err != nil {
@@ -67,20 +56,37 @@ func (r *ColumnRepository) List(spec repo.QuerySpec) (*[]domain.Column, error) {
 	return &domainColumns, nil
 }
 
-func (r *ColumnRepository) Create(Column *domain.Column) error {
-	if model, err := r.toColumn(Column); err != nil {
-		return err
-	} else {
-		return r.conn.GetEngine().Create(model).Error
+func (r *ColumnRepository) Create(column *domain.Column) (*domain.Column, error) {
+	model, err := r.toColumn(column)
+	if err != nil {
+		return nil, err
 	}
+
+	if err := r.conn.GetEngine().Create(model).Error; err != nil {
+		return nil, err
+	}
+
+	result, err := r.toDomainColumn(model)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
 }
 
-func (r *ColumnRepository) Update(Column *domain.Column) error {
-	if model, err := r.toColumn(Column); err != nil {
-		return err
-	} else {
-		return r.conn.GetEngine().Save(model).Error
+func (r *ColumnRepository) Update(column *domain.Column) (*domain.Column, error) {
+	model, err := r.toColumn(column)
+	if err != nil {
+		return nil, err
 	}
+	if err := r.conn.GetEngine().Save(model).Error; err != nil {
+		return nil, err
+	}
+
+	result, err := r.toDomainColumn(model)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
 }
 
 func (r *ColumnRepository) Delete(id domain.ColumnId) error {
@@ -88,26 +94,33 @@ func (r *ColumnRepository) Delete(id domain.ColumnId) error {
 }
 
 func (r *ColumnRepository) toDomainColumn(column *models.Column) (*domain.Column, error) {
-	teamId, err := utils.IntToUintPtr(column.TeamId)
+	var team *domain.Team
+	if column.Team != nil {
+		team = r.teamRepo.ToDomainTeam(column.Team)
+	}
+
+	result, err := domain.NewColumn(
+		domain.ColumnId(column.Id),
+		column.Name,
+		utils.Map(column.Labels, func(labelId string) domain.LabelId {
+			return domain.LabelId(labelId)
+		}),
+		team,
+		column.Order,
+	)
+
 	if err != nil {
 		return nil, err
 	}
 
-	return &domain.Column{
-		Id:     domain.ColumnId(column.Id),
-		Name:   column.Name,
-		TeamId: (*domain.TeamId)(teamId),
-		Labels: utils.Map(column.Labels, func(labelId string) domain.LabelId {
-			return domain.LabelId(labelId)
-		}),
-		Order: column.Order,
-	}, nil
+	return result, nil
 }
 
 func (r *ColumnRepository) toColumn(column *domain.Column) (*models.Column, error) {
-	teamId, err := utils.UintToIntPtr((*uint)(column.TeamId))
-	if err != nil {
-		return nil, nil
+	var teamId *uint
+	if column.Team != nil {
+		val := uint(column.Team.Id)
+		teamId = &val
 	}
 
 	return &models.Column{
@@ -119,4 +132,8 @@ func (r *ColumnRepository) toColumn(column *domain.Column) (*models.Column, erro
 		})),
 		Order: column.Order,
 	}, nil
+}
+
+func (r *ColumnRepository) getQuery() *gorm.DB {
+	return r.conn.GetEngine().Model(&models.Column{}).Preload("Team")
 }

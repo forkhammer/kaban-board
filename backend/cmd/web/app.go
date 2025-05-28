@@ -3,6 +3,7 @@ package web
 import (
 	"main/config"
 	"main/internal/app/account_usecases"
+	"main/internal/app/column_usecases"
 	"main/internal/infra/db/implementation"
 	"main/internal/infra/db/interfaces"
 	"main/internal/infra/persistance/models"
@@ -70,10 +71,14 @@ func (a *Application) registerDeps() {
 	di.RegisterBean("LoginUseCase", reflect.TypeOf((*account_usecases.LoginUseCase)(nil)))
 	di.RegisterBean("RegisterUseCase", reflect.TypeOf((*account_usecases.RegisterUseCase)(nil)))
 
+	di.RegisterBean("ListColumnsUseCase", reflect.TypeOf((*column_usecases.ListColumnsUseCase)(nil)))
+
 	di.RegisterBean("AccountController", reflect.TypeOf((*controllers.AccountController)(nil)))
 	di.RegisterBean("BoardController", reflect.TypeOf((*controllers.BoardController)(nil)))
 	di.RegisterBean("ReportsController", reflect.TypeOf((*controllers.ReportsController)(nil)))
 	di.RegisterBean("HealthController", reflect.TypeOf((*controllers.HealthController)(nil)))
+
+	di.RegisterBean("ColumnController", reflect.TypeOf((*controllers.ColumnController)(nil)))
 }
 
 func (app *Application) Run() {
@@ -92,6 +97,7 @@ func (app *Application) initRouter() error {
 		di.GetInstance("BoardController").(api.Controller),
 		di.GetInstance("ReportsController").(api.Controller),
 		di.GetInstance("HealthController").(api.Controller),
+		di.GetInstance("ColumnController").(api.Controller),
 	}
 	for _, controller := range controllers {
 		err := controller.RegisterRoutes(app.router)

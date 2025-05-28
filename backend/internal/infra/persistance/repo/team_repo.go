@@ -11,7 +11,8 @@ import (
 )
 
 type TeamRepository struct {
-	conn interfaces.ConnectionInterface `di.inject:"db"`
+	conn      interfaces.ConnectionInterface `di.inject:"db"`
+	groupRepo *GroupRepository               `di.inject:"GroupRepository"`
 }
 
 func (r *TeamRepository) Get(id domain.TeamId) (*domain.Team, error) {
@@ -19,7 +20,7 @@ func (r *TeamRepository) Get(id domain.TeamId) (*domain.Team, error) {
 	if err := r.getQuery().Where("id = ?", id).First(team).Error; err != nil {
 		return nil, err
 	}
-	return r.toDomainTeam(team), nil
+	return r.ToDomainTeam(team), nil
 }
 
 func (r *TeamRepository) GetByUsername(username string) (*domain.Team, error) {
@@ -27,7 +28,7 @@ func (r *TeamRepository) GetByUsername(username string) (*domain.Team, error) {
 	if err := r.getQuery().Where("username = ?", username).First(team).Error; err != nil {
 		return nil, err
 	}
-	return r.toDomainTeam(team), nil
+	return r.ToDomainTeam(team), nil
 }
 
 func (r *TeamRepository) List(spec repo.QuerySpec) (*[]domain.Team, error) {
@@ -48,19 +49,19 @@ func (r *TeamRepository) List(spec repo.QuerySpec) (*[]domain.Team, error) {
 
 	domainTeams := make([]domain.Team, len(teams))
 	for i, team := range teams {
-		domainTeams[i] = *r.toDomainTeam(&team)
+		domainTeams[i] = *r.ToDomainTeam(&team)
 	}
 
 	return &domainTeams, nil
 }
 
 func (r *TeamRepository) Create(team *domain.Team) error {
-	model := r.toTeam(team)
+	model := r.ToTeam(team)
 	return r.conn.GetEngine().Create(model).Error
 }
 
 func (r *TeamRepository) Update(team *domain.Team) error {
-	model := r.toTeam(team)
+	model := r.ToTeam(team)
 	return r.conn.GetEngine().Save(model).Error
 }
 
@@ -68,22 +69,22 @@ func (r *TeamRepository) Delete(id domain.TeamId) error {
 	return r.conn.GetEngine().Where("id = ?", id).Delete(&models.Team{}).Error
 }
 
-func (r *TeamRepository) toDomainTeam(team *models.Team) *domain.Team {
+func (r *TeamRepository) ToDomainTeam(team *models.Team) *domain.Team {
 	return &domain.Team{
 		Id:    domain.TeamId(team.Id),
 		Title: team.Title,
-		Groups: utils.Map(team.Groups, func(g *models.Group) domain.GroupId {
-			return domain.GroupId(g.Id)
+		Groups: utils.Map(team.Groups, func(group *models.Group) domain.Group {
+			return *r.groupRepo.toDomainGroup(group)
 		}),
 	}
 }
 
-func (r *TeamRepository) toTeam(team *domain.Team) *models.Team {
+func (r *TeamRepository) ToTeam(team *domain.Team) *models.Team {
 	return &models.Team{
 		Id:    uint(team.Id),
 		Title: team.Title,
-		Groups: utils.Map(team.Groups, func(groupId domain.GroupId) *models.Group {
-			return &models.Group{Id: uint(groupId)}
+		Groups: utils.Map(team.Groups, func(group domain.Group) *models.Group {
+			return r.groupRepo.toGroup(&group)
 		}),
 	}
 }

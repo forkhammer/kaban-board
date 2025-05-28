@@ -59,14 +59,22 @@ func (r *AccountRepository) List(spec repo.QuerySpec) (*[]domain.Account, error)
 	return &domainAccounts, nil
 }
 
-func (r *AccountRepository) Create(account *domain.Account) error {
+func (r *AccountRepository) Create(account *domain.Account) (*domain.Account, error) {
 	model := r.toAccount(account)
-	return r.conn.GetEngine().Create(model).Error
+	err := r.conn.GetEngine().Create(model).Error
+	if err != nil {
+		return nil, err
+	}
+	return r.toDomainAccount(model), nil
 }
 
-func (r *AccountRepository) Update(account *domain.Account) error {
+func (r *AccountRepository) Update(account *domain.Account) (*domain.Account, error) {
 	model := r.toAccount(account)
-	return r.conn.GetEngine().Save(model).Error
+	err := r.conn.GetEngine().Save(model).Error
+	if err != nil {
+		return nil, err
+	}
+	return r.toDomainAccount(model), nil
 }
 
 func (r *AccountRepository) Delete(id domain.AccountId) error {

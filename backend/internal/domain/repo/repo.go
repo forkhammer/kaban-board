@@ -9,11 +9,11 @@ type ListRepo[T any] interface {
 }
 
 type CreateRepo[T any] interface {
-	Create(item *T) error
+	Create(item *T) (*T, error)
 }
 
 type UpdateRepo[T any] interface {
-	Update(item *T) error
+	Update(item *T) (*T, error)
 }
 
 type DeleteRepo[TID comparable] interface {

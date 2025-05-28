@@ -72,6 +72,7 @@ func (a *Application) registerDeps() {
 	di.RegisterBean("RegisterUseCase", reflect.TypeOf((*account_usecases.RegisterUseCase)(nil)))
 
 	di.RegisterBean("ListColumnsUseCase", reflect.TypeOf((*column_usecases.ListColumnsUseCase)(nil)))
+	di.RegisterBean("RetrieveColumnUseCase", reflect.TypeOf((*column_usecases.RetrieveColumnUseCase)(nil)))
 
 	di.RegisterBean("AccountController", reflect.TypeOf((*controllers.AccountController)(nil)))
 	di.RegisterBean("BoardController", reflect.TypeOf((*controllers.BoardController)(nil)))

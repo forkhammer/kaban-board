@@ -4,17 +4,19 @@ import (
 	"main/internal/app/column_usecases"
 	"main/internal/interfaces/api/dto"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
 type ColumnController struct {
-	listUC *column_usecases.ListColumnsUseCase `di.inject:"ListColumnsUseCase"`
+	listUC     *column_usecases.ListColumnsUseCase    `di.inject:"ListColumnsUseCase"`
+	retrieveUC *column_usecases.RetrieveColumnUseCase `di.inject:"RetrieveColumnUseCase"`
 }
 
 func (c *ColumnController) RegisterRoutes(router *gin.Engine) error {
 	router.GET("/columns", c.getColumns)
-	// router.GET("/columns/:id", c.getColumnById)
+	router.GET("/columns/:id", c.getColumnById)
 
 	// columnRoutes := router.Group("/")
 	// columnRoutes.Use(middleware.AuthRequiredMiddleware())
@@ -34,4 +36,22 @@ func (c *ColumnController) getColumns(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, dto.SerializeColumns(columns))
+}
+
+func (c *ColumnController) getColumnById(ctx *gin.Context) {
+	id, err := strconv.ParseUint(ctx.Param("id"), 10, 32)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	column, err := c.retrieveUC.Execute(uint(id))
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, dto.SerializeColumn(column))
 }

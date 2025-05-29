@@ -5,11 +5,13 @@ import (
 	"main/internal/app/account_usecases"
 	"main/internal/app/column_usecases"
 	app_services "main/internal/app/services"
+	"main/internal/app/team_usecases"
 	"main/internal/infra/db/implementation"
 	"main/internal/infra/db/interfaces"
 	"main/internal/infra/persistance/models"
 	"main/internal/infra/persistance/repo"
 	column_spec "main/internal/infra/persistance/spec/column"
+	group_spec "main/internal/infra/persistance/spec/group"
 	label_spec "main/internal/infra/persistance/spec/label"
 	"main/internal/infra/services"
 	"main/internal/interfaces/api"
@@ -69,6 +71,7 @@ func (a *Application) registerDeps() {
 
 	di.RegisterBean("LabelQuery", reflect.TypeOf((*label_spec.LabelQueryImpl)(nil)))
 	di.RegisterBean("ColumnQuery", reflect.TypeOf((*column_spec.ColumnQueryImpl)(nil)))
+	di.RegisterBean("GroupQuery", reflect.TypeOf((*group_spec.GroupQueryImpl)(nil)))
 
 	di.RegisterBean("JWTService", reflect.TypeOf((*services.JWTService)(nil)))
 	di.RegisterBean("PasswordService", reflect.TypeOf((*services.PasswordService)(nil)))
@@ -84,12 +87,14 @@ func (a *Application) registerDeps() {
 	di.RegisterBean("CreateColumnUseCase", reflect.TypeOf((*column_usecases.CreateColumnUseCase)(nil)))
 	di.RegisterBean("DeleteColumUseCase", reflect.TypeOf((*column_usecases.DeleteColumUseCase)(nil)))
 	di.RegisterBean("OrderingColumnUseCase", reflect.TypeOf((*column_usecases.OrderingColumnUseCase)(nil)))
+	di.RegisterBean("TeamUseCases", reflect.TypeOf((*team_usecases.TeamUseCases)(nil)))
 
 	di.RegisterBean("AccountController", reflect.TypeOf((*controllers.AccountController)(nil)))
 	di.RegisterBean("BoardController", reflect.TypeOf((*controllers.BoardController)(nil)))
 	di.RegisterBean("ReportsController", reflect.TypeOf((*controllers.ReportsController)(nil)))
 	di.RegisterBean("HealthController", reflect.TypeOf((*controllers.HealthController)(nil)))
 	di.RegisterBean("ColumnController", reflect.TypeOf((*controllers.ColumnController)(nil)))
+	di.RegisterBean("TeamController", reflect.TypeOf((*controllers.TeamController)(nil)))
 
 }
 
@@ -113,6 +118,7 @@ func (app *Application) initRouter() error {
 		di.GetInstance("ReportsController").(api.Controller),
 		di.GetInstance("HealthController").(api.Controller),
 		di.GetInstance("ColumnController").(api.Controller),
+		di.GetInstance("TeamController").(api.Controller),
 	}
 	for _, controller := range controllers {
 		err := controller.RegisterRoutes(app.router)

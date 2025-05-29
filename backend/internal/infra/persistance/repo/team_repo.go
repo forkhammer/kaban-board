@@ -23,14 +23,6 @@ func (r *TeamRepository) Get(id domain.TeamId) (*domain.Team, error) {
 	return r.ToDomainTeam(team)
 }
 
-func (r *TeamRepository) GetByUsername(username string) (*domain.Team, error) {
-	team := &models.Team{}
-	if err := r.getQuery().Where("username = ?", username).First(team).Error; err != nil {
-		return nil, err
-	}
-	return r.ToDomainTeam(team)
-}
-
 func (r *TeamRepository) List(spec repo.QuerySpec) (*[]domain.Team, error) {
 	teams := make([]models.Team, 0)
 	query := r.getQuery()
@@ -65,7 +57,12 @@ func (r *TeamRepository) Create(team *domain.Team) (*domain.Team, error) {
 	if err != nil {
 		return nil, err
 	}
-	return r.ToDomainTeam(model)
+
+	err = r.conn.GetEngine().Model(model).Association("Groups").Replace(model.Groups)
+	if err != nil {
+		return nil, err
+	}
+	return r.Get(domain.TeamId(model.Id))
 }
 
 func (r *TeamRepository) Update(team *domain.Team) (*domain.Team, error) {
@@ -74,7 +71,13 @@ func (r *TeamRepository) Update(team *domain.Team) (*domain.Team, error) {
 	if err != nil {
 		return nil, err
 	}
-	return r.ToDomainTeam(model)
+
+	err = r.conn.GetEngine().Model(model).Association("Groups").Replace(model.Groups)
+	if err != nil {
+		return nil, err
+	}
+
+	return r.Get(domain.TeamId(model.Id))
 }
 
 func (r *TeamRepository) Delete(id domain.TeamId) error {

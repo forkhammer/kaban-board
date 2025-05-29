@@ -1,6 +1,7 @@
 package web
 
 import (
+	"context"
 	"main/config"
 	"main/internal/app/account_usecases"
 	"main/internal/app/column_usecases"
@@ -10,9 +11,11 @@ import (
 	app_services "main/internal/app/services"
 	"main/internal/app/settings_usecases"
 	"main/internal/app/team_usecases"
+	"main/internal/app/usecases"
 	"main/internal/app/user_usecases"
 	"main/internal/infra/db/implementation"
 	"main/internal/infra/db/interfaces"
+	"main/internal/infra/gitlab"
 	"main/internal/infra/persistance/models"
 	"main/internal/infra/persistance/repo"
 	column_spec "main/internal/infra/persistance/spec/column"
@@ -63,6 +66,10 @@ func NewApplication() *Application {
 func (a *Application) registerDeps() {
 	di.RegisterBeanInstance("config", config.Settings)
 	di.RegisterBeanInstance("db", a.connection)
+	di.RegisterBeanFactory("gitlab", di.Singleton, func(ctx context.Context) (interface{}, error) {
+		return gitlab.NewGitlabClient(config.Settings.GitlabUrl, config.Settings.GitlabToken), nil
+	})
+
 	di.RegisterBean("AccountRepository", reflect.TypeOf((*repo.AccountRepository)(nil)))
 	di.RegisterBean("ColumnRepository", reflect.TypeOf((*repo.ColumnRepository)(nil)))
 	di.RegisterBean("GroupRepository", reflect.TypeOf((*repo.GroupRepository)(nil)))
@@ -99,6 +106,7 @@ func (a *Application) registerDeps() {
 	di.RegisterBean("GroupUseCases", reflect.TypeOf((*group_usecases.GroupUseCases)(nil)))
 	di.RegisterBean("ProjectUseCases", reflect.TypeOf((*project_usecases.ProjectUseCases)(nil)))
 	di.RegisterBean("SettingsUseCases", reflect.TypeOf((*settings_usecases.SettingsUseCases)(nil)))
+	di.RegisterBean("SyncUseCases", reflect.TypeOf((*usecases.SyncUseCases)(nil)))
 
 	di.RegisterBean("AccountController", reflect.TypeOf((*controllers.AccountController)(nil)))
 	di.RegisterBean("BoardController", reflect.TypeOf((*controllers.BoardController)(nil)))

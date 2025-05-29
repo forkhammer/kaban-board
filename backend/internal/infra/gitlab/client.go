@@ -6,13 +6,18 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"main/config"
 	"net/http"
 	"net/url"
+	"strconv"
+	"strings"
 	"time"
+
+	"main/internal/app/interfaces"
+	domain "main/internal/domain/models"
 )
 
 type GitlabClient struct {
+	interfaces.TaskTracker
 	apiUrl string
 	token  string
 }
@@ -22,6 +27,51 @@ func NewGitlabClient(apiUrl string, token string) *GitlabClient {
 		apiUrl: apiUrl,
 		token:  token,
 	}
+}
+
+func (client *GitlabClient) GetProjects() ([]domain.Project, error) {
+	return nil, nil
+}
+
+func (client *GitlabClient) GetUsers() ([]domain.User, error) {
+	pageSize := 100
+	startCursor := ""
+	users := make([]GitlabUser, 0)
+
+	for {
+		response, err := client.GetUsersResponse(pageSize, startCursor)
+
+		if err != nil {
+			log.Println(err.Error())
+			return []domain.User{}, err
+		}
+
+		users = append(users, response.Data.Users.Nodes...)
+
+		if !response.Data.Users.PageInfo.HasNextPage {
+			break
+		}
+
+		startCursor = response.Data.Users.PageInfo.EndCursor
+	}
+
+	domainUsers := make([]domain.User, 0)
+
+	for _, user := range users {
+		domainUser, err := client.toDomainUser(&user)
+
+		if err != nil {
+			return []domain.User{}, err
+		}
+
+		domainUsers = append(domainUsers, *domainUser)
+	}
+
+	return domainUsers, nil
+}
+
+func (client *GitlabClient) GetIssues() ([]domain.Issue, error) {
+	return nil, nil
 }
 
 func (client *GitlabClient) GetUsersResponse(pageSize int, startCursor string) (*GitlabUsersResponse, error) {
@@ -237,4 +287,28 @@ func (client *GitlabClient) graphQLRequest(query string) ([]byte, error) {
 	return body, nil
 }
 
-var GitlabClientInstance = NewGitlabClient(config.Settings.GitlabUrl, config.Settings.GitlabToken)
+func (client *GitlabClient) toDomainUser(user *GitlabUser) (*domain.User, error) {
+	userId, err := client.cleanUserId(user.Id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &domain.User{
+		Id:        domain.UserId(userId),
+		Name:      user.Name,
+		Username:  user.Username,
+		AvatarUrl: user.AvatarUrl,
+		IsVisible: true,
+	}, nil
+}
+
+func (client *GitlabClient) cleanUserId(gid string) (uint, error) {
+	id, err := strconv.ParseUint(strings.ReplaceAll(gid, "gid://gitlab/User/", ""), 10, 32)
+
+	if err != nil {
+		return 0, err
+	}
+
+	return uint(id), nil
+}

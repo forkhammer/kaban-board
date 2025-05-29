@@ -21,12 +21,12 @@ type Issue struct {
 	Iid         IssueIid
 	Title       string
 	IssueType   IssueType
-	Assignees   []UserId
+	Assignees   []User
 	WebUrl      string
-	Labels      []LabelId
-	ProjectId   ProjectId
-	ReleaseId   *ReleaseId
-	TaskType    *LabelId
+	Labels      []Label
+	Project     Project
+	Release     *Release
+	TaskType    *Label
 	EstimateDev *uint
 	EstimateQA  *uint
 }

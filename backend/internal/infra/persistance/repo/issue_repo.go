@@ -11,7 +11,11 @@ import (
 )
 
 type IssueRepository struct {
-	conn interfaces.ConnectionInterface `di.inject:"db"`
+	conn        interfaces.ConnectionInterface `di.inject:"db"`
+	userRepo    *UserRepository                `di.inject:"UserRepository"`
+	projectRepo *ProjectRepository             `di.inject:"ProjectRepository"`
+	releaseRepo *ReleaseRepository             `di.inject:"ReleaseRepository"`
+	labelRepo   *LabelRepository               `di.inject:"LabelRepository"`
 }
 
 func (r *IssueRepository) Get(id domain.IssueId) (*domain.Issue, error) {
@@ -19,7 +23,7 @@ func (r *IssueRepository) Get(id domain.IssueId) (*domain.Issue, error) {
 	if err := r.getQuery().Where("id = ?", id).First(issue).Error; err != nil {
 		return nil, err
 	}
-	return r.toDomainIssue(issue), nil
+	return r.toDomainIssue(issue)
 }
 
 func (r *IssueRepository) List(spec repo.QuerySpec) (*[]domain.Issue, error) {
@@ -40,7 +44,11 @@ func (r *IssueRepository) List(spec repo.QuerySpec) (*[]domain.Issue, error) {
 
 	domainIssues := make([]domain.Issue, len(issues))
 	for i, issue := range issues {
-		domainIssues[i] = *r.toDomainIssue(&issue)
+		model, err := r.toDomainIssue(&issue)
+		if err != nil {
+			return nil, err
+		}
+		domainIssues[i] = *model
 	}
 
 	return &domainIssues, nil
@@ -52,6 +60,15 @@ func (r *IssueRepository) Create(issue *domain.Issue) (*domain.Issue, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	if err := r.conn.GetEngine().Model(model).Association("Assignees").Replace(model.Assignees); err != nil {
+		return nil, err
+	}
+
+	if err := r.conn.GetEngine().Model(model).Association("Labels").Replace(model.Labels); err != nil {
+		return nil, err
+	}
+
 	return r.Get(domain.IssueId(model.Id))
 }
 
@@ -61,6 +78,15 @@ func (r *IssueRepository) Update(issue *domain.Issue) (*domain.Issue, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	if err := r.conn.GetEngine().Model(model).Association("Assignees").Replace(model.Assignees); err != nil {
+		return nil, err
+	}
+
+	if err := r.conn.GetEngine().Model(model).Association("Labels").Replace(model.Labels); err != nil {
+		return nil, err
+	}
+
 	return r.Get(domain.IssueId(model.Id))
 }
 
@@ -68,43 +94,71 @@ func (r *IssueRepository) Delete(id domain.IssueId) error {
 	return r.conn.GetEngine().Where("id = ?", id).Delete(&models.Issue{}).Error
 }
 
-func (r *IssueRepository) toDomainIssue(issue *models.Issue) *domain.Issue {
+func (r *IssueRepository) toDomainIssue(issue *models.Issue) (*domain.Issue, error) {
+	project, err := r.projectRepo.toDomainProject(&issue.Project)
+	if err != nil {
+		return nil, err
+	}
+
 	return &domain.Issue{
 		Id:        domain.IssueId(issue.Id),
 		Iid:       domain.IssueIid(issue.Iid),
 		Title:     issue.Title,
 		IssueType: domain.IssueType(issue.IssueType),
-		Assignees: utils.Map(issue.Assignees, func(a models.User) domain.UserId {
-			return domain.UserId(a.Id)
+		Assignees: utils.Map(issue.Assignees, func(a models.User) domain.User {
+			return *r.userRepo.toDomainUser(&a)
 		}),
 		WebUrl: issue.WebUrl,
-		Labels: utils.Map(issue.Labels, func(l models.Label) domain.LabelId {
-			return domain.LabelId(l.Id)
+		Labels: utils.Map(issue.Labels, func(l models.Label) domain.Label {
+			return *r.labelRepo.toDomainLabel(&l)
 		}),
-		ProjectId:   domain.ProjectId(issue.ProjectId),
-		ReleaseId:   (*domain.ReleaseId)(issue.ReleaseId),
-		TaskType:    (*domain.LabelId)(issue.TaskTypeId),
+		Project: *project,
+		Release: func() *domain.Release {
+			if issue.Release != (*models.Release)(nil) {
+				return r.releaseRepo.toDomainRelease(issue.Release)
+			}
+			return nil
+		}(),
+		TaskType: func() *domain.Label {
+			if issue.TaskType != (*models.Label)(nil) {
+				return r.labelRepo.toDomainLabel(issue.TaskType)
+			}
+			return nil
+		}(),
 		EstimateDev: issue.EstimateDev,
 		EstimateQA:  issue.EstimateQA,
-	}
+	}, nil
 }
 
 func (r *IssueRepository) toIssue(issue *domain.Issue) *models.Issue {
+
 	return &models.Issue{
 		Id:        string(issue.Id),
 		Iid:       string(issue.Iid),
 		Title:     issue.Title,
 		IssueType: string(issue.IssueType),
-		Assignees: utils.Map(issue.Assignees, func(a domain.UserId) models.User {
-			return models.User{Id: uint(a)}
+		Assignees: utils.Map(issue.Assignees, func(a domain.User) models.User {
+			return *r.userRepo.toUser(&a)
 		}),
 		WebUrl: issue.WebUrl,
-		Labels: utils.Map(issue.Labels, func(l domain.LabelId) models.Label {
-			return models.Label{Id: string(l)}
+		Labels: utils.Map(issue.Labels, func(l domain.Label) models.Label {
+			return *r.labelRepo.toLabel(&l)
 		}),
-		ProjectId:   uint(issue.ProjectId),
-		ReleaseId:   (*string)(issue.ReleaseId),
-		TaskTypeId:  (*string)(issue.TaskType),
+		ProjectId: uint(issue.Project.Id),
+		ReleaseId: func() *string {
+			if issue.Release != (*domain.Release)(nil) {
+				val := string(issue.Release.Id)
+				return &val
+			}
+			return nil
+		}(),
+		TaskTypeId: func() *string {
+			if issue.TaskType != (*domain.Label)(nil) {
+				val := string(issue.TaskType.Id)
+				return &val
+			}
+			return nil
+		}(),
 		EstimateDev: issue.EstimateDev,
 		EstimateQA:  issue.EstimateQA,
 	}

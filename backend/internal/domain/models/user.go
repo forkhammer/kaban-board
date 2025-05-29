@@ -8,5 +8,9 @@ type User struct {
 	Name      string
 	Username  string
 	AvatarUrl string
-	Groups    []GroupId
+	Groups    []Group
+}
+
+func (u *User) Validate() error {
+	return nil
 }

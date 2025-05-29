@@ -25,7 +25,7 @@ func SerializeTeam(team *domain.Team) *TeamDto {
 	return &TeamDto{
 		Id:     int(team.Id),
 		Title:  team.Title,
-		Groups: *SerializeGroups(&team.Groups),
+		Groups: SerializeGroups(team.Groups),
 	}
 }
 

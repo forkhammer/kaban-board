@@ -10,11 +10,11 @@ type GroupDto struct {
 	Name string `json:"title"`
 }
 
-func SerializeGroups(groups *[]domain.Group) *[]GroupDto {
-	result := utils.Map(*groups, func(group domain.Group) GroupDto {
+func SerializeGroups(groups []domain.Group) []GroupDto {
+	result := utils.Map(groups, func(group domain.Group) GroupDto {
 		return *SerializeGroup(&group)
 	})
-	return &result
+	return result
 }
 
 func SerializeGroup(group *domain.Group) *GroupDto {

@@ -11,7 +11,6 @@ import (
 
 type KanbanController struct {
 	userService           *UserService           `di.inject:"userService"`
-	labelService          *LabelService          `di.inject:"labelService"`
 	projectService        *ProjectService        `di.inject:"projectService"`
 	groupService          *GroupService          `di.inject:"groupService"`
 	clientSettingsService *ClientSettingsService `di.inject:"clientSettingsService"`
@@ -26,12 +25,6 @@ func (c *KanbanController) RegisterRoutes(engine *gin.Engine) {
 
 	columnRoutes := engine.Group("/")
 	columnRoutes.Use(account.AuthRequiredMiddleware())
-
-	userRoutes := engine.Group("/")
-	userRoutes.Use(account.AuthRequiredMiddleware())
-	userRoutes.GET("/users", c.getUsers)
-	userRoutes.POST("/users/:id/visibility", c.setUserVisibility)
-	userRoutes.POST("/users/:id/groups", c.setUserGroups)
 
 	projectRoutes := engine.Group("/")
 	projectRoutes.Use(account.AuthRequiredMiddleware())
@@ -54,67 +47,6 @@ func (c *KanbanController) getKanbanUsers(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"users": users, "updateTime": updateTime})
-}
-
-func (c *KanbanController) getUsers(ctx *gin.Context) {
-	users, err := c.userService.GetUsers()
-
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, err.Error())
-		return
-	}
-
-	ctx.JSON(http.StatusOK, users)
-}
-
-func (c *KanbanController) setUserVisibility(ctx *gin.Context) {
-	var request SetUserVisibilityRequest
-
-	id, err := strconv.ParseInt(ctx.Param("id"), 10, 32)
-
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	if err = ctx.ShouldBindJSON(&request); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	user, err := c.userService.SetUserVisibility(int(id), request.Visible)
-
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, user)
-}
-
-func (c *KanbanController) setUserGroups(ctx *gin.Context) {
-	var request SetUserGroupsRequest
-
-	id, err := strconv.ParseInt(ctx.Param("id"), 10, 32)
-
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	if err = ctx.ShouldBindJSON(&request); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	user, err := c.userService.SetUserGroups(int(id), request.Groups)
-
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, user)
 }
 
 func (c *KanbanController) getProjects(ctx *gin.Context) {

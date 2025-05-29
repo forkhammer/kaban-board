@@ -7,6 +7,7 @@ import (
 	"main/internal/app/label_usecases"
 	app_services "main/internal/app/services"
 	"main/internal/app/team_usecases"
+	"main/internal/app/user_usecases"
 	"main/internal/infra/db/implementation"
 	"main/internal/infra/db/interfaces"
 	"main/internal/infra/persistance/models"
@@ -90,6 +91,7 @@ func (a *Application) registerDeps() {
 	di.RegisterBean("OrderingColumnUseCase", reflect.TypeOf((*column_usecases.OrderingColumnUseCase)(nil)))
 	di.RegisterBean("TeamUseCases", reflect.TypeOf((*team_usecases.TeamUseCases)(nil)))
 	di.RegisterBean("LabelUseCases", reflect.TypeOf((*label_usecases.LabelUseCases)(nil)))
+	di.RegisterBean("UserUseCases", reflect.TypeOf((*user_usecases.UserUseCases)(nil)))
 
 	di.RegisterBean("AccountController", reflect.TypeOf((*controllers.AccountController)(nil)))
 	di.RegisterBean("BoardController", reflect.TypeOf((*controllers.BoardController)(nil)))
@@ -98,6 +100,7 @@ func (a *Application) registerDeps() {
 	di.RegisterBean("ColumnController", reflect.TypeOf((*controllers.ColumnController)(nil)))
 	di.RegisterBean("TeamController", reflect.TypeOf((*controllers.TeamController)(nil)))
 	di.RegisterBean("LabelController", reflect.TypeOf((*controllers.LabelController)(nil)))
+	di.RegisterBean("UserController", reflect.TypeOf((*controllers.UserController)(nil)))
 
 }
 
@@ -123,6 +126,7 @@ func (app *Application) initRouter() error {
 		di.GetInstance("ColumnController").(api.Controller),
 		di.GetInstance("TeamController").(api.Controller),
 		di.GetInstance("LabelController").(api.Controller),
+		di.GetInstance("UserController").(api.Controller),
 	}
 	for _, controller := range controllers {
 		err := controller.RegisterRoutes(app.router)

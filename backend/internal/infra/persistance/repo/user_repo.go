@@ -11,7 +11,8 @@ import (
 )
 
 type UserRepository struct {
-	conn interfaces.ConnectionInterface `di.inject:"db"`
+	conn      interfaces.ConnectionInterface `di.inject:"db"`
+	groupRepo *GroupRepository               `di.inject:"GroupRepository"`
 }
 
 func (r *UserRepository) Get(id domain.UserId) (*domain.User, error) {
@@ -52,6 +53,12 @@ func (r *UserRepository) Create(user *domain.User) (*domain.User, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	err = r.conn.GetEngine().Model(model).Association("Groups").Replace(model.Groups)
+	if err != nil {
+		return nil, err
+	}
+
 	return r.Get(domain.UserId(model.Id))
 }
 
@@ -61,6 +68,12 @@ func (r *UserRepository) Update(user *domain.User) (*domain.User, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	err = r.conn.GetEngine().Model(model).Association("Groups").Replace(model.Groups)
+	if err != nil {
+		return nil, err
+	}
+
 	return r.Get(domain.UserId(model.Id))
 }
 
@@ -75,8 +88,8 @@ func (r *UserRepository) toDomainUser(user *models.User) *domain.User {
 		Name:      user.Name,
 		Username:  user.Username,
 		AvatarUrl: user.AvatarUrl,
-		Groups: utils.Map(user.Groups, func(g *models.Group) domain.GroupId {
-			return domain.GroupId(g.Id)
+		Groups: utils.Map(user.Groups, func(group *models.Group) domain.Group {
+			return *r.groupRepo.toDomainGroup(group)
 		}),
 	}
 }
@@ -88,8 +101,8 @@ func (r *UserRepository) toUser(user *domain.User) *models.User {
 		Name:      user.Name,
 		Username:  user.Username,
 		AvatarUrl: user.AvatarUrl,
-		Groups: utils.Map(user.Groups, func(groupId domain.GroupId) *models.Group {
-			return &models.Group{Id: uint(groupId)}
+		Groups: utils.Map(user.Groups, func(group domain.Group) *models.Group {
+			return r.groupRepo.toGroup(&group)
 		}),
 	}
 }

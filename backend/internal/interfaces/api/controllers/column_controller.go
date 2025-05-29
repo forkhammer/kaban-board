@@ -24,7 +24,7 @@ func (c *ColumnController) RegisterRoutes(router *gin.Engine) error {
 	protectedRoutes := router.Group("/")
 	protectedRoutes.Use(middleware.AuthRequiredMiddleware())
 	protectedRoutes.POST("/columns", c.addColumn)
-	// protectedRoutes.PUT("/columns/:id", c.updateColumnById)
+	protectedRoutes.PUT("/columns/:id", c.updateColumn)
 	// protectedRoutes.DELETE("/columns/:id", c.deleteColumn)
 	// protectedRoutes.POST("/columns/save_ordering", c.saveColumnOrdering)
 	return nil

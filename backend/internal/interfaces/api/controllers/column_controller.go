@@ -15,6 +15,7 @@ type ColumnController struct {
 	retrieveUC *column_usecases.RetrieveColumnUseCase `di.inject:"RetrieveColumnUseCase"`
 	updateUC   *column_usecases.UpdateColumnUseCase   `di.inject:"UpdateColumnUseCase"`
 	createUC   *column_usecases.CreateColumnUseCase   `di.inject:"CreateColumnUseCase"`
+	deleteUC   *column_usecases.DeleteColumUseCase    `di.inject:"DeleteColumUseCase"`
 }
 
 func (c *ColumnController) RegisterRoutes(router *gin.Engine) error {
@@ -25,7 +26,7 @@ func (c *ColumnController) RegisterRoutes(router *gin.Engine) error {
 	protectedRoutes.Use(middleware.AuthRequiredMiddleware())
 	protectedRoutes.POST("/columns", c.addColumn)
 	protectedRoutes.PUT("/columns/:id", c.updateColumn)
-	// protectedRoutes.DELETE("/columns/:id", c.deleteColumn)
+	protectedRoutes.DELETE("/columns/:id", c.deleteColumn)
 	// protectedRoutes.POST("/columns/save_ordering", c.saveColumnOrdering)
 	return nil
 }
@@ -104,4 +105,22 @@ func (c *ColumnController) updateColumn(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusCreated, dto.SerializeColumn(column))
+}
+
+func (c *ColumnController) deleteColumn(ctx *gin.Context) {
+	id, err := strconv.ParseUint(ctx.Param("id"), 10, 32)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	err = c.deleteUC.Execute(uint(id))
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusNoContent, gin.H{})
 }

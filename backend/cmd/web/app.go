@@ -80,6 +80,7 @@ func (a *Application) registerDeps() {
 	di.RegisterBean("RetrieveColumnUseCase", reflect.TypeOf((*column_usecases.RetrieveColumnUseCase)(nil)))
 	di.RegisterBean("UpdateColumnUseCase", reflect.TypeOf((*column_usecases.UpdateColumnUseCase)(nil)))
 	di.RegisterBean("CreateColumnUseCase", reflect.TypeOf((*column_usecases.CreateColumnUseCase)(nil)))
+	di.RegisterBean("DeleteColumUseCase", reflect.TypeOf((*column_usecases.DeleteColumUseCase)(nil)))
 
 	di.RegisterBean("AccountController", reflect.TypeOf((*controllers.AccountController)(nil)))
 	di.RegisterBean("BoardController", reflect.TypeOf((*controllers.BoardController)(nil)))

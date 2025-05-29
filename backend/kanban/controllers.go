@@ -11,7 +11,6 @@ import (
 
 type KanbanController struct {
 	userService           *UserService           `di.inject:"userService"`
-	teamService           *TeamService           `di.inject:"teamService"`
 	labelService          *LabelService          `di.inject:"labelService"`
 	projectService        *ProjectService        `di.inject:"projectService"`
 	groupService          *GroupService          `di.inject:"groupService"`
@@ -21,8 +20,6 @@ type KanbanController struct {
 
 func (c *KanbanController) RegisterRoutes(engine *gin.Engine) {
 	engine.GET("/kanban-users", c.getKanbanUsers)
-	engine.GET("/teams", c.getTeams)
-	engine.GET("/teams/:id", c.getTeamById)
 	engine.GET("/labels", c.getLabels)
 	engine.GET("/settings", c.getSettings)
 	engine.GET("/groups", c.getGroups)
@@ -30,12 +27,6 @@ func (c *KanbanController) RegisterRoutes(engine *gin.Engine) {
 
 	columnRoutes := engine.Group("/")
 	columnRoutes.Use(account.AuthRequiredMiddleware())
-
-	teamRoutes := engine.Group("/")
-	teamRoutes.Use(account.AuthRequiredMiddleware())
-	teamRoutes.POST("/teams", c.addTeam)
-	teamRoutes.PUT("/teams/:id", c.updateTeamById)
-	teamRoutes.DELETE("/teams/:id", c.deleteTeam)
 
 	userRoutes := engine.Group("/")
 	userRoutes.Use(account.AuthRequiredMiddleware())
@@ -129,95 +120,6 @@ func (c *KanbanController) setUserGroups(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, user)
-}
-
-func (c *KanbanController) getTeams(ctx *gin.Context) {
-	teams, err := c.teamService.GetAllTeams()
-
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, teams)
-}
-
-func (c *KanbanController) getTeamById(ctx *gin.Context) {
-	id, err := strconv.ParseInt(ctx.Param("id"), 10, 32)
-
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	team, err := c.teamService.GetTeamById(int(id))
-
-	if err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, team)
-}
-
-func (c *KanbanController) updateTeamById(ctx *gin.Context) {
-	var request UpdateTeamRequest
-
-	if err := ctx.ShouldBindJSON(&request); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	id, err := strconv.ParseInt(ctx.Param("id"), 10, 32)
-
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	team, err := c.teamService.UpdateTeam(int(id), &request)
-
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, team)
-}
-
-func (c *KanbanController) addTeam(ctx *gin.Context) {
-	var request CreateTeamRequest
-
-	if err := ctx.ShouldBindJSON(&request); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	team, err := c.teamService.CreateTeam(&request)
-
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	}
-
-	ctx.JSON(http.StatusCreated, team)
-}
-
-func (c *KanbanController) deleteTeam(ctx *gin.Context) {
-	id, err := strconv.ParseInt(ctx.Param("id"), 10, 32)
-
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	err = c.teamService.DeleteTeamById(int(id))
-
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(http.StatusNoContent, gin.H{})
 }
 
 func (c *KanbanController) getLabels(ctx *gin.Context) {

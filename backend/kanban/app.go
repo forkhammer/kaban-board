@@ -23,7 +23,6 @@ func (m *KanbanModule) Init(engine *gin.Engine, connection repository.Connection
 	di.RegisterBean("userService", reflect.TypeOf((*UserService)(nil)))
 	di.RegisterBean("labelService", reflect.TypeOf((*LabelService)(nil)))
 	di.RegisterBean("projectService", reflect.TypeOf((*ProjectService)(nil)))
-	di.RegisterBean("teamService", reflect.TypeOf((*TeamService)(nil)))
 	di.RegisterBean("groupService", reflect.TypeOf((*GroupService)(nil)))
 	di.RegisterBeanInstance("kanban", NewKanban(cache.MemoryCacheInstance))
 	di.RegisterBean("kanbanController", reflect.TypeOf((*KanbanController)(nil)))

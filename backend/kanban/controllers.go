@@ -22,8 +22,6 @@ type KanbanController struct {
 
 func (c *KanbanController) RegisterRoutes(engine *gin.Engine) {
 	engine.GET("/kanban-users", c.getKanbanUsers)
-	engine.GET("/columns", c.getColumns)
-	engine.GET("/columns/:id", c.getColumnById)
 	engine.GET("/teams", c.getTeams)
 	engine.GET("/teams/:id", c.getTeamById)
 	engine.GET("/labels", c.getLabels)
@@ -33,10 +31,6 @@ func (c *KanbanController) RegisterRoutes(engine *gin.Engine) {
 
 	columnRoutes := engine.Group("/")
 	columnRoutes.Use(account.AuthRequiredMiddleware())
-	columnRoutes.POST("/columns", c.addColumn)
-	columnRoutes.PUT("/columns/:id", c.updateColumnById)
-	columnRoutes.DELETE("/columns/:id", c.deleteColumn)
-	columnRoutes.POST("/columns/save_ordering", c.saveColumnOrdering)
 
 	teamRoutes := engine.Group("/")
 	teamRoutes.Use(account.AuthRequiredMiddleware())
@@ -136,113 +130,6 @@ func (c *KanbanController) setUserGroups(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, user)
-}
-
-func (c *KanbanController) getColumns(ctx *gin.Context) {
-	columns, err := c.columnService.GetAllColumns()
-
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, columns)
-}
-
-func (c *KanbanController) getColumnById(ctx *gin.Context) {
-	id, err := strconv.ParseInt(ctx.Param("id"), 10, 32)
-
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	column, err := c.columnService.GetColumnById(int(id))
-
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, column)
-}
-
-func (c *KanbanController) updateColumnById(ctx *gin.Context) {
-	var request UpdateColumnRequest
-
-	if err := ctx.ShouldBindJSON(&request); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	id, err := strconv.ParseInt(ctx.Param("id"), 10, 32)
-
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	column, err := c.columnService.UpdateColumn(int(id), &request)
-
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, column)
-}
-
-func (c *KanbanController) addColumn(ctx *gin.Context) {
-	var request CreateColumnRequest
-
-	if err := ctx.ShouldBindJSON(&request); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	column, err := c.columnService.CreateColumn(&request)
-
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	}
-
-	ctx.JSON(http.StatusCreated, column)
-}
-
-func (c *KanbanController) deleteColumn(ctx *gin.Context) {
-	id, err := strconv.ParseInt(ctx.Param("id"), 10, 32)
-
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	err = c.columnService.DeleteColumnById(int(id))
-
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(http.StatusNoContent, gin.H{})
-}
-
-func (c *KanbanController) saveColumnOrdering(ctx *gin.Context) {
-	request := make([]SetColumnOrderRequest, 0)
-
-	if err := ctx.ShouldBindJSON(&request); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	columns, err := c.columnService.SaveOrdering(request)
-
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, columns)
 }
 
 func (c *KanbanController) getTeams(ctx *gin.Context) {

@@ -20,8 +20,6 @@ type KanbanController struct {
 func (c *KanbanController) RegisterRoutes(engine *gin.Engine) {
 	engine.GET("/kanban-users", c.getKanbanUsers)
 	engine.GET("/settings", c.getSettings)
-	engine.GET("/groups", c.getGroups)
-	engine.GET("/groups/:id", c.getGroupById)
 
 	columnRoutes := engine.Group("/")
 	columnRoutes.Use(account.AuthRequiredMiddleware())
@@ -108,33 +106,4 @@ func (c *KanbanController) saveTaskTypeLabels(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{})
-}
-
-func (c *KanbanController) getGroups(ctx *gin.Context) {
-	groups, err := c.groupService.GetGroups()
-
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, groups)
-}
-
-func (c *KanbanController) getGroupById(ctx *gin.Context) {
-	id, err := strconv.ParseInt(ctx.Param("id"), 10, 32)
-
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	group, err := c.groupService.GetGroupById(int(id))
-
-	if err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, group)
 }

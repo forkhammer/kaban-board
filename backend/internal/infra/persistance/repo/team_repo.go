@@ -20,7 +20,7 @@ func (r *TeamRepository) Get(id domain.TeamId) (*domain.Team, error) {
 	if err := r.getQuery().Where("id = ?", id).First(team).Error; err != nil {
 		return nil, err
 	}
-	return r.ToDomainTeam(team), nil
+	return r.ToDomainTeam(team)
 }
 
 func (r *TeamRepository) GetByUsername(username string) (*domain.Team, error) {
@@ -28,7 +28,7 @@ func (r *TeamRepository) GetByUsername(username string) (*domain.Team, error) {
 	if err := r.getQuery().Where("username = ?", username).First(team).Error; err != nil {
 		return nil, err
 	}
-	return r.ToDomainTeam(team), nil
+	return r.ToDomainTeam(team)
 }
 
 func (r *TeamRepository) List(spec repo.QuerySpec) (*[]domain.Team, error) {
@@ -49,34 +49,46 @@ func (r *TeamRepository) List(spec repo.QuerySpec) (*[]domain.Team, error) {
 
 	domainTeams := make([]domain.Team, len(teams))
 	for i, team := range teams {
-		domainTeams[i] = *r.ToDomainTeam(&team)
+		team, err := r.ToDomainTeam(&team)
+		if err != nil {
+			return nil, err
+		}
+		domainTeams[i] = *team
 	}
 
 	return &domainTeams, nil
 }
 
-func (r *TeamRepository) Create(team *domain.Team) error {
+func (r *TeamRepository) Create(team *domain.Team) (*domain.Team, error) {
 	model := r.ToTeam(team)
-	return r.conn.GetEngine().Create(model).Error
+	err := r.conn.GetEngine().Create(model).Error
+	if err != nil {
+		return nil, err
+	}
+	return r.ToDomainTeam(model)
 }
 
-func (r *TeamRepository) Update(team *domain.Team) error {
+func (r *TeamRepository) Update(team *domain.Team) (*domain.Team, error) {
 	model := r.ToTeam(team)
-	return r.conn.GetEngine().Save(model).Error
+	err := r.conn.GetEngine().Save(model).Error
+	if err != nil {
+		return nil, err
+	}
+	return r.ToDomainTeam(model)
 }
 
 func (r *TeamRepository) Delete(id domain.TeamId) error {
 	return r.conn.GetEngine().Where("id = ?", id).Delete(&models.Team{}).Error
 }
 
-func (r *TeamRepository) ToDomainTeam(team *models.Team) *domain.Team {
-	return &domain.Team{
-		Id:    domain.TeamId(team.Id),
-		Title: team.Title,
-		Groups: utils.Map(team.Groups, func(group *models.Group) domain.Group {
+func (r *TeamRepository) ToDomainTeam(team *models.Team) (*domain.Team, error) {
+	return domain.NewTeam(
+		domain.TeamId(team.Id),
+		team.Title,
+		utils.Map(team.Groups, func(group *models.Group) domain.Group {
 			return *r.groupRepo.toDomainGroup(group)
 		}),
-	}
+	)
 }
 
 func (r *TeamRepository) ToTeam(team *domain.Team) *models.Team {

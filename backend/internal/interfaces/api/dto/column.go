@@ -43,3 +43,15 @@ func SerializeColumns(columns *[]domain.Column) *[]ColumnDto {
 	})
 	return &result
 }
+
+type CreateColumnRequest struct {
+	Name   string   `json:"name"`
+	Labels []string `json:"labels"`
+	TeamId *uint    `json:"team_id"`
+}
+
+type UpdateColumnRequest struct {
+	Name   string   `json:"name"`
+	Labels []string `json:"labels"`
+	TeamId *uint    `json:"team_id"`
+}

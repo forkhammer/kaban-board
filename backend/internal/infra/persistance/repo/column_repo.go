@@ -66,7 +66,7 @@ func (r *ColumnRepository) Create(column *domain.Column) (*domain.Column, error)
 		return nil, err
 	}
 
-	result, err := r.toDomainColumn(model)
+	result, err := r.Get(domain.ColumnId(model.Id))
 	if err != nil {
 		return nil, err
 	}
@@ -82,7 +82,7 @@ func (r *ColumnRepository) Update(column *domain.Column) (*domain.Column, error)
 		return nil, err
 	}
 
-	result, err := r.toDomainColumn(model)
+	result, err := r.Get(domain.ColumnId(model.Id))
 	if err != nil {
 		return nil, err
 	}
@@ -95,8 +95,12 @@ func (r *ColumnRepository) Delete(id domain.ColumnId) error {
 
 func (r *ColumnRepository) toDomainColumn(column *models.Column) (*domain.Column, error) {
 	var team *domain.Team
+	var err error
 	if column.Team != nil {
-		team = r.teamRepo.ToDomainTeam(column.Team)
+		team, err = r.teamRepo.ToDomainTeam(column.Team)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	result, err := domain.NewColumn(

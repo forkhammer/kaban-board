@@ -55,3 +55,10 @@ type UpdateColumnRequest struct {
 	Labels []string `json:"labels"`
 	TeamId *uint    `json:"team_id"`
 }
+
+type SetColumnOrder struct {
+	Id    uint `json:"id"`
+	Order int  `json:"order"`
+}
+
+type SetColumnOrderRequest = []SetColumnOrder

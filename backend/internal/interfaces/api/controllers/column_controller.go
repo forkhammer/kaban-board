@@ -2,8 +2,10 @@ package controllers
 
 import (
 	"main/internal/app/column_usecases"
+	domain "main/internal/domain/models"
 	"main/internal/interfaces/api/dto"
 	"main/internal/interfaces/api/middleware"
+	"main/pkg/utils"
 	"net/http"
 	"strconv"
 
@@ -16,6 +18,7 @@ type ColumnController struct {
 	updateUC   *column_usecases.UpdateColumnUseCase   `di.inject:"UpdateColumnUseCase"`
 	createUC   *column_usecases.CreateColumnUseCase   `di.inject:"CreateColumnUseCase"`
 	deleteUC   *column_usecases.DeleteColumUseCase    `di.inject:"DeleteColumUseCase"`
+	orderUC    *column_usecases.OrderingColumnUseCase `di.inject:"OrderingColumnUseCase"`
 }
 
 func (c *ColumnController) RegisterRoutes(router *gin.Engine) error {
@@ -27,7 +30,7 @@ func (c *ColumnController) RegisterRoutes(router *gin.Engine) error {
 	protectedRoutes.POST("/columns", c.addColumn)
 	protectedRoutes.PUT("/columns/:id", c.updateColumn)
 	protectedRoutes.DELETE("/columns/:id", c.deleteColumn)
-	// protectedRoutes.POST("/columns/save_ordering", c.saveColumnOrdering)
+	protectedRoutes.POST("/columns/save_ordering", c.saveColumnOrdering)
 	return nil
 }
 
@@ -123,4 +126,30 @@ func (c *ColumnController) deleteColumn(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusNoContent, gin.H{})
+}
+
+func (c *ColumnController) saveColumnOrdering(ctx *gin.Context) {
+	request := make(dto.SetColumnOrderRequest, 0)
+
+	if err := ctx.ShouldBindJSON(&request); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	ordering := utils.Map(request, func(o dto.SetColumnOrder) column_usecases.ColumnOrdering {
+		return column_usecases.ColumnOrdering{
+			Id:    o.Id,
+			Order: o.Order,
+		}
+	})
+	columns, err := c.orderUC.Execute(ordering)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, utils.Map(*columns, func(column domain.Column) dto.ColumnDto {
+		return *dto.SerializeColumn(&column)
+	}))
 }

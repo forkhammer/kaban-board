@@ -9,6 +9,7 @@ import (
 	"main/internal/infra/db/interfaces"
 	"main/internal/infra/persistance/models"
 	"main/internal/infra/persistance/repo"
+	column_spec "main/internal/infra/persistance/spec/column"
 	label_spec "main/internal/infra/persistance/spec/label"
 	"main/internal/infra/services"
 	"main/internal/interfaces/api"
@@ -67,6 +68,7 @@ func (a *Application) registerDeps() {
 	di.RegisterBean("UserRepository", reflect.TypeOf((*repo.UserRepository)(nil)))
 
 	di.RegisterBean("LabelQuery", reflect.TypeOf((*label_spec.LabelQueryImpl)(nil)))
+	di.RegisterBean("ColumnQuery", reflect.TypeOf((*column_spec.ColumnQueryImpl)(nil)))
 
 	di.RegisterBean("JWTService", reflect.TypeOf((*services.JWTService)(nil)))
 	di.RegisterBean("PasswordService", reflect.TypeOf((*services.PasswordService)(nil)))
@@ -81,6 +83,7 @@ func (a *Application) registerDeps() {
 	di.RegisterBean("UpdateColumnUseCase", reflect.TypeOf((*column_usecases.UpdateColumnUseCase)(nil)))
 	di.RegisterBean("CreateColumnUseCase", reflect.TypeOf((*column_usecases.CreateColumnUseCase)(nil)))
 	di.RegisterBean("DeleteColumUseCase", reflect.TypeOf((*column_usecases.DeleteColumUseCase)(nil)))
+	di.RegisterBean("OrderingColumnUseCase", reflect.TypeOf((*column_usecases.OrderingColumnUseCase)(nil)))
 
 	di.RegisterBean("AccountController", reflect.TypeOf((*controllers.AccountController)(nil)))
 	di.RegisterBean("BoardController", reflect.TypeOf((*controllers.BoardController)(nil)))

@@ -11,7 +11,6 @@ import (
 
 type KanbanController struct {
 	userService           *UserService           `di.inject:"userService"`
-	columnService         *ColumnService         `di.inject:"columnService"`
 	teamService           *TeamService           `di.inject:"teamService"`
 	labelService          *LabelService          `di.inject:"labelService"`
 	projectService        *ProjectService        `di.inject:"projectService"`

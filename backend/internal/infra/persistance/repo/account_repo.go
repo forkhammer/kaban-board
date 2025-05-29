@@ -65,7 +65,7 @@ func (r *AccountRepository) Create(account *domain.Account) (*domain.Account, er
 	if err != nil {
 		return nil, err
 	}
-	return r.toDomainAccount(model), nil
+	return r.Get(domain.AccountId(model.Id))
 }
 
 func (r *AccountRepository) Update(account *domain.Account) (*domain.Account, error) {
@@ -74,7 +74,7 @@ func (r *AccountRepository) Update(account *domain.Account) (*domain.Account, er
 	if err != nil {
 		return nil, err
 	}
-	return r.toDomainAccount(model), nil
+	return r.Get(domain.AccountId(model.Id))
 }
 
 func (r *AccountRepository) Delete(id domain.AccountId) error {

@@ -45,14 +45,22 @@ func (r *GroupRepository) List(spec repo.QuerySpec) (*[]domain.Group, error) {
 	return &domainGroups, nil
 }
 
-func (r *GroupRepository) Create(group *domain.Group) error {
+func (r *GroupRepository) Create(group *domain.Group) (*domain.Group, error) {
 	model := r.toGroup(group)
-	return r.conn.GetEngine().Create(model).Error
+	err := r.conn.GetEngine().Create(model).Error
+	if err != nil {
+		return nil, err
+	}
+	return r.Get(domain.GroupId(model.Id))
 }
 
-func (r *GroupRepository) Update(group *domain.Group) error {
+func (r *GroupRepository) Update(group *domain.Group) (*domain.Group, error) {
 	model := r.toGroup(group)
-	return r.conn.GetEngine().Save(model).Error
+	err := r.conn.GetEngine().Save(model).Error
+	if err != nil {
+		return nil, err
+	}
+	return r.Get(domain.GroupId(model.Id))
 }
 
 func (r *GroupRepository) Delete(id domain.GroupId) error {

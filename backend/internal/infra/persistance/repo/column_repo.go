@@ -66,11 +66,7 @@ func (r *ColumnRepository) Create(column *domain.Column) (*domain.Column, error)
 		return nil, err
 	}
 
-	result, err := r.Get(domain.ColumnId(model.Id))
-	if err != nil {
-		return nil, err
-	}
-	return result, nil
+	return r.Get(domain.ColumnId(model.Id))
 }
 
 func (r *ColumnRepository) Update(column *domain.Column) (*domain.Column, error) {
@@ -82,11 +78,7 @@ func (r *ColumnRepository) Update(column *domain.Column) (*domain.Column, error)
 		return nil, err
 	}
 
-	result, err := r.Get(domain.ColumnId(model.Id))
-	if err != nil {
-		return nil, err
-	}
-	return result, nil
+	return r.Get(domain.ColumnId(model.Id))
 }
 
 func (r *ColumnRepository) Delete(id domain.ColumnId) error {
@@ -103,7 +95,7 @@ func (r *ColumnRepository) toDomainColumn(column *models.Column) (*domain.Column
 		}
 	}
 
-	result, err := domain.NewColumn(
+	return domain.NewColumn(
 		domain.ColumnId(column.Id),
 		column.Name,
 		utils.Map(column.Labels, func(labelId string) domain.LabelId {
@@ -112,12 +104,6 @@ func (r *ColumnRepository) toDomainColumn(column *models.Column) (*domain.Column
 		team,
 		column.Order,
 	)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return result, nil
 }
 
 func (r *ColumnRepository) toColumn(column *domain.Column) (*models.Column, error) {

@@ -45,14 +45,22 @@ func (r *ReleaseRepository) List(spec repo.QuerySpec) (*[]domain.Release, error)
 	return &domainReleases, nil
 }
 
-func (r *ReleaseRepository) Create(release *domain.Release) error {
+func (r *ReleaseRepository) Create(release *domain.Release) (*domain.Release, error) {
 	model := r.toRelease(release)
-	return r.conn.GetEngine().Create(model).Error
+	err := r.conn.GetEngine().Create(model).Error
+	if err != nil {
+		return nil, err
+	}
+	return r.Get(domain.ReleaseId(model.Id))
 }
 
-func (r *ReleaseRepository) Update(release *domain.Release) error {
+func (r *ReleaseRepository) Update(release *domain.Release) (*domain.Release, error) {
 	model := r.toRelease(release)
-	return r.conn.GetEngine().Save(model).Error
+	err := r.conn.GetEngine().Save(model).Error
+	if err != nil {
+		return nil, err
+	}
+	return r.Get(domain.ReleaseId(model.Id))
 }
 
 func (r *ReleaseRepository) Delete(id domain.ReleaseId) error {

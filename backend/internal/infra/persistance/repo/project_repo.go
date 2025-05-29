@@ -55,20 +55,31 @@ func (r *ProjectRepository) List(spec repo.QuerySpec) (*[]domain.Project, error)
 	return &domainProjects, nil
 }
 
-func (r *ProjectRepository) Create(Project *domain.Project) error {
-	if model, err := r.toProject(Project); err != nil {
-		return err
-	} else {
-		return r.conn.GetEngine().Create(model).Error
+func (r *ProjectRepository) Create(Project *domain.Project) (*domain.Project, error) {
+	model, err := r.toProject(Project)
+	if err != nil {
+		return nil, err
 	}
+
+	err = r.conn.GetEngine().Create(model).Error
+	if err != nil {
+		return nil, err
+	}
+	return r.Get(domain.ProjectId(model.Id))
+
 }
 
-func (r *ProjectRepository) Update(Project *domain.Project) error {
-	if model, err := r.toProject(Project); err != nil {
-		return err
-	} else {
-		return r.conn.GetEngine().Save(model).Error
+func (r *ProjectRepository) Update(Project *domain.Project) (*domain.Project, error) {
+	model, err := r.toProject(Project)
+	if err != nil {
+		return nil, err
 	}
+
+	err = r.conn.GetEngine().Save(model).Error
+	if err != nil {
+		return nil, err
+	}
+	return r.Get(domain.ProjectId(model.Id))
 }
 
 func (r *ProjectRepository) Delete(id domain.ProjectId) error {

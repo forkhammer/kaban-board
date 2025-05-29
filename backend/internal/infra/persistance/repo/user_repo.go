@@ -46,14 +46,22 @@ func (r *UserRepository) List(spec repo.QuerySpec) (*[]domain.User, error) {
 	return &domainUsers, nil
 }
 
-func (r *UserRepository) Create(user *domain.User) error {
+func (r *UserRepository) Create(user *domain.User) (*domain.User, error) {
 	model := r.toUser(user)
-	return r.conn.GetEngine().Create(model).Error
+	err := r.conn.GetEngine().Create(model).Error
+	if err != nil {
+		return nil, err
+	}
+	return r.Get(domain.UserId(model.Id))
 }
 
-func (r *UserRepository) Update(user *domain.User) error {
+func (r *UserRepository) Update(user *domain.User) (*domain.User, error) {
 	model := r.toUser(user)
-	return r.conn.GetEngine().Save(model).Error
+	err := r.conn.GetEngine().Save(model).Error
+	if err != nil {
+		return nil, err
+	}
+	return r.Get(domain.UserId(model.Id))
 }
 
 func (r *UserRepository) Delete(id domain.UserId) error {

@@ -45,14 +45,22 @@ func (r *LabelRepository) List(spec repo.QuerySpec) (*[]domain.Label, error) {
 	return &domainLabels, nil
 }
 
-func (r *LabelRepository) Create(label *domain.Label) error {
+func (r *LabelRepository) Create(label *domain.Label) (*domain.Label, error) {
 	model := r.toLabel(label)
-	return r.conn.GetEngine().Create(model).Error
+	err := r.conn.GetEngine().Create(model).Error
+	if err != nil {
+		return nil, err
+	}
+	return r.Get(domain.LabelId(model.Id))
 }
 
-func (r *LabelRepository) Update(label *domain.Label) error {
+func (r *LabelRepository) Update(label *domain.Label) (*domain.Label, error) {
 	model := r.toLabel(label)
-	return r.conn.GetEngine().Save(model).Error
+	err := r.conn.GetEngine().Save(model).Error
+	if err != nil {
+		return nil, err
+	}
+	return r.Get(domain.LabelId(model.Id))
 }
 
 func (r *LabelRepository) Delete(id domain.LabelId) error {

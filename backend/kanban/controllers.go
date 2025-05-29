@@ -3,7 +3,6 @@ package kanban
 import (
 	"main/account"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/goioc/di"
@@ -21,11 +20,6 @@ func (c *KanbanController) RegisterRoutes(engine *gin.Engine) {
 	engine.GET("/kanban-users", c.getKanbanUsers)
 	engine.GET("/settings", c.getSettings)
 
-	projectRoutes := engine.Group("/")
-	projectRoutes.Use(account.AuthRequiredMiddleware())
-	projectRoutes.GET("/projects", c.getProjects)
-	projectRoutes.POST("/projects/:id/set_team", c.setProjectTeam)
-
 	kanbanSettingsRoutes := engine.Group("/")
 	kanbanSettingsRoutes.Use(account.AuthRequiredMiddleware())
 	kanbanSettingsRoutes.GET("/kanban-settings", c.getKanbanSettings)
@@ -42,42 +36,6 @@ func (c *KanbanController) getKanbanUsers(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"users": users, "updateTime": updateTime})
-}
-
-func (c *KanbanController) getProjects(ctx *gin.Context) {
-	projects, err := c.projectService.GetProjects()
-
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, projects)
-}
-
-func (c *KanbanController) setProjectTeam(ctx *gin.Context) {
-	var request SetTeamRequest
-
-	id, err := strconv.ParseUint(ctx.Param("id"), 10, 32)
-
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	if err = ctx.ShouldBindJSON(&request); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	project, err := c.projectService.SetTeam(uint(id), request.TeamId)
-
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, project)
 }
 
 func (c *KanbanController) getSettings(ctx *gin.Context) {

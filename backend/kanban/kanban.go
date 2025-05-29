@@ -20,7 +20,6 @@ type Kanban struct {
 	client         *gitlab.GitlabClient
 	userService    *UserService
 	projectService *ProjectService
-	labelService   *LabelService
 	kanbanSettings *KanbanSettings
 }
 
@@ -34,7 +33,6 @@ func NewKanban(cache cache.Cache) *Kanban {
 func (k *Kanban) PostConstruct() error {
 	k.userService = di.GetInstance("userService").(*UserService)
 	k.projectService = di.GetInstance("projectService").(*ProjectService)
-	k.labelService = di.GetInstance("labelService").(*LabelService)
 	k.kanbanSettings = di.GetInstance("kanbanSettings").(*KanbanSettings)
 	return nil
 }

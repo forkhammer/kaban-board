@@ -4,10 +4,12 @@ import (
 	"main/config"
 	"main/internal/app/account_usecases"
 	"main/internal/app/column_usecases"
+	app_services "main/internal/app/services"
 	"main/internal/infra/db/implementation"
 	"main/internal/infra/db/interfaces"
 	"main/internal/infra/persistance/models"
 	"main/internal/infra/persistance/repo"
+	label_spec "main/internal/infra/persistance/spec/label"
 	"main/internal/infra/services"
 	"main/internal/interfaces/api"
 	"main/internal/interfaces/api/controllers"
@@ -64,8 +66,11 @@ func (a *Application) registerDeps() {
 	di.RegisterBean("TeamRepository", reflect.TypeOf((*repo.TeamRepository)(nil)))
 	di.RegisterBean("UserRepository", reflect.TypeOf((*repo.UserRepository)(nil)))
 
+	di.RegisterBean("LabelQuery", reflect.TypeOf((*label_spec.LabelQueryImpl)(nil)))
+
 	di.RegisterBean("JWTService", reflect.TypeOf((*services.JWTService)(nil)))
 	di.RegisterBean("PasswordService", reflect.TypeOf((*services.PasswordService)(nil)))
+	di.RegisterBean("LabelService", reflect.TypeOf((*app_services.LabelService)(nil)))
 
 	di.RegisterBean("ActiveUserUseCase", reflect.TypeOf((*account_usecases.ActiveUserUseCase)(nil)))
 	di.RegisterBean("LoginUseCase", reflect.TypeOf((*account_usecases.LoginUseCase)(nil)))
@@ -80,12 +85,15 @@ func (a *Application) registerDeps() {
 	di.RegisterBean("BoardController", reflect.TypeOf((*controllers.BoardController)(nil)))
 	di.RegisterBean("ReportsController", reflect.TypeOf((*controllers.ReportsController)(nil)))
 	di.RegisterBean("HealthController", reflect.TypeOf((*controllers.HealthController)(nil)))
-
 	di.RegisterBean("ColumnController", reflect.TypeOf((*controllers.ColumnController)(nil)))
+
 }
 
 func (app *Application) Run() {
-	di.InitializeContainer()
+	err := di.InitializeContainer()
+	if err != nil {
+		panic(err)
+	}
 
 	if err := app.initRouter(); err != nil {
 		panic(err)

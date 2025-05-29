@@ -1,6 +1,8 @@
 package column_usecases
 
 import (
+	"fmt"
+	app_services "main/internal/app/services"
 	domain "main/internal/domain/models"
 	"main/internal/domain/repo"
 	"main/pkg/utils"
@@ -14,11 +16,20 @@ type UpdateColumnRequest struct {
 }
 
 type UpdateColumnUseCase struct {
-	columnRepo repo.ColumnRepo `di.inject:"ColumnRepository"`
-	teamRepo   repo.TeamRepo   `di.inject:"TeamRepository"`
+	columnRepo   repo.ColumnRepo            `di.inject:"ColumnRepository"`
+	teamRepo     repo.TeamRepo              `di.inject:"TeamRepository"`
+	labelService *app_services.LabelService `di.inject:"LabelService"`
 }
 
 func (uc *UpdateColumnUseCase) Execute(request *UpdateColumnRequest) (*domain.Column, error) {
+	existLabels, diff, err := uc.labelService.ExistNames(request.Labels)
+	if err != nil {
+		return nil, err
+	}
+	if !existLabels {
+		return nil, fmt.Errorf("Labels not found: %v", diff)
+	}
+
 	column, err := uc.columnRepo.Get(domain.ColumnId(request.Id))
 	if err != nil {
 		return nil, err

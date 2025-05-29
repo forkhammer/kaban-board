@@ -10,3 +10,7 @@ type Label struct {
 	TextColor Color
 	AltName   *string
 }
+
+func (l Label) Validate() error {
+	return nil
+}

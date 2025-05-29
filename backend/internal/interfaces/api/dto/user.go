@@ -12,10 +12,6 @@ type SetUserVisibilityRequest struct {
 	Visible bool `json:"visible"`
 }
 
-type SetTeamRequest struct {
-	TeamId *int `json:"team_id"`
-}
-
 type SetUserGroupsRequest struct {
 	Groups []uint `json:"groups"`
 }

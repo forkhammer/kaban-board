@@ -12,12 +12,13 @@ import (
 )
 
 type ProjectRepository struct {
-	conn interfaces.ConnectionInterface `di.inject:"db"`
+	conn     interfaces.ConnectionInterface `di.inject:"db"`
+	teamRepo *TeamRepository                `di.inject:"TeamRepository"`
 }
 
 func (r *ProjectRepository) Get(id domain.ProjectId) (*domain.Project, error) {
 	project := &models.Project{}
-	if err := r.conn.GetEngine().Where("id = ?", id).First(project).Error; err != nil {
+	if err := r.getQuery().Where("id = ?", id).First(project).Error; err != nil {
 		return nil, err
 	}
 	model, err := r.toDomainProject(project)
@@ -29,7 +30,7 @@ func (r *ProjectRepository) Get(id domain.ProjectId) (*domain.Project, error) {
 
 func (r *ProjectRepository) List(spec repo.QuerySpec) (*[]domain.Project, error) {
 	projects := make([]models.Project, 0)
-	query := r.conn.GetEngine().Model(&models.Project{})
+	query := r.getQuery()
 
 	if spec != nil {
 		if result, err := spec.Apply(query); err != nil {
@@ -87,15 +88,19 @@ func (r *ProjectRepository) Delete(id domain.ProjectId) error {
 }
 
 func (r *ProjectRepository) toDomainProject(project *models.Project) (*domain.Project, error) {
-	teamId, err := utils.IntToUintPtr(project.TeamId)
-	if err != nil {
-		return nil, err
+	var team *domain.Team
+
+	if project.Team != (*models.Team)(nil) {
+		var err error
+		if team, err = r.teamRepo.ToDomainTeam(project.Team); err != nil {
+			return nil, err
+		}
 	}
 
 	return &domain.Project{
 		Id:        domain.ProjectId(project.Id),
 		Name:      project.Name,
-		TeamId:    (*domain.TeamId)(teamId),
+		Team:      team,
 		IsVisible: project.IsVisible,
 		Users: utils.Map(project.Users, func(userId int64) domain.UserId {
 			return domain.UserId(userId)
@@ -103,19 +108,24 @@ func (r *ProjectRepository) toDomainProject(project *models.Project) (*domain.Pr
 	}, nil
 }
 
-func (r *ProjectRepository) toProject(column *domain.Project) (*models.Project, error) {
-	teamId, err := utils.UintToIntPtr((*uint)(column.TeamId))
-	if err != nil {
-		return nil, nil
+func (r *ProjectRepository) toProject(project *domain.Project) (*models.Project, error) {
+	var teamId *uint
+	if project.Team != (*domain.Team)(nil) {
+		val := uint(project.Team.Id)
+		teamId = &val
 	}
 
 	return &models.Project{
-		Id:        uint(column.Id),
-		Name:      column.Name,
+		Id:        uint(project.Id),
+		Name:      project.Name,
 		TeamId:    teamId,
-		IsVisible: column.IsVisible,
-		Users: datatypes.NewJSONSlice(utils.Map(column.Users, func(userId domain.UserId) int64 {
+		IsVisible: project.IsVisible,
+		Users: datatypes.NewJSONSlice(utils.Map(project.Users, func(userId domain.UserId) int64 {
 			return int64(userId)
 		})),
 	}, nil
+}
+
+func (r *ProjectRepository) getQuery() *gorm.DB {
+	return r.conn.GetEngine().Model(&models.Project{}).Preload("Team")
 }

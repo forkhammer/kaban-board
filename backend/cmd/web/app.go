@@ -6,6 +6,7 @@ import (
 	"main/internal/app/column_usecases"
 	"main/internal/app/group_usecases"
 	"main/internal/app/label_usecases"
+	"main/internal/app/project_usecases"
 	app_services "main/internal/app/services"
 	"main/internal/app/team_usecases"
 	"main/internal/app/user_usecases"
@@ -94,6 +95,7 @@ func (a *Application) registerDeps() {
 	di.RegisterBean("LabelUseCases", reflect.TypeOf((*label_usecases.LabelUseCases)(nil)))
 	di.RegisterBean("UserUseCases", reflect.TypeOf((*user_usecases.UserUseCases)(nil)))
 	di.RegisterBean("GroupUseCases", reflect.TypeOf((*group_usecases.GroupUseCases)(nil)))
+	di.RegisterBean("ProjectUseCases", reflect.TypeOf((*project_usecases.ProjectUseCases)(nil)))
 
 	di.RegisterBean("AccountController", reflect.TypeOf((*controllers.AccountController)(nil)))
 	di.RegisterBean("BoardController", reflect.TypeOf((*controllers.BoardController)(nil)))
@@ -104,6 +106,7 @@ func (a *Application) registerDeps() {
 	di.RegisterBean("LabelController", reflect.TypeOf((*controllers.LabelController)(nil)))
 	di.RegisterBean("UserController", reflect.TypeOf((*controllers.UserController)(nil)))
 	di.RegisterBean("GroupController", reflect.TypeOf((*controllers.GroupController)(nil)))
+	di.RegisterBean("ProjectController", reflect.TypeOf((*controllers.ProjectController)(nil)))
 
 }
 
@@ -131,6 +134,7 @@ func (app *Application) initRouter() error {
 		di.GetInstance("LabelController").(api.Controller),
 		di.GetInstance("UserController").(api.Controller),
 		di.GetInstance("GroupController").(api.Controller),
+		di.GetInstance("ProjectController").(api.Controller),
 	}
 	for _, controller := range controllers {
 		err := controller.RegisterRoutes(app.router)

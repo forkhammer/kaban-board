@@ -21,9 +21,6 @@ func (c *KanbanController) RegisterRoutes(engine *gin.Engine) {
 	engine.GET("/kanban-users", c.getKanbanUsers)
 	engine.GET("/settings", c.getSettings)
 
-	columnRoutes := engine.Group("/")
-	columnRoutes.Use(account.AuthRequiredMiddleware())
-
 	projectRoutes := engine.Group("/")
 	projectRoutes.Use(account.AuthRequiredMiddleware())
 	projectRoutes.GET("/projects", c.getProjects)

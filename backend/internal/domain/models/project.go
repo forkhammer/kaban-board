@@ -6,6 +6,10 @@ type Project struct {
 	IsVisible bool
 	Id        ProjectId
 	Name      string
-	TeamId    *TeamId
+	Team      *Team
 	Users     []UserId
+}
+
+func (p *Project) Validate() error {
+	return nil
 }

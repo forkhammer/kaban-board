@@ -14,7 +14,7 @@ type Issue struct {
 	ProjectId   uint     `gorm:"project_id;not null"`
 	Project     Project  `gorm:"foreignKey:ProjectId;not null"`
 	ReleaseId   *string  `gorm:"release_id"`
-	Release     *Release `gorm:"foreignKey:Release"`
+	Release     *Release `gorm:"foreignKey:ReleaseId"`
 	TaskTypeId  *string  `gorm:"task_type_id"`
 	TaskType    *Label   `gorm:"foreignKey:TaskTypeId"`
 	EstimateDev *uint    `gorm:"estimate_dev"`

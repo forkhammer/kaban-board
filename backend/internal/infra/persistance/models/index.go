@@ -6,8 +6,8 @@ var ALL_MODELS []any = []any{
 	&User{},
 	&Group{},
 	&Label{},
-	&Issue{},
 	&Release{},
+	&Issue{},
 	&Column{},
 	&Project{},
 }

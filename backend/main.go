@@ -4,8 +4,6 @@ import (
 	"context"
 	"main/cmd"
 	"main/config"
-	"main/internal/app/account_usecases"
-	"main/internal/app/column_usecases"
 	app_services "main/internal/app/services"
 	"main/internal/app/usecases"
 	"main/internal/infra/db/implementation"
@@ -68,16 +66,8 @@ func (app *Application) Init() {
 	di.RegisterBean("PasswordService", reflect.TypeOf((*services.PasswordService)(nil)))
 	di.RegisterBean("LabelService", reflect.TypeOf((*app_services.LabelService)(nil)))
 
-	di.RegisterBean("ActiveUserUseCase", reflect.TypeOf((*account_usecases.ActiveUserUseCase)(nil)))
-	di.RegisterBean("LoginUseCase", reflect.TypeOf((*account_usecases.LoginUseCase)(nil)))
-	di.RegisterBean("RegisterUseCase", reflect.TypeOf((*account_usecases.RegisterUseCase)(nil)))
-
-	di.RegisterBean("ListColumnsUseCase", reflect.TypeOf((*column_usecases.ListColumnsUseCase)(nil)))
-	di.RegisterBean("RetrieveColumnUseCase", reflect.TypeOf((*column_usecases.RetrieveColumnUseCase)(nil)))
-	di.RegisterBean("UpdateColumnUseCase", reflect.TypeOf((*column_usecases.UpdateColumnUseCase)(nil)))
-	di.RegisterBean("CreateColumnUseCase", reflect.TypeOf((*column_usecases.CreateColumnUseCase)(nil)))
-	di.RegisterBean("DeleteColumUseCase", reflect.TypeOf((*column_usecases.DeleteColumUseCase)(nil)))
-	di.RegisterBean("OrderingColumnUseCase", reflect.TypeOf((*column_usecases.OrderingColumnUseCase)(nil)))
+	di.RegisterBean("AccountUseCases", reflect.TypeOf((*usecases.AccountUseCases)(nil)))
+	di.RegisterBean("ColumnUseCases", reflect.TypeOf((*usecases.ColumnUseCases)(nil)))
 	di.RegisterBean("TeamUseCases", reflect.TypeOf((*usecases.TeamUseCases)(nil)))
 	di.RegisterBean("LabelUseCases", reflect.TypeOf((*usecases.LabelUseCases)(nil)))
 	di.RegisterBean("UserUseCases", reflect.TypeOf((*usecases.UserUseCases)(nil)))

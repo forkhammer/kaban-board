@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"main/internal/app/column_usecases"
+	"main/internal/app/usecases"
 	domain "main/internal/domain/models"
 	"main/internal/interfaces/api/dto"
 	"main/internal/interfaces/api/middleware"
@@ -13,12 +13,7 @@ import (
 )
 
 type ColumnController struct {
-	listUC     *column_usecases.ListColumnsUseCase    `di.inject:"ListColumnsUseCase"`
-	retrieveUC *column_usecases.RetrieveColumnUseCase `di.inject:"RetrieveColumnUseCase"`
-	updateUC   *column_usecases.UpdateColumnUseCase   `di.inject:"UpdateColumnUseCase"`
-	createUC   *column_usecases.CreateColumnUseCase   `di.inject:"CreateColumnUseCase"`
-	deleteUC   *column_usecases.DeleteColumUseCase    `di.inject:"DeleteColumUseCase"`
-	orderUC    *column_usecases.OrderingColumnUseCase `di.inject:"OrderingColumnUseCase"`
+	columnUC *usecases.ColumnUseCases `di.inject:"ColumnUseCases"`
 }
 
 func (c *ColumnController) RegisterRoutes(router *gin.Engine) error {
@@ -35,7 +30,7 @@ func (c *ColumnController) RegisterRoutes(router *gin.Engine) error {
 }
 
 func (c *ColumnController) getColumns(ctx *gin.Context) {
-	columns, err := c.listUC.Execute()
+	columns, err := c.columnUC.List()
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -53,7 +48,7 @@ func (c *ColumnController) getColumnById(ctx *gin.Context) {
 		return
 	}
 
-	column, err := c.retrieveUC.Execute(uint(id))
+	column, err := c.columnUC.Retrieve(uint(id))
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
@@ -71,7 +66,7 @@ func (c *ColumnController) addColumn(ctx *gin.Context) {
 		return
 	}
 
-	column, err := c.createUC.Execute(&column_usecases.CreateColumnRequest{
+	column, err := c.columnUC.Create(&usecases.CreateColumnRequest{
 		Name:   request.Name,
 		Labels: request.Labels,
 		TeamId: request.TeamId,
@@ -95,7 +90,7 @@ func (c *ColumnController) updateColumn(ctx *gin.Context) {
 		return
 	}
 
-	column, err := c.updateUC.Execute(&column_usecases.UpdateColumnRequest{
+	column, err := c.columnUC.Update(&usecases.UpdateColumnRequest{
 		Id:     uint(id),
 		Name:   request.Name,
 		Labels: request.Labels,
@@ -118,7 +113,7 @@ func (c *ColumnController) deleteColumn(ctx *gin.Context) {
 		return
 	}
 
-	err = c.deleteUC.Execute(uint(id))
+	err = c.columnUC.Delete(uint(id))
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
@@ -136,13 +131,13 @@ func (c *ColumnController) saveColumnOrdering(ctx *gin.Context) {
 		return
 	}
 
-	ordering := utils.Map(request, func(o dto.SetColumnOrder) column_usecases.ColumnOrdering {
-		return column_usecases.ColumnOrdering{
+	ordering := utils.Map(request, func(o dto.SetColumnOrder) usecases.ColumnOrdering {
+		return usecases.ColumnOrdering{
 			Id:    o.Id,
 			Order: o.Order,
 		}
 	})
-	columns, err := c.orderUC.Execute(ordering)
+	columns, err := c.columnUC.Ordering(ordering)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})

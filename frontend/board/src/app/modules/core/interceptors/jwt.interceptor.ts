@@ -26,7 +26,7 @@ export class JWTInterceptor implements HttpInterceptor {
 
         if (accessToken && !this.isBlacklistedRoute(req)) {
           apiReq = apiReq.clone({
-            headers: req.headers.set('Authorization', this.jwt.authToken).set('ngrok-skip-browser-warning', '123456789'),
+            headers: req.headers.set('Authorization', this.jwt.authToken),
           });
         } else {
           apiReq = apiReq.clone();

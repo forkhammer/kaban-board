@@ -24,6 +24,8 @@ import {environment} from "../../../../../environments/environment";
 import { Team } from '../../models/team';
 import { Group } from '../../models/group';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { catchErrorMessages } from 'src/app/modules/core/tools/catch-error';
+import { ToastService } from 'src/app/modules/core/services/toast.service';
 
 @Component({
     selector: 'app-kanban-board',
@@ -41,6 +43,7 @@ export class KanbanBoardComponent implements OnInit {
   public teamService = inject(TeamService)
   private syncService = inject(GitlabSyncService)
   private destroyRef = inject(DestroyRef)
+  private toast = inject(ToastService)
 
   faXmark = faXmark
   faArrowLeft = faArrowLeft
@@ -90,6 +93,7 @@ export class KanbanBoardComponent implements OnInit {
 
     const users$ = timer(0, environment.autoUpdateIssuesMin * 60 * 1000).pipe(
       switchMap(_ => this.kanbanUserService.listUsers().pipe(
+        catchErrorMessages(this.toast),
         finalize(() => this.isLoading = false),
       )),
       takeUntilDestroyed(this.destroyRef)

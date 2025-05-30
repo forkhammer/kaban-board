@@ -12,4 +12,8 @@ export class LabelService extends BaseService<Label>{
     super(injector)
     this.apiUrl = this.config.apiUrl + '/labels'
   }
+
+  formatter(item: Label) {
+    return item.name
+  }
 }

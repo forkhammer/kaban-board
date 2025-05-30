@@ -2,7 +2,8 @@
   <div class="mb-2">
     <label for="" class="mb-1">Метки типа задачи</label>
     <div class="scroll border rounded p-2">
-      <app-select-model-multiple [service]="labelService" formControlName="taskTypeLabels" [useClear]="true"></app-select-model-multiple>
+      <app-select-model-multiple [service]="labelService" formControlName="taskTypeLabels" [useClear]="true"
+        [itemFormatter]="labelService.formatter"></app-select-model-multiple>
     </div>
   </div>
 </form>

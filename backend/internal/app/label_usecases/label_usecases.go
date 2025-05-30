@@ -4,10 +4,17 @@ import (
 	"main/internal/app/queries"
 	domain "main/internal/domain/models"
 	"main/internal/domain/repo"
+	"main/pkg/utils"
 )
 
 type UpdateLabelRequest struct {
 	Title   string
+	AltName *string
+}
+
+type KanbanLabel struct {
+	Id      string
+	Name    string
 	AltName *string
 }
 
@@ -18,8 +25,24 @@ type LabelUseCases struct {
 	groupQuery queries.GroupQuery `di.inject:"GroupQuery"`
 }
 
-func (uc *LabelUseCases) GetLabels() (*[]domain.Label, error) {
-	return uc.labelRepo.List(nil)
+func (uc *LabelUseCases) GetLabels() (*[]KanbanLabel, error) {
+	labels, err := uc.labelRepo.List(nil)
+	if err != nil {
+		return nil, err
+	}
+	kanbanLabels := utils.Map(
+		utils.Unique(*labels, func(l domain.Label) string {
+			return l.Name
+		}),
+		func(l domain.Label) KanbanLabel {
+			return KanbanLabel{
+				Id:      l.Name,
+				Name:    l.Name,
+				AltName: l.AltName,
+			}
+		},
+	)
+	return &kanbanLabels, nil
 }
 
 func (uc *LabelUseCases) GetLabel(id string) (*domain.Label, error) {

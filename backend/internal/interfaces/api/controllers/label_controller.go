@@ -30,7 +30,7 @@ func (c *LabelController) getLabels(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, dto.SerializeLabels(labels))
+	ctx.JSON(http.StatusOK, dto.SerializeKanbanLabels(labels))
 }
 
 func (c *LabelController) updateLabel(ctx *gin.Context) {

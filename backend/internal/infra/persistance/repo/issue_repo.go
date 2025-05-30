@@ -168,5 +168,9 @@ func (r *IssueRepository) toIssue(issue *domain.Issue) *models.Issue {
 }
 
 func (r *IssueRepository) getQuery() *gorm.DB {
-	return r.conn.GetEngine().Model(&models.Issue{}).Preload("Assignees").Preload("Labels").Preload("Project").Preload("Release").Preload("TaskType")
+	query := r.conn.GetEngine().Model(&models.Issue{})
+	query = query.Preload("Assignees").Preload("Labels")
+	query = query.Preload("Project").Preload("Project.Team")
+	query = query.Preload("Release").Preload("TaskType")
+	return query
 }

@@ -12,20 +12,26 @@ type SyncUseCases struct {
 	userRepo    repo.UserRepo          `di.inject:"UserRepository"`
 	projectRepo repo.ProjectRepo       `di.inject:"ProjectRepository"`
 	issueRepo   repo.IssueRepo         `di.inject:"IssueRepository"`
+	labelRepo   repo.LabelRepo         `di.inject:"LabelRepository"`
 }
 
 func (uc *SyncUseCases) Sync() error {
-	// err := uc.SyncProjects()
-	// if err != nil {
-	// 	return fmt.Errorf("Error syncing projects: %w", err)
-	// }
+	err := uc.SyncProjects()
+	if err != nil {
+		return fmt.Errorf("Error syncing projects: %w", err)
+	}
 
-	// err = uc.SyncUsers()
-	// if err != nil {
-	// 	return fmt.Errorf("Error syncing users: %w", err)
-	// }
+	err = uc.SyncUsers()
+	if err != nil {
+		return fmt.Errorf("Error syncing users: %w", err)
+	}
 
-	err := uc.SyncIssues()
+	err = uc.SyncLabels()
+	if err != nil {
+		return fmt.Errorf("Error syncing labels: %w", err)
+	}
+
+	err = uc.SyncIssues()
 	if err != nil {
 		return fmt.Errorf("Error syncing issues: %w", err)
 	}
@@ -126,6 +132,38 @@ func (uc *SyncUseCases) SyncIssues() error {
 			}
 		} else {
 			_, err := uc.issueRepo.Create(&issue)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+func (uc *SyncUseCases) SyncLabels() error {
+	labels, err := uc.gitlab.GetLabels()
+	if err != nil {
+		return err
+	}
+
+	for _, label := range labels {
+		existLabel, err := uc.labelRepo.Get(label.Id)
+		if err == nil {
+			existLabel.Name = label.Name
+			existLabel.Color = label.Color
+			existLabel.TextColor = label.TextColor
+
+			if err := existLabel.Validate(); err != nil {
+				return err
+			}
+
+			_, err := uc.labelRepo.Update(existLabel)
+			if err != nil {
+				return err
+			}
+		} else {
+			_, err := uc.labelRepo.Create(&label)
 			if err != nil {
 				return err
 			}

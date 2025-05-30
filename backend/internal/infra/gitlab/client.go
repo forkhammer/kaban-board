@@ -177,6 +177,41 @@ func (client *GitlabClient) GetIssues() ([]domain.Issue, error) {
 	return result, nil
 }
 
+func (client *GitlabClient) GetLabels() ([]domain.Label, error) {
+	pageSize := 100
+	startCursor := ""
+	issues := make([]GitlabIssue, 0)
+
+	for {
+		response, err := client.GetIssuesResponse(pageSize, startCursor)
+
+		if err != nil {
+			return []domain.Label{}, err
+		}
+
+		issues = append(issues, response.Data.Issues.Nodes...)
+
+		if !response.Data.Issues.PageInfo.HasNextPage {
+			break
+		}
+
+		startCursor = response.Data.Issues.PageInfo.EndCursor
+	}
+
+	labels := make([]GitlabLabel, 0)
+	for _, issue := range issues {
+		labels = append(labels, issue.Labels.Nodes...)
+	}
+	labels = utils.Unique(labels, func(issue GitlabLabel) string {
+		return issue.Id
+	})
+
+	domainLabels := utils.Map(labels, func(label GitlabLabel) domain.Label {
+		return *client.toDomainLabel(&label)
+	})
+	return domainLabels, nil
+}
+
 func (client *GitlabClient) GetUsersResponse(pageSize int, startCursor string) (*GitlabUsersResponse, error) {
 	data, err := client.graphQLRequest(client.getUsersQuery(pageSize, startCursor))
 
@@ -535,4 +570,14 @@ func (client *GitlabClient) getIssueTaskType(labels []domain.Label, settings *do
 			return id == label.Name
 		}) > -1
 	})
+}
+
+func (client *GitlabClient) toDomainLabel(label *GitlabLabel) *domain.Label {
+	return &domain.Label{
+		Id:        domain.LabelId(label.Id),
+		Name:      label.Title,
+		Color:     domain.Color(label.Color),
+		TextColor: domain.Color(label.TextColor),
+		AltName:   nil,
+	}
 }

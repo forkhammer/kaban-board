@@ -1,4 +1,4 @@
-package settings_usecases
+package usecases
 
 import (
 	"main/config"

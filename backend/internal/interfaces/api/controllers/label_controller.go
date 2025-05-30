@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"main/internal/app/label_usecases"
+	"main/internal/app/usecases"
 	"main/internal/interfaces/api/dto"
 	"main/internal/interfaces/api/middleware"
 	"net/http"
@@ -10,7 +10,7 @@ import (
 )
 
 type LabelController struct {
-	labelUC *label_usecases.LabelUseCases `di.inject:"LabelUseCases"`
+	labelUC *usecases.LabelUseCases `di.inject:"LabelUseCases"`
 }
 
 func (c *LabelController) RegisterRoutes(router *gin.Engine) error {
@@ -43,7 +43,7 @@ func (c *LabelController) updateLabel(ctx *gin.Context) {
 
 	id := ctx.Param("id")
 
-	err := c.labelUC.Update(&label_usecases.UpdateLabelRequest{
+	err := c.labelUC.Update(&usecases.UpdateLabelRequest{
 		Title:   string(id),
 		AltName: request.AltName,
 	})

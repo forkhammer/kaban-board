@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"main/internal/app/group_usecases"
+	"main/internal/app/usecases"
 	"main/internal/interfaces/api/dto"
 	"net/http"
 	"strconv"
@@ -10,7 +10,7 @@ import (
 )
 
 type GroupController struct {
-	groupUC *group_usecases.GroupUseCases `di.inject:"GroupUseCases"`
+	groupUC *usecases.GroupUseCases `di.inject:"GroupUseCases"`
 }
 
 func (c *GroupController) RegisterRoutes(router *gin.Engine) error {

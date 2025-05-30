@@ -1,4 +1,4 @@
-package team_usecases
+package usecases
 
 import (
 	"main/internal/app/queries"

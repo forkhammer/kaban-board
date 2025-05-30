@@ -1,4 +1,4 @@
-package group_usecases
+package usecases
 
 import (
 	domain "main/internal/domain/models"

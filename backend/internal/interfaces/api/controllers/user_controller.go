@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"main/internal/app/user_usecases"
+	"main/internal/app/usecases"
 	"main/internal/domain/repo"
 	"main/internal/interfaces/api/dto"
 	"main/internal/interfaces/api/middleware"
@@ -12,8 +12,8 @@ import (
 )
 
 type UserController struct {
-	userRepo repo.UserRepo               `di.inject:"UserRepository"`
-	userUC   *user_usecases.UserUseCases `di.inject:"UserUseCases"`
+	userRepo repo.UserRepo          `di.inject:"UserRepository"`
+	userUC   *usecases.UserUseCases `di.inject:"UserUseCases"`
 }
 
 func (c *UserController) RegisterRoutes(router *gin.Engine) error {

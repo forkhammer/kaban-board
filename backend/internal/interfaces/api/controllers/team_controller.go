@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"main/internal/app/team_usecases"
+	"main/internal/app/usecases"
 	"main/internal/interfaces/api/dto"
 	"main/internal/interfaces/api/middleware"
 	"net/http"
@@ -11,7 +11,7 @@ import (
 )
 
 type TeamController struct {
-	teamUC *team_usecases.TeamUseCases `di.inject:"TeamUseCases"`
+	teamUC *usecases.TeamUseCases `di.inject:"TeamUseCases"`
 }
 
 func (c *TeamController) RegisterRoutes(router *gin.Engine) error {
@@ -70,7 +70,7 @@ func (c *TeamController) updateTeam(ctx *gin.Context) {
 		return
 	}
 
-	team, err := c.teamUC.Update(&team_usecases.UpdateTeamRequest{
+	team, err := c.teamUC.Update(&usecases.UpdateTeamRequest{
 		Id:     uint(id),
 		Title:  request.Title,
 		Groups: request.Groups,
@@ -92,7 +92,7 @@ func (c *TeamController) addTeam(ctx *gin.Context) {
 		return
 	}
 
-	team, err := c.teamUC.Create(&team_usecases.CreateTeamRequest{
+	team, err := c.teamUC.Create(&usecases.CreateTeamRequest{
 		Title:  request.Title,
 		Groups: request.Groups,
 	})

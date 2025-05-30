@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"main/internal/app/settings_usecases"
+	"main/internal/app/usecases"
 	"main/internal/interfaces/api/dto"
 	"main/internal/interfaces/api/middleware"
 	"net/http"
@@ -10,7 +10,7 @@ import (
 )
 
 type SettingsController struct {
-	settingsUC *settings_usecases.SettingsUseCases `di.inject:"SettingsUseCases"`
+	settingsUC *usecases.SettingsUseCases `di.inject:"SettingsUseCases"`
 }
 
 func (c *SettingsController) RegisterRoutes(router *gin.Engine) error {

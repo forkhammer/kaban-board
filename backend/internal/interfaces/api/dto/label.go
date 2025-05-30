@@ -1,7 +1,7 @@
 package dto
 
 import (
-	"main/internal/app/label_usecases"
+	"main/internal/app/usecases"
 	domain "main/internal/domain/models"
 	"main/pkg/utils"
 )
@@ -41,7 +41,7 @@ func SerializeLabels(labels *[]domain.Label) *[]LabelDto {
 	return &result
 }
 
-func SerializeKanbanLabel(label *label_usecases.KanbanLabel) *KanbanLabelDto {
+func SerializeKanbanLabel(label *usecases.KanbanLabel) *KanbanLabelDto {
 	return &KanbanLabelDto{
 		Id:      label.Name,
 		Name:    label.Name,
@@ -49,8 +49,8 @@ func SerializeKanbanLabel(label *label_usecases.KanbanLabel) *KanbanLabelDto {
 	}
 }
 
-func SerializeKanbanLabels(labels *[]label_usecases.KanbanLabel) *[]KanbanLabelDto {
-	result := utils.Map(*labels, func(label label_usecases.KanbanLabel) KanbanLabelDto {
+func SerializeKanbanLabels(labels *[]usecases.KanbanLabel) *[]KanbanLabelDto {
+	result := utils.Map(*labels, func(label usecases.KanbanLabel) KanbanLabelDto {
 		return *SerializeKanbanLabel(&label)
 	})
 	return &result

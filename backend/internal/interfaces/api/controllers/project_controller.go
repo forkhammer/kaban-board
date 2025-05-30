@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"main/internal/app/project_usecases"
+	"main/internal/app/usecases"
 	"main/internal/interfaces/api/dto"
 	"main/internal/interfaces/api/middleware"
 	"net/http"
@@ -11,7 +11,7 @@ import (
 )
 
 type ProjectController struct {
-	projectUC *project_usecases.ProjectUseCases `di.inject:"ProjectUseCases"`
+	projectUC *usecases.ProjectUseCases `di.inject:"ProjectUseCases"`
 }
 
 func (c *ProjectController) RegisterRoutes(router *gin.Engine) error {

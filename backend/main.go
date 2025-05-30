@@ -6,14 +6,8 @@ import (
 	"main/config"
 	"main/internal/app/account_usecases"
 	"main/internal/app/column_usecases"
-	"main/internal/app/group_usecases"
-	"main/internal/app/label_usecases"
-	"main/internal/app/project_usecases"
 	app_services "main/internal/app/services"
-	"main/internal/app/settings_usecases"
-	"main/internal/app/team_usecases"
 	"main/internal/app/usecases"
-	"main/internal/app/user_usecases"
 	"main/internal/infra/db/implementation"
 	"main/internal/infra/db/interfaces"
 	"main/internal/infra/gitlab"
@@ -84,12 +78,12 @@ func (app *Application) Init() {
 	di.RegisterBean("CreateColumnUseCase", reflect.TypeOf((*column_usecases.CreateColumnUseCase)(nil)))
 	di.RegisterBean("DeleteColumUseCase", reflect.TypeOf((*column_usecases.DeleteColumUseCase)(nil)))
 	di.RegisterBean("OrderingColumnUseCase", reflect.TypeOf((*column_usecases.OrderingColumnUseCase)(nil)))
-	di.RegisterBean("TeamUseCases", reflect.TypeOf((*team_usecases.TeamUseCases)(nil)))
-	di.RegisterBean("LabelUseCases", reflect.TypeOf((*label_usecases.LabelUseCases)(nil)))
-	di.RegisterBean("UserUseCases", reflect.TypeOf((*user_usecases.UserUseCases)(nil)))
-	di.RegisterBean("GroupUseCases", reflect.TypeOf((*group_usecases.GroupUseCases)(nil)))
-	di.RegisterBean("ProjectUseCases", reflect.TypeOf((*project_usecases.ProjectUseCases)(nil)))
-	di.RegisterBean("SettingsUseCases", reflect.TypeOf((*settings_usecases.SettingsUseCases)(nil)))
+	di.RegisterBean("TeamUseCases", reflect.TypeOf((*usecases.TeamUseCases)(nil)))
+	di.RegisterBean("LabelUseCases", reflect.TypeOf((*usecases.LabelUseCases)(nil)))
+	di.RegisterBean("UserUseCases", reflect.TypeOf((*usecases.UserUseCases)(nil)))
+	di.RegisterBean("GroupUseCases", reflect.TypeOf((*usecases.GroupUseCases)(nil)))
+	di.RegisterBean("ProjectUseCases", reflect.TypeOf((*usecases.ProjectUseCases)(nil)))
+	di.RegisterBean("SettingsUseCases", reflect.TypeOf((*usecases.SettingsUseCases)(nil)))
 	di.RegisterBean("SyncUseCases", reflect.TypeOf((*usecases.SyncUseCases)(nil)))
 	di.RegisterBean("KanbanUseCases", reflect.TypeOf((*usecases.KanbanUseCases)(nil)))
 

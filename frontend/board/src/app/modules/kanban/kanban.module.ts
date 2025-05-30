@@ -36,6 +36,7 @@ import { FilterLabelsByNamePipe } from './pipes/filter-labels-by-name.pipe';
 import { AdminLabelCardComponent } from './components/admin-label-card/admin-label-card.component';
 import { UserGroupCardComponent } from './components/user-group-card/user-group-card.component';
 import { FilterUsersByGroupPipe } from './pipes/filter-users-by-group.pipe';
+import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 
 
 @NgModule({
@@ -85,6 +86,7 @@ import { FilterUsersByGroupPipe } from './pipes/filter-users-by-group.pipe';
     FontAwesomeModule,
     RouterLink,
     DragDropModule,
+    NgbTooltipModule,
   ]
 })
 export class KanbanModule { }

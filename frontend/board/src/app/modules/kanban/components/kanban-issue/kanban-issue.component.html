@@ -1,5 +1,9 @@
 <div class="issue">
   <div class="header">
+    <div class="assignee" *ngIf="assignee">
+      <img [src]="assignee.avatar_url" [alt]="assignee.name">
+    </div>
+
     <div class="task-type fs-paragraph-xxs" *ngIf="issue?.taskType">
       <div class="task-type-icon" [style.backgroundColor]="issue?.taskType?.color"></div>
 
@@ -8,19 +12,34 @@
     </div>
   </div>
 
-  <div class="content pt-1 pb-1 pe-3 ps-3">
+  <div class="content pt-1 pb-1 pe-2 ps-2">
     {{issue?.title}}
   </div>
 
-  <div class="labels d-flex p-3 pt-1 pb-0 mb-1 flex-wrap">
+  <div class="labels d-flex p-2 pt-1 pb-0 mb-1 flex-wrap">
     <app-kanban-label [label]="label" *ngFor="let label of issue?.labels" class="mb-1"></app-kanban-label>
   </div>
 
-  <div class="footer pe-3 ps-3 pt-1 pb-1 border-top d-flex align-items-center">
-    <a [href]="issue?.webUrl" target="_blank" class="fs-paragraph-xs text-nowrap">{{issue?.projectName}}#{{issue?.iid}}</a>
+  <div class="footer pe-1 ps-2 pt-1 pb-1 border-top d-flex align-items-center">
+    <a [href]="issue?.webUrl" target="_blank" class="fs-paragraph-xxxs text-nowrap me-auto ">{{issue?.projectName}}#{{issue?.iid}}</a>
 
-    <a [href]="issue?.milestone?.webPath" class="ms-3 milestone text-truncate" target="_blank"
+    <a [href]="issue?.milestone?.webPath" class="milestone text-truncate" target="_blank"
       [title]="issue?.milestone?.title"
-      *ngIf="issue?.milestone?.id">{{issue?.milestone?.title}}</a>
+      *ngIf="issue?.milestone?.id">
+      <fa-icon [icon]="faSquare"></fa-icon>
+      {{issue?.milestone?.title}}
+    </a>
+
+    <div class="estimate-dev" ngbTooltip="Оценка разработки: {{issue?.estimateDev ? issue?.estimateDev + ' ч.' : '?'}}">
+      <fa-icon [icon]="faHammer"></fa-icon>
+      <span *ngIf="issue?.estimateDev">{{issue?.estimateDev}} ч.</span>
+      <span *ngIf="!issue?.estimateDev">?</span>
+    </div>
+
+    <div class="estimate-qa" ngbTooltip="Оценка тестирования: {{issue?.estimateQA ? issue?.estimateQA + ' ч.' : '?'}}">
+      <fa-icon [icon]="faBug"></fa-icon>
+      <span *ngIf="issue?.estimateQA">{{issue?.estimateQA}} ч.</span>
+      <span *ngIf="!issue?.estimateQA">?</span>
+    </div>
   </div>
 </div>

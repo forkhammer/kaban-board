@@ -17,9 +17,20 @@
   }
 }
 
-.milestone {
+.milestone,
+.estimate-dev,
+.estimate-qa {
   color: $gray-600;
-  text-decoration: underline;
+  @include fs-paragraph-xxs();
+  border: 1px solid $gray-300;
+  border-radius: 1rem;
+  padding: 0.1rem 0.5rem;
+  margin-right: $pt;
+
+  fa-icon {
+    margin-right: 3px;
+    @include fs-paragraph-xxxs();
+  }
 
   :host-context([data-bs-theme="dark"]) {
     .milestone {
@@ -29,7 +40,10 @@
 }
 
 .header {
-  padding: $pt $pt3 0 $pt3;
+  padding: $pt $pt2 0 $pt2;
+  display: flex;
+  justify-content: start;
+  align-items: center;
 }
 
 .task-type {
@@ -41,6 +55,16 @@
     height: $pt;
     border-radius: 50%;
     background: $white;
+    margin-right: $pt;
+  }
+}
+
+.assignee {
+  img {
+    width: $pt3;
+    height: $pt3;
+    border-radius: 50%;
+    overflow: hidden;
     margin-right: $pt;
   }
 }

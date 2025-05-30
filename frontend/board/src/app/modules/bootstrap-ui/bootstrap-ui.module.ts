@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   NgbDropdownModule, NgbModalModule, NgbNavModule, NgbToastModule,
+  NgbTooltipModule,
 } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
@@ -12,6 +13,7 @@ import {
     NgbDropdownModule,
     NgbModalModule,
     NgbNavModule,
+    NgbTooltipModule
   ],
   exports: [
     NgbToastModule,

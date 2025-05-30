@@ -91,9 +91,9 @@ func (app *Application) Init() {
 	di.RegisterBean("ProjectUseCases", reflect.TypeOf((*project_usecases.ProjectUseCases)(nil)))
 	di.RegisterBean("SettingsUseCases", reflect.TypeOf((*settings_usecases.SettingsUseCases)(nil)))
 	di.RegisterBean("SyncUseCases", reflect.TypeOf((*usecases.SyncUseCases)(nil)))
+	di.RegisterBean("KanbanUseCases", reflect.TypeOf((*usecases.KanbanUseCases)(nil)))
 
 	di.RegisterBean("AccountController", reflect.TypeOf((*controllers.AccountController)(nil)))
-	di.RegisterBean("BoardController", reflect.TypeOf((*controllers.BoardController)(nil)))
 	di.RegisterBean("ReportsController", reflect.TypeOf((*controllers.ReportsController)(nil)))
 	di.RegisterBean("HealthController", reflect.TypeOf((*controllers.HealthController)(nil)))
 	di.RegisterBean("ColumnController", reflect.TypeOf((*controllers.ColumnController)(nil)))
@@ -103,6 +103,7 @@ func (app *Application) Init() {
 	di.RegisterBean("GroupController", reflect.TypeOf((*controllers.GroupController)(nil)))
 	di.RegisterBean("ProjectController", reflect.TypeOf((*controllers.ProjectController)(nil)))
 	di.RegisterBean("SettingsController", reflect.TypeOf((*controllers.SettingsController)(nil)))
+	di.RegisterBean("KanbanController", reflect.TypeOf((*controllers.KanbanController)(nil)))
 
 	err = di.InitializeContainer()
 	if err != nil {

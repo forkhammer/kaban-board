@@ -661,6 +661,7 @@ func (client *GitlabClient) toDomainRelease(milestone *GitlabMilestone, project 
 		Iid:     domain.ReleaseIid(milestone.Iid),
 		Title:   milestone.Title,
 		Project: *project,
+		WebPath: milestone.WebPath,
 	}
 
 	if err := result.Validate(); err != nil {

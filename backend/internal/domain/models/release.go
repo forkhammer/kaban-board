@@ -8,6 +8,7 @@ type Release struct {
 	Iid     ReleaseIid
 	Title   string
 	Project Project
+	WebPath string
 }
 
 func (r *Release) Validate() error {

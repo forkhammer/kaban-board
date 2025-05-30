@@ -46,7 +46,7 @@ func (app *ApiApplication) Run() {
 func (app *ApiApplication) initRouter() error {
 	controllers := []api.Controller{
 		di.GetInstance("AccountController").(api.Controller),
-		di.GetInstance("BoardController").(api.Controller),
+		di.GetInstance("KanbanController").(api.Controller),
 		di.GetInstance("ReportsController").(api.Controller),
 		di.GetInstance("HealthController").(api.Controller),
 		di.GetInstance("ColumnController").(api.Controller),

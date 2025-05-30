@@ -10,16 +10,20 @@ type UpdateLabelRequest struct {
 }
 
 type LabelDto struct {
-	Id      string  `json:"id"`
-	Title   string  `json:"title"`
-	AltName *string `json:"altName"`
+	Id        string  `json:"id"`
+	Title     string  `json:"title"`
+	Color     string  `json:"color"`
+	TextColor string  `json:"textColor"`
+	AltName   *string `json:"altName"`
 }
 
 func SerializeLabel(label *domain.Label) *LabelDto {
 	return &LabelDto{
-		Id:      string(label.Id),
-		Title:   label.Name,
-		AltName: label.AltName,
+		Id:        string(label.Id),
+		Title:     label.Name,
+		Color:     string(label.Color),
+		TextColor: string(label.TextColor),
+		AltName:   label.AltName,
 	}
 }
 

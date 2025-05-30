@@ -66,6 +66,9 @@ type GitlabProject struct {
 	ProjectMembers struct {
 		Nodes []GitlabProjectMember `json:"nodes"`
 	} `json:"projectMembers"`
+	Milesones struct {
+		Nodes []GitlabMilestone `json:"nodes"`
+	} `json:"milestones"`
 }
 
 func (p *GitlabProject) GetUserIds() []string {
@@ -96,6 +99,12 @@ type GitlabProjectMember struct {
 
 type GitlabMilestone struct {
 	Id      string `json:"id"`
+	Iid     string `json:"iid"`
 	Title   string `json:"title"`
 	WebPath string `json:"webPath"`
+}
+
+type MilestoneIndex struct {
+	Milestone *GitlabMilestone
+	Project   *GitlabProject
 }

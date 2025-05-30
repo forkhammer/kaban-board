@@ -30,6 +30,7 @@ type GitlabClient struct {
 	projectRepo repo.ProjectRepo  `di.inject:"ProjectRepository"`
 	labelRepo   repo.LabelRepo    `di.inject:"LabelRepository"`
 	settingRepo repo.SettingsRepo `di.inject:"SettingsRepository"`
+	releaseRepo repo.ReleaseRepo  `di.inject:"ReleaseRepository"`
 }
 
 func NewGitlabClient(apiUrl string, token string) *GitlabClient {
@@ -45,6 +46,7 @@ func (client *GitlabClient) PostConstruct() error {
 	client.projectRepo = di.GetInstance("ProjectRepository").(repo.ProjectRepo)
 	client.labelRepo = di.GetInstance("LabelRepository").(repo.LabelRepo)
 	client.settingRepo = di.GetInstance("SettingsRepository").(repo.SettingsRepo)
+	client.releaseRepo = di.GetInstance("ReleaseRepository").(repo.ReleaseRepo)
 	return nil
 }
 
@@ -159,6 +161,11 @@ func (client *GitlabClient) GetIssues() ([]domain.Issue, error) {
 		return []domain.Issue{}, err
 	}
 
+	releases, err := client.releaseRepo.List(nil)
+	if err != nil {
+		return []domain.Issue{}, err
+	}
+
 	result := make([]domain.Issue, 0)
 	for _, issue := range issues {
 		domainIssue, err := client.toDomainIssue(
@@ -166,6 +173,7 @@ func (client *GitlabClient) GetIssues() ([]domain.Issue, error) {
 			users,
 			projects,
 			labels,
+			releases,
 			settings,
 		)
 		if err != nil {
@@ -210,6 +218,57 @@ func (client *GitlabClient) GetLabels() ([]domain.Label, error) {
 		return *client.toDomainLabel(&label)
 	})
 	return domainLabels, nil
+}
+
+func (client *GitlabClient) GetReleases() ([]domain.Release, error) {
+	pageSize := 100
+	startCursor := ""
+	projects := make([]GitlabProject, 0)
+
+	for {
+		response, err := client.GetProjectsResponse(pageSize, startCursor)
+
+		if err != nil {
+			return []domain.Release{}, err
+		}
+
+		projects = append(projects, response.Data.Projects.Nodes...)
+
+		if !response.Data.Projects.PageInfo.HasNextPage {
+			break
+		}
+
+		startCursor = response.Data.Projects.PageInfo.EndCursor
+	}
+
+	milesones := make([]MilestoneIndex, 0)
+	for _, project := range projects {
+		for _, node := range project.Milesones.Nodes {
+			milesones = append(milesones, MilestoneIndex{
+				Milestone: &node,
+				Project:   &project,
+			})
+		}
+	}
+	milesones = utils.Unique(milesones, func(milestone MilestoneIndex) string {
+		return milestone.Milestone.Id
+	})
+
+	result := make([]domain.Release, 0)
+	for _, milesone := range milesones {
+		domainProject, err := client.toDomainProject(milesone.Project)
+		if err != nil {
+			return []domain.Release{}, err
+		}
+
+		domainRelease, err := client.toDomainRelease(milesone.Milestone, domainProject)
+		if err != nil {
+			return []domain.Release{}, err
+		}
+		result = append(result, *domainRelease)
+	}
+
+	return result, nil
 }
 
 func (client *GitlabClient) GetUsersResponse(pageSize int, startCursor string) (*GitlabUsersResponse, error) {
@@ -336,6 +395,7 @@ func (client *GitlabClient) getIssuesQuery(pageSize int, startCursor string) str
 					projectId
 					milestone {
 						id
+						iid
 						title
 						webPath
 					}
@@ -375,6 +435,14 @@ func (client *GitlabClient) getProjectsQuery(pageSize int, startCursor string) s
 							}
 						}
 					}
+					milestones {
+                        nodes {
+                            id
+                            iid
+                            title
+							webPath
+                        }
+                    }
 				}
 				pageInfo {
 					startCursor
@@ -494,6 +562,7 @@ func (client *GitlabClient) toDomainIssue(
 	users *[]domain.User,
 	projects *[]domain.Project,
 	labels *[]domain.Label,
+	releases *[]domain.Release,
 	settings *domain.Settings,
 ) (*domain.Issue, error) {
 	issueId, err := client.cleanIssueId(issue.Id)
@@ -532,6 +601,10 @@ func (client *GitlabClient) toDomainIssue(
 		}
 	}
 
+	release := utils.Find(*releases, func(r domain.Release) bool {
+		return r.Id == domain.ReleaseId(issue.Milestone.Id)
+	})
+
 	domainIssue := &domain.Issue{
 		Id:          domain.IssueId(issueId),
 		Iid:         domain.IssueIid(issue.Iid),
@@ -541,7 +614,7 @@ func (client *GitlabClient) toDomainIssue(
 		WebUrl:      issue.WebUrl,
 		Labels:      issueLabels,
 		Project:     *project,
-		Release:     nil,
+		Release:     release,
 		TaskType:    client.getIssueTaskType(issueLabels, settings),
 		EstimateDev: nil,
 		EstimateQA:  nil,
@@ -580,4 +653,19 @@ func (client *GitlabClient) toDomainLabel(label *GitlabLabel) *domain.Label {
 		TextColor: domain.Color(label.TextColor),
 		AltName:   nil,
 	}
+}
+
+func (client *GitlabClient) toDomainRelease(milestone *GitlabMilestone, project *domain.Project) (*domain.Release, error) {
+	result := &domain.Release{
+		Id:      domain.ReleaseId(milestone.Id),
+		Iid:     domain.ReleaseIid(milestone.Iid),
+		Title:   milestone.Title,
+		Project: *project,
+	}
+
+	if err := result.Validate(); err != nil {
+		return nil, err
+	}
+
+	return result, nil
 }

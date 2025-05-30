@@ -100,6 +100,14 @@ func (r *IssueRepository) toDomainIssue(issue *models.Issue) (*domain.Issue, err
 		return nil, err
 	}
 
+	var release *domain.Release
+	if issue.Release != (*models.Release)(nil) {
+		release, err = r.releaseRepo.toDomainRelease(issue.Release)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	return &domain.Issue{
 		Id:        domain.IssueId(issue.Id),
 		Iid:       domain.IssueIid(issue.Iid),
@@ -113,12 +121,7 @@ func (r *IssueRepository) toDomainIssue(issue *models.Issue) (*domain.Issue, err
 			return *r.labelRepo.toDomainLabel(&l)
 		}),
 		Project: *project,
-		Release: func() *domain.Release {
-			if issue.Release != (*models.Release)(nil) {
-				return r.releaseRepo.toDomainRelease(issue.Release)
-			}
-			return nil
-		}(),
+		Release: release,
 		TaskType: func() *domain.Label {
 			if issue.TaskType != (*models.Label)(nil) {
 				return r.labelRepo.toDomainLabel(issue.TaskType)

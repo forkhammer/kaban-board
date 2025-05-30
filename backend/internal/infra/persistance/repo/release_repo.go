@@ -10,7 +10,8 @@ import (
 )
 
 type ReleaseRepository struct {
-	conn interfaces.ConnectionInterface `di.inject:"db"`
+	conn        interfaces.ConnectionInterface `di.inject:"db"`
+	projectRepo *ProjectRepository             `di.inject:"ProjectRepository"`
 }
 
 func (r *ReleaseRepository) Get(id domain.ReleaseId) (*domain.Release, error) {
@@ -18,7 +19,7 @@ func (r *ReleaseRepository) Get(id domain.ReleaseId) (*domain.Release, error) {
 	if err := r.getQuery().Where("id = ?", id).First(release).Error; err != nil {
 		return nil, err
 	}
-	return r.toDomainRelease(release), nil
+	return r.toDomainRelease(release)
 }
 
 func (r *ReleaseRepository) List(spec repo.QuerySpec) (*[]domain.Release, error) {
@@ -39,7 +40,11 @@ func (r *ReleaseRepository) List(spec repo.QuerySpec) (*[]domain.Release, error)
 
 	domainReleases := make([]domain.Release, len(releases))
 	for i, release := range releases {
-		domainReleases[i] = *r.toDomainRelease(&release)
+		val, err := r.toDomainRelease(&release)
+		if err != nil {
+			return nil, err
+		}
+		domainReleases[i] = *val
 	}
 
 	return &domainReleases, nil
@@ -67,13 +72,18 @@ func (r *ReleaseRepository) Delete(id domain.ReleaseId) error {
 	return r.conn.GetEngine().Where("id = ?", id).Delete(&models.Release{}).Error
 }
 
-func (r *ReleaseRepository) toDomainRelease(release *models.Release) *domain.Release {
-	return &domain.Release{
-		Id:        domain.ReleaseId(release.Id),
-		Iid:       domain.ReleaseIid(release.Iid),
-		Title:     release.Title,
-		ProjectId: domain.ProjectId(release.ProjectId),
+func (r *ReleaseRepository) toDomainRelease(release *models.Release) (*domain.Release, error) {
+	project, err := r.projectRepo.toDomainProject(&release.Project)
+	if err != nil {
+		return nil, err
 	}
+
+	return &domain.Release{
+		Id:      domain.ReleaseId(release.Id),
+		Iid:     domain.ReleaseIid(release.Iid),
+		Title:   release.Title,
+		Project: *project,
+	}, nil
 }
 
 func (r *ReleaseRepository) toRelease(release *domain.Release) *models.Release {
@@ -81,7 +91,7 @@ func (r *ReleaseRepository) toRelease(release *domain.Release) *models.Release {
 		Id:        string(release.Id),
 		Iid:       string(release.Iid),
 		Title:     release.Title,
-		ProjectId: uint(release.ProjectId),
+		ProjectId: uint(release.Project.Id),
 	}
 }
 

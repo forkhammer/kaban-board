@@ -13,12 +13,18 @@ type SyncUseCases struct {
 	projectRepo repo.ProjectRepo       `di.inject:"ProjectRepository"`
 	issueRepo   repo.IssueRepo         `di.inject:"IssueRepository"`
 	labelRepo   repo.LabelRepo         `di.inject:"LabelRepository"`
+	releaseRepo repo.ReleaseRepo       `di.inject:"ReleaseRepository"`
 }
 
 func (uc *SyncUseCases) Sync() error {
 	err := uc.SyncProjects()
 	if err != nil {
 		return fmt.Errorf("Error syncing projects: %w", err)
+	}
+
+	err = uc.SyncReleases()
+	if err != nil {
+		return fmt.Errorf("Error syncing releases: %w", err)
 	}
 
 	err = uc.SyncUsers()
@@ -60,6 +66,38 @@ func (uc *SyncUseCases) SyncProjects() error {
 			}
 		} else {
 			_, err := uc.projectRepo.Create(&project)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+func (uc *SyncUseCases) SyncReleases() error {
+	releases, err := uc.gitlab.GetReleases()
+	if err != nil {
+		return err
+	}
+
+	for _, release := range releases {
+		existRelease, err := uc.releaseRepo.Get(release.Id)
+		if err == nil {
+			existRelease.Title = release.Title
+			existRelease.Iid = release.Iid
+			existRelease.Project = release.Project
+
+			if err := existRelease.Validate(); err != nil {
+				return err
+			}
+
+			_, err := uc.releaseRepo.Update(existRelease)
+			if err != nil {
+				return err
+			}
+		} else {
+			_, err := uc.releaseRepo.Create(&release)
 			if err != nil {
 				return err
 			}

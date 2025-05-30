@@ -14,6 +14,7 @@ import (
 	column_spec "main/internal/infra/persistance/spec/column"
 	group_spec "main/internal/infra/persistance/spec/group"
 	label_spec "main/internal/infra/persistance/spec/label"
+	user_spec "main/internal/infra/persistance/spec/user"
 	"main/internal/infra/services"
 	"main/internal/interfaces/api/controllers"
 	"reflect"
@@ -61,6 +62,7 @@ func (app *Application) Init() {
 	di.RegisterBean("LabelQuery", reflect.TypeOf((*label_spec.LabelQueryImpl)(nil)))
 	di.RegisterBean("ColumnQuery", reflect.TypeOf((*column_spec.ColumnQueryImpl)(nil)))
 	di.RegisterBean("GroupQuery", reflect.TypeOf((*group_spec.GroupQueryImpl)(nil)))
+	di.RegisterBean("UserQuery", reflect.TypeOf((*user_spec.UserQueryImpl)(nil)))
 
 	di.RegisterBean("JWTService", reflect.TypeOf((*services.JWTService)(nil)))
 	di.RegisterBean("PasswordService", reflect.TypeOf((*services.PasswordService)(nil)))

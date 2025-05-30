@@ -1,7 +1,7 @@
 package models
 
 type IssueType string
-type IssueId string
+type IssueId uint
 type IssueIid string
 
 const (
@@ -29,4 +29,8 @@ type Issue struct {
 	TaskType    *Label
 	EstimateDev *uint
 	EstimateQA  *uint
+}
+
+func (i *Issue) Validate() error {
+	return nil
 }

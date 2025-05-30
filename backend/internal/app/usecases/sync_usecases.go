@@ -15,17 +15,17 @@ type SyncUseCases struct {
 }
 
 func (uc *SyncUseCases) Sync() error {
-	err := uc.SyncProjects()
-	if err != nil {
-		return fmt.Errorf("Error syncing projects: %w", err)
-	}
+	// err := uc.SyncProjects()
+	// if err != nil {
+	// 	return fmt.Errorf("Error syncing projects: %w", err)
+	// }
 
-	err = uc.SyncUsers()
-	if err != nil {
-		return fmt.Errorf("Error syncing users: %w", err)
-	}
+	// err = uc.SyncUsers()
+	// if err != nil {
+	// 	return fmt.Errorf("Error syncing users: %w", err)
+	// }
 
-	err = uc.SyncIssues()
+	err := uc.SyncIssues()
 	if err != nil {
 		return fmt.Errorf("Error syncing issues: %w", err)
 	}
@@ -96,5 +96,41 @@ func (uc *SyncUseCases) SyncUsers() error {
 }
 
 func (uc *SyncUseCases) SyncIssues() error {
+	issues, err := uc.gitlab.GetIssues()
+	if err != nil {
+		return err
+	}
+
+	for _, issue := range issues {
+		existIssue, err := uc.issueRepo.Get(issue.Id)
+		if err == nil {
+			existIssue.Iid = issue.Iid
+			existIssue.Title = issue.Title
+			existIssue.IssueType = issue.IssueType
+			existIssue.Assignees = issue.Assignees
+			existIssue.WebUrl = issue.WebUrl
+			existIssue.Labels = issue.Labels
+			existIssue.Project = issue.Project
+			existIssue.Release = issue.Release
+			existIssue.TaskType = issue.TaskType
+			existIssue.EstimateDev = issue.EstimateDev
+			existIssue.EstimateQA = issue.EstimateQA
+
+			if err := existIssue.Validate(); err != nil {
+				return err
+			}
+
+			_, err := uc.issueRepo.Update(existIssue)
+			if err != nil {
+				return err
+			}
+		} else {
+			_, err := uc.issueRepo.Create(&issue)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
 	return nil
 }

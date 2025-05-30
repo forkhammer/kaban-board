@@ -133,7 +133,7 @@ func (r *IssueRepository) toDomainIssue(issue *models.Issue) (*domain.Issue, err
 func (r *IssueRepository) toIssue(issue *domain.Issue) *models.Issue {
 
 	return &models.Issue{
-		Id:        string(issue.Id),
+		Id:        uint(issue.Id),
 		Iid:       string(issue.Iid),
 		Title:     issue.Title,
 		IssueType: string(issue.IssueType),

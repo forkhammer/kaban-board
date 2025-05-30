@@ -12,15 +12,24 @@ import (
 	"strings"
 	"time"
 
+	"main/config"
 	"main/internal/app/interfaces"
 	domain "main/internal/domain/models"
+	"main/internal/domain/repo"
 	"main/pkg/utils"
+
+	"github.com/goioc/di"
 )
 
 type GitlabClient struct {
 	interfaces.TaskTracker
-	apiUrl string
-	token  string
+	apiUrl      string
+	token       string
+	config      *config.Config    `di.inject:"config"`
+	userRepo    repo.UserRepo     `di.inject:"UserRepository"`
+	projectRepo repo.ProjectRepo  `di.inject:"ProjectRepository"`
+	labelRepo   repo.LabelRepo    `di.inject:"LabelRepository"`
+	settingRepo repo.SettingsRepo `di.inject:"SettingsRepository"`
 }
 
 func NewGitlabClient(apiUrl string, token string) *GitlabClient {
@@ -28,6 +37,15 @@ func NewGitlabClient(apiUrl string, token string) *GitlabClient {
 		apiUrl: apiUrl,
 		token:  token,
 	}
+}
+
+func (client *GitlabClient) PostConstruct() error {
+	client.config = di.GetInstance("config").(*config.Config)
+	client.userRepo = di.GetInstance("UserRepository").(repo.UserRepo)
+	client.projectRepo = di.GetInstance("ProjectRepository").(repo.ProjectRepo)
+	client.labelRepo = di.GetInstance("LabelRepository").(repo.LabelRepo)
+	client.settingRepo = di.GetInstance("SettingsRepository").(repo.SettingsRepo)
+	return nil
 }
 
 func (client *GitlabClient) GetProjects() ([]domain.Project, error) {
@@ -101,7 +119,62 @@ func (client *GitlabClient) GetUsers() ([]domain.User, error) {
 }
 
 func (client *GitlabClient) GetIssues() ([]domain.Issue, error) {
-	return nil, nil
+	pageSize := 100
+	startCursor := ""
+	issues := make([]GitlabIssue, 0)
+
+	for {
+		response, err := client.GetIssuesResponse(pageSize, startCursor)
+
+		if err != nil {
+			return []domain.Issue{}, err
+		}
+
+		issues = append(issues, response.Data.Issues.Nodes...)
+
+		if !response.Data.Issues.PageInfo.HasNextPage {
+			break
+		}
+
+		startCursor = response.Data.Issues.PageInfo.EndCursor
+	}
+
+	users, err := client.userRepo.List(nil)
+	if err != nil {
+		return []domain.Issue{}, err
+	}
+
+	projects, err := client.projectRepo.List(nil)
+	if err != nil {
+		return []domain.Issue{}, err
+	}
+
+	labels, err := client.labelRepo.List(nil)
+	if err != nil {
+		return []domain.Issue{}, err
+	}
+
+	settings, err := client.settingRepo.Get()
+	if err != nil {
+		return []domain.Issue{}, err
+	}
+
+	result := make([]domain.Issue, 0)
+	for _, issue := range issues {
+		domainIssue, err := client.toDomainIssue(
+			&issue,
+			users,
+			projects,
+			labels,
+			settings,
+		)
+		if err != nil {
+			return []domain.Issue{}, err
+		}
+		result = append(result, *domainIssue)
+	}
+
+	return result, nil
 }
 
 func (client *GitlabClient) GetUsersResponse(pageSize int, startCursor string) (*GitlabUsersResponse, error) {
@@ -371,7 +444,7 @@ func (client *GitlabClient) toDomainProject(project *GitlabProject) (*domain.Pro
 	return result, nil
 }
 
-func (app *GitlabClient) cleanProjectId(gid string) (uint, error) {
+func (client *GitlabClient) cleanProjectId(gid string) (uint, error) {
 	id, err := strconv.ParseUint(strings.ReplaceAll(gid, "gid://gitlab/Project/", ""), 10, 32)
 
 	if err != nil {
@@ -379,4 +452,87 @@ func (app *GitlabClient) cleanProjectId(gid string) (uint, error) {
 	}
 
 	return uint(id), nil
+}
+
+func (client *GitlabClient) toDomainIssue(
+	issue *GitlabIssue,
+	users *[]domain.User,
+	projects *[]domain.Project,
+	labels *[]domain.Label,
+	settings *domain.Settings,
+) (*domain.Issue, error) {
+	issueId, err := client.cleanIssueId(issue.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	assignees := make([]domain.User, 0)
+	for _, a := range issue.Assignees.Nodes {
+		for _, user := range *users {
+			assigneeId, err := client.cleanUserId(a.UserId)
+			if err != nil {
+				continue
+			}
+
+			if user.Id == domain.UserId(assigneeId) {
+				assignees = append(assignees, user)
+			}
+		}
+	}
+
+	projectId := domain.ProjectId(uint(issue.ProjectId))
+	project := utils.Find(*projects, func(p domain.Project) bool {
+		return p.Id == projectId
+	})
+	if project == nil {
+		return nil, fmt.Errorf("project not found")
+	}
+
+	issueLabels := make([]domain.Label, 0)
+	for _, l := range issue.Labels.Nodes {
+		for _, label := range *labels {
+			if domain.LabelId(l.Id) == label.Id {
+				issueLabels = append(issueLabels, label)
+			}
+		}
+	}
+
+	domainIssue := &domain.Issue{
+		Id:          domain.IssueId(issueId),
+		Iid:         domain.IssueIid(issue.Iid),
+		Title:       issue.Title,
+		IssueType:   domain.IssueType(issue.IssueType),
+		Assignees:   assignees,
+		WebUrl:      issue.WebUrl,
+		Labels:      issueLabels,
+		Project:     *project,
+		Release:     nil,
+		TaskType:    client.getIssueTaskType(issueLabels, settings),
+		EstimateDev: nil,
+		EstimateQA:  nil,
+	}
+
+	if err := domainIssue.Validate(); err != nil {
+		return nil, err
+	}
+
+	return domainIssue, nil
+}
+
+func (client *GitlabClient) cleanIssueId(gid string) (uint, error) {
+	id, err := strconv.ParseUint(strings.ReplaceAll(gid, "gid://gitlab/Issue/", ""), 10, 32)
+
+	if err != nil {
+		return 0, err
+	}
+
+	return uint(id), nil
+}
+
+func (client *GitlabClient) getIssueTaskType(labels []domain.Label, settings *domain.Settings) *domain.Label {
+	return utils.Find(labels, func(label domain.Label) bool {
+		return utils.IndexOf(settings.TaskTypeLabels, func(id string) bool {
+			return id == label.Name
+		}) > -1
+	})
 }

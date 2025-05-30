@@ -1,6 +1,6 @@
 <div class="issue">
   <div class="header">
-    <div class="assignee" *ngIf="assignee">
+    <div class="assignee" *ngIf="assignee" ngbTooltip="{{assignee.name}}">
       <img [src]="assignee.avatar_url" [alt]="assignee.name">
     </div>
 

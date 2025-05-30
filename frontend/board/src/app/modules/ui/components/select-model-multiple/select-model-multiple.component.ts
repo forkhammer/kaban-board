@@ -5,7 +5,7 @@ import { BehaviorSubject, of, EMPTY } from 'rxjs';
 import { switchMap, pluck, debounceTime, catchError, map } from 'rxjs/operators';
 import { HttpErrorResponse } from '@angular/common/http';
 import { BaseService } from "../../../core/services/base.service";
-import { BaseTitleModel, Pagination } from "../../../core/models/base";
+import { BaseModel, BaseTitleModel, Pagination } from "../../../core/models/base";
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
@@ -32,14 +32,15 @@ export class SelectModelMultipleComponent implements ControlValueAccessor, OnIni
 
   @Input() useSearch: boolean = false;
   @Input() useClear: boolean = false;
-  @Input() service!: BaseService<BaseTitleModel>;
+  @Input() service!: BaseService<BaseModel>;
   @Input() title = '';
   @Input() all = true;
   @Input() nullTitle: string | null = null;
   @Input() formatter: any = null;
+  @Input() itemFormatter: any = null;
 
   value = new BehaviorSubject<(number | string)[]>([]);
-  valuesModel: BaseTitleModel[] = [];
+  valuesModel: BaseModel[] = [];
   valuesFilter = new BehaviorSubject<any>(null);
   private onChange: any;
   searchForm: FormGroup;
@@ -91,9 +92,9 @@ export class SelectModelMultipleComponent implements ControlValueAccessor, OnIni
         }),
         map((data: any) => {
           if (this.service.usePagination) {
-            return (data as Pagination<BaseTitleModel>).results;
+            return (data as Pagination<BaseModel>).results;
           } else {
-            return (data as BaseTitleModel[]);
+            return (data as BaseModel[]);
           }
         }),
         takeUntilDestroyed(this.destriyRef),
@@ -118,9 +119,9 @@ export class SelectModelMultipleComponent implements ControlValueAccessor, OnIni
         }),
         map((data: any) => {
           if (this.service.usePagination) {
-            return (data as Pagination<BaseTitleModel>).results;
+            return (data as Pagination<BaseModel>).results;
           } else {
-            return (data as BaseTitleModel[]);
+            return (data as BaseModel[]);
           }
         }),
         takeUntilDestroyed(this.destriyRef),
@@ -152,7 +153,7 @@ export class SelectModelMultipleComponent implements ControlValueAccessor, OnIni
     return false;
   }
 
-  select(e: MouseEvent, item: BaseTitleModel) {
+  select(e: MouseEvent, item: BaseModel) {
     if (this.selectValue.indexOf(item.id) === -1) {
       this.selectValue = this.selectValue.concat(item.id);
     } else {
@@ -167,7 +168,7 @@ export class SelectModelMultipleComponent implements ControlValueAccessor, OnIni
     return false;
   }
 
-  deselect(e: MouseEvent, item: BaseTitleModel) {
+  deselect(e: MouseEvent, item: BaseModel) {
     if (this.selectValue.indexOf(item.id) > -1) {
       const value = [...this.selectValue];
       value.splice(value.indexOf(item.id), 1);
@@ -177,11 +178,18 @@ export class SelectModelMultipleComponent implements ControlValueAccessor, OnIni
     return false;
   }
 
-  getTitle(item: BaseTitleModel) {
+  getTitle(item: BaseModel) {
     if (this.formatter) {
       return this.formatter(item);
     }
-    return item.title;
+    return (item as BaseTitleModel).title;
+  }
+
+  getItemTitle(item: BaseModel) {
+    if (this.itemFormatter) {
+      return this.itemFormatter(item);
+    }
+    return (item as BaseTitleModel).title;
   }
 
 }

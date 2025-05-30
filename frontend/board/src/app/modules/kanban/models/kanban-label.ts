@@ -8,6 +8,6 @@ export type KanbanLabel = {
 
 export type Label = {
   id: string
-  title: string
+  name: string
   altName: string | null
 }

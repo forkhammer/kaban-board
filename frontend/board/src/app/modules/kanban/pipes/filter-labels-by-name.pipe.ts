@@ -12,7 +12,7 @@ export class FilterLabelsByNamePipe implements PipeTransform {
 
     return labels.filter(label => {
       return lowerText
-        ? (label.title.toLowerCase().indexOf(lowerText) > -1)
+        ? (label.name.toLowerCase().indexOf(lowerText) > -1)
         : true
     });
   }

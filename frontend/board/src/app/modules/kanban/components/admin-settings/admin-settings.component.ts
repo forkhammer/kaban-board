@@ -4,6 +4,8 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { LabelService } from '../../services/label.service';
 import { distinctUntilChanged, filter, switchMap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { catchErrorMessages } from 'src/app/modules/core/tools/catch-error';
+import { ToastService } from 'src/app/modules/core/services/toast.service';
 
 @Component({
     selector: 'app-admin-settings',
@@ -15,6 +17,7 @@ export class AdminSettingsComponent {
   private settingsServie = inject(KanbanSettingsService)
   private fb = inject(FormBuilder)
   public labelService = inject(LabelService)
+  private toast = inject(ToastService)
 
   form: FormGroup
   private isUpdate = false
@@ -25,6 +28,7 @@ export class AdminSettingsComponent {
     })
 
     this.settingsServie.getKanbanSettings().pipe(
+      catchErrorMessages(this.toast),
       takeUntilDestroyed()
     ).subscribe(data => {
       this.isUpdate = true
@@ -35,7 +39,11 @@ export class AdminSettingsComponent {
     this.form.get('taskTypeLabels')?.valueChanges.pipe(
       filter(_ => !this.isUpdate),
       distinctUntilChanged(),
-      switchMap(data => this.settingsServie.saveTaskTypeLabels(data as string[])),
+      switchMap(data => {
+        return this.settingsServie.saveTaskTypeLabels(data as string[]).pipe(
+          catchErrorMessages(this.toast)
+        )
+      }),
       takeUntilDestroyed()
     ).subscribe(data => {})
   }

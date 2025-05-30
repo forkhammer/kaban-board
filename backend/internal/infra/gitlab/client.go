@@ -14,6 +14,7 @@ import (
 
 	"main/internal/app/interfaces"
 	domain "main/internal/domain/models"
+	"main/pkg/utils"
 )
 
 type GitlabClient struct {
@@ -30,7 +31,36 @@ func NewGitlabClient(apiUrl string, token string) *GitlabClient {
 }
 
 func (client *GitlabClient) GetProjects() ([]domain.Project, error) {
-	return nil, nil
+	pageSize := 100
+	startCursor := ""
+	projects := make([]GitlabProject, 0)
+
+	for {
+		response, err := client.GetProjectsResponse(pageSize, startCursor)
+
+		if err != nil {
+			return []domain.Project{}, err
+		}
+
+		projects = append(projects, response.Data.Projects.Nodes...)
+
+		if !response.Data.Projects.PageInfo.HasNextPage {
+			break
+		}
+
+		startCursor = response.Data.Projects.PageInfo.EndCursor
+	}
+
+	result := make([]domain.Project, 0)
+	for _, project := range projects {
+		domainProject, err := client.toDomainProject(&project)
+		if err != nil {
+			return []domain.Project{}, err
+		}
+		result = append(result, *domainProject)
+	}
+
+	return result, nil
 }
 
 func (client *GitlabClient) GetUsers() ([]domain.User, error) {
@@ -305,6 +335,44 @@ func (client *GitlabClient) toDomainUser(user *GitlabUser) (*domain.User, error)
 
 func (client *GitlabClient) cleanUserId(gid string) (uint, error) {
 	id, err := strconv.ParseUint(strings.ReplaceAll(gid, "gid://gitlab/User/", ""), 10, 32)
+
+	if err != nil {
+		return 0, err
+	}
+
+	return uint(id), nil
+}
+
+func (client *GitlabClient) toDomainProject(project *GitlabProject) (*domain.Project, error) {
+	projectId, err := client.cleanProjectId(project.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	userIds := utils.Map(project.GetUserIds(), func(strId string) domain.UserId {
+		val, err := client.cleanUserId(strId)
+		if err != nil {
+			return 0
+		}
+		return domain.UserId(val)
+	})
+
+	result := &domain.Project{
+		Id:        domain.ProjectId(projectId),
+		Name:      project.Name,
+		Users:     userIds,
+		IsVisible: true,
+	}
+
+	if err := result.Validate(); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (app *GitlabClient) cleanProjectId(gid string) (uint, error) {
+	id, err := strconv.ParseUint(strings.ReplaceAll(gid, "gid://gitlab/Project/", ""), 10, 32)
 
 	if err != nil {
 		return 0, err

@@ -8,8 +8,10 @@ import (
 )
 
 type SyncUseCases struct {
-	gitlab   interfaces.TaskTracker `di.inject:"gitlab"`
-	userRepo repo.UserRepo          `di.inject:"UserRepository"`
+	gitlab      interfaces.TaskTracker `di.inject:"gitlab"`
+	userRepo    repo.UserRepo          `di.inject:"UserRepository"`
+	projectRepo repo.ProjectRepo       `di.inject:"ProjectRepository"`
+	issueRepo   repo.IssueRepo         `di.inject:"IssueRepository"`
 }
 
 func (uc *SyncUseCases) Sync() error {
@@ -31,6 +33,33 @@ func (uc *SyncUseCases) Sync() error {
 }
 
 func (uc *SyncUseCases) SyncProjects() error {
+	projects, err := uc.gitlab.GetProjects()
+	if err != nil {
+		return err
+	}
+
+	for _, project := range projects {
+		existProject, err := uc.projectRepo.Get(project.Id)
+		if err == nil {
+			existProject.Name = project.Name
+			existProject.Users = project.Users
+
+			if err := existProject.Validate(); err != nil {
+				return err
+			}
+
+			_, err := uc.projectRepo.Update(existProject)
+			if err != nil {
+				return err
+			}
+		} else {
+			_, err := uc.projectRepo.Create(&project)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
 	return nil
 }
 

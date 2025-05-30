@@ -1,4 +1,4 @@
-package web
+package cmd
 
 import (
 	"main/config"
@@ -10,11 +10,11 @@ import (
 	"github.com/goioc/di"
 )
 
-type Application struct {
+type ApiApplication struct {
 	router *gin.Engine
 }
 
-func NewApplication() *Application {
+func NewApiApplication() *ApiApplication {
 	config.Settings.Print()
 
 	router := gin.Default()
@@ -24,18 +24,18 @@ func NewApplication() *Application {
 	router.Use(cors.New(corsConfig))
 	router.Use(middleware.JwtMiddleware())
 
-	app := Application{
+	app := ApiApplication{
 		router: router,
 	}
 	app.registerDeps()
 	return &app
 }
 
-func (a *Application) registerDeps() {
+func (a *ApiApplication) registerDeps() {
 
 }
 
-func (app *Application) Run() {
+func (app *ApiApplication) Run() {
 	if err := app.initRouter(); err != nil {
 		panic(err)
 	}
@@ -43,7 +43,7 @@ func (app *Application) Run() {
 	app.router.Run(config.Settings.GetHostPort())
 }
 
-func (app *Application) initRouter() error {
+func (app *ApiApplication) initRouter() error {
 	controllers := []api.Controller{
 		di.GetInstance("AccountController").(api.Controller),
 		di.GetInstance("BoardController").(api.Controller),

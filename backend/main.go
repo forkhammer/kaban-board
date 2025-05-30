@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"main/cmd/web"
+	"main/cmd"
 	"main/config"
 	"main/internal/app/account_usecases"
 	"main/internal/app/column_usecases"
@@ -30,13 +30,12 @@ import (
 )
 
 type Application struct {
-	web *web.Application
+	api    *cmd.ApiApplication
+	worker *cmd.WorkerApplication
 }
 
 func NewApplication() *Application {
-	app := &Application{
-		web: web.NewApplication(),
-	}
+	app := &Application{}
 	app.Init()
 	return app
 }
@@ -116,8 +115,16 @@ func (app *Application) Run() {
 	if err != nil {
 		panic(err)
 	}
+	ctx, cancel := context.WithCancel(context.Background())
+	defer func() {
+		cancel()
+	}()
 
-	app.web.Run()
+	app.api = cmd.NewApiApplication()
+	app.worker = cmd.NewWorkerApplication()
+
+	app.worker.Run(ctx)
+	app.api.Run()
 }
 
 func (app *Application) migrate() error {

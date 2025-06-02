@@ -1,12 +1,15 @@
 package repo
 
 import (
+	"errors"
 	domain "main/internal/domain/models"
 	"main/internal/domain/repo"
 	"main/internal/infra/db/interfaces"
 	"main/internal/infra/persistance/models"
 	"main/pkg/utils"
+	"slices"
 
+	"gorm.io/datatypes"
 	"gorm.io/gorm"
 )
 
@@ -69,7 +72,16 @@ func (r *IssueRepository) Create(issue *domain.Issue) (*domain.Issue, error) {
 		return nil, err
 	}
 
-	return r.Get(domain.IssueId(model.Id))
+	domainModel, err := r.Get(domain.IssueId(model.Id))
+	if err != nil {
+		return nil, err
+	}
+
+	if err := r.saveLabelHistory(model); err != nil {
+		return nil, err
+	}
+
+	return domainModel, nil
 }
 
 func (r *IssueRepository) Update(issue *domain.Issue) (*domain.Issue, error) {
@@ -87,7 +99,16 @@ func (r *IssueRepository) Update(issue *domain.Issue) (*domain.Issue, error) {
 		return nil, err
 	}
 
-	return r.Get(domain.IssueId(model.Id))
+	domainModel, err := r.Get(domain.IssueId(model.Id))
+	if err != nil {
+		return nil, err
+	}
+
+	if err := r.saveLabelHistory(model); err != nil {
+		return nil, err
+	}
+
+	return domainModel, nil
 }
 
 func (r *IssueRepository) Delete(id domain.IssueId) error {
@@ -173,4 +194,29 @@ func (r *IssueRepository) getQuery() *gorm.DB {
 	query = query.Preload("Project").Preload("Project.Team")
 	query = query.Preload("Release").Preload("TaskType")
 	return query
+}
+
+func (r *IssueRepository) saveLabelHistory(issue *models.Issue) error {
+	labelIds := utils.Map(issue.Labels, func(l models.Label) string {
+		return string(l.Id)
+	})
+
+	var lastHistory models.LabelHistory
+	err := r.conn.GetEngine().Where("issue_id = ?", issue.Id).Order("created_at DESC").First(&lastHistory).Error
+	if err != nil {
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			return err
+		}
+	}
+	lastLabelIds := utils.Map(lastHistory.Labels, func(l string) string {
+		return l
+	})
+
+	if slices.Equal(lastLabelIds, labelIds) {
+		return nil
+	}
+	return r.conn.GetEngine().Save(&models.LabelHistory{
+		IssueId: issue.Id,
+		Labels:  datatypes.NewJSONSlice(labelIds),
+	}).Error
 }

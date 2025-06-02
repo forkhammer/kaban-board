@@ -10,4 +10,5 @@ var ALL_MODELS []any = []any{
 	&Issue{},
 	&Column{},
 	&Project{},
+	&LabelHistory{},
 }

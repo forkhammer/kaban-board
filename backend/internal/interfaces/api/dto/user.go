@@ -1,11 +1,8 @@
 package dto
 
 import (
-	"main/config"
 	domain "main/internal/domain/models"
 	"main/pkg/utils"
-	"path"
-	"strings"
 )
 
 type SetUserVisibilityRequest struct {
@@ -37,15 +34,8 @@ func SerializeUser(user *domain.User) *UserDto {
 		Id:        uint(user.Id),
 		Name:      user.Name,
 		Username:  user.Username,
-		AvatarUrl: cleanUserAvatar(user.AvatarUrl),
+		AvatarUrl: user.AvatarUrl,
 		IsVisible: user.IsVisible,
 		Groups:    SerializeGroups(user.Groups),
 	}
-}
-
-func cleanUserAvatar(avatarUrl string) string {
-	if !strings.HasPrefix(avatarUrl, "https://") {
-		return path.Join(config.Settings.GitlabUrl, avatarUrl)
-	}
-	return avatarUrl
 }

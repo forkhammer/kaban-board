@@ -26,7 +26,7 @@ func SerializeKanbanUser(user *domain.KanbanUser) *KanbanUserDto {
 		Id:        uint(user.User.Id),
 		Name:      user.User.Name,
 		Username:  user.User.Username,
-		AvatarUrl: cleanUserAvatar(user.User.AvatarUrl),
+		AvatarUrl: user.User.AvatarUrl,
 		Issues:    SerializeIssues(user.Issues),
 		Teams: utils.Map(user.Teams, func(team domain.Team) uint {
 			return uint(team.Id)

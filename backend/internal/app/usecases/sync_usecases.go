@@ -87,6 +87,7 @@ func (uc *SyncUseCases) SyncReleases() error {
 			existRelease.Title = release.Title
 			existRelease.Iid = release.Iid
 			existRelease.Project = release.Project
+			existRelease.WebPath = release.WebPath
 
 			if err := existRelease.Validate(); err != nil {
 				return err

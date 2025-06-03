@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"path"
 	"strconv"
 	"strings"
 	"time"
@@ -504,7 +505,7 @@ func (client *GitlabClient) toDomainUser(user *GitlabUser) (*domain.User, error)
 		Id:        domain.UserId(userId),
 		Name:      user.Name,
 		Username:  user.Username,
-		AvatarUrl: user.AvatarUrl,
+		AvatarUrl: client.cleanUserAvatar(user.AvatarUrl),
 		IsVisible: true,
 	}, nil
 }
@@ -661,7 +662,7 @@ func (client *GitlabClient) toDomainRelease(milestone *GitlabMilestone, project 
 		Iid:     domain.ReleaseIid(milestone.Iid),
 		Title:   milestone.Title,
 		Project: *project,
-		WebPath: milestone.WebPath,
+		WebPath: client.cleanReleaseWebUrl(milestone.WebPath),
 	}
 
 	if err := result.Validate(); err != nil {
@@ -669,4 +670,18 @@ func (client *GitlabClient) toDomainRelease(milestone *GitlabMilestone, project 
 	}
 
 	return result, nil
+}
+
+func (client *GitlabClient) cleanReleaseWebUrl(url string) string {
+	if !strings.HasPrefix(url, "https://") {
+		return path.Join(client.config.GitlabUrl, url)
+	}
+	return url
+}
+
+func (client *GitlabClient) cleanUserAvatar(avatarUrl string) string {
+	if !strings.HasPrefix(avatarUrl, "https://") {
+		return path.Join(client.config.GitlabUrl, avatarUrl)
+	}
+	return avatarUrl
 }

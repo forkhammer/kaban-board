@@ -83,6 +83,7 @@ func (r *ReleaseRepository) toDomainRelease(release *models.Release) (*domain.Re
 		Iid:     domain.ReleaseIid(release.Iid),
 		Title:   release.Title,
 		Project: *project,
+		WebPath: release.WebPath,
 	}, nil
 }
 
@@ -92,6 +93,7 @@ func (r *ReleaseRepository) toRelease(release *domain.Release) *models.Release {
 		Iid:       string(release.Iid),
 		Title:     release.Title,
 		ProjectId: uint(release.Project.Id),
+		WebPath:   release.WebPath,
 	}
 }
 

@@ -7,7 +7,6 @@ import (
 	"main/internal/infra/db/interfaces"
 	"main/internal/infra/persistance/models"
 	"main/pkg/utils"
-	"slices"
 
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
@@ -197,26 +196,43 @@ func (r *IssueRepository) getQuery() *gorm.DB {
 }
 
 func (r *IssueRepository) saveLabelHistory(issue *models.Issue) error {
-	labelIds := utils.Map(issue.Labels, func(l models.Label) string {
-		return string(l.Id)
-	})
+	domainIssue, err := r.toDomainIssue(issue)
+	if err != nil {
+		return err
+	}
 
+	domainHistory := make([]domain.LabelHistory, 0)
 	var lastHistory models.LabelHistory
-	err := r.conn.GetEngine().Where("issue_id = ?", issue.Id).Order("created_at DESC").First(&lastHistory).Error
+	err = r.conn.GetEngine().Where("issue_id = ?", issue.Id).Order("created_at DESC").First(&lastHistory).Error
 	if err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			return err
 		}
+	} else {
+		domainHistory = append(domainHistory, *r.toDomainLabelHistory(&lastHistory))
 	}
-	lastLabelIds := utils.Map(lastHistory.Labels, func(l string) string {
-		return l
-	})
 
-	if slices.Equal(lastLabelIds, labelIds) {
-		return nil
+	domainIssue.SetHistory(domainHistory)
+	addedHistory := domainIssue.GetAddedHistory()
+	for _, historyItem := range addedHistory {
+		err := r.conn.GetEngine().Save(&models.LabelHistory{
+			IssueId: issue.Id,
+			Labels: datatypes.NewJSONSlice(utils.Map(historyItem.Labels, func(id domain.LabelId) string {
+				return string(id)
+			})),
+		}).Error
+		if err != nil {
+			return err
+		}
 	}
-	return r.conn.GetEngine().Save(&models.LabelHistory{
-		IssueId: issue.Id,
-		Labels:  datatypes.NewJSONSlice(labelIds),
-	}).Error
+	return nil
+}
+
+func (r *IssueRepository) toDomainLabelHistory(history *models.LabelHistory) *domain.LabelHistory {
+	return &domain.LabelHistory{
+		Labels: utils.Map(history.Labels, func(id string) domain.LabelId {
+			return domain.LabelId(id)
+		}),
+		CreatedAt: history.CreatedAt,
+	}
 }

@@ -58,6 +58,7 @@ func (app *Application) Init() {
 	di.RegisterBean("TeamRepository", reflect.TypeOf((*repo.TeamRepository)(nil)))
 	di.RegisterBean("UserRepository", reflect.TypeOf((*repo.UserRepository)(nil)))
 	di.RegisterBean("SettingsRepository", reflect.TypeOf((*repo.SettingsRepository)(nil)))
+	di.RegisterBean("SprintRepository", reflect.TypeOf((*repo.SprintRepository)(nil)))
 
 	di.RegisterBean("LabelQuery", reflect.TypeOf((*label_spec.LabelQueryImpl)(nil)))
 	di.RegisterBean("ColumnQuery", reflect.TypeOf((*column_spec.ColumnQueryImpl)(nil)))
@@ -78,6 +79,7 @@ func (app *Application) Init() {
 	di.RegisterBean("SettingsUseCases", reflect.TypeOf((*usecases.SettingsUseCases)(nil)))
 	di.RegisterBean("SyncUseCases", reflect.TypeOf((*usecases.SyncUseCases)(nil)))
 	di.RegisterBean("KanbanUseCases", reflect.TypeOf((*usecases.KanbanUseCases)(nil)))
+	di.RegisterBean("SprintUseCases", reflect.TypeOf((*usecases.SprintUseCases)(nil)))
 
 	di.RegisterBean("AccountController", reflect.TypeOf((*controllers.AccountController)(nil)))
 	di.RegisterBean("ReportsController", reflect.TypeOf((*controllers.ReportsController)(nil)))
@@ -90,6 +92,7 @@ func (app *Application) Init() {
 	di.RegisterBean("ProjectController", reflect.TypeOf((*controllers.ProjectController)(nil)))
 	di.RegisterBean("SettingsController", reflect.TypeOf((*controllers.SettingsController)(nil)))
 	di.RegisterBean("KanbanController", reflect.TypeOf((*controllers.KanbanController)(nil)))
+	di.RegisterBean("SprintController", reflect.TypeOf((*controllers.SprintController)(nil)))
 
 	err = di.InitializeContainer()
 	if err != nil {

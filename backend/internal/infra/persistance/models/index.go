@@ -11,4 +11,5 @@ var ALL_MODELS []any = []any{
 	&Column{},
 	&Project{},
 	&LabelHistory{},
+	&Sprint{},
 }

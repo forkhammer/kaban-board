@@ -1,0 +1,27 @@
+<div class="status">
+  <div [ngSwitch]="sprint.status">
+    <div *ngSwitchCase="SprintStatus.WAITING">
+      <fa-icon [icon]="faClock" class="text-body"></fa-icon>
+    </div>
+
+    <div *ngSwitchCase="SprintStatus.RUNNING">
+      <fa-icon [icon]="faPlay" class="text-success"></fa-icon>
+    </div>
+
+    <div *ngSwitchCase="SprintStatus.COMPLETED">
+      <fa-icon [icon]="faStop" class="text-secondary"></fa-icon>
+    </div>
+  </div>
+</div>
+
+<div class="desc">
+  <div class="title">{{sprint.title}}</div>
+
+  <div class="d-flex">
+    <div class="date">{{sprint.start_date | formatDate}} - {{sprint.end_date | formatDate}}</div>
+
+    <div class="team">{{sprint.team.title}}</div>
+  </div>
+</div>
+
+<div class="count">9 задач</div>

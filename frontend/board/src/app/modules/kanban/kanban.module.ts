@@ -36,7 +36,9 @@ import { FilterLabelsByNamePipe } from './pipes/filter-labels-by-name.pipe';
 import { AdminLabelCardComponent } from './components/admin-label-card/admin-label-card.component';
 import { UserGroupCardComponent } from './components/user-group-card/user-group-card.component';
 import { FilterUsersByGroupPipe } from './pipes/filter-users-by-group.pipe';
-import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
+import { SprintListComponent } from './components/sprint-list/sprint-list.component';
+import { SprintCardComponent } from './components/sprint-card/sprint-card.component';
+import { FilterSprintsByQuarterPipe } from './pipes/filter-sprints-by-quarter.pipe';
 
 
 @NgModule({
@@ -71,11 +73,17 @@ import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
     AdminLabelCardComponent,
     UserGroupCardComponent,
     FilterUsersByGroupPipe,
+    SprintListComponent,
+    SprintCardComponent,
+    FilterSprintsByQuarterPipe,
   ],
   exports: [
     UserBoardComponent,
     KanbanBoardComponent,
     OffcanvasAdminComponent,
+    SprintListComponent,
+    SprintCardComponent,
+    FilterSprintsByQuarterPipe
   ],
   imports: [
     CommonModule,
@@ -86,7 +94,6 @@ import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
     FontAwesomeModule,
     RouterLink,
     DragDropModule,
-    NgbTooltipModule,
   ]
 })
 export class KanbanModule { }

@@ -51,14 +51,14 @@ func (s *Sprint) GetTitle() string {
 		return s.Title
 	}
 
-	return fmt.Sprintf("Спринт %s - %s", s.StartDate.String(), s.EndDate.String())
+	return fmt.Sprintf("Спринт %s - %s", s.StartDate.Format("02.01.2006"), s.EndDate.Format("02.01.2006"))
 }
 
 func (s *Sprint) GetStatus() SprintStatus {
 	if s.IsCompleted {
 		return SprintStatusCompleted
 	}
-	if s.StartDate.After(time.Now()) {
+	if s.StartDate.Before(time.Now()) {
 		return SprintStatusRunning
 	}
 	return SprintStatusWaiting
@@ -71,4 +71,11 @@ func (s *Sprint) SetCompleted() error {
 
 	s.IsCompleted = true
 	return nil
+}
+
+func (s *Sprint) GetQuarter() *Quarter {
+	year := s.StartDate.Year()
+	month := s.StartDate.Month()
+	val, _ := NewQuarter(year, int((month-1)/3+1))
+	return val
 }

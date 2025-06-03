@@ -1,0 +1,16 @@
+@import '../../../styles/imports';
+
+.quarter {
+  margin-bottom: $pt3;
+
+  &-title {
+    font-weight: 600;
+    @include fs-paragraph-m();
+    padding: $pt $pt3;
+    margin-bottom: $pt3;
+  }
+
+  &-content {
+    margin-left: $pt7;
+  }
+}

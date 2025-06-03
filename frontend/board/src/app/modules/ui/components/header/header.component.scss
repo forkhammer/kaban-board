@@ -60,3 +60,19 @@
     }
   }
 }
+
+.menu {
+  display: flex;
+  align-items: center;
+  gap: $pt2;
+  flex-grow: 1;
+
+  &-link {
+    text-decoration: underline;
+    color: $body-color;
+
+    &.active {
+      color: $primary
+    }
+  }
+}

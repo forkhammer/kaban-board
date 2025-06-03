@@ -7,13 +7,14 @@ import (
 )
 
 type SprintDto struct {
-	Id           int     `json:"id"`
-	Title        string  `json:"title"`
-	StartDate    string  `json:"start_date"`
-	EndDate      string  `json:"end_date"`
-	Team         TeamDto `json:"team"`
-	Status       string  `json:"status"`
-	HoursPerUser int     `json:"hours_per_user"`
+	Id           int        `json:"id"`
+	Title        string     `json:"title"`
+	StartDate    string     `json:"start_date"`
+	EndDate      string     `json:"end_date"`
+	Team         TeamDto    `json:"team"`
+	Status       string     `json:"status"`
+	HoursPerUser int        `json:"hours_per_user"`
+	Quarter      QuarterDto `json:"quarter"`
 }
 
 type CreateSprintRequest struct {
@@ -36,11 +37,12 @@ func SerializeSprint(sprint *domain.Sprint) *SprintDto {
 	return &SprintDto{
 		Id:           int(sprint.Id),
 		Title:        sprint.GetTitle(),
-		StartDate:    sprint.StartDate.String(),
-		EndDate:      sprint.EndDate.String(),
+		StartDate:    sprint.StartDate.Format("2006-01-02"),
+		EndDate:      sprint.EndDate.Format("2006-01-02"),
 		Team:         *SerializeTeam(&sprint.Team),
 		Status:       string(sprint.GetStatus()),
 		HoursPerUser: int(sprint.HoursPerUser),
+		Quarter:      *SerializeQuarter(sprint.GetQuarter()),
 	}
 }
 

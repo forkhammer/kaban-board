@@ -24,6 +24,9 @@ import { JWTInterceptor } from './modules/core/interceptors/jwt.interceptor';
 import { AuthPageComponent } from './components/auth-page/auth-page.component';
 import { BootstrapUiModule } from './modules/bootstrap-ui/bootstrap-ui.module';
 import * as Hammer from 'hammerjs';
+import { SprintsPageComponent } from './components/sprints-page/sprints-page.component';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { ReportsPageComponent } from './components/reports-page/reports-page.component';
 
 export class MyHammerConfig extends HammerGestureConfig {
   override overrides = <any>{
@@ -32,7 +35,7 @@ export class MyHammerConfig extends HammerGestureConfig {
 }
 
 @NgModule({
-  declarations: [AppComponent, IndexPageComponent, AuthPageComponent],
+  declarations: [AppComponent, IndexPageComponent, AuthPageComponent, SprintsPageComponent, ReportsPageComponent],
   bootstrap: [AppComponent],
   imports: [
     BrowserModule,
@@ -47,6 +50,7 @@ export class MyHammerConfig extends HammerGestureConfig {
     ReactiveFormsModule,
     BootstrapUiModule,
     HammerModule,
+    FontAwesomeModule
   ],
   providers: [
     {

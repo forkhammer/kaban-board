@@ -20,6 +20,7 @@ import {
     NgbDropdownModule,
     NgbModalModule,
     NgbNavModule,
+    NgbTooltipModule,
   ],
 })
 export class BootstrapUiModule {}

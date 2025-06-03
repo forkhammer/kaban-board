@@ -1,0 +1,33 @@
+@import '../../../../../styles/imports';
+
+:host {
+  display: flex;
+  align-items: center;
+  border: 1px solid $gray-200;
+  padding: $pt3;
+  background: $white;
+  border-radius: $pt;
+}
+
+.status {
+  margin-right: $pt3;
+}
+
+.desc {
+  flex-grow: 1;
+}
+
+.title {
+  font-weight: 600;
+  @include fs-paragraph-m();
+  margin-bottom: $pt;
+}
+
+.date,
+.team {
+  padding: 2px $pt2;
+  background: $gray-200;
+  border-radius: 4px;
+  margin-right: $pt3;
+  @include fs-paragraph-xs();
+}

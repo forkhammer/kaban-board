@@ -34,7 +34,7 @@ func (r *SprintRepository) List(spec repo.QuerySpec) (*[]domain.Sprint, error) {
 		}
 	}
 
-	if err := query.Find(&sprints).Error; err != nil {
+	if err := query.Order("start_date ASC").Find(&sprints).Error; err != nil {
 		return nil, err
 	}
 

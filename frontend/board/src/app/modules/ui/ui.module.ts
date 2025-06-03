@@ -16,6 +16,7 @@ import {FontAwesomeModule} from "@fortawesome/angular-fontawesome";
 import {SafePipe} from "./pipes/safe.pipe";
 import {SelectItemsPipe} from "./pipes/select-items.pipe";
 import { ElapsedTimePipe } from './pipes/elapsed-time.pipe';
+import { FormatDatePipe } from './pipes/format-date.pipe';
 
 
 
@@ -33,6 +34,7 @@ import { ElapsedTimePipe } from './pipes/elapsed-time.pipe';
     SafePipe,
     SelectItemsPipe,
     ElapsedTimePipe,
+    FormatDatePipe,
   ],
   exports: [
     HeaderComponent,
@@ -45,6 +47,7 @@ import { ElapsedTimePipe } from './pipes/elapsed-time.pipe';
     SelectToggleComponent,
     SafePipe,
     ElapsedTimePipe,
+    FormatDatePipe
   ],
   imports: [
     CommonModule,

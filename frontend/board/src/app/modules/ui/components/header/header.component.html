@@ -9,11 +9,16 @@
           <a routerLink="/" class="caption" *ngIf="settings?.caption">{{settings?.caption}}</a>
         </div>
 
-        <div class="search me-auto input-group">
+        <div class="search me-3 input-group">
           <input type="text" class="form-control search-input" formControlName="search" placeholder="Поиск по тексту или номеру тикета (#номер)...">
           <button class="btn btn-clear-search" (click)="clearSearch()">
             <fa-icon [icon]="faXmark"></fa-icon>
           </button>
+        </div>
+
+        <div class="menu">
+          <a routerLink="/sprints" class="menu-link" routerLinkActive="active">Спринты</a>
+          <a routerLink="/reports" class="menu-link" routerLinkActive="active">Отчеты</a>
         </div>
 
         <div class="update-time me-3">

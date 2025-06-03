@@ -1,0 +1,27 @@
+<div class="header p-3 border-bottom bg-white d-flex align-items-center" [formGroup]="form">
+  <a routerLink="/" class="back-link text-body me-5">
+    <fa-icon [icon]="faArrowLeftLong" class="me-2"></fa-icon>
+    Текущий спринт
+  </a>
+
+  <app-select-model [service]="teamService" formControlName="team" [useClear]="true"
+    title="Команда" class="me-2"></app-select-model>
+
+  <app-select [values]="[]" formControlName="quarter" title="Квартал"></app-select>
+</div>
+
+<div class="p-3">
+  <div class="row">
+    <div class="col-6">
+      <div class="quarter" *ngFor="let quarter of quarters">
+        <div class="quarter-title">
+          <fa-icon [icon]="faPlus" class="me-2"></fa-icon>
+          {{quarter.title}}
+        </div>
+        <div class="quarter-content">
+          <app-sprint-list [sprints]="sprints | filterSprintsByQuarter:quarter"></app-sprint-list>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

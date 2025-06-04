@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"main/internal/app/queries"
 	"main/internal/app/usecases"
 	"main/internal/interfaces/api/dto"
 	"net/http"
@@ -24,7 +25,16 @@ func (c *SprintController) RegisterRoutes(router *gin.Engine) error {
 }
 
 func (c *SprintController) GetSprints(ctx *gin.Context) {
-	sprints, err := c.sprintUC.GetSprints()
+	var request dto.GetSprintsRequest
+	if err := ctx.ShouldBindQuery(&request); err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	sprints, err := c.sprintUC.GetSprints(&queries.SprintFilter{
+		TeamID:    request.Team,
+		QuarterId: request.Quarter,
+	})
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
 		return

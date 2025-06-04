@@ -2,6 +2,7 @@ package usecases
 
 import (
 	"fmt"
+	"main/internal/app/queries"
 	domain "main/internal/domain/models"
 	"main/internal/domain/repo"
 	"time"
@@ -25,12 +26,17 @@ type UpdateSprintRequest struct {
 }
 
 type SprintUseCases struct {
-	sprintRepo repo.SprintRepo `di.inject:"SprintRepository"`
-	teamRepo   repo.TeamRepo   `di.inject:"TeamRepository"`
+	sprintRepo  repo.SprintRepo     `di.inject:"SprintRepository"`
+	teamRepo    repo.TeamRepo       `di.inject:"TeamRepository"`
+	sprintQuery queries.SprintQuery `di.inject:"SprintQuery"`
 }
 
-func (uc *SprintUseCases) GetSprints() (*[]domain.Sprint, error) {
-	return uc.sprintRepo.List(nil)
+func (uc *SprintUseCases) GetSprints(filter *queries.SprintFilter) (*[]domain.Sprint, error) {
+	var spec repo.QuerySpec
+	if filter != nil {
+		spec = uc.sprintQuery.GetSpec(*filter)
+	}
+	return uc.sprintRepo.List(spec)
 }
 
 func (uc *SprintUseCases) GetSprint(id uint) (*domain.Sprint, error) {

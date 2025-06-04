@@ -9,6 +9,8 @@ import { Sprint } from 'src/app/modules/kanban/models/sprint';
 import { SprintService } from 'src/app/modules/kanban/services/sprint.service';
 import { TeamService } from 'src/app/modules/kanban/services/team.service';
 import {faPlus, faMinus} from '@fortawesome/free-solid-svg-icons'
+import { ActivatedRoute, Router } from '@angular/router';
+import { combineLatestWith, debounceTime, distinctUntilChanged, map, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-sprints-page',
@@ -21,6 +23,8 @@ export class SprintsPageComponent {
   fb = inject(FormBuilder)
   sprintService = inject(SprintService)
   toast = inject(ToastService)
+  router = inject(Router)
+  route = inject(ActivatedRoute)
 
   faArrowLeftLong = faArrowLeftLong
   faPlus = faPlus
@@ -36,8 +40,28 @@ export class SprintsPageComponent {
       quarter: [null]
     })
 
-    this.sprintService.list().pipe(
-      catchErrorMessages(this.toast),
+    const team$ = this.route.queryParams.pipe(
+      map(params => params['team'] ? Number(params['team']) : null),
+      distinctUntilChanged()
+    );
+    const quarter$ = this.route.queryParams.pipe(
+      map(params => params['quarter'] ? params['quarter'] : null),
+      distinctUntilChanged()
+    );
+
+    team$.pipe(
+      combineLatestWith(quarter$),
+      debounceTime(1),
+      switchMap(([teamId, quarter]) => {
+        const query = {
+          team: teamId,
+          quarter
+        }
+
+        return this.sprintService.list(query).pipe(
+          catchErrorMessages(this.toast),
+        )
+      }),
       takeUntilDestroyed()
     ).subscribe(data => {
       this.sprints = data as Sprint[]
@@ -48,6 +72,20 @@ export class SprintsPageComponent {
         }
         return quarters
       }, [] as Quarter[])
+    })
+
+    this.form.valueChanges.pipe(
+      distinctUntilChanged(),
+      takeUntilDestroyed()
+    ).subscribe(data => {
+      this.router.navigate([], {queryParams: data, queryParamsHandling: 'merge'})
+    })
+
+    this.route.queryParams.pipe(
+      distinctUntilChanged(),
+      takeUntilDestroyed()
+    ).subscribe(data => {
+      this.form.patchValue(data)
     })
   }
 }

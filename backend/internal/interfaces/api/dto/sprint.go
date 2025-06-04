@@ -17,6 +17,11 @@ type SprintDto struct {
 	Quarter      QuarterDto `json:"quarter"`
 }
 
+type GetSprintsRequest struct {
+	Team    *int    `form:"team"`
+	Quarter *string `form:"quarter"`
+}
+
 type CreateSprintRequest struct {
 	Title        string    `json:"title"`
 	StartDate    time.Time `json:"start_date"`

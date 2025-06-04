@@ -16,4 +16,13 @@ export type Sprint = {
   team: Team
   status: SprintStatus
   quarter: Quarter
+  hours_per_user: number | null
+}
+
+export type SaveSprintRequest = {
+  title: string
+  start_date: string
+  end_date: string
+  team_id: number
+  hours_per_user: number | null
 }

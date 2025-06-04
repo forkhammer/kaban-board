@@ -10,7 +10,8 @@ import { SprintService } from 'src/app/modules/kanban/services/sprint.service';
 import { TeamService } from 'src/app/modules/kanban/services/team.service';
 import {faPlus, faMinus} from '@fortawesome/free-solid-svg-icons'
 import { ActivatedRoute, Router } from '@angular/router';
-import { combineLatestWith, debounceTime, distinctUntilChanged, map, switchMap } from 'rxjs';
+import { BehaviorSubject, combineLatestWith, debounceTime, distinctUntilChanged, map, switchMap } from 'rxjs';
+import { SprintModalServiceService } from 'src/app/modules/kanban/services/sprint-modal-service.service';
 
 @Component({
   selector: 'app-sprints-page',
@@ -25,6 +26,7 @@ export class SprintsPageComponent {
   toast = inject(ToastService)
   router = inject(Router)
   route = inject(ActivatedRoute)
+  sprintModal = inject(SprintModalServiceService)
 
   faArrowLeftLong = faArrowLeftLong
   faPlus = faPlus
@@ -33,6 +35,7 @@ export class SprintsPageComponent {
   form: FormGroup
   sprints: Sprint[] = []
   quarters: Quarter[] = []
+  reload$ = new BehaviorSubject<null>(null)
 
   constructor() {
     this.form = this.fb.group({
@@ -50,9 +53,9 @@ export class SprintsPageComponent {
     );
 
     team$.pipe(
-      combineLatestWith(quarter$),
+      combineLatestWith(quarter$, this.reload$),
       debounceTime(1),
-      switchMap(([teamId, quarter]) => {
+      switchMap(([teamId, quarter, _]) => {
         const query: Record<string, any> = {}
         if (teamId) {
           query['team'] = teamId
@@ -90,5 +93,19 @@ export class SprintsPageComponent {
     ).subscribe(data => {
       this.form.patchValue(data)
     })
+  }
+
+  add() {
+    this.sprintModal.show()
+      .then(sprint => {
+        if (sprint) {
+          this.reload()
+        }
+      })
+      .catch(() => {})
+  }
+
+  reload() {
+    this.reload$.next(null)
   }
 }

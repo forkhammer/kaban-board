@@ -1,5 +1,19 @@
 @import '../../../../../styles/imports';
 
 :host {
-  color: $danger-light;
+  font-size: .875rem;
+  color: $danger;
+
+  &.danger {
+    color: $danger;
+  }
+  &.warning {
+    color: $warning;
+  }
+  &.success {
+    color: $success;
+  }
+  &.info {
+    color: $info;
+  }
 }

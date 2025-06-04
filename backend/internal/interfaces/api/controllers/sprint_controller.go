@@ -63,10 +63,18 @@ func (c *SprintController) CreateSprint(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
 		return
 	}
+
+	if err := request.Validate(); err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+		return
+	}
+	startDate, _ := request.GetStartDate()
+	endDate, _ := request.GetEndDate()
+
 	sprint, err := c.sprintUC.CreateSprint(&usecases.CreateSprintRequest{
 		Title:        request.Title,
-		StartDate:    request.StartDate,
-		EndDate:      request.EndDate,
+		StartDate:    startDate,
+		EndDate:      endDate,
 		TeamId:       request.TeamId,
 		HoursPerUser: request.HoursPerUser,
 	})

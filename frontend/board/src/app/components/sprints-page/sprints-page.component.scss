@@ -14,3 +14,18 @@
     margin-left: $pt7;
   }
 }
+
+.btn-add {
+  padding: $pt3;
+  background: $gray-100;
+  border: 1px dashed $gray-400;
+  border-radius: 1rem;
+  margin-bottom: $pt3;
+  width: 100%;
+  display: block;
+  transition-duration: .2s;
+
+  &:hover {
+    background: $white;
+  }
+}

@@ -3,6 +3,8 @@ package models
 import (
 	"fmt"
 	"time"
+
+	"github.com/go-playground/validator/v10"
 )
 
 type SprintStatus string
@@ -18,11 +20,11 @@ type SprintId int
 type Sprint struct {
 	IsCompleted  bool
 	Id           SprintId
-	HoursPerUser uint
+	HoursPerUser uint `validate:"required,gt=0"`
 	Title        string
-	StartDate    time.Time
+	StartDate    time.Time `validate:"required"`
 	EndDate      time.Time
-	Team         Team
+	Team         Team `validate:"required"`
 }
 
 func NewSprint(id SprintId, title string, startDate time.Time, endDate time.Time, team Team, isCompleted bool, hoursPerUser uint) (*Sprint, error) {
@@ -39,6 +41,11 @@ func NewSprint(id SprintId, title string, startDate time.Time, endDate time.Time
 }
 
 func (s *Sprint) Validate() error {
+	validator := validator.New()
+	if err := validator.Struct(s); err != nil {
+		return err
+	}
+
 	if s.StartDate.After(s.EndDate) {
 		return fmt.Errorf("Дата начала должна быть раньше даты окончания")
 	}

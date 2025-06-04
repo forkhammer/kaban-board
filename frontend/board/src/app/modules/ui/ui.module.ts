@@ -17,6 +17,7 @@ import {SafePipe} from "./pipes/safe.pipe";
 import {SelectItemsPipe} from "./pipes/select-items.pipe";
 import { ElapsedTimePipe } from './pipes/elapsed-time.pipe';
 import { FormatDatePipe } from './pipes/format-date.pipe';
+import { InputErrorComponent } from './components/input-error/input-error.component';
 
 
 
@@ -35,6 +36,7 @@ import { FormatDatePipe } from './pipes/format-date.pipe';
     SelectItemsPipe,
     ElapsedTimePipe,
     FormatDatePipe,
+    InputErrorComponent,
   ],
   exports: [
     HeaderComponent,
@@ -47,7 +49,8 @@ import { FormatDatePipe } from './pipes/format-date.pipe';
     SelectToggleComponent,
     SafePipe,
     ElapsedTimePipe,
-    FormatDatePipe
+    FormatDatePipe,
+    InputErrorComponent,
   ],
   imports: [
     CommonModule,

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, HostBinding, inject, Input } from '@angular/core';
 
 @Component({
     selector: 'app-input-alert',
@@ -8,7 +8,17 @@ import { Component } from '@angular/core';
     standalone: false
 })
 export class InputAlertComponent {
+  @Input() type: string = 'danger';
 
-  constructor() { }
+  private element = inject(ElementRef)
+
+  @HostBinding('class')
+  get classes() {
+    if (this.element.nativeElement.classList) {
+      return this.type;
+    } else {
+      return this.element.nativeElement.classList.value + ' ' + this.type;
+    }
+  }
 
 }

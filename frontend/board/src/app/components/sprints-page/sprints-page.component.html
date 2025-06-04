@@ -13,12 +13,17 @@
 <div class="p-3">
   <div class="row">
     <div class="col-6">
+      <button class="btn-add" (click)="add()">
+        Новый спринт
+      </button>
+
       <div class="quarter" *ngFor="let quarter of quarters">
         <div class="quarter-title">
           <fa-icon [icon]="faPlus" class="me-2"></fa-icon>
           {{quarter.title}}
         </div>
         <div class="quarter-content">
+
           <app-sprint-list [sprints]="sprints | filterSprintsByQuarter:quarter"></app-sprint-list>
         </div>
       </div>

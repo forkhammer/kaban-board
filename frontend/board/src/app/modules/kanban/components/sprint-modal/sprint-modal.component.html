@@ -1,0 +1,45 @@
+<div class="modal-header">
+  <h4 class='me-auto'>Спринт</h4>
+  <button type="button" class="btn-close" aria-label="Закрыть" (click)="close()"></button>
+</div>
+
+<div class="modal-body"  [formGroup]='form'>
+  <div class="mb-3">
+    <label for="id_title" class="form-label">Название</label>
+    <input type="text" formControlName='title' id="id_title" class="form-control">
+    <app-input-error [errorData]="errors" code="title"></app-input-error>
+  </div>
+
+  <div class="mb-3">
+    <label for="id_start_date" class="form-label">Старт спринта</label>
+    <input type="date" formControlName='start_date' id="id_start_date" class="form-control">
+    <app-input-error [errorData]="errors" code="start_date"></app-input-error>
+  </div>
+
+  <div class="mb-3">
+    <label for="id_end_date" class="form-label">Конец спринта</label>
+    <input type="date" formControlName='end_date' id="id_end_date" class="form-control">
+    <app-input-alert *ngIf='form.get("end_date")?.hasError("required") && form.get("end_date")?.dirty'>Это поле обязательно</app-input-alert>
+    <app-input-error [errorData]="errors" code="end_date"></app-input-error>
+  </div>
+
+  <div class="mb-3">
+    <label for="">Команда</label>
+    <app-select-model [service]="teamService" formControlName="team_id" [useClear]="false" title="Команда"></app-select-model>
+    <app-input-error [errorData]="errors" code="team_id"></app-input-error>
+  </div>
+
+  <div class="mb-3">
+    <label for="id_hours_per_user" class="form-label">Количество часов на сотрудника</label>
+    <input type="number" formControlName='hours_per_user' id="id_hours_per_user" class="form-control">
+    <app-input-error [errorData]="errors" code="hours_per_user"></app-input-error>
+  </div>
+
+  <app-input-error [errorData]="errors" code="error"></app-input-error>
+</div>
+
+<div class="modal-footer">
+  <button class="btn btn-primary"
+          [class.loading]='isLoading'
+          (click)='submit()'>Сохранить</button>
+</div>

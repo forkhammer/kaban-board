@@ -23,11 +23,31 @@ type GetSprintsRequest struct {
 }
 
 type CreateSprintRequest struct {
-	Title        string    `json:"title"`
-	StartDate    time.Time `json:"start_date"`
-	EndDate      time.Time `json:"end_date"`
-	HoursPerUser uint      `json:"hours_per_user"`
-	TeamId       uint      `json:"team_id"`
+	Title        string `json:"title"`
+	StartDate    string `json:"start_date"`
+	EndDate      string `json:"end_date"`
+	HoursPerUser uint   `json:"hours_per_user"`
+	TeamId       uint   `json:"team_id"`
+}
+
+func (r *CreateSprintRequest) Validate() error {
+	_, err := r.GetStartDate()
+	if err != nil {
+		return err
+	}
+	_, err = r.GetEndDate()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *CreateSprintRequest) GetStartDate() (time.Time, error) {
+	return time.Parse("2006-01-02", r.StartDate)
+}
+
+func (r *CreateSprintRequest) GetEndDate() (time.Time, error) {
+	return time.Parse("2006-01-02", r.EndDate)
 }
 
 type UpdateSprintRequest struct {

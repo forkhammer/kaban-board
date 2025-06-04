@@ -16,6 +16,7 @@ type SprintController struct {
 
 func (c *SprintController) RegisterRoutes(router *gin.Engine) error {
 	router.GET("/sprint", c.GetSprints)
+	router.GET("/sprint/quarters", c.GetQuarters)
 	router.GET("/sprint/:id", c.GetSprint)
 	router.POST("/sprint", c.CreateSprint)
 	router.PUT("/sprint/:id", c.UpdateSprint)
@@ -161,4 +162,13 @@ func (c *SprintController) RunSprint(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, dto.SerializeSprint(sprint))
+}
+
+func (c *SprintController) GetQuarters(ctx *gin.Context) {
+	quarters, err := c.sprintUC.GetQuarters()
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, dto.SerializeQuarters(quarters))
 }

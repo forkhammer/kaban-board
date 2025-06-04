@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type Quarter struct {
@@ -11,22 +12,15 @@ type Quarter struct {
 	number int
 }
 
-func NewQuarter(year int, number int) (*Quarter, error) {
+func NewQuarter(year int, number int) *Quarter {
 	quarter := &Quarter{
 		year:   year,
 		number: number,
 	}
-	if err := quarter.Validate(); err != nil {
-		return nil, err
-	}
-	return quarter, nil
+	return quarter
 }
 
 func NewQuarterFromId(id string) (*Quarter, error) {
-	if len(id) != 7 {
-		return nil, fmt.Errorf("invalid id")
-	}
-
 	split := strings.Split(id, "-")
 	if len(split) != 2 {
 		return nil, fmt.Errorf("invalid id separator")
@@ -40,7 +34,12 @@ func NewQuarterFromId(id string) (*Quarter, error) {
 	if err != nil {
 		return nil, err
 	}
-	return NewQuarter(int(year), int(number))
+	quarter := NewQuarter(int(year), int(number))
+	return quarter, quarter.Validate()
+}
+
+func NewQuarterFromDate(dt time.Time) *Quarter {
+	return NewQuarter(dt.Year(), int((dt.Month()-1)/3+1))
 }
 
 func (q *Quarter) Validate() error {
@@ -62,4 +61,12 @@ func (q *Quarter) GetId() string {
 
 func (q *Quarter) GetTitle() string {
 	return fmt.Sprintf("%d квартал %d года", q.number, q.year)
+}
+
+func (q *Quarter) StartDate() time.Time {
+	return time.Date(q.year, time.Month((q.number-1)*3+1), 1, 0, 0, 0, 0, time.Local)
+}
+
+func (q *Quarter) EndDate() time.Time {
+	return time.Date(q.year, time.Month((q.number-1)*3+4), 1, 0, 0, 0, 0, time.Local).Add(time.Duration(-1) * time.Minute)
 }

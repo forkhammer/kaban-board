@@ -2,6 +2,7 @@ package dto
 
 import (
 	domain "main/internal/domain/models"
+	"main/pkg/utils"
 )
 
 type QuarterDto struct {
@@ -14,4 +15,10 @@ func SerializeQuarter(quarter *domain.Quarter) *QuarterDto {
 		Id:    quarter.GetId(),
 		Title: quarter.GetTitle(),
 	}
+}
+
+func SerializeQuarters(quarters []domain.Quarter) []QuarterDto {
+	return utils.Map(quarters, func(quarter domain.Quarter) QuarterDto {
+		return *SerializeQuarter(&quarter)
+	})
 }

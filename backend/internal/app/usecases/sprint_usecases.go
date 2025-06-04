@@ -119,3 +119,7 @@ func (uc *SprintUseCases) RunSprint(id uint) (*domain.Sprint, error) {
 	}
 	return uc.sprintRepo.Update(sprint)
 }
+
+func (uc *SprintUseCases) GetQuarters() ([]domain.Quarter, error) {
+	return uc.sprintRepo.GetQuarters()
+}

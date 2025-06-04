@@ -5,9 +5,15 @@ import (
 	"main/internal/domain/repo"
 	"main/internal/infra/db/interfaces"
 	"main/internal/infra/persistance/models"
+	"main/pkg/utils"
+	"time"
 
 	"gorm.io/gorm"
 )
+
+type SprintQuerterRow struct {
+	StartDate time.Time
+}
 
 type SprintRepository struct {
 	conn     interfaces.ConnectionInterface `di.inject:"db"`
@@ -104,4 +110,25 @@ func (r *SprintRepository) toSprint(sprint *domain.Sprint) *models.Sprint {
 
 func (r *SprintRepository) getQuery() *gorm.DB {
 	return r.conn.GetEngine().Model(&models.Sprint{}).Preload("Team")
+}
+
+func (r *SprintRepository) GetQuarters() ([]domain.Quarter, error) {
+	rows := make([]SprintQuerterRow, 0)
+	err := r.conn.GetEngine().Raw("SELECT DISTINCT start_date FROM sprints ORDER BY start_date").Find(&rows).Error
+	if err != nil {
+		return nil, err
+	}
+
+	quarters := utils.Map(rows, func(row SprintQuerterRow) domain.Quarter {
+		return *domain.NewQuarterFromDate(row.StartDate)
+	})
+
+	quarters = utils.Filter(quarters, func(quarter domain.Quarter) bool {
+		return quarter.Validate() == nil
+	})
+
+	quarters = utils.Unique(quarters, func(quarter domain.Quarter) string {
+		return quarter.GetId()
+	})
+	return quarters, nil
 }

@@ -12,6 +12,8 @@ import {faPlus, faMinus} from '@fortawesome/free-solid-svg-icons'
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, combineLatestWith, debounceTime, distinctUntilChanged, map, switchMap } from 'rxjs';
 import { SprintModalServiceService } from 'src/app/modules/kanban/services/sprint-modal.service';
+import { SelectValue } from 'src/app/modules/ui/models/select-value';
+import { TitleService } from 'src/app/modules/core/services/title.service';
 
 @Component({
   selector: 'app-sprints-page',
@@ -27,6 +29,7 @@ export class SprintsPageComponent {
   router = inject(Router)
   route = inject(ActivatedRoute)
   sprintModal = inject(SprintModalServiceService)
+  title = inject(TitleService)
 
   faArrowLeftLong = faArrowLeftLong
   faPlus = faPlus
@@ -35,9 +38,13 @@ export class SprintsPageComponent {
   form: FormGroup
   sprints: Sprint[] = []
   quarters: Quarter[] = []
+  allQuarters: Quarter[] = []
+  quartersValues: SelectValue[] = []
   reload$ = new BehaviorSubject<null>(null)
 
   constructor() {
+    this.title.setTitleAndDescription('Sprints')
+
     this.form = this.fb.group({
       team: [null],
       quarter: [null]
@@ -92,6 +99,14 @@ export class SprintsPageComponent {
       takeUntilDestroyed()
     ).subscribe(data => {
       this.form.patchValue(data)
+    })
+
+    this.sprintService.quarters().pipe(
+      catchErrorMessages(this.toast),
+      takeUntilDestroyed()
+    ).subscribe(data => {
+      this.allQuarters = data
+      this.quartersValues = this.allQuarters.map(q => ({id: q.id, title: q.title}))
     })
   }
 

@@ -6,4 +6,5 @@ import (
 
 type SprintRepo interface {
 	RWRepo[models.Sprint, models.SprintId]
+	GetQuarters() ([]models.Quarter, error)
 }

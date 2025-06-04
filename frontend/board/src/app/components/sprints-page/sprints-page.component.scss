@@ -1,5 +1,27 @@
 @import '../../../styles/imports';
 
+:host {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.header {
+
+}
+
+.content {
+  position: relative;
+  flex-grow: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: $pt3
+}
+
 .quarter {
   margin-bottom: $pt3;
 

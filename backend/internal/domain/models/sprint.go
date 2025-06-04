@@ -84,10 +84,7 @@ func (s *Sprint) Complete() error {
 }
 
 func (s *Sprint) GetQuarter() *Quarter {
-	year := s.StartDate.Year()
-	month := s.StartDate.Month()
-	val, _ := NewQuarter(year, int((month-1)/3+1))
-	return val
+	return NewQuarterFromDate(s.StartDate)
 }
 
 func (s *Sprint) CanDelete() bool {

@@ -53,9 +53,12 @@ export class SprintsPageComponent {
       combineLatestWith(quarter$),
       debounceTime(1),
       switchMap(([teamId, quarter]) => {
-        const query = {
-          team: teamId,
-          quarter
+        const query: Record<string, any> = {}
+        if (teamId) {
+          query['team'] = teamId
+        }
+        if (quarter) {
+          query['quarter'] = quarter
         }
 
         return this.sprintService.list(query).pipe(

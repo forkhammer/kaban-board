@@ -1,6 +1,7 @@
 @import '../../../../../styles/imports.scss';
 
 $user-list-width: 320px;
+$board-header-height: 100px;
 
 .board {
   position: absolute;
@@ -54,7 +55,7 @@ $user-list-width: 320px;
     position: absolute;
     left: $pt3;
     right: $pt3;
-    top: $pt3;
+    top: $board-header-height;
     bottom: $pt3;
     transition-duration: 0.3s;
   }
@@ -114,4 +115,11 @@ $user-list-width: 320px;
   &.visible {
     display: block;
   }
+}
+
+.board-header {
+  padding: $pt2 $pt3;
+  background: $white;
+  display: flex;
+  align-items: center;
 }

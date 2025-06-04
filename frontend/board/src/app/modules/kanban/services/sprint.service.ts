@@ -14,6 +14,10 @@ export class SprintService extends BaseService<Sprint>{
     this.apiUrl = this.config.apiUrl + '/sprint'
   }
 
+  formatter(item: Sprint) {
+    return item.represent
+  }
+
   complete(sprintId: number) {
     return this.http.post<Sprint>(`${this.apiUrl}/${sprintId}/complete`, {})
   }

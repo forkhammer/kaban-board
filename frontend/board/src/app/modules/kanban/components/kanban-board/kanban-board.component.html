@@ -31,6 +31,25 @@
   </div>
 
   <div class="user-board" *ngIf="selectedUser" (swipeLeft)="swipeLeft($event)" (swipeRight)="swipeRight($event)">
+    <div class="board-header" [formGroup]="filterForm">
+      <div class="btn-group me-3">
+        <button class="btn btn-light">
+          <fa-icon [icon]="faTableColumns"></fa-icon>
+        </button>
+        <button class="btn btn-light">
+          <fa-icon [icon]="faTableList"></fa-icon>
+        </button>
+      </div>
+
+      <app-select-model [service]="sprintService" formControlName="sprint" [useClear]="true" title="Спринт"
+        [itemFormatter]="sprintService.formatter" [formatter]="sprintService.formatter"
+        class="me-1"></app-select-model>
+
+      <button class="btn btn-outline-secondary me-3"><fa-icon [icon]="faPlus"></fa-icon></button>
+
+      <a routerLink="/reports" class="btn btn-light ms-auto">Отчеты по спринту</a>
+    </div>
+
     <div class="user-board-inner" [ngStyle]="getUserBoardStyles()" #UserBoardInner>
       <app-user-board [user]="selectedUser" [columns]="getActiveColumns((teamId$ | async))"
         [columnWidth]="COLUMN_WIDTH"
@@ -48,6 +67,7 @@
     <button class="slide right" (click)="slideRight($event)" [class.visible]="getScreenEndColumn() - 1 < getActiveColumns((teamId$ | async)).length">
       <fa-icon [icon]="faArrowRight"></fa-icon>
     </button>
+
   </div>
 </div>
 

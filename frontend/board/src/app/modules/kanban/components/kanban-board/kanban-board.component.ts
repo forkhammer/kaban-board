@@ -16,7 +16,7 @@ import {KanbanColumn} from "../../models/kanban-column";
 import {KanbanColumnService} from "../../services/kanban-column.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {FormBuilder, FormGroup} from "@angular/forms";
-import { faXmark, faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { faXmark, faArrowLeft, faArrowRight, faTableList, faTableColumns, faPlus } from '@fortawesome/free-solid-svg-icons';
 import {TitleService} from "../../../core/services/title.service";
 import {TeamService} from "../../services/team.service";
 import {GitlabSyncService} from "../../services/gitlab-sync.service";
@@ -26,6 +26,7 @@ import { Group } from '../../models/group';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { catchErrorMessages } from 'src/app/modules/core/tools/catch-error';
 import { ToastService } from 'src/app/modules/core/services/toast.service';
+import { SprintService } from '../../services/sprint.service';
 
 @Component({
     selector: 'app-kanban-board',
@@ -44,10 +45,14 @@ export class KanbanBoardComponent implements OnInit {
   private syncService = inject(GitlabSyncService)
   private destroyRef = inject(DestroyRef)
   private toast = inject(ToastService)
+  sprintService = inject(SprintService)
 
   faXmark = faXmark
   faArrowLeft = faArrowLeft
   faArrowRight = faArrowRight
+  faTableList = faTableList
+  faTableColumns = faTableColumns
+  faPlus = faPlus
   COLUMN_WIDTH = 340
 
   public users: KanbanUser[] = []
@@ -73,7 +78,8 @@ export class KanbanBoardComponent implements OnInit {
       search: [''],
     })
     this.filterForm = this.builder.group({
-      team: [null]
+      team: [null],
+      sprint: [null],
     })
     this.teamId$ = this.route.queryParams.pipe(
       map(params => params['team'] ? Number(params['team']) : null)

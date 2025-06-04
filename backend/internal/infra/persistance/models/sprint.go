@@ -8,8 +8,8 @@ import (
 
 type Sprint struct {
 	gorm.Model
-	IsCompleted  bool      `gorm:"is_completed;default:false;not null"`
 	Id           uint      `gorm:"id;primaryKey"`
+	Status       string    `gorm:"status;default:waiting;not null"`
 	TeamId       uint      `gorm:"team_id;not null"`
 	HoursPerUser uint      `gorm:"hours_per_user;default:0;not null"`
 	Title        string    `gorm:"title;default:''"`

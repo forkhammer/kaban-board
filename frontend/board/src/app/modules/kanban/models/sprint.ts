@@ -18,6 +18,9 @@ export type Sprint = {
   status: SprintStatus
   quarter: Quarter
   hours_per_user: number | null
+  can_run: boolean
+  can_delete: boolean
+  can_complete: boolean
 }
 
 export type SaveSprintRequest = {

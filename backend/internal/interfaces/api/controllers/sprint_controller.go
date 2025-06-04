@@ -21,6 +21,7 @@ func (c *SprintController) RegisterRoutes(router *gin.Engine) error {
 	router.PUT("/sprint/:id", c.UpdateSprint)
 	router.DELETE("/sprint/:id", c.DeleteSprint)
 	router.POST("/sprint/:id/complete", c.CompleteSprint)
+	router.POST("/sprint/:id/run", c.RunSprint)
 	return nil
 }
 
@@ -141,6 +142,20 @@ func (c *SprintController) CompleteSprint(ctx *gin.Context) {
 		return
 	}
 	sprint, err := c.sprintUC.CompleteSprint(uint(id))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, dto.SerializeSprint(sprint))
+}
+
+func (c *SprintController) RunSprint(ctx *gin.Context) {
+	id, err := strconv.ParseUint(ctx.Param("id"), 10, 32)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+		return
+	}
+	sprint, err := c.sprintUC.RunSprint(uint(id))
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
 		return

@@ -89,7 +89,7 @@ func (uc *SprintUseCases) DeleteSprint(id uint) error {
 	if err != nil {
 		return err
 	}
-	if sprint.GetStatus() != domain.SprintStatusWaiting {
+	if !sprint.CanDelete() {
 		return fmt.Errorf("Нельзя удалить этот спринт")
 	}
 
@@ -101,7 +101,19 @@ func (uc *SprintUseCases) CompleteSprint(id uint) (*domain.Sprint, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = sprint.SetCompleted()
+	err = sprint.Complete()
+	if err != nil {
+		return nil, err
+	}
+	return uc.sprintRepo.Update(sprint)
+}
+
+func (uc *SprintUseCases) RunSprint(id uint) (*domain.Sprint, error) {
+	sprint, err := uc.sprintRepo.Get(domain.SprintId(id))
+	if err != nil {
+		return nil, err
+	}
+	err = sprint.Run()
 	if err != nil {
 		return nil, err
 	}

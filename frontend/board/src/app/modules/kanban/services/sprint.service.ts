@@ -16,4 +16,8 @@ export class SprintService extends BaseService<Sprint>{
   complete(sprintId: number) {
     return this.http.post<Sprint>(`${this.apiUrl}/${sprintId}/complete`, {})
   }
+
+  run(sprintId: number) {
+    return this.http.post<Sprint>(`${this.apiUrl}/${sprintId}/run`, {})
+  }
 }

@@ -47,4 +47,26 @@ export class SprintCardComponent {
       })
     }
   }
+
+  run() {
+    if (confirm('Запустить спринт?')) {
+      this.sprintService.run(this.sprint.id).pipe(
+        catchErrorMessages(this.toast),
+        takeUntilDestroyed(this.destroyRef),
+      ).subscribe(data => {
+        Object.assign(this.sprint, data)
+      })
+    }
+  }
+
+  complete() {
+    if (confirm('Завершить спринт?')) {
+      this.sprintService.complete(this.sprint.id).pipe(
+        catchErrorMessages(this.toast),
+        takeUntilDestroyed(this.destroyRef),
+      ).subscribe(data => {
+        Object.assign(this.sprint, data)
+      })
+    }
+  }
 }

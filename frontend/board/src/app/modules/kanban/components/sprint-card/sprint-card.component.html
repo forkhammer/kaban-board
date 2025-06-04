@@ -24,13 +24,22 @@
   </div>
 </div>
 
+<button class="btn btn-light ms-3 me-3" *ngIf="sprint.can_run" (click)="run()">
+  <fa-icon [icon]="faPlay" class="text-success"></fa-icon>
+  Запустить
+</button>
+
+<button class="btn btn-light ms-3 me-3" *ngIf="sprint.can_complete" (click)="complete()">
+  <fa-icon [icon]="faStop" class="text-danger"></fa-icon>
+  Завершить
+</button>
+
 <div class="count ms-3 me-3">9 задач</div>
 
 <div ngbDropdown>
   <button type="button" class="btn btn-light" id="sprint-dropdown" ngbDropdownToggle>...</button>
   <div ngbDropdownMenu>
     <button ngbDropdownItem (click)="change()">Изменить</button>
-    <button ngbDropdownItem *ngIf="sprint.status === SprintStatus.RUNNING">Завершить</button>
-    <button ngbDropdownItem *ngIf="sprint.status === SprintStatus.WAITING" (click)="delete()">Удалить</button>
+    <button ngbDropdownItem *ngIf="sprint.can_delete" (click)="delete()">Удалить</button>
   </div>
 </div>

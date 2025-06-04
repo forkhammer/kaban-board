@@ -18,23 +18,23 @@ const (
 type SprintId int
 
 type Sprint struct {
-	IsCompleted  bool
 	Id           SprintId
 	HoursPerUser uint `validate:"required,gt=0"`
 	Title        string
 	StartDate    time.Time `validate:"required"`
 	EndDate      time.Time
 	Team         Team `validate:"required"`
+	Status       SprintStatus
 }
 
-func NewSprint(id SprintId, title string, startDate time.Time, endDate time.Time, team Team, isCompleted bool, hoursPerUser uint) (*Sprint, error) {
+func NewSprint(id SprintId, title string, startDate time.Time, endDate time.Time, team Team, status SprintStatus, hoursPerUser uint) (*Sprint, error) {
 	sprint := &Sprint{
 		Id:           id,
 		Title:        title,
 		StartDate:    startDate,
 		EndDate:      endDate,
 		Team:         team,
-		IsCompleted:  isCompleted,
+		Status:       status,
 		HoursPerUser: hoursPerUser,
 	}
 	return sprint, sprint.Validate()
@@ -61,22 +61,25 @@ func (s *Sprint) GetTitle() string {
 	return fmt.Sprintf("Спринт %s - %s", s.StartDate.Format("02.01.2006"), s.EndDate.Format("02.01.2006"))
 }
 
-func (s *Sprint) GetStatus() SprintStatus {
-	if s.IsCompleted {
-		return SprintStatusCompleted
+func (s *Sprint) Run() error {
+	if s.Status == SprintStatusRunning {
+		return fmt.Errorf("Нельзя запустить этот спринт")
 	}
-	if s.StartDate.Before(time.Now()) {
-		return SprintStatusRunning
+
+	if s.StartDate.After(time.Now()) {
+		return fmt.Errorf("Нельзя запустить спринт в будущем")
 	}
-	return SprintStatusWaiting
+
+	s.Status = SprintStatusRunning
+	return nil
 }
 
-func (s *Sprint) SetCompleted() error {
-	if s.GetStatus() != SprintStatusRunning {
+func (s *Sprint) Complete() error {
+	if s.Status != SprintStatusRunning {
 		return fmt.Errorf("Нельзя завершить не запущенный спринт")
 	}
 
-	s.IsCompleted = true
+	s.Status = SprintStatusCompleted
 	return nil
 }
 
@@ -85,4 +88,16 @@ func (s *Sprint) GetQuarter() *Quarter {
 	month := s.StartDate.Month()
 	val, _ := NewQuarter(year, int((month-1)/3+1))
 	return val
+}
+
+func (s *Sprint) CanDelete() bool {
+	return s.Status == SprintStatusWaiting
+}
+
+func (s *Sprint) CanRun() bool {
+	return (s.Status == SprintStatusWaiting || s.Status == SprintStatusCompleted) && s.StartDate.Before(time.Now()) && s.EndDate.After(time.Now())
+}
+
+func (s *Sprint) CanComplete() bool {
+	return s.Status == SprintStatusRunning
 }

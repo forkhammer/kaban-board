@@ -17,6 +17,9 @@ type SprintDto struct {
 	Status       string     `json:"status"`
 	HoursPerUser int        `json:"hours_per_user"`
 	Quarter      QuarterDto `json:"quarter"`
+	CanRun       bool       `json:"can_run"`
+	CanDelete    bool       `json:"can_delete"`
+	CanComplete  bool       `json:"can_complete"`
 }
 
 type GetSprintsRequest struct {
@@ -65,9 +68,12 @@ func SerializeSprint(sprint *domain.Sprint) *SprintDto {
 		EndDate:      sprint.EndDate.Format("2006-01-02"),
 		TeamId:       int(sprint.Team.Id),
 		Team:         *SerializeTeam(&sprint.Team),
-		Status:       string(sprint.GetStatus()),
+		Status:       string(sprint.Status),
 		HoursPerUser: int(sprint.HoursPerUser),
 		Quarter:      *SerializeQuarter(sprint.GetQuarter()),
+		CanRun:       sprint.CanRun(),
+		CanDelete:    sprint.CanDelete(),
+		CanComplete:  sprint.CanComplete(),
 	}
 }
 

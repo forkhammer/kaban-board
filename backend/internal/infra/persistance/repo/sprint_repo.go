@@ -81,7 +81,7 @@ func (r *SprintRepository) toDomainSprint(sprint *models.Sprint) (*domain.Sprint
 	}
 	return &domain.Sprint{
 		Id:           domain.SprintId(sprint.Id),
-		IsCompleted:  sprint.IsCompleted,
+		Status:       domain.SprintStatus(sprint.Status),
 		Title:        sprint.Title,
 		StartDate:    sprint.StartDate,
 		EndDate:      sprint.EndDate,
@@ -93,7 +93,7 @@ func (r *SprintRepository) toDomainSprint(sprint *models.Sprint) (*domain.Sprint
 func (r *SprintRepository) toSprint(sprint *domain.Sprint) *models.Sprint {
 	return &models.Sprint{
 		Id:           uint(sprint.Id),
-		IsCompleted:  sprint.IsCompleted,
+		Status:       string(sprint.Status),
 		Title:        sprint.Title,
 		StartDate:    sprint.StartDate,
 		EndDate:      sprint.EndDate,

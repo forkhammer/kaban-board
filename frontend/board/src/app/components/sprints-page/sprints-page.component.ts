@@ -11,7 +11,7 @@ import { TeamService } from 'src/app/modules/kanban/services/team.service';
 import {faPlus, faMinus} from '@fortawesome/free-solid-svg-icons'
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, combineLatestWith, debounceTime, distinctUntilChanged, map, switchMap } from 'rxjs';
-import { SprintModalServiceService } from 'src/app/modules/kanban/services/sprint-modal-service.service';
+import { SprintModalServiceService } from 'src/app/modules/kanban/services/sprint-modal.service';
 
 @Component({
   selector: 'app-sprints-page',
@@ -107,5 +107,9 @@ export class SprintsPageComponent {
 
   reload() {
     this.reload$.next(null)
+  }
+
+  onDeleteSprint(sprint: Sprint) {
+    this.sprints = this.sprints.filter(s => s.id !== sprint.id)
   }
 }

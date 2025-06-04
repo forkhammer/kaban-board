@@ -63,6 +63,7 @@ export class SprintModalComponent {
   submit() {
     this.isLoading = true
     const data: SaveSprintRequest = {
+      id: this.sprint?.id,
       title: this.form.value.title,
       start_date: this.form.value.start_date,
       end_date: this.form.value.end_date,

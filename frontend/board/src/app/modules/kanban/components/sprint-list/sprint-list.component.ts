@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Sprint } from '../../models/sprint';
 
 @Component({
@@ -9,4 +9,5 @@ import { Sprint } from '../../models/sprint';
 })
 export class SprintListComponent {
   @Input() sprints: Sprint[] = []
+  @Output() onDelete = new EventEmitter<Sprint>()
 }

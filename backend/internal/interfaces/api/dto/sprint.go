@@ -9,8 +9,10 @@ import (
 type SprintDto struct {
 	Id           int        `json:"id"`
 	Title        string     `json:"title"`
+	Represent    string     `json:"represent"`
 	StartDate    string     `json:"start_date"`
 	EndDate      string     `json:"end_date"`
+	TeamId       int        `json:"team_id"`
 	Team         TeamDto    `json:"team"`
 	Status       string     `json:"status"`
 	HoursPerUser int        `json:"hours_per_user"`
@@ -51,19 +53,17 @@ func (r *CreateSprintRequest) GetEndDate() (time.Time, error) {
 }
 
 type UpdateSprintRequest struct {
-	Title        string    `json:"title"`
-	StartDate    time.Time `json:"start_date"`
-	EndDate      time.Time `json:"end_date"`
-	HoursPerUser uint      `json:"hours_per_user"`
-	TeamId       uint      `json:"team_id"`
+	CreateSprintRequest
 }
 
 func SerializeSprint(sprint *domain.Sprint) *SprintDto {
 	return &SprintDto{
 		Id:           int(sprint.Id),
-		Title:        sprint.GetTitle(),
+		Title:        sprint.Title,
+		Represent:    sprint.GetTitle(),
 		StartDate:    sprint.StartDate.Format("2006-01-02"),
 		EndDate:      sprint.EndDate.Format("2006-01-02"),
+		TeamId:       int(sprint.Team.Id),
 		Team:         *SerializeTeam(&sprint.Team),
 		Status:       string(sprint.GetStatus()),
 		HoursPerUser: int(sprint.HoursPerUser),

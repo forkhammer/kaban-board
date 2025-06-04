@@ -15,7 +15,7 @@
 </div>
 
 <div class="desc">
-  <div class="title">{{sprint.title}}</div>
+  <div class="title">{{sprint.represent}}</div>
 
   <div class="d-flex">
     <div class="date">{{sprint.start_date | formatDate}} - {{sprint.end_date | formatDate}}</div>
@@ -24,4 +24,13 @@
   </div>
 </div>
 
-<div class="count">9 задач</div>
+<div class="count ms-3 me-3">9 задач</div>
+
+<div ngbDropdown>
+  <button type="button" class="btn btn-light" id="sprint-dropdown" ngbDropdownToggle>...</button>
+  <div ngbDropdownMenu>
+    <button ngbDropdownItem (click)="change()">Изменить</button>
+    <button ngbDropdownItem *ngIf="sprint.status === SprintStatus.RUNNING">Завершить</button>
+    <button ngbDropdownItem *ngIf="sprint.status === SprintStatus.WAITING" (click)="delete()">Удалить</button>
+  </div>
+</div>

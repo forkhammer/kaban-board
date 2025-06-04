@@ -10,6 +10,7 @@ export enum SprintStatus {
 export type Sprint = {
   id: number
   title: string
+  represent: string
   start_date: string
   end_date: string
   team_id: number
@@ -20,6 +21,7 @@ export type Sprint = {
 }
 
 export type SaveSprintRequest = {
+  id?: number
   title: string
   start_date: string
   end_date: string

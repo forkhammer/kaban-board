@@ -24,7 +24,7 @@
         </div>
         <div class="quarter-content">
 
-          <app-sprint-list [sprints]="sprints | filterSprintsByQuarter:quarter"></app-sprint-list>
+          <app-sprint-list [sprints]="sprints | filterSprintsByQuarter:quarter" (onDelete)="onDeleteSprint($event)"></app-sprint-list>
         </div>
       </div>
     </div>

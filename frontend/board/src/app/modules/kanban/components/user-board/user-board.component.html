@@ -1,6 +1,6 @@
-<div class="user-board" (swipeLeft)="swipeLeft($event)" (swipeRight)="swipeRight($event)" *ngIf="(user$ | async) && (team$ | async)">
+<div class="user-board" (swipeLeft)="swipeLeft($event)" (swipeRight)="swipeRight($event)" *ngIf="(team$ | async)">
   <div class="user-board-inner" [ngStyle]="getUserBoardStyles()" #UserBoardInner>
-    <div class="issues" *ngIf="(user$ | async)">
+    <div class="issues">
       <div class="d-flex align-items-start flex-nowrap position-relative" cdkDropList cdkDropListOrientation="horizontal"
         (cdkDropListDropped)='dropColumn($event)'>
         <div class="issue-col flex-grow-0" *ngFor="let column of columns; trackBy trackByColumn"

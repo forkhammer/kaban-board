@@ -65,13 +65,15 @@ export class UserBoardComponent {
     this.timer$.pipe(
       combineLatestWith(this.user$, this.team$),
       filter(([_, user, team]) => {
-        return !!user && !!team
+        return !!team
       }),
       debounceTime(1),
       switchMap(([_, user, team]) => {
         const query: Record<string, any> = {
-          'assignee': user!.id,
           'team': team!.id
+        }
+        if (user) {
+          query['assignee'] = user.id
         }
         return this.issueService.list(query).pipe(
           catchErrorMessages(this.toast)

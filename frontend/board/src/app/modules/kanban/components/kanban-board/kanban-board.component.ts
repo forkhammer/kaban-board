@@ -197,4 +197,8 @@ export class KanbanBoardComponent implements OnInit {
   selectTeam(team: Team) {
     this.filterForm.patchValue({team: team.id})
   }
+
+  goToTeamBoard() {
+    this.router.navigate(['/'], {queryParams: {user: null}, queryParamsHandling: 'merge'})
+  }
 }

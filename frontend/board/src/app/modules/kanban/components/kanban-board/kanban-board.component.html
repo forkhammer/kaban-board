@@ -19,6 +19,12 @@
       <button class="search-clear btn"><fa-icon [icon]="faXmark" (click)="clearSearch($event)"></fa-icon></button>
     </form> -->
 
+    <button class="user-list__team-link" (click)="goToTeamBoard()"
+      [class.active]="!selectedUser">
+      <span>Задачи команды {{selectedTeam?.title}}</span>
+      <fa-icon [icon]="faArrowRight"></fa-icon>
+    </button>
+
 
     <div class="user-list__content">
       <div class="user-list__scroll">

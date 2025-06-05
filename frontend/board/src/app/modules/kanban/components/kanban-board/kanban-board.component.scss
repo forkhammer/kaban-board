@@ -30,6 +30,7 @@ $board-header-height: 100px;
 .team {
   border: 2px solid $white;
   background: $white;
+  color: $gray-700;
   width: $pt6;
   height: $pt6;
   border-radius: 4px;
@@ -45,6 +46,7 @@ $board-header-height: 100px;
 
   &.active {
     border-color: $primary;
+    color: $primary;
   }
 }
 
@@ -74,6 +76,29 @@ $board-header-height: 100px;
     right: 0;
     bottom: 0;
     overflow-y: auto;
+  }
+
+  &__team-link {
+    background: $white;
+    padding: $pt2 $pt3;
+    cursor: pointer;
+    border: none;
+    display: flex;
+    align-items: center;
+    color: $gray-700;
+
+    > span {
+      flex-grow: 1;
+    }
+
+    fa-icon {
+      color: $gray-500;
+    }
+
+    &.active {
+      background: $primary;
+      color: $white;
+    }
   }
 }
 

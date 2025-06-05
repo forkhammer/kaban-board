@@ -13,6 +13,7 @@ import (
 	"main/internal/infra/persistance/repo"
 	column_spec "main/internal/infra/persistance/spec/column"
 	group_spec "main/internal/infra/persistance/spec/group"
+	issue_spec "main/internal/infra/persistance/spec/issue"
 	label_spec "main/internal/infra/persistance/spec/label"
 	sprint_spec "main/internal/infra/persistance/spec/sprint"
 	user_spec "main/internal/infra/persistance/spec/user"
@@ -66,6 +67,7 @@ func (app *Application) Init() {
 	di.RegisterBean("GroupQuery", reflect.TypeOf((*group_spec.GroupQueryImpl)(nil)))
 	di.RegisterBean("UserQuery", reflect.TypeOf((*user_spec.UserQueryImpl)(nil)))
 	di.RegisterBean("SprintQuery", reflect.TypeOf((*sprint_spec.SprintQueryImpl)(nil)))
+	di.RegisterBean("IssueQuery", reflect.TypeOf((*issue_spec.IssueQueryImpl)(nil)))
 
 	di.RegisterBean("JWTService", reflect.TypeOf((*services.JWTService)(nil)))
 	di.RegisterBean("PasswordService", reflect.TypeOf((*services.PasswordService)(nil)))
@@ -82,6 +84,7 @@ func (app *Application) Init() {
 	di.RegisterBean("SyncUseCases", reflect.TypeOf((*usecases.SyncUseCases)(nil)))
 	di.RegisterBean("KanbanUseCases", reflect.TypeOf((*usecases.KanbanUseCases)(nil)))
 	di.RegisterBean("SprintUseCases", reflect.TypeOf((*usecases.SprintUseCases)(nil)))
+	di.RegisterBean("IssueUseCases", reflect.TypeOf((*usecases.IssueUseCases)(nil)))
 
 	di.RegisterBean("AccountController", reflect.TypeOf((*controllers.AccountController)(nil)))
 	di.RegisterBean("ReportsController", reflect.TypeOf((*controllers.ReportsController)(nil)))
@@ -95,6 +98,7 @@ func (app *Application) Init() {
 	di.RegisterBean("SettingsController", reflect.TypeOf((*controllers.SettingsController)(nil)))
 	di.RegisterBean("KanbanController", reflect.TypeOf((*controllers.KanbanController)(nil)))
 	di.RegisterBean("SprintController", reflect.TypeOf((*controllers.SprintController)(nil)))
+	di.RegisterBean("IssueController", reflect.TypeOf((*controllers.IssueController)(nil)))
 
 	err = di.InitializeContainer()
 	if err != nil {

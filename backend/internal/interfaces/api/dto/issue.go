@@ -6,6 +6,13 @@ import (
 	"main/pkg/utils"
 )
 
+type IssuesRequest struct {
+	Assignee *uint `form:"assignee"`
+	Team     *uint `form:"team"`
+	Group    *uint `form:"group"`
+	Sprint   *uint `form:"sprint"`
+}
+
 type IssueDto struct {
 	Id          string      `json:"id"`
 	Iid         string      `json:"iid"`

@@ -25,6 +25,7 @@ $board-header-height: 100px;
   top: 0;
   bottom: 0;
   background: $white;
+  border-right: 1px solid $gray-100;
 
   :host-context([data-bs-theme="dark"]) {
     .user-list  {
@@ -42,23 +43,14 @@ $board-header-height: 100px;
   }
 }
 
-.user-board {
+.content {
   position: absolute;
   left: $user-list-width;
   right: 0;
   top: 0;
   bottom: 0;
-  overflow-x: hidden;
-  overflow-y: hidden;
-
-  &-inner {
-    position: absolute;
-    left: $pt3;
-    right: $pt3;
-    top: $board-header-height;
-    bottom: $pt3;
-    transition-duration: 0.3s;
-  }
+  display: flex;
+  flex-direction: column;
 }
 
 .search-input {
@@ -85,35 +77,6 @@ $board-header-height: 100px;
     .search-clear {
       background: $gray-900;
     }
-  }
-}
-
-.slide {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 100px;
-  background: rgba($black, 0.1);
-  color: $white;
-  border: none;
-  font-size: 2rem;
-  transition-duration: 0.2s;
-  display: none;
-
-  &:hover {
-    background: rgba($black, 0.3);
-  }
-
-  &.left {
-    left: 0;
-  }
-
-  &.right {
-    right: 0;
-  }
-
-  &.visible {
-    display: block;
   }
 }
 

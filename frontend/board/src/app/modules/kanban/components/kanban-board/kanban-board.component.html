@@ -14,14 +14,14 @@
 
     <div class="user-list-scroll">
       <ng-container [ngTemplateOutlet]="userGroupTpl" [ngTemplateOutletContext]="{
-        users: users | filterUsersByGroup: null | filterUsersByTeam: (teamId$ | async) | searchUsers:searchForm.get('search')?.value | filterUsersByText: (search$ | async),
+        users: users | filterUsersByGroup: null | filterUsersByTeam: (teamId$ | async) | searchUsers:searchForm.get('search')?.value,
         group: otherGroup,
         open: false
       }"></ng-container>
 
       <div *ngFor="let group of team?.groups">
         <ng-container [ngTemplateOutlet]="userGroupTpl" [ngTemplateOutletContext]="{
-          users: users | filterUsersByGroup: group.id | filterUsersByTeam: (teamId$ | async) | searchUsers:searchForm.get('search')?.value | filterUsersByText: (search$ | async),
+          users: users | filterUsersByGroup: group.id | filterUsersByTeam: (teamId$ | async) | searchUsers:searchForm.get('search')?.value,
           group: group,
           open: true
         }"></ng-container>
@@ -30,7 +30,7 @@
 
   </div>
 
-  <div class="user-board" *ngIf="selectedUser" (swipeLeft)="swipeLeft($event)" (swipeRight)="swipeRight($event)">
+  <div class="content">
     <div class="board-header" [formGroup]="filterForm">
       <div class="btn-group me-3">
         <button class="btn btn-light">
@@ -50,25 +50,13 @@
       <a routerLink="/reports" class="btn btn-light ms-auto">Отчеты по спринту</a>
     </div>
 
-    <div class="user-board-inner" [ngStyle]="getUserBoardStyles()" #UserBoardInner>
-      <app-user-board [user]="selectedUser" [columns]="getActiveColumns((teamId$ | async))"
-        [columnWidth]="COLUMN_WIDTH"
-        [search]="search$ | async"
-        (onAddColumn)="catchAddColumn($event)"
-        (onDeleteColumn)="catchDeleteColumn($event)"
-        (onUpdateColumns)="catchUpdateColumns($event)"
-        (onDrag)="catchDrag($event)"></app-user-board>
+    <div class="position-relative flex-grow-1">
+      <ng-container *ngIf="selectedUser && team">
+        <app-user-board [user]="selectedUser" [team]="team"
+          [search]="search$ | async"></app-user-board>
+      </ng-container>
     </div>
 
-    <button class="slide left" (click)="slideLeft($event)" [class.visible]="getScreenStartColumn() > 0">
-      <fa-icon [icon]="faArrowLeft"></fa-icon>
-    </button>
-
-    <button class="slide right" (click)="slideRight($event)" [class.visible]="getScreenEndColumn() - 1 < getActiveColumns((teamId$ | async)).length">
-      <fa-icon [icon]="faArrowRight"></fa-icon>
-    </button>
-
-  </div>
 </div>
 
 
@@ -77,8 +65,7 @@
     <app-user-group-card [group]="group" [userCount]="users.length" [isOpen]="open">
       <app-user-card [user]="user" *ngFor="let user of users; trackBy trackByUser"
         (click)="goToUserBoard(user)"
-        [selected]="selectedUser === user"
-        [columns]="getActiveColumns((teamId$ | async))"></app-user-card>
+        [selected]="selectedUser === user"></app-user-card>
     </app-user-group-card>
   </ng-container>
 </ng-template>

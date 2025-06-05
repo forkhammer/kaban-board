@@ -1,7 +1,6 @@
 import {Component, DestroyRef, ElementRef, inject, OnInit, ViewChild} from '@angular/core';
 import {KanbanUserService} from "../../services/kanban-user.service";
 import {
-  BehaviorSubject,
   combineLatestWith,
   distinctUntilChanged,
   filter,
@@ -13,7 +12,6 @@ import {
 import {KanbanUser} from "../../models/kanban-user";
 import {map} from "rxjs/operators";
 import {KanbanColumn} from "../../models/kanban-column";
-import {KanbanColumnService} from "../../services/kanban-column.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import { faXmark, faArrowLeft, faArrowRight, faTableList, faTableColumns, faPlus } from '@fortawesome/free-solid-svg-icons';
@@ -36,7 +34,7 @@ import { SprintService } from '../../services/sprint.service';
 })
 export class KanbanBoardComponent implements OnInit {
   private kanbanUserService = inject(KanbanUserService)
-  private kanbanColumnsService = inject(KanbanColumnService)
+
   private route = inject(ActivatedRoute)
   private router = inject(Router)
   private builder = inject(FormBuilder)
@@ -56,18 +54,16 @@ export class KanbanBoardComponent implements OnInit {
   COLUMN_WIDTH = 340
 
   public users: KanbanUser[] = []
-  public columns: KanbanColumn[] = []
+
   public isLoading = false
   public selectedUser: KanbanUser | undefined = undefined
   public searchForm: FormGroup
   public filterForm: FormGroup
   public teamId$: Observable<number | null>
   public team: Team | null = null
-  public slidePosition = 0
-  @ViewChild('UserBoardInner') userBoardInner: ElementRef | null = null
   public search$: Observable<string | null>
-  private updateColumnSignal$ = new BehaviorSubject(null)
-  private isDrag$ = new BehaviorSubject<boolean>(false)
+
+
   public otherGroup: Group = {
     id: 0,
     title: 'Остальные',
@@ -122,12 +118,7 @@ export class KanbanBoardComponent implements OnInit {
       }
     })
 
-    this.updateColumnSignal$.pipe(
-      switchMap(_ => this.kanbanColumnsService.list()),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe(data => {
-      this.columns = data as KanbanColumn[]
-    })
+
 
     this.filterForm.get('team')?.valueChanges.pipe(
       distinctUntilChanged(),
@@ -171,87 +162,5 @@ export class KanbanBoardComponent implements OnInit {
     this.searchForm.patchValue({search:''})
     e.preventDefault()
     return false
-  }
-
-  catchAddColumn(column: KanbanColumn) {
-    this.columns.push(column)
-  }
-
-  catchDeleteColumn(column: KanbanColumn) {
-    this.columns.splice(this.columns.findIndex(c => c.id == column.id), 1)
-  }
-
-  catchUpdateColumns(columns: KanbanColumn[]) {
-    this.updateColumnSignal$.next(null)
-  }
-
-  getActiveColumns(teamId: number | null): KanbanColumn[] {
-    let columns = this.filterColumnByTeam(teamId)
-    if (columns.length === 0) {
-      columns = this.filterColumnByTeam(null)
-    }
-    return columns
-  }
-
-  filterColumnByTeam(teamId: number | null): KanbanColumn[] {
-    return this.columns.filter(column => {
-      if (teamId) {
-        return column.team_id === teamId
-      } else {
-        return column.team_id === null
-      }
-    })
-  }
-
-  slideLeft(e: MouseEvent | null) {
-    if (this.slidePosition + this.getSlideStep() > 0) {
-      this.slidePosition = 0
-    } else {
-      this.slidePosition += this.getSlideStep()
-    }
-    return false
-  }
-
-  slideRight(e: MouseEvent | null) {
-    this.slidePosition -= this.getSlideStep()
-    return false
-  }
-
-  getUserBoardStyles(): {[p:string]: any} {
-    return {
-      'transform': `translateX(${this.slidePosition * this.COLUMN_WIDTH}px)`,
-    }
-  }
-
-  getScreenStartColumn() {
-    return -this.slidePosition
-  }
-
-  getScreenEndColumn() {
-    return this.getScreenColumnsCount() + this.getScreenStartColumn()
-  }
-
-  getScreenColumnsCount() {
-    return Math.floor(this.userBoardInner?.nativeElement?.offsetWidth / this.COLUMN_WIDTH)
-  }
-
-  getSlideStep() {
-    return this.getScreenColumnsCount()
-  }
-
-  swipeLeft(e: Event) {
-    if (!this.isDrag$.value) {
-      this.slideRight(null)
-    }
-  }
-
-  swipeRight(e: Event) {
-    if (!this.isDrag$.value) {
-      this.slideLeft(null)
-    }
-  }
-
-  catchDrag(e: boolean) {
-    this.isDrag$.next(e)
   }
 }

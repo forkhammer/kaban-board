@@ -73,7 +73,7 @@ func (k *Kanban) GetBoard() (*Board, error) {
 		kanbanUser := KanbanUser{
 			User:   &user,
 			Teams:  teams,
-			Issues: issues,
+			Issues: []Issue{},
 		}
 		kanbanUsers = append(kanbanUsers, kanbanUser)
 	}

@@ -1,6 +1,5 @@
 import {Component, Input} from '@angular/core';
 import {KanbanUser} from "../../models/kanban-user";
-import {KanbanColumn} from "../../models/kanban-column";
 
 @Component({
     selector: 'app-user-card',
@@ -11,20 +10,8 @@ import {KanbanColumn} from "../../models/kanban-column";
 export class UserCardComponent {
   @Input() user!: KanbanUser
   @Input() selected: boolean = false
-  @Input() columns: KanbanColumn[] = []
 
   getIssuesCount() {
-    const labels = this.columns.reduce((prev, column) => {
-      prev.push(...column.labels)
-      return prev
-    }, [] as string[])
-
-    const issues = this.user.issues.filter(issue => {
-      return issue.labels.find(label => {
-        return labels.find(s => label.name.toLowerCase().includes(s.toLowerCase()))
-      })
-    })
-
-    return issues.length
+    return 0
   }
 }

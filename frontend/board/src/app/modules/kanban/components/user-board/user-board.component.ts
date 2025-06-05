@@ -41,16 +41,16 @@ export class UserBoardComponent {
   private isDrag$ = new BehaviorSubject<boolean>(false)
   public columns: KanbanColumn[] = []
   private updateColumnSignal$ = new BehaviorSubject(null)
-  public user$ = new BehaviorSubject<KanbanUser | null>(null)
-  public team$ = new BehaviorSubject<Team | null>(null)
+  public user$ = new BehaviorSubject<KanbanUser | null | undefined>(null)
+  public team$ = new BehaviorSubject<Team | null | undefined>(null)
   public issues: KanbanIssue[] = []
   private timer$ = timer(0, environment.autoUpdateIssuesMin * 60 * 1000)
 
-  @Input() set user(value : KanbanUser | null) {
+  @Input() set user(value : KanbanUser | undefined | null) {
     this.user$.next(value)
   }
 
-  @Input() set team(value: Team | null) {
+  @Input() set team(value: Team | undefined | null) {
     this.team$.next(value)
   }
 

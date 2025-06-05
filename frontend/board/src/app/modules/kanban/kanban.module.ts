@@ -39,6 +39,7 @@ import { FilterUsersByGroupPipe } from './pipes/filter-users-by-group.pipe';
 import { SprintListComponent } from './components/sprint-list/sprint-list.component';
 import { SprintCardComponent } from './components/sprint-card/sprint-card.component';
 import { FilterSprintsByQuarterPipe } from './pipes/filter-sprints-by-quarter.pipe';
+import { IssueTableComponent } from './components/issue-table/issue-table.component';
 
 
 @NgModule({
@@ -76,6 +77,7 @@ import { FilterSprintsByQuarterPipe } from './pipes/filter-sprints-by-quarter.pi
     SprintListComponent,
     SprintCardComponent,
     FilterSprintsByQuarterPipe,
+    IssueTableComponent
   ],
   exports: [
     UserBoardComponent,

@@ -33,10 +33,14 @@
   <div class="content">
     <div class="board-header" [formGroup]="filterForm">
       <div class="btn-group me-3">
-        <button class="btn btn-light">
+        <button class="btn" (click)="viewBoard()"
+          [class.btn-primary]="view === KanbanView.BOARD"
+          [class.btn-light]="view !== KanbanView.BOARD">
           <fa-icon [icon]="faTableColumns"></fa-icon>
         </button>
-        <button class="btn btn-light">
+        <button class="btn" (click)="viewList()"
+          [class.btn-primary]="view === KanbanView.LIST"
+          [class.btn-light]="view !== KanbanView.LIST">
           <fa-icon [icon]="faTableList"></fa-icon>
         </button>
       </div>
@@ -51,12 +55,13 @@
     </div>
 
     <div class="position-relative flex-grow-1">
-      <ng-container *ngIf="selectedUser && team">
-        <app-user-board [user]="selectedUser" [team]="team"
+      <ng-container [ngSwitch]="view">
+        <app-user-board *ngSwitchCase="KanbanView.BOARD" [user]="selectedUser" [team]="team"
           [search]="search$ | async"></app-user-board>
+
+        <app-issue-table *ngSwitchCase="KanbanView.LIST" [user]="selectedUser" [team]="team"></app-issue-table>
       </ng-container>
     </div>
-
 </div>
 
 

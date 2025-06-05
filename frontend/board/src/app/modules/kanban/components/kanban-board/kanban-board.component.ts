@@ -25,6 +25,12 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { catchErrorMessages } from 'src/app/modules/core/tools/catch-error';
 import { ToastService } from 'src/app/modules/core/services/toast.service';
 import { SprintService } from '../../services/sprint.service';
+import { isEqual } from 'lodash';
+
+enum KanbanView {
+  LIST = 'list',
+  BOARD = 'board'
+}
 
 @Component({
     selector: 'app-kanban-board',
@@ -52,6 +58,7 @@ export class KanbanBoardComponent implements OnInit {
   faTableColumns = faTableColumns
   faPlus = faPlus
   COLUMN_WIDTH = 340
+  KanbanView = KanbanView
 
   public users: KanbanUser[] = []
 
@@ -63,10 +70,13 @@ export class KanbanBoardComponent implements OnInit {
   public team: Team | null = null
   public search$: Observable<string | null>
 
-
   public otherGroup: Group = {
     id: 0,
     title: 'Остальные',
+  }
+
+  get view(): KanbanView {
+    return this.filterForm.get('view')?.value ?this.filterForm.get('view')?.value as KanbanView : KanbanView.BOARD
   }
 
   constructor() {
@@ -76,6 +86,7 @@ export class KanbanBoardComponent implements OnInit {
     this.filterForm = this.builder.group({
       team: [null],
       sprint: [null],
+      view: [KanbanView.BOARD],
     })
     this.teamId$ = this.route.queryParams.pipe(
       map(params => params['team'] ? Number(params['team']) : null)
@@ -118,13 +129,11 @@ export class KanbanBoardComponent implements OnInit {
       }
     })
 
-
-
-    this.filterForm.get('team')?.valueChanges.pipe(
-      distinctUntilChanged(),
+    this.filterForm?.valueChanges.pipe(
+      distinctUntilChanged(isEqual),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(value => {
-      this.router.navigate(['/'], {queryParams:{team: value ? value : ''}, queryParamsHandling: 'merge'})
+      this.router.navigate(['/'], {queryParams:value, queryParamsHandling: 'merge'})
     })
 
     this.teamId$.pipe(
@@ -162,5 +171,13 @@ export class KanbanBoardComponent implements OnInit {
     this.searchForm.patchValue({search:''})
     e.preventDefault()
     return false
+  }
+
+  viewBoard() {
+    this.filterForm.patchValue({view: KanbanView.BOARD})
+  }
+
+  viewList() {
+    this.filterForm.patchValue({view: KanbanView.LIST})
   }
 }

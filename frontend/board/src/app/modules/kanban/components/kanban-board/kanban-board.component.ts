@@ -1,6 +1,7 @@
 import {Component, DestroyRef, ElementRef, inject, OnInit, ViewChild} from '@angular/core';
 import {KanbanUserService} from "../../services/kanban-user.service";
 import {
+  BehaviorSubject,
   combineLatestWith,
   distinctUntilChanged,
   filter,
@@ -60,14 +61,15 @@ export class KanbanBoardComponent implements OnInit {
   COLUMN_WIDTH = 340
   KanbanView = KanbanView
 
-  public users: KanbanUser[] = []
+  users: KanbanUser[] = []
+  teams$ = new BehaviorSubject<Team[]>([])
 
   public isLoading = false
   public selectedUser: KanbanUser | undefined = undefined
   public searchForm: FormGroup
   public filterForm: FormGroup
   public teamId$: Observable<number | null>
-  public team: Team | null = null
+  public selectedTeam: Team | null = null
   public search$: Observable<string | null>
 
   public otherGroup: Group = {
@@ -94,6 +96,13 @@ export class KanbanBoardComponent implements OnInit {
     this.search$ = this.route.queryParams.pipe(
       map(params => params['search'] ? params['search'] : null)
     );
+
+    this.teamService.list().pipe(
+      catchErrorMessages(this.toast),
+      takeUntilDestroyed(),
+    ).subscribe(data => {
+      this.teams$.next(data as Team[])
+    })
   }
 
   ngOnInit() {
@@ -144,10 +153,10 @@ export class KanbanBoardComponent implements OnInit {
     })
 
     this.teamId$.pipe(
-      switchMap(value => value ? this.teamService.get(value) : of(null)),
+      combineLatestWith(this.teams$.pipe(filter(value => value.length > 0))),
       takeUntilDestroyed(this.destroyRef)
-    ).subscribe(data => {
-      this.team = data
+    ).subscribe(([teamId, teams]) => {
+      this.selectedTeam = teams.find(team => team.id === teamId) ?? teams[0]
     })
   }
 
@@ -179,5 +188,13 @@ export class KanbanBoardComponent implements OnInit {
 
   viewList() {
     this.filterForm.patchValue({view: KanbanView.LIST})
+  }
+
+  getTeamTitle(team: Team) {
+    return team.title.slice(0, 2)
+  }
+
+  selectTeam(team: Team) {
+    this.filterForm.patchValue({team: team.id})
   }
 }

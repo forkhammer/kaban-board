@@ -9,6 +9,7 @@ $board-header-height: 100px;
   bottom: 0;
   left: 0;
   right: 0;
+  display: flex;
   background: $gray-100;
 
   :host-context([data-bs-theme="dark"]) {
@@ -18,14 +19,42 @@ $board-header-height: 100px;
   }
 }
 
+.teams {
+  background: $gray-300;
+  padding: $pt;
+  display: flex;
+  flex-direction: column;
+  gap: $pt;
+}
+
+.team {
+  border: 2px solid $white;
+  background: $white;
+  width: $pt6;
+  height: $pt6;
+  border-radius: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover {
+    border-color: $primary;
+  }
+
+  &.active {
+    border-color: $primary;
+  }
+}
+
 .user-list {
-  position: absolute;
-  left: 0;
+  position: relative;
   width: $user-list-width;
-  top: 0;
-  bottom: 0;
   background: $white;
   border-right: 1px solid $gray-100;
+  display: flex;
+  flex-direction: column;
 
   :host-context([data-bs-theme="dark"]) {
     .user-list  {
@@ -33,22 +62,24 @@ $board-header-height: 100px;
     }
   }
 
-  &-scroll {
+  &__content {
+    flex-grow: 1;
+    position: relative;
+  }
+
+  &__scroll {
     position: absolute;
+    top: 0;
     left: 0;
-    width: $user-list-width;
-    top: 140px;
+    right: 0;
     bottom: 0;
     overflow-y: auto;
   }
 }
 
 .content {
-  position: absolute;
-  left: $user-list-width;
-  right: 0;
-  top: 0;
-  bottom: 0;
+  position: relative;
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
 }

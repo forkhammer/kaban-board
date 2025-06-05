@@ -1,30 +1,40 @@
 <div class="board">
   <app-spinner [visible]="isLoading"></app-spinner>
 
+  <div class="teams">
+    <button class="team" *ngFor="let team of (teams$ | async)" [ngbTooltip]="team.title" ngbTooltipPlacement="right" (click)="selectTeam(team)"
+      [class.active]="team.id === selectedTeam?.id">
+      {{getTeamTitle(team)}}
+    </button>
+  </div>
+
   <div class="user-list" *ngIf="users.length > 0">
-    <div class="filter p-2" [formGroup]="filterForm">
+    <!-- <div class="filter p-2" [formGroup]="filterForm">
       <app-select-model [service]="teamService" [useClear]="true" formControlName="team"
                         nullTitle="Все"></app-select-model>
-    </div>
+    </div> -->
 
-    <form class="user-search d-flex" [formGroup]="searchForm">
+    <!-- <form class="user-search d-flex" [formGroup]="searchForm">
       <input type="text" class="search-input form-control flex-grow-1" formControlName="search" placeholder="Найти...">
       <button class="search-clear btn"><fa-icon [icon]="faXmark" (click)="clearSearch($event)"></fa-icon></button>
-    </form>
+    </form> -->
 
-    <div class="user-list-scroll">
-      <ng-container [ngTemplateOutlet]="userGroupTpl" [ngTemplateOutletContext]="{
-        users: users | filterUsersByGroup: null | filterUsersByTeam: (teamId$ | async) | searchUsers:searchForm.get('search')?.value,
-        group: otherGroup,
-        open: false
-      }"></ng-container>
 
-      <div *ngFor="let group of team?.groups">
+    <div class="user-list__content">
+      <div class="user-list__scroll">
         <ng-container [ngTemplateOutlet]="userGroupTpl" [ngTemplateOutletContext]="{
-          users: users | filterUsersByGroup: group.id | filterUsersByTeam: (teamId$ | async) | searchUsers:searchForm.get('search')?.value,
-          group: group,
-          open: true
-        }"></ng-container>
+          users: users | filterUsersByGroup: null | filterUsersByTeam: (teamId$ | async) | searchUsers:searchForm.get('search')?.value,
+          group: otherGroup,
+          open: false
+          }"></ng-container>
+
+        <div *ngFor="let group of selectedTeam?.groups">
+          <ng-container [ngTemplateOutlet]="userGroupTpl" [ngTemplateOutletContext]="{
+            users: users | filterUsersByGroup: group.id | filterUsersByTeam: (teamId$ | async) | searchUsers:searchForm.get('search')?.value,
+            group: group,
+            open: true
+            }"></ng-container>
+          </div>
       </div>
     </div>
 
@@ -56,10 +66,10 @@
 
     <div class="position-relative flex-grow-1">
       <ng-container [ngSwitch]="view">
-        <app-user-board *ngSwitchCase="KanbanView.BOARD" [user]="selectedUser" [team]="team"
+        <app-user-board *ngSwitchCase="KanbanView.BOARD" [user]="selectedUser" [team]="selectedTeam"
           [search]="search$ | async"></app-user-board>
 
-        <app-issue-table *ngSwitchCase="KanbanView.LIST" [user]="selectedUser" [team]="team"></app-issue-table>
+        <app-issue-table *ngSwitchCase="KanbanView.LIST" [user]="selectedUser" [team]="selectedTeam"></app-issue-table>
       </ng-container>
     </div>
 </div>

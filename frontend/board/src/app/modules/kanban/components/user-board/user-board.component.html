@@ -9,7 +9,7 @@
             (cdkDragStarted)="dragStart($event)"
             (cdkDragReleased)="dragEnd($event)"
             [cdkDragDisabled]="!(accountService.isAdmin$ | async)">
-          <app-kanban-column [column]="column" [user]="(user$ | async)!" [search]="search" (onDelete)="catchDeleteColumn($event)"></app-kanban-column>
+          <app-kanban-column [column]="column" [issues]="issues" [search]="search" (onDelete)="catchDeleteColumn($event)"></app-kanban-column>
         </div>
 
         <div class="issue-col" *ngIf="accountService.isAdmin$ | async">

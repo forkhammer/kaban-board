@@ -40,7 +40,7 @@ func (r *ColumnRepository) List(spec repo.QuerySpec) (*[]domain.Column, error) {
 		}
 	}
 
-	if err := query.Find(&сolumns).Error; err != nil {
+	if err := query.Order("\"order\" ASC").Find(&сolumns).Error; err != nil {
 		return nil, err
 	}
 

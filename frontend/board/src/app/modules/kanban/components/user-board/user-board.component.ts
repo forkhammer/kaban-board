@@ -7,8 +7,13 @@ import { CdkDragDrop, CdkDragRelease, CdkDragStart, moveItemInArray } from '@ang
 import { KanbanColumnService } from '../../services/kanban-column.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { faArrowLeft, faArrowRight, faPlus } from '@fortawesome/free-solid-svg-icons';
-import { BehaviorSubject, switchMap } from 'rxjs';
+import { BehaviorSubject, combineLatestWith, debounceTime, filter, switchMap, timer } from 'rxjs';
 import { Team } from '../../models/team';
+import { KanbanIssue } from '../../models/kanban-issue';
+import { IssueService } from '../../services/issue.service';
+import { ToastService } from 'src/app/modules/core/services/toast.service';
+import { environment } from 'src/environments/environment';
+import { catchErrorMessages } from 'src/app/modules/core/tools/catch-error';
 
 @Component({
     selector: 'app-user-board',
@@ -22,6 +27,8 @@ export class UserBoardComponent {
   private columnService = inject(KanbanColumnService)
   private destroyRef = inject(DestroyRef)
   private kanbanColumnsService = inject(KanbanColumnService)
+  private issueService = inject(IssueService)
+  private toast = inject(ToastService)
 
   faPlus = faPlus
   faArrowLeft = faArrowLeft
@@ -36,6 +43,8 @@ export class UserBoardComponent {
   private updateColumnSignal$ = new BehaviorSubject(null)
   public user$ = new BehaviorSubject<KanbanUser | null>(null)
   public team$ = new BehaviorSubject<Team | null>(null)
+  public issues: KanbanIssue[] = []
+  private timer$ = timer(0, environment.autoUpdateIssuesMin * 60 * 1000)
 
   @Input() set user(value : KanbanUser | null) {
     this.user$.next(value)
@@ -51,6 +60,26 @@ export class UserBoardComponent {
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(data => {
       this.columns = data as KanbanColumn[]
+    })
+
+    this.timer$.pipe(
+      combineLatestWith(this.user$, this.team$),
+      filter(([_, user, team]) => {
+        return !!user && !!team
+      }),
+      debounceTime(1),
+      switchMap(([_, user, team]) => {
+        const query: Record<string, any> = {
+          'assignee': user!.id,
+          'team': team!.id
+        }
+        return this.issueService.list(query).pipe(
+          catchErrorMessages(this.toast)
+        )
+      }),
+      takeUntilDestroyed()
+    ).subscribe(data => {
+      this.issues = data as KanbanIssue[]
     })
   }
 

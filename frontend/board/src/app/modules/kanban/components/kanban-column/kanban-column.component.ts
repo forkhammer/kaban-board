@@ -8,6 +8,7 @@ import {takeUntil} from "rxjs/operators";
 import {Subject} from "rxjs";
 import {AccountService} from "../../../core/services/account.service";
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { KanbanIssue } from '../../models/kanban-issue';
 
 @Component({
     selector: 'app-kanban-column',
@@ -22,7 +23,7 @@ export class KanbanColumnComponent{
   private destroyRef = inject(DestroyRef)
 
   @Input() column!: KanbanColumn
-  @Input() user!: KanbanUser
+  @Input() issues: KanbanIssue[] = []
   @Input() search: string | null = null
   @Output() onDelete = new EventEmitter<KanbanColumn>()
 

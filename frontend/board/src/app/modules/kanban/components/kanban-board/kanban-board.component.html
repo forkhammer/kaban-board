@@ -63,7 +63,7 @@
 
       <app-select-model [service]="sprintService" formControlName="sprint" [useClear]="true" title="Спринт"
         [itemFormatter]="sprintService.formatter" [formatter]="sprintService.formatter"
-        class="me-1"></app-select-model>
+        class="me-1" #sprintSelect></app-select-model>
 
       <button class="btn btn-outline-secondary me-3"><fa-icon [icon]="faPlus"></fa-icon></button>
 
@@ -72,7 +72,10 @@
 
     <div class="position-relative flex-grow-1">
       <ng-container [ngSwitch]="view">
-        <app-user-board *ngSwitchCase="KanbanView.BOARD" [user]="selectedUser" [team]="selectedTeam"
+        <app-user-board *ngSwitchCase="KanbanView.BOARD"
+          [user]="selectedUser"
+          [team]="selectedTeam"
+          [sprint]="selectedSprint"
           [search]="search$ | async"></app-user-board>
 
         <app-issue-table *ngSwitchCase="KanbanView.LIST" [user]="selectedUser" [team]="selectedTeam"></app-issue-table>

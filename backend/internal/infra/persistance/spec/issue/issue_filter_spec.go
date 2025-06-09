@@ -33,7 +33,9 @@ func (s *IssueFilterSpec) Apply(conn any) (any, error) {
 			Where("projects.team_id = ?", s.Filter.TeamId)
 	}
 	if s.Filter.SprintId != nil {
-
+		query = query.
+			Joins("left join issue_bindings on issues.id = issue_bindings.issue_id").
+			Where("issue_bindings.sprint_id = ?", s.Filter.SprintId)
 	}
 
 	return query, nil

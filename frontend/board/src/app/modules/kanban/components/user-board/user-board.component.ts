@@ -7,13 +7,15 @@ import { CdkDragDrop, CdkDragRelease, CdkDragStart, moveItemInArray } from '@ang
 import { KanbanColumnService } from '../../services/kanban-column.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { faArrowLeft, faArrowRight, faPlus } from '@fortawesome/free-solid-svg-icons';
-import { BehaviorSubject, combineLatestWith, debounceTime, filter, switchMap, timer } from 'rxjs';
+import { BehaviorSubject, combineLatestWith, debounceTime, distinctUntilChanged, filter, switchMap, timer } from 'rxjs';
 import { Team } from '../../models/team';
 import { KanbanIssue } from '../../models/kanban-issue';
 import { IssueService } from '../../services/issue.service';
 import { ToastService } from 'src/app/modules/core/services/toast.service';
 import { environment } from 'src/environments/environment';
 import { catchErrorMessages } from 'src/app/modules/core/tools/catch-error';
+import { Sprint } from '../../models/sprint';
+import { isEqual } from 'lodash';
 
 @Component({
     selector: 'app-user-board',
@@ -43,6 +45,7 @@ export class UserBoardComponent {
   private updateColumnSignal$ = new BehaviorSubject(null)
   public user$ = new BehaviorSubject<KanbanUser | null | undefined>(null)
   public team$ = new BehaviorSubject<Team | null | undefined>(null)
+  public sprint$ = new BehaviorSubject<Sprint | null | undefined>(null)
   public issues: KanbanIssue[] = []
   private timer$ = timer(0, environment.autoUpdateIssuesMin * 60 * 1000)
 
@@ -54,6 +57,10 @@ export class UserBoardComponent {
     this.team$.next(value)
   }
 
+  @Input() set sprint(value: Sprint | undefined | null) {
+    this.sprint$.next(value)
+  }
+
   constructor() {
     this.updateColumnSignal$.pipe(
       switchMap(_ => this.kanbanColumnsService.list()),
@@ -63,17 +70,21 @@ export class UserBoardComponent {
     })
 
     this.timer$.pipe(
-      combineLatestWith(this.user$, this.team$),
-      filter(([_, user, team]) => {
+      combineLatestWith(this.user$, this.team$, this.sprint$),
+      filter(([_, user, team, sprint]) => {
         return !!team
       }),
+      distinctUntilChanged(isEqual),
       debounceTime(1),
-      switchMap(([_, user, team]) => {
+      switchMap(([_, user, team, sprint]) => {
         const query: Record<string, any> = {
           'team': team!.id
         }
         if (user) {
           query['assignee'] = user.id
+        }
+        if (sprint) {
+          query['sprint'] = sprint.id
         }
         return this.issueService.list(query).pipe(
           catchErrorMessages(this.toast)

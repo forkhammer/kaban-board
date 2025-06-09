@@ -1,4 +1,4 @@
-import {Component, DestroyRef, ElementRef, inject, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, DestroyRef, ElementRef, inject, OnInit, ViewChild} from '@angular/core';
 import {KanbanUserService} from "../../services/kanban-user.service";
 import {
   BehaviorSubject,
@@ -27,6 +27,8 @@ import { catchErrorMessages } from 'src/app/modules/core/tools/catch-error';
 import { ToastService } from 'src/app/modules/core/services/toast.service';
 import { SprintService } from '../../services/sprint.service';
 import { isEqual } from 'lodash';
+import { Sprint } from '../../models/sprint';
+import { SelectModelComponent } from 'src/app/modules/ui/components/select-model/select-model.component';
 
 enum KanbanView {
   LIST = 'list',
@@ -39,7 +41,7 @@ enum KanbanView {
     styleUrls: ['./kanban-board.component.scss'],
     standalone: false
 })
-export class KanbanBoardComponent implements OnInit {
+export class KanbanBoardComponent implements OnInit, AfterViewInit {
   private kanbanUserService = inject(KanbanUserService)
 
   private route = inject(ActivatedRoute)
@@ -69,8 +71,11 @@ export class KanbanBoardComponent implements OnInit {
   public searchForm: FormGroup
   public filterForm: FormGroup
   public teamId$: Observable<number | null>
+  public sprintId$: Observable<number | null>
   public selectedTeam: Team | null = null
   public search$: Observable<string | null>
+  public selectedSprint: Sprint | null = null
+  @ViewChild('sprintSelect') sprintSelect!: SelectModelComponent
 
   public otherGroup: Group = {
     id: 0,
@@ -92,6 +97,9 @@ export class KanbanBoardComponent implements OnInit {
     })
     this.teamId$ = this.route.queryParams.pipe(
       map(params => params['team'] ? Number(params['team']) : null)
+    );
+    this.sprintId$ = this.route.queryParams.pipe(
+      map(params => params['sprint'] ? Number(params['sprint']) : null)
     );
     this.search$ = this.route.queryParams.pipe(
       map(params => params['search'] ? params['search'] : null)
@@ -157,6 +165,21 @@ export class KanbanBoardComponent implements OnInit {
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(([teamId, teams]) => {
       this.selectedTeam = teams.find(team => team.id === teamId) ?? teams[0]
+    })
+
+    this.sprintId$.pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(value => {
+      this.filterForm.patchValue({sprint: value})
+    })
+
+  }
+
+  ngAfterViewInit(): void {
+    this.sprintSelect.valueModel$.pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(value => {
+      this.selectedSprint = value as Sprint
     })
   }
 

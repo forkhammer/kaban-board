@@ -25,6 +25,7 @@ type Sprint struct {
 	EndDate      time.Time
 	Team         Team `validate:"required"`
 	Status       SprintStatus
+	Bindings     []IssueBinding
 }
 
 func NewSprint(id SprintId, title string, startDate time.Time, endDate time.Time, team Team, status SprintStatus, hoursPerUser uint) (*Sprint, error) {

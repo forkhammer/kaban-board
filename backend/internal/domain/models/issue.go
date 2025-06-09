@@ -23,19 +23,20 @@ const (
 )
 
 type Issue struct {
-	Id           IssueId
-	Iid          IssueIid
-	Title        string
-	IssueType    IssueType
-	Assignees    []User
-	WebUrl       string
-	Labels       []Label
-	LabelHistory []LabelHistory
-	Project      Project
-	Release      *Release
-	TaskType     *Label
-	EstimateDev  *uint
-	EstimateQA   *uint
+	Id             IssueId
+	Iid            IssueIid
+	Title          string
+	IssueType      IssueType
+	Assignees      []User
+	WebUrl         string
+	Labels         []Label
+	LabelHistory   []LabelHistory
+	Project        Project
+	Release        *Release
+	TaskType       *Label
+	EstimateDev    *uint
+	EstimateQA     *uint
+	SprintBindings []IssueBinding
 }
 
 func (i *Issue) Validate() error {

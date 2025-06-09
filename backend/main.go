@@ -61,6 +61,7 @@ func (app *Application) Init() {
 	di.RegisterBean("UserRepository", reflect.TypeOf((*repo.UserRepository)(nil)))
 	di.RegisterBean("SettingsRepository", reflect.TypeOf((*repo.SettingsRepository)(nil)))
 	di.RegisterBean("SprintRepository", reflect.TypeOf((*repo.SprintRepository)(nil)))
+	di.RegisterBean("IssueBindingRepository", reflect.TypeOf((*repo.IssueBindingRepository)(nil)))
 
 	di.RegisterBean("LabelQuery", reflect.TypeOf((*label_spec.LabelQueryImpl)(nil)))
 	di.RegisterBean("ColumnQuery", reflect.TypeOf((*column_spec.ColumnQueryImpl)(nil)))

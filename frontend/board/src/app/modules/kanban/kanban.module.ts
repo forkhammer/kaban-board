@@ -40,6 +40,7 @@ import { SprintListComponent } from './components/sprint-list/sprint-list.compon
 import { SprintCardComponent } from './components/sprint-card/sprint-card.component';
 import { FilterSprintsByQuarterPipe } from './pipes/filter-sprints-by-quarter.pipe';
 import { IssueTableComponent } from './components/issue-table/issue-table.component';
+import { IssueTableRowComponent } from './components/issue-table-row/issue-table-row.component';
 
 
 @NgModule({
@@ -77,7 +78,8 @@ import { IssueTableComponent } from './components/issue-table/issue-table.compon
     SprintListComponent,
     SprintCardComponent,
     FilterSprintsByQuarterPipe,
-    IssueTableComponent
+    IssueTableComponent,
+    IssueTableRowComponent,
   ],
   exports: [
     UserBoardComponent,

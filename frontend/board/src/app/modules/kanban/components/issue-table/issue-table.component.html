@@ -1,1 +1,17 @@
-<p>issue-table works!</p>
+<div class="header">
+  <div class="column">Проект</div>
+  <div class="column">Задача</div>
+  <div class="column">Исполнитель</div>
+  <div class="column">Эпик</div>
+  <div class="column">Релиз</div>
+  <div class="column">Приоритет</div>
+  <div class="column">Оценка разработки</div>
+  <div class="column">Оценка тестирования</div>
+  <div class="column">Статус</div>
+  <div class="column">Комментарий</div>
+  <div class="column">&nbsp;</div>
+</div>
+
+<div class="scroll">
+  <app-issue-table-row *ngFor="let issue of issues" [issue]="issue"></app-issue-table-row>
+</div>

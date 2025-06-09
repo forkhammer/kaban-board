@@ -74,6 +74,7 @@ export class KanbanBoardComponent implements OnInit, AfterViewInit {
   public sprintId$: Observable<number | null>
   public selectedTeam: Team | null = null
   public search$: Observable<string | null>
+  public view$: Observable<KanbanView | null>
   public selectedSprint: Sprint | null = null
   @ViewChild('sprintSelect') sprintSelect!: SelectModelComponent
 
@@ -103,6 +104,9 @@ export class KanbanBoardComponent implements OnInit, AfterViewInit {
     );
     this.search$ = this.route.queryParams.pipe(
       map(params => params['search'] ? params['search'] : null)
+    );
+    this.view$ = this.route.queryParams.pipe(
+      map(params => params['view'] ? params['view'] : null)
     );
 
     this.teamService.list().pipe(
@@ -171,6 +175,12 @@ export class KanbanBoardComponent implements OnInit, AfterViewInit {
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(value => {
       this.filterForm.patchValue({sprint: value})
+    })
+
+    this.view$.pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(value => {
+      this.filterForm.patchValue({view: value})
     })
 
   }

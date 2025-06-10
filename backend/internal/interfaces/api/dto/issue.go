@@ -15,6 +15,10 @@ type IssuesRequest struct {
 	Search   *string `form:"search"`
 }
 
+type BindIssueRequest struct {
+	SprintId uint `json:"sprint_id"`
+}
+
 type IssueDto struct {
 	Id          string      `json:"id"`
 	Iid         string      `json:"iid"`

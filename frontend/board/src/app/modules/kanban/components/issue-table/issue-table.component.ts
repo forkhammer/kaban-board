@@ -75,7 +75,9 @@ export class IssueTableComponent {
     this.appendedIssues.push(null)
   }
 
-  bindIssue(issue: KanbanIssue) {
-    console.log(issue)
+  bindIssue(event: [number, KanbanIssue]) {
+    console.log(event)
+    this.appendedIssues.splice(event[0], 1)
+    this.issues.push(event[1])
   }
 }

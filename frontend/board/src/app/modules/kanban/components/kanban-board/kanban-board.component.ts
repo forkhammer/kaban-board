@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, DestroyRef, ElementRef, inject, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, DestroyRef, inject, OnInit, ViewChild} from '@angular/core';
 import {KanbanUserService} from "../../services/kanban-user.service";
 import {
   BehaviorSubject,
@@ -7,12 +7,10 @@ import {
   filter,
   finalize,
   Observable,
-  of,
   switchMap, timer
 } from "rxjs";
 import {KanbanUser} from "../../models/kanban-user";
 import {map} from "rxjs/operators";
-import {KanbanColumn} from "../../models/kanban-column";
 import {ActivatedRoute, Router} from "@angular/router";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import { faXmark, faArrowLeft, faArrowRight, faTableList, faTableColumns, faPlus } from '@fortawesome/free-solid-svg-icons';

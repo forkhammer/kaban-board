@@ -14,10 +14,15 @@
 
 <div class="scroll">
   <app-issue-table-row *ngFor="let issue of issues" [issue]="issue"></app-issue-table-row>
-  <app-issue-table-append-row *ngFor="let issue of appendedIssues" (issue)="bindIssue($event)"></app-issue-table-append-row>
 
-  <button class="btn-append" (click)="appendIssue()" *ngIf="sprint$ | async">
-    <fa-icon [icon]="faPlus" class="me-1"></fa-icon>
-    <span>Добавить задачу</span>
-  </button>
+  <ng-container *ngIf="sprint$ | async">
+    <button class="btn-append" (click)="appendIssue()">
+      <fa-icon [icon]="faPlus" class="me-1"></fa-icon>
+      <span>Добавить задачу</span>
+    </button>
+
+    <app-issue-table-append-row *ngFor="let issue of appendedIssues; let i = index" (issue)="bindIssue($event)"
+      [sprint]="(sprint$ | async)!"
+      [index]="i"></app-issue-table-append-row>
+  </ng-container>
 </div>

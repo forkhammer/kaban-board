@@ -25,7 +25,7 @@ func NewTeam(id TeamId, title string, groups []Group) (*Team, error) {
 
 func (t *Team) Validate() error {
 	if t.Title == "" {
-		return fmt.Errorf("title is required")
+		return fmt.Errorf("Team title is required")
 	}
 
 	return nil

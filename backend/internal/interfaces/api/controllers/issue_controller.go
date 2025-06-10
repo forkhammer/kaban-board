@@ -15,12 +15,13 @@ type IssueController struct {
 }
 
 func (c *IssueController) RegisterRoutes(router *gin.Engine) error {
-	router.GET("/issue", c.GetIssues)
-	router.GET("/issue/:id", c.GetIssue)
+	router.GET("/issue", c.getIssues)
+	router.GET("/issue/:id", c.getIssue)
+	router.POST("/issue/:id/bind", c.bindIssue)
 	return nil
 }
 
-func (c *IssueController) GetIssues(ctx *gin.Context) {
+func (c *IssueController) getIssues(ctx *gin.Context) {
 	var request dto.IssuesRequest
 	if err := ctx.ShouldBindQuery(&request); err != nil {
 		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
@@ -42,7 +43,7 @@ func (c *IssueController) GetIssues(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, dto.SerializeIssues(*issues))
 }
 
-func (c *IssueController) GetIssue(ctx *gin.Context) {
+func (c *IssueController) getIssue(ctx *gin.Context) {
 	id, err := strconv.ParseUint(ctx.Param("id"), 10, 32)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
@@ -50,6 +51,27 @@ func (c *IssueController) GetIssue(ctx *gin.Context) {
 	}
 
 	issue, err := c.issueUC.GetIssue(uint(id))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, dto.SerializeIssue(issue))
+}
+
+func (c *IssueController) bindIssue(ctx *gin.Context) {
+	id, err := strconv.ParseUint(ctx.Param("id"), 10, 32)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	var request dto.BindIssueRequest
+	if err := ctx.ShouldBindJSON(&request); err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	issue, err := c.issueUC.BindIssue(uint(id), request.SprintId)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
 		return

@@ -32,3 +32,15 @@
   overflow-y: auto;
 }
 
+.btn-append {
+  display: block;
+  width: 100%;
+  padding: $pt $pt3;
+  text-align: center;
+  color: $gray-600;
+  @include fs-paragraph-xs();
+  text-transform: uppercase;
+  font-weight: 600;
+  border: 1px dashed $gray-300;
+  background: $white;
+}

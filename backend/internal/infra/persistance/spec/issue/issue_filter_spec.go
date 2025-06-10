@@ -1,6 +1,7 @@
 package issue_spec
 
 import (
+	"fmt"
 	"main/internal/app/queries"
 	"main/internal/domain/repo"
 
@@ -36,6 +37,12 @@ func (s *IssueFilterSpec) Apply(conn any) (any, error) {
 		query = query.
 			Joins("left join issue_bindings on issues.id = issue_bindings.issue_id").
 			Where("issue_bindings.sprint_id = ?", s.Filter.SprintId)
+	}
+	if s.Filter.ProjectId != nil {
+		query = query.Where("issues.project_id = ?", s.Filter.ProjectId)
+	}
+	if s.Filter.Search != nil {
+		query = query.Where("(issues.title like ?) or (issues.iid = ?)", fmt.Sprintf("%%%s%%", *s.Filter.Search), s.Filter.Search)
 	}
 
 	return query, nil

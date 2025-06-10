@@ -7,10 +7,12 @@ import (
 )
 
 type IssuesRequest struct {
-	Assignee *uint `form:"assignee"`
-	Team     *uint `form:"team"`
-	Group    *uint `form:"group"`
-	Sprint   *uint `form:"sprint"`
+	Assignee *uint   `form:"assignee"`
+	Team     *uint   `form:"team"`
+	Group    *uint   `form:"group"`
+	Sprint   *uint   `form:"sprint"`
+	Project  *uint   `form:"project"`
+	Search   *string `form:"search"`
 }
 
 type IssueDto struct {

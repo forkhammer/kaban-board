@@ -12,4 +12,8 @@ export class IssueService extends BaseService<KanbanIssue>{
     super(injector)
     this.apiUrl = this.config.apiUrl + '/issue'
   }
+
+  formatter(item: KanbanIssue) {
+    return `#${item.projectName}${item.iid} - ${item.title}`
+  }
 }

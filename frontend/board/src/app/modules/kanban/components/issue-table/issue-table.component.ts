@@ -10,6 +10,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { KanbanIssue } from '../../models/kanban-issue';
 import { IssueService } from '../../services/issue.service';
 import { ToastService } from 'src/app/modules/core/services/toast.service';
+import { faPlus } from '@fortawesome/free-solid-svg-icons'
 
 @Component({
   selector: 'app-issue-table',
@@ -21,11 +22,14 @@ export class IssueTableComponent {
   private issueService = inject(IssueService)
   private toast = inject(ToastService)
 
+  faPlus = faPlus
+
   public user$ = new BehaviorSubject<KanbanUser | null | undefined>(null)
   public team$ = new BehaviorSubject<Team | null | undefined>(null)
   public sprint$ = new BehaviorSubject<Sprint | null | undefined>(null)
   private timer$ = timer(0, environment.autoUpdateIssuesMin * 60 * 1000)
   public issues: KanbanIssue[] = []
+  public appendedIssues: (number | null)[] = []
 
   @Input() set user(value : KanbanUser | undefined | null) {
     this.user$.next(value)
@@ -65,5 +69,13 @@ export class IssueTableComponent {
     ).subscribe(data => {
       this.issues = data as KanbanIssue[]
     })
+  }
+
+  appendIssue() {
+    this.appendedIssues.push(null)
+  }
+
+  bindIssue(issue: KanbanIssue) {
+    console.log(issue)
   }
 }

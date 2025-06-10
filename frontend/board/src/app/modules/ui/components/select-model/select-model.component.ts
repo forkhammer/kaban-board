@@ -3,10 +3,12 @@ import { faAngleDown, faAngleUp, faTimes } from '@fortawesome/free-solid-svg-ico
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormGroup, FormBuilder } from '@angular/forms';
 import { BehaviorSubject, of, EMPTY, distinctUntilChanged} from 'rxjs';
 import { BaseService } from '../../../core/services/base.service';
-import { BaseTitleModel, Pagination } from '../../../core/models/base';
+import { BaseModel, BaseTitleModel, Pagination } from '../../../core/models/base';
 import { switchMap, pluck, debounceTime, catchError, map } from 'rxjs/operators';
 import { HttpErrorResponse } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { catchErrorMessages } from 'src/app/modules/core/tools/catch-error';
+import { ToastService } from 'src/app/modules/core/services/toast.service';
 
 @Component({
     selector: 'app-select-model',
@@ -25,10 +27,11 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 export class SelectModelComponent implements ControlValueAccessor, OnInit {
   protected fb = inject(FormBuilder)
   destroyRef = inject(DestroyRef)
+  toast = inject(ToastService)
 
   @Input() useSearch: boolean = false;
   @Input() useClear: boolean = false;
-  @Input() service!: BaseService<BaseTitleModel>;
+  @Input() service!: BaseService<BaseModel>;
   @Input() title = '';
   @Input() all = true;
   @Input() nullTitle: string | null = null;
@@ -37,8 +40,8 @@ export class SelectModelComponent implements ControlValueAccessor, OnInit {
   @ViewChild('dropdown') dropdown!: ElementRef;
 
   value = new BehaviorSubject<string | number | null>(null);
-  valueModel$ = new BehaviorSubject<BaseTitleModel | null>(null);
-  valuesModel: BaseTitleModel[] = [];
+  valueModel$ = new BehaviorSubject<BaseModel | null>(null);
+  valuesModel: BaseModel[] = [];
   valuesFilter = new BehaviorSubject<any>(null);
   private onChange: any;
   faAngleDown = faAngleDown;
@@ -47,11 +50,11 @@ export class SelectModelComponent implements ControlValueAccessor, OnInit {
   searchForm: FormGroup;
   protected errorValuesMessage: string | null = null;
 
-  get selectValue(): BaseTitleModel | null {
+  get selectValue(): BaseModel | null {
     return null;
   }
 
-  set selectValue(item: BaseTitleModel | null) {
+  set selectValue(item: BaseModel | null) {
     if (item) {
       this.writeValue(item.id);
     } else {
@@ -119,7 +122,11 @@ export class SelectModelComponent implements ControlValueAccessor, OnInit {
           }));
         }),
         map((data: any) => {
-          return (data as Pagination<BaseTitleModel>).results;
+          if (this.service.usePagination) {
+            return (data as Pagination<BaseModel>).results;
+          } else {
+            return (data as BaseModel[]);
+          }
         }),
         takeUntilDestroyed(this.destroyRef),
       )
@@ -137,6 +144,7 @@ export class SelectModelComponent implements ControlValueAccessor, OnInit {
             return [null];
           }
         }),
+        catchErrorMessages(this.toast),
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe(data => {
@@ -171,7 +179,7 @@ export class SelectModelComponent implements ControlValueAccessor, OnInit {
     return false;
   }
 
-  select(e: MouseEvent, item: BaseTitleModel) {
+  select(e: MouseEvent, item: BaseModel) {
     this.selectValue = item;
     (this.dropdown as any).close();
     return false;
@@ -183,18 +191,18 @@ export class SelectModelComponent implements ControlValueAccessor, OnInit {
     return false;
   }
 
-  getTitle(item: BaseTitleModel) {
+  getTitle(item: BaseModel) {
     if (this.formatter) {
       return this.formatter(item);
     }
-    return item.title;
+    return (item as BaseTitleModel).title;
   }
 
-  getItemTitle(item: BaseTitleModel) {
+  getItemTitle(item: BaseModel) {
     if (this.itemFormatter) {
       return this.itemFormatter(item);
     }
-    return item.title;
+    return (item as BaseTitleModel).title;
   }
 
 }

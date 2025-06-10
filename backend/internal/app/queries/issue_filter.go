@@ -9,6 +9,8 @@ type IssueFilter struct {
 	TeamId     *uint
 	GroupId    *uint
 	SprintId   *uint
+	ProjectId  *uint
+	Search     *string
 }
 
 type IssueQuery interface {

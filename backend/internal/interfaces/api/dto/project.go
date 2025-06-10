@@ -16,6 +16,11 @@ type ProjectDto struct {
 	TeamId    *uint  `json:"team_id"`
 }
 
+type GetProjectsRequest struct {
+	TeamId *uint   `form:"team_id"`
+	Search *string `form:"search"`
+}
+
 func SerializeProject(project *domain.Project) *ProjectDto {
 	var teamId *uint
 	if project.Team != (*domain.Team)(nil) {

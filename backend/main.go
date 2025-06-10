@@ -15,6 +15,7 @@ import (
 	group_spec "main/internal/infra/persistance/spec/group"
 	issue_spec "main/internal/infra/persistance/spec/issue"
 	label_spec "main/internal/infra/persistance/spec/label"
+	project_spec "main/internal/infra/persistance/spec/project"
 	sprint_spec "main/internal/infra/persistance/spec/sprint"
 	user_spec "main/internal/infra/persistance/spec/user"
 	"main/internal/infra/services"
@@ -69,6 +70,7 @@ func (app *Application) Init() {
 	di.RegisterBean("UserQuery", reflect.TypeOf((*user_spec.UserQueryImpl)(nil)))
 	di.RegisterBean("SprintQuery", reflect.TypeOf((*sprint_spec.SprintQueryImpl)(nil)))
 	di.RegisterBean("IssueQuery", reflect.TypeOf((*issue_spec.IssueQueryImpl)(nil)))
+	di.RegisterBean("ProjectQuery", reflect.TypeOf((*project_spec.ProjectQueryImpl)(nil)))
 
 	di.RegisterBean("JWTService", reflect.TypeOf((*services.JWTService)(nil)))
 	di.RegisterBean("PasswordService", reflect.TypeOf((*services.PasswordService)(nil)))

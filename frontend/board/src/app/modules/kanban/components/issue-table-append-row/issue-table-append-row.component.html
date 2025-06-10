@@ -1,0 +1,24 @@
+<form [formGroup]="form" class="bind-form">
+  <div class="column">
+    <app-select-model [service]="projectService" formControlName="projectId"
+      [formatter]="projectService.formatter"
+      [itemFormatter]="projectService.formatter"
+      [useSearch]="true"></app-select-model>
+  </div>
+  <div class="column">
+    <app-select-model [service]="issueService" formControlName="issueId"
+      [useSearch]="true"
+      [filter]="issueFilter"
+      [formatter]="issueService.formatter"
+      [itemFormatter]="issueService.formatter"></app-select-model>
+  </div>
+  <div class="column"></div>
+  <div class="column"></div>
+  <div class="column"></div>
+  <div class="column"></div>
+  <div class="column"></div>
+  <div class="column"></div>
+  <div class="column"></div>
+  <div class="column"></div>
+  <div class="column"></div>
+</form>

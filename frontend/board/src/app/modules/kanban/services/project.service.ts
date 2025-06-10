@@ -19,4 +19,8 @@ export class ProjectService extends BaseService<Project>{
       map(data => data as Project)
     )
   }
+
+  formatter(item: Project) {
+    return item.name
+  }
 }

@@ -32,6 +32,8 @@ func (c *IssueController) GetIssues(ctx *gin.Context) {
 		TeamId:     request.Team,
 		SprintId:   request.Sprint,
 		GroupId:    request.Group,
+		ProjectId:  request.Project,
+		Search:     request.Search,
 	})
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})

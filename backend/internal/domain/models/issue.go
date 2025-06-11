@@ -23,20 +23,22 @@ const (
 )
 
 type Issue struct {
-	Id             IssueId
-	Iid            IssueIid
-	Title          string
-	IssueType      IssueType
-	Assignees      []User
-	WebUrl         string
-	Labels         []Label
-	LabelHistory   []LabelHistory
-	Project        Project
-	Release        *Release
-	TaskType       *Label
-	EstimateDev    *uint
-	EstimateQA     *uint
-	SprintBindings []IssueBinding
+	Id               IssueId
+	Iid              IssueIid
+	Title            string
+	IssueType        IssueType
+	Assignees        []User
+	WebUrl           string
+	Labels           []Label
+	LabelHistory     []LabelHistory
+	Project          Project
+	Release          *Release
+	TaskType         *Label
+	EstimateDev      *uint
+	EstimateQA       *uint
+	SprintBindings   []IssueBinding
+	contextSprintId  *SprintId
+	contextBindingId *IssueBindingId
 }
 
 func (i *Issue) Validate() error {
@@ -87,5 +89,68 @@ func (i *Issue) BindToSprint(sprint *Sprint) error {
 	}
 
 	i.SprintBindings = append(i.SprintBindings, binding)
+	return nil
+}
+
+func (i *Issue) SetContext(bindingId *IssueBindingId) {
+	i.contextBindingId = bindingId
+}
+
+func (i *Issue) GetContextBindingId() *IssueBindingId {
+	return i.contextBindingId
+}
+
+func (i *Issue) GetEstimateDev() *uint {
+	if i.contextBindingId != nil {
+		binding := i.getBindingById(*i.contextBindingId)
+		if binding != nil {
+			return binding.EstimateDev
+		}
+	}
+
+	return i.EstimateDev
+}
+
+func (i *Issue) GetEstimateQA() *uint {
+	if i.contextBindingId != nil {
+		binding := i.getBindingById(*i.contextBindingId)
+		if binding != nil {
+			return binding.EstimateQA
+		}
+	}
+
+	return i.EstimateQA
+}
+
+func (i *Issue) SetEstimateDev(estimate *uint) {
+	if i.contextBindingId != nil {
+		binding := i.getBindingById(*i.contextBindingId)
+		if binding != nil {
+			binding.EstimateDev = estimate
+			return
+		}
+	}
+
+	i.EstimateDev = estimate
+}
+
+func (i *Issue) SetEstimateQA(estimate *uint) {
+	if i.contextBindingId != nil {
+		binding := i.getBindingById(*i.contextBindingId)
+		if binding != nil {
+			binding.EstimateQA = estimate
+			return
+		}
+	}
+
+	i.EstimateQA = estimate
+}
+
+func (i *Issue) getBindingById(id IssueBindingId) *IssueBinding {
+	for index, binding := range i.SprintBindings {
+		if binding.Id == id {
+			return &i.SprintBindings[index]
+		}
+	}
 	return nil
 }

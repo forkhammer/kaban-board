@@ -6,6 +6,13 @@ import (
 	"main/internal/domain/repo"
 )
 
+type SaveIssueRequest struct {
+	Id          uint
+	BindingId   *uint
+	EstimateDev *uint
+	EstimateQA  *uint
+}
+
 type IssueUseCases struct {
 	issueQuery queries.IssueQuery `di.inject:"IssueQuery"`
 	issueRepo  repo.IssueRepo     `di.inject:"IssueRepository"`
@@ -14,10 +21,16 @@ type IssueUseCases struct {
 
 func (u *IssueUseCases) GetIssues(filter *queries.IssueFilter) (*[]domain.Issue, error) {
 	var query repo.QuerySpec
+
 	if filter != nil {
 		query = u.issueQuery.GetSpec(*filter)
 	}
-	return u.issueRepo.List(query)
+	issues, err := u.issueRepo.List(query)
+	if err != nil {
+		return nil, err
+	}
+
+	return issues, nil
 }
 
 func (u *IssueUseCases) GetIssue(id uint) (*domain.Issue, error) {
@@ -40,4 +53,26 @@ func (u *IssueUseCases) BindIssue(id uint, sprintId uint) (*domain.Issue, error)
 		return nil, err
 	}
 	return u.issueRepo.Update(issue)
+}
+
+func (uc *IssueUseCases) SaveIssue(request SaveIssueRequest) (*domain.Issue, error) {
+	issue, err := uc.issueRepo.Get(domain.IssueId(request.Id))
+	if err != nil {
+		return nil, err
+	}
+
+	if request.BindingId != nil {
+		issue.SetContext((*domain.IssueBindingId)(request.BindingId))
+	}
+
+	issue.SetEstimateDev(request.EstimateDev)
+	issue.SetEstimateQA(request.EstimateQA)
+
+	issue, err = uc.issueRepo.Update(issue)
+	if err != nil {
+		return nil, err
+	}
+
+	return issue, nil
+
 }

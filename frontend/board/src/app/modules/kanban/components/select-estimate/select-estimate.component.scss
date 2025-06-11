@@ -1,0 +1,34 @@
+@import '../../../../../styles/imports';
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+.dropdown-menu {
+  padding: 0;
+}
+
+.cells {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.cell {
+  background: $white;
+  border: none;
+  padding: $pt2;
+  @include fs-paragraph-xs();
+  text-align: center;
+  cursor: pointer;
+  white-space: nowrap;
+
+  &:hover {
+    background: $gray-100;
+  }
+
+  &.active {
+    background: $primary;
+    color: $white;
+  }
+}

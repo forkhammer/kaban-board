@@ -42,6 +42,7 @@ import { FilterSprintsByQuarterPipe } from './pipes/filter-sprints-by-quarter.pi
 import { IssueTableComponent } from './components/issue-table/issue-table.component';
 import { IssueTableRowComponent } from './components/issue-table-row/issue-table-row.component';
 import { IssueTableAppendRowComponent } from './components/issue-table-append-row/issue-table-append-row.component';
+import { SelectEstimateComponent } from './components/select-estimate/select-estimate.component';
 
 
 @NgModule({
@@ -82,6 +83,7 @@ import { IssueTableAppendRowComponent } from './components/issue-table-append-ro
     IssueTableComponent,
     IssueTableRowComponent,
     IssueTableAppendRowComponent,
+    SelectEstimateComponent,
   ],
   exports: [
     UserBoardComponent,

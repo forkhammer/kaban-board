@@ -16,7 +16,7 @@ func (s *IssueBindingFilterSpec) Apply(conn any) (any, error) {
 	query := conn.(*gorm.DB)
 
 	if len(s.Filter.Issues) > 0 {
-		query = query.Where("id in ?", s.Filter.Issues)
+		query = query.Where("issue_id in ?", s.Filter.Issues)
 	}
 
 	return query, nil

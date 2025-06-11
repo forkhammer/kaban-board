@@ -19,4 +19,5 @@ export type KanbanIssue = {
   taskType: KanbanLabel | null
   estimateDev: number | null
   estimateQA: number | null
+  bindingId: number | null
 }

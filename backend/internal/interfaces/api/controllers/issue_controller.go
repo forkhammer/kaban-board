@@ -17,6 +17,7 @@ type IssueController struct {
 func (c *IssueController) RegisterRoutes(router *gin.Engine) error {
 	router.GET("/issue", c.getIssues)
 	router.GET("/issue/:id", c.getIssue)
+	router.PUT("/issue/:id", c.saveIssue)
 	router.POST("/issue/:id/bind", c.bindIssue)
 	return nil
 }
@@ -72,6 +73,32 @@ func (c *IssueController) bindIssue(ctx *gin.Context) {
 	}
 
 	issue, err := c.issueUC.BindIssue(uint(id), request.SprintId)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, dto.SerializeIssue(issue))
+}
+
+func (c *IssueController) saveIssue(ctx *gin.Context) {
+	id, err := strconv.ParseUint(ctx.Param("id"), 10, 32)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	var request dto.SaveIssueRequest
+	if err := ctx.ShouldBindJSON(&request); err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	issue, err := c.issueUC.SaveIssue(usecases.SaveIssueRequest{
+		Id:          uint(id),
+		BindingId:   request.BindingId,
+		EstimateDev: request.EstimateDev,
+		EstimateQA:  request.EstimateQA,
+	})
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
 		return

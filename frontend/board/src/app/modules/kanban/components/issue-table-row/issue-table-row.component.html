@@ -1,28 +1,30 @@
-<div class="column project">
-  {{issue.projectName}}
-</div>
-<div class="column">
-  {{issue.title}}
-</div>
-<div class="column">
-  <div class="assignee" *ngFor="let assignee of issue.assignees">
-    <div class="assignee__avatar">
-      <img [src]="assignee.avatar_url" [alt]="assignee.name">
-    </div>
-    <div class="assignee__name">{{assignee.name}}</div>
+<form [formGroup]="form" class="form">
+  <div class="column project">
+    {{issue.projectName}}
   </div>
-</div>
-<div class="column">&nbsp;</div>
-<div class="column">
-  {{issue.milestone?.title}}
-</div>
-<div class="column">&nbsp;</div>
-<div class="column">
-  {{issue.estimateDev}}
-</div>
-<div class="column">
-  {{issue.estimateQA}}
-</div>
-<div class="column">&nbsp;</div>
-<div class="column">&nbsp;</div>
-<div class="column">&nbsp;</div>
+  <div class="column">
+    {{issue.title}}
+  </div>
+  <div class="column">
+    <div class="assignee" *ngFor="let assignee of issue.assignees">
+      <div class="assignee__avatar">
+        <img [src]="assignee.avatar_url" [alt]="assignee.name">
+      </div>
+      <div class="assignee__name">{{assignee.name}}</div>
+    </div>
+  </div>
+  <div class="column">&nbsp;</div>
+  <div class="column">
+    {{issue.milestone?.title}}
+  </div>
+  <div class="column">&nbsp;</div>
+  <div class="column">
+    <app-select-estimate formControlName="estimateDev"></app-select-estimate>
+  </div>
+  <div class="column">
+    <app-select-estimate formControlName="estimateQA"></app-select-estimate>
+  </div>
+  <div class="column">&nbsp;</div>
+  <div class="column">&nbsp;</div>
+  <div class="column">&nbsp;</div>
+</form>

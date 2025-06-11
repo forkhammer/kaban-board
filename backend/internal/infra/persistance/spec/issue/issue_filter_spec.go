@@ -35,6 +35,7 @@ func (s *IssueFilterSpec) Apply(conn any) (any, error) {
 	}
 	if s.Filter.SprintId != nil {
 		query = query.
+			Select("issues.*, issue_bindings.id as binding_id").
 			Joins("left join issue_bindings on issues.id = issue_bindings.issue_id").
 			Where("issue_bindings.sprint_id = ?", s.Filter.SprintId)
 	}

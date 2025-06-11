@@ -19,4 +19,5 @@ type Issue struct {
 	TaskType    *Label   `gorm:"foreignKey:TaskTypeId"`
 	EstimateDev *uint    `gorm:"estimate_dev"`
 	EstimateQA  *uint    `gorm:"estimate_qa"`
+	BindingId   *uint    `gorm:"binding_id;<-:false"`
 }

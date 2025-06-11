@@ -19,6 +19,12 @@ type BindIssueRequest struct {
 	SprintId uint `json:"sprint_id"`
 }
 
+type SaveIssueRequest struct {
+	BindingId   *uint `json:"bindingId"`
+	EstimateDev *uint `json:"estimateDev"`
+	EstimateQA  *uint `json:"estimateQA"`
+}
+
 type IssueDto struct {
 	Id          string      `json:"id"`
 	Iid         string      `json:"iid"`
@@ -33,6 +39,7 @@ type IssueDto struct {
 	TaskType    *LabelDto   `json:"taskType"`
 	EstimateDev *uint       `json:"estimateDev"`
 	EstimateQA  *uint       `json:"estimateQA"`
+	BindingId   *uint       `json:"bindingId"`
 }
 
 func SerializeIssues(issues []domain.Issue) []IssueDto {
@@ -64,7 +71,8 @@ func SerializeIssue(issue *domain.Issue) *IssueDto {
 			}
 			return SerializeLabel(issue.TaskType)
 		}(),
-		EstimateDev: issue.EstimateDev,
-		EstimateQA:  issue.EstimateQA,
+		EstimateDev: issue.GetEstimateDev(),
+		EstimateQA:  issue.GetEstimateQA(),
+		BindingId:   (*uint)(issue.GetContextBindingId()),
 	}
 }

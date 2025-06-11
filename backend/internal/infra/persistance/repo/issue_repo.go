@@ -130,6 +130,7 @@ func (r *IssueRepository) Update(issue *domain.Issue) (*domain.Issue, error) {
 	if err != nil {
 		return nil, err
 	}
+	domainIssue.SetContext(issue.GetContextBindingId())
 
 	if err := r.saveLabelHistory(domainIssue); err != nil {
 		return nil, err
@@ -160,7 +161,7 @@ func (r *IssueRepository) toDomainIssue(issue *models.Issue, preloadBindings *[]
 		bindings = r.filterBindbinsByIssue(*preloadBindings, domain.IssueId(issue.Id))
 	}
 
-	return &domain.Issue{
+	domainIssue := &domain.Issue{
 		Id:        domain.IssueId(issue.Id),
 		Iid:       domain.IssueIid(issue.Iid),
 		Title:     issue.Title,
@@ -183,7 +184,13 @@ func (r *IssueRepository) toDomainIssue(issue *models.Issue, preloadBindings *[]
 		EstimateDev:    issue.EstimateDev,
 		EstimateQA:     issue.EstimateQA,
 		SprintBindings: bindings,
-	}, nil
+	}
+
+	if issue.BindingId != nil {
+		domainIssue.SetContext((*domain.IssueBindingId)(issue.BindingId))
+	}
+
+	return domainIssue, nil
 }
 
 func (r *IssueRepository) toIssue(issue *domain.Issue) *models.Issue {
@@ -220,11 +227,13 @@ func (r *IssueRepository) toIssue(issue *domain.Issue) *models.Issue {
 }
 
 func (r *IssueRepository) getQuery() *gorm.DB {
-	query := r.conn.GetEngine().Model(&models.Issue{})
-	query = query.Preload("Assignees").Preload("Labels")
-	query = query.Preload("Project").Preload("Project.Team")
-	query = query.Preload("Release").Preload("TaskType")
-	return query
+	return r.conn.GetEngine().Model(&models.Issue{}).
+		Preload("Assignees").
+		Preload("Labels").
+		Preload("Project").
+		Preload("Project.Team").
+		Preload("Release").
+		Preload("TaskType")
 }
 
 func (r *IssueRepository) saveLabelHistory(domainIssue *domain.Issue) error {

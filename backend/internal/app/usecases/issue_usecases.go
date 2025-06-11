@@ -11,6 +11,7 @@ type SaveIssueRequest struct {
 	BindingId   *uint
 	EstimateDev *uint
 	EstimateQA  *uint
+	BindStatus  *domain.IssueBindingStatus
 }
 
 type IssueUseCases struct {
@@ -67,6 +68,7 @@ func (uc *IssueUseCases) SaveIssue(request SaveIssueRequest) (*domain.Issue, err
 
 	issue.SetEstimateDev(request.EstimateDev)
 	issue.SetEstimateQA(request.EstimateQA)
+	issue.SetBindStatus(*request.BindStatus)
 
 	issue, err = uc.issueRepo.Update(issue)
 	if err != nil {

@@ -3,6 +3,7 @@ package controllers
 import (
 	"main/internal/app/queries"
 	"main/internal/app/usecases"
+	domain "main/internal/domain/models"
 	"main/internal/interfaces/api/dto"
 	"net/http"
 	"strconv"
@@ -98,6 +99,7 @@ func (c *IssueController) saveIssue(ctx *gin.Context) {
 		BindingId:   request.BindingId,
 		EstimateDev: request.EstimateDev,
 		EstimateQA:  request.EstimateQA,
+		BindStatus:  (*domain.IssueBindingStatus)(request.BindStatus),
 	})
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})

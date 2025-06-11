@@ -1,5 +1,5 @@
 import { Component, DestroyRef, inject, Input, OnInit } from '@angular/core';
-import { KanbanIssue } from '../../models/kanban-issue';
+import { BIND_STATUS_LABELS, BIND_STATUS_VALUES, KanbanIssue } from '../../models/kanban-issue';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
@@ -20,6 +20,8 @@ export class IssueTableRowComponent implements OnInit{
   issueService = inject(IssueService)
   toast = inject(ToastService)
 
+  readonly BIND_STATUS_VALUES = BIND_STATUS_VALUES
+
   private _issue!: KanbanIssue
   form: FormGroup
 
@@ -29,6 +31,7 @@ export class IssueTableRowComponent implements OnInit{
     this.form.patchValue({
       estimateDev: value.estimateDev,
       estimateQA: value.estimateQA,
+      bindStatus: value.bindStatus
     })
   }
 
@@ -40,6 +43,7 @@ export class IssueTableRowComponent implements OnInit{
     this.form = this.fb.group({
       estimateDev: [null],
       estimateQA: [null],
+      bindStatus: [null],
     })
   }
 

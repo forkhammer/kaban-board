@@ -24,7 +24,9 @@
   <div class="column">
     <app-select-estimate formControlName="estimateQA"></app-select-estimate>
   </div>
-  <div class="column">&nbsp;</div>
+  <div class="column">
+    <app-select [values]="BIND_STATUS_VALUES" formControlName="bindStatus"></app-select>
+  </div>
   <div class="column">&nbsp;</div>
   <div class="column">&nbsp;</div>
 </form>

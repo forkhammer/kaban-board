@@ -146,6 +146,26 @@ func (i *Issue) SetEstimateQA(estimate *uint) {
 	i.EstimateQA = estimate
 }
 
+func (i *Issue) GetBindStatus() *IssueBindingStatus {
+	if i.contextBindingId != nil {
+		binding := i.getBindingById(*i.contextBindingId)
+		if binding != nil {
+			return &binding.BindStatus
+		}
+	}
+	return nil
+}
+
+func (i *Issue) SetBindStatus(status IssueBindingStatus) {
+	if i.contextBindingId != nil {
+		binding := i.getBindingById(*i.contextBindingId)
+		if binding != nil {
+			binding.BindStatus = status
+			return
+		}
+	}
+}
+
 func (i *Issue) getBindingById(id IssueBindingId) *IssueBinding {
 	for index, binding := range i.SprintBindings {
 		if binding.Id == id {

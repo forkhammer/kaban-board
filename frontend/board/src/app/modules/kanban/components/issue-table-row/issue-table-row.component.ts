@@ -34,7 +34,8 @@ export class IssueTableRowComponent implements OnInit{
       estimateDev: value.estimateDev,
       estimateQA: value.estimateQA,
       bindStatus: value.bindStatus,
-      assignee: value.assignee ? value.assignee.id : null
+      assignee: value.assignee ? value.assignee.id : null,
+      comment: value.comment,
     })
   }
 
@@ -47,14 +48,15 @@ export class IssueTableRowComponent implements OnInit{
       estimateDev: [null],
       estimateQA: [null],
       bindStatus: [null],
-      assignee: [null]
+      assignee: [null],
+      comment: [null]
     })
   }
 
   ngOnInit(): void {
     this.form.valueChanges.pipe(
       distinctUntilChanged(isEqual),
-      debounceTime(10),
+      debounceTime(500),
       switchMap(data => {
         const query = Object.assign({}, this._issue, data)
         console.log(query)

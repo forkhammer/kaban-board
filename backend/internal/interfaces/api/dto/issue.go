@@ -25,6 +25,7 @@ type SaveIssueRequest struct {
 	EstimateQA  *uint   `json:"estimateQA"`
 	BindStatus  *string `json:"bindStatus"`
 	Assignee    *uint   `json:"assignee"`
+	Comment     *string `json:"comment"`
 }
 
 type IssueDto struct {
@@ -44,6 +45,7 @@ type IssueDto struct {
 	EstimateQA  *uint       `json:"estimateQA"`
 	BindingId   *uint       `json:"bindingId"`
 	BindStatus  *string     `json:"bindStatus"`
+	Comment     *string     `json:"comment"`
 }
 
 func SerializeIssues(issues []domain.Issue) []IssueDto {
@@ -86,5 +88,6 @@ func SerializeIssue(issue *domain.Issue) *IssueDto {
 		EstimateQA:  issue.GetEstimateQA(),
 		BindingId:   (*uint)(issue.GetContextBindingId()),
 		BindStatus:  (*string)(issue.GetBindStatus()),
+		Comment:     issue.GetComment(),
 	}
 }

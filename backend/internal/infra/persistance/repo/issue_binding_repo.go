@@ -109,6 +109,7 @@ func (r *IssueBindingRepository) toDomainIssueBinding(binding *models.IssueBindi
 		EstimateQA:  binding.EstimateQA,
 		BindStatus:  domain.IssueBindingStatus(binding.BindStatus),
 		Assignee:    assignee,
+		Comment:     binding.Comment,
 	}
 
 	return domainBinding, domainBinding.Validate()
@@ -129,6 +130,7 @@ func (r *IssueBindingRepository) toIssueBinding(binding *domain.IssueBinding) (*
 		EstimateQA:  binding.EstimateQA,
 		BindStatus:  string(binding.BindStatus),
 		AssigneeId:  assigneeId,
+		Comment:     binding.Comment,
 	}, nil
 }
 

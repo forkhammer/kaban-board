@@ -11,4 +11,5 @@ type IssueBinding struct {
 	BindStatus  string  `gorm:"bind_status;not null"`
 	AssigneeId  *uint   `gorm:"assignee_id"`
 	Assignee    *User   `gorm:"foreignKey:assignee_id"`
+	Comment     *string `gorm:"comment"`
 }

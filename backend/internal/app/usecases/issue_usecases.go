@@ -13,6 +13,7 @@ type SaveIssueRequest struct {
 	EstimateQA  *uint
 	BindStatus  *domain.IssueBindingStatus
 	Assignee    *uint
+	Comment     *string
 }
 
 type IssueUseCases struct {
@@ -71,6 +72,7 @@ func (uc *IssueUseCases) SaveIssue(request SaveIssueRequest) (*domain.Issue, err
 	issue.SetEstimateDev(request.EstimateDev)
 	issue.SetEstimateQA(request.EstimateQA)
 	issue.SetBindStatus(*request.BindStatus)
+	issue.SetComment(request.Comment)
 
 	if request.Assignee != nil {
 		assignee, err := uc.userRepo.Get((domain.UserId)(*request.Assignee))

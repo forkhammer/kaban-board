@@ -41,4 +41,5 @@ export type KanbanIssue = {
   estimateQA: number | null
   bindingId: number | null
   bindStatus: BindStatus | null
+  comment: string | null
 }

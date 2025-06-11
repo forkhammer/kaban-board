@@ -191,6 +191,26 @@ func (i *Issue) SetAssignee(assignee *User) {
 	}
 }
 
+func (i *Issue) GetComment() *string {
+	if i.contextBindingId != nil {
+		binding := i.getBindingById(*i.contextBindingId)
+		if binding != nil {
+			return binding.Comment
+		}
+	}
+	return nil
+}
+
+func (i *Issue) SetComment(comment *string) {
+	if i.contextBindingId != nil {
+		binding := i.getBindingById(*i.contextBindingId)
+		if binding != nil {
+			binding.Comment = comment
+			return
+		}
+	}
+}
+
 func (i *Issue) getBindingById(id IssueBindingId) *IssueBinding {
 	for index, binding := range i.SprintBindings {
 		if binding.Id == id {

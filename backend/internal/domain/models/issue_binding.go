@@ -20,6 +20,7 @@ type IssueBinding struct {
 	EstimateQA  *uint
 	BindStatus  IssueBindingStatus
 	Assignee    *User
+	Comment     *string
 }
 
 func (ib *IssueBinding) Validate() error {

@@ -12,18 +12,18 @@
 
 .header {
   display: grid;
-  grid-template-columns: 1fr 2fr repeat(9, 1fr);
-  gap: $pt3;
+  grid-template-columns: 100px auto 200px 100px 100px 100px 100px 100px 180px 200px 100px;
   background: $gray-300;
 }
 
 .column {
   display: flex;
   align-items: center;
-  padding: $pt $pt3;
+  padding: $pt;
   @include fs-paragraph-xs();
   text-transform: uppercase;
   font-weight: 600;;
+  border-right: 1px solid $gray-200;
 }
 
 .scroll {

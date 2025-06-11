@@ -1,6 +1,8 @@
 @import '../../../../../styles/imports';
 
 :host {
+  max-width: 100%;
+
   &.input-height {
     .btn-dropdown-toggle {
       line-height: 62px;

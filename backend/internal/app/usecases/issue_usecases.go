@@ -12,12 +12,14 @@ type SaveIssueRequest struct {
 	EstimateDev *uint
 	EstimateQA  *uint
 	BindStatus  *domain.IssueBindingStatus
+	Assignee    *uint
 }
 
 type IssueUseCases struct {
 	issueQuery queries.IssueQuery `di.inject:"IssueQuery"`
 	issueRepo  repo.IssueRepo     `di.inject:"IssueRepository"`
 	sprintRepo repo.SprintRepo    `di.inject:"SprintRepository"`
+	userRepo   repo.UserRepo      `di.inject:"UserRepository"`
 }
 
 func (u *IssueUseCases) GetIssues(filter *queries.IssueFilter) (*[]domain.Issue, error) {
@@ -69,6 +71,14 @@ func (uc *IssueUseCases) SaveIssue(request SaveIssueRequest) (*domain.Issue, err
 	issue.SetEstimateDev(request.EstimateDev)
 	issue.SetEstimateQA(request.EstimateQA)
 	issue.SetBindStatus(*request.BindStatus)
+
+	if request.Assignee != nil {
+		assignee, err := uc.userRepo.Get((domain.UserId)(*request.Assignee))
+		if err != nil {
+			return nil, err
+		}
+		issue.SetAssignee(assignee)
+	}
 
 	issue, err = uc.issueRepo.Update(issue)
 	if err != nil {

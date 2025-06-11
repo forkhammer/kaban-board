@@ -166,6 +166,31 @@ func (i *Issue) SetBindStatus(status IssueBindingStatus) {
 	}
 }
 
+func (i *Issue) GetAssignee() *User {
+	if i.contextBindingId != nil {
+		binding := i.getBindingById(*i.contextBindingId)
+		if binding != nil && binding.Assignee != nil {
+			return binding.Assignee
+		}
+	}
+
+	if len(i.Assignees) > 0 {
+		return &i.Assignees[0]
+	}
+
+	return nil
+}
+
+func (i *Issue) SetAssignee(assignee *User) {
+	if i.contextBindingId != nil {
+		binding := i.getBindingById(*i.contextBindingId)
+		if binding != nil {
+			binding.Assignee = assignee
+			return
+		}
+	}
+}
+
 func (i *Issue) getBindingById(id IssueBindingId) *IssueBinding {
 	for index, binding := range i.SprintBindings {
 		if binding.Id == id {

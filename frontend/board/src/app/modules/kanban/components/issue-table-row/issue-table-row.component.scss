@@ -18,25 +18,3 @@
   display: flex;
   align-items: center;
 }
-
-.assignee {
-  display: flex;
-  align-items: center;
-
-  &__avatar {
-    width: $pt3;
-    height: $pt3;
-    border-radius: 50%;
-    overflow: hidden;
-    margin-right: $pt;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-
-    img {
-      max-width: 100%;
-      max-height: 100%
-    }
-  }
-}

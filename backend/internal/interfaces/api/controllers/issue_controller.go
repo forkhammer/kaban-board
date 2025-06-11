@@ -100,6 +100,7 @@ func (c *IssueController) saveIssue(ctx *gin.Context) {
 		EstimateDev: request.EstimateDev,
 		EstimateQA:  request.EstimateQA,
 		BindStatus:  (*domain.IssueBindingStatus)(request.BindStatus),
+		Assignee:    request.Assignee,
 	})
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})

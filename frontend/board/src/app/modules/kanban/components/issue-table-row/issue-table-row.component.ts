@@ -7,6 +7,7 @@ import { isEqual } from 'lodash';
 import { IssueService } from '../../services/issue.service';
 import { catchErrorMessages } from 'src/app/modules/core/tools/catch-error';
 import { ToastService } from 'src/app/modules/core/services/toast.service';
+import { UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-issue-table-row',
@@ -19,6 +20,7 @@ export class IssueTableRowComponent implements OnInit{
   destroyRef = inject(DestroyRef)
   issueService = inject(IssueService)
   toast = inject(ToastService)
+  userService = inject(UserService)
 
   readonly BIND_STATUS_VALUES = BIND_STATUS_VALUES
 
@@ -31,7 +33,8 @@ export class IssueTableRowComponent implements OnInit{
     this.form.patchValue({
       estimateDev: value.estimateDev,
       estimateQA: value.estimateQA,
-      bindStatus: value.bindStatus
+      bindStatus: value.bindStatus,
+      assignee: value.assignee ? value.assignee.id : null
     })
   }
 
@@ -44,6 +47,7 @@ export class IssueTableRowComponent implements OnInit{
       estimateDev: [null],
       estimateQA: [null],
       bindStatus: [null],
+      assignee: [null]
     })
   }
 
@@ -53,6 +57,7 @@ export class IssueTableRowComponent implements OnInit{
       debounceTime(10),
       switchMap(data => {
         const query = Object.assign({}, this._issue, data)
+        console.log(query)
         return this.issueService.save(query).pipe(
           catchErrorMessages(this.toast)
         )

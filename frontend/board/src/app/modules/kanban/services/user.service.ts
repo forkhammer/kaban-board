@@ -25,4 +25,8 @@ export class UserService extends BaseService<User>{
       map(data => data as User)
     )
   }
+
+  formatter(item: User) {
+    return item.name
+  }
 }

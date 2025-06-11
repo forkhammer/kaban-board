@@ -13,6 +13,11 @@ type SetUserGroupsRequest struct {
 	Groups []uint `json:"groups"`
 }
 
+type GetUsersRequest struct {
+	Search *string `form:"search"`
+	TeamId *uint   `form:"team_id"`
+}
+
 type UserDto struct {
 	Id        uint       `json:"id"`
 	Name      string     `json:"name"`

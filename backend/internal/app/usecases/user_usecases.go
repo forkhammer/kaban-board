@@ -11,10 +11,19 @@ type UserUseCases struct {
 	userRepo   repo.UserRepo      `di.inject:"UserRepository"`
 	groupRepo  repo.GroupRepo     `di.inject:"GroupRepository"`
 	groupQuery queries.GroupQuery `di.inject:"GroupQuery"`
+	userQuery  queries.UserQuery  `di.inject:"UserQuery"`
 }
 
-func (uc *UserUseCases) GetUsers() (*[]domain.User, error) {
-	return uc.userRepo.List(nil)
+func (uc *UserUseCases) GetUsers(filter *queries.UserFilter) (*[]domain.User, error) {
+	var spec repo.QuerySpec
+	if filter != nil {
+		spec = uc.userQuery.GetSpec(*filter)
+	}
+	return uc.userRepo.List(spec)
+}
+
+func (uc *UserUseCases) GetUser(id uint) (*domain.User, error) {
+	return uc.userRepo.Get(domain.UserId(id))
 }
 
 func (uc *UserUseCases) SetVisibility(id uint, visible bool) (*domain.User, error) {

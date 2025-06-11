@@ -24,6 +24,7 @@ type SaveIssueRequest struct {
 	EstimateDev *uint   `json:"estimateDev"`
 	EstimateQA  *uint   `json:"estimateQA"`
 	BindStatus  *string `json:"bindStatus"`
+	Assignee    *uint   `json:"assignee"`
 }
 
 type IssueDto struct {
@@ -32,6 +33,7 @@ type IssueDto struct {
 	Title       string      `json:"title"`
 	IssueType   string      `json:"type"`
 	Assignees   []UserDto   `json:"assignees"`
+	Assignee    *UserDto    `json:"assignee"`
 	WebUrl      string      `json:"webUrl"`
 	Labels      []LabelDto  `json:"labels"`
 	ProjectId   int         `json:"projectId"`
@@ -52,11 +54,18 @@ func SerializeIssues(issues []domain.Issue) []IssueDto {
 
 func SerializeIssue(issue *domain.Issue) *IssueDto {
 	return &IssueDto{
-		Id:          fmt.Sprintf("%d", issue.Id),
-		Iid:         string(issue.Iid),
-		Title:       issue.Title,
-		IssueType:   string(issue.IssueType),
-		Assignees:   SerializeUsers(issue.Assignees),
+		Id:        fmt.Sprintf("%d", issue.Id),
+		Iid:       string(issue.Iid),
+		Title:     issue.Title,
+		IssueType: string(issue.IssueType),
+		Assignees: SerializeUsers(issue.Assignees),
+		Assignee: func() *UserDto {
+			assignee := issue.GetAssignee()
+			if assignee == nil {
+				return nil
+			}
+			return SerializeUser(assignee)
+		}(),
 		WebUrl:      issue.WebUrl,
 		Labels:      *SerializeLabels(&issue.Labels),
 		ProjectId:   int(issue.Project.Id),

@@ -27,6 +27,7 @@ export type KanbanIssue = {
   type: string
   webUrl: string
   assignees: User[],
+  assignee: User | null,
   labels: KanbanLabel[]
   projectId: number
   projectName: string

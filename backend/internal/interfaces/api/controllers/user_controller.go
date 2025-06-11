@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"main/internal/app/queries"
 	"main/internal/app/usecases"
 	"main/internal/domain/repo"
 	"main/internal/interfaces/api/dto"
@@ -20,13 +21,23 @@ func (c *UserController) RegisterRoutes(router *gin.Engine) error {
 	userRoutes := router.Group("/")
 	userRoutes.Use(middleware.AuthRequiredMiddleware())
 	userRoutes.GET("/users", c.getUsers)
+	userRoutes.GET("/users/:id", c.getUser)
 	userRoutes.POST("/users/:id/visibility", c.setUserVisibility)
 	userRoutes.POST("/users/:id/groups", c.setUserGroups)
 	return nil
 }
 
 func (c *UserController) getUsers(ctx *gin.Context) {
-	users, err := c.userUC.GetUsers()
+	var request dto.GetUsersRequest
+	if err := ctx.ShouldBindQuery(&request); err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	users, err := c.userUC.GetUsers(&queries.UserFilter{
+		TeamId: request.TeamId,
+		Search: request.Search,
+	})
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
@@ -34,6 +45,21 @@ func (c *UserController) getUsers(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, dto.SerializeUsers(*users))
+}
+
+func (c *UserController) getUser(ctx *gin.Context) {
+	id, err := strconv.ParseUint(ctx.Param("id"), 10, 32)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	user, err := c.userUC.GetUser(uint(id))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, dto.SerializeUser(user))
 }
 
 func (c *UserController) setUserVisibility(ctx *gin.Context) {

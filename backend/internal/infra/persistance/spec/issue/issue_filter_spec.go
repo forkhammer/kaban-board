@@ -16,12 +16,12 @@ type IssueFilterSpec struct {
 func (s *IssueFilterSpec) Apply(conn any) (any, error) {
 	query := conn.(*gorm.DB)
 
-	if s.Filter.AssigneeId != nil {
+	if s.Filter.AssigneeId != nil && s.Filter.SprintId == nil {
 		query = query.
 			Joins("left join assignees on issues.id = assignees.issue_id").
 			Where("assignees.user_id = ?", s.Filter.AssigneeId)
 	}
-	if s.Filter.GroupId != nil {
+	if s.Filter.GroupId != nil && s.Filter.SprintId == nil {
 		query = query.
 			Joins("left join assignees on issues.id = assignees.issue_id").
 			Joins("left join users on assignees.user_id = users.id").
@@ -38,6 +38,17 @@ func (s *IssueFilterSpec) Apply(conn any) (any, error) {
 			Select("issues.*, issue_bindings.id as binding_id").
 			Joins("left join issue_bindings on issues.id = issue_bindings.issue_id").
 			Where("issue_bindings.sprint_id = ?", s.Filter.SprintId)
+
+		if s.Filter.AssigneeId != nil {
+			query = query.
+				Where("issue_bindings.assignee_id = ?", s.Filter.AssigneeId)
+		}
+
+		if s.Filter.GroupId != nil {
+			query = query.
+				Joins("left join user_groups on user_groups.user_id = issue_bindings.assignee_id").
+				Where("user_groups.group_id = ?", s.Filter.GroupId)
+		}
 	}
 	if s.Filter.ProjectId != nil {
 		query = query.Where("issues.project_id = ?", s.Filter.ProjectId)

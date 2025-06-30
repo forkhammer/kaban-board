@@ -1,37 +1,37 @@
-<form [formGroup]="form" class="form">
-  <div class="column project">
+<ng-container [formGroup]="form">
+  <td class="column project">
     {{issue.projectName}}
-  </div>
-  <div class="column">
+  </td>
+  <td class="column">
     {{issue.title}}
-  </div>
-  <div class="column">
+  </td>
+  <td class="column">
     <app-select-model [service]="userService" formControlName="assignee" [useSearch]="true" [useClear]="true"
       [formatter]="userService.formatter" [itemFormatter]="userService.formatter"></app-select-model>
-  </div>
-  <div class="column">&nbsp;</div>
-  <div class="column">
+  </td>
+  <td class="column">&nbsp;</td>
+  <td class="column">
     {{issue.milestone?.title}}
-  </div>
-  <div class="column">&nbsp;</div>
-  <div class="column">
+  </td>
+  <td class="column">&nbsp;</td>
+  <td class="column">
     <app-select-estimate formControlName="estimateDev"></app-select-estimate>
-  </div>
-  <div class="column">
+  </td>
+  <td class="column">
     <app-select-estimate formControlName="estimateQA"></app-select-estimate>
-  </div>
-  <div class="column">
+  </td>
+  <td class="column">
     <app-select [values]="BIND_STATUS_VALUES" formControlName="bindStatus"></app-select>
-  </div>
-  <div class="column">
+  </td>
+  <td class="column">
     <textarea rows="1" formControlName="comment" class="form-control"></textarea>
-  </div>
-  <div class="column">
+  </td>
+  <td class="column">
     <div ngbDropdown>
       <button class="btn btn-outline-secondary" ngbDropdownToggle>...</button>
       <div ngbDropdownMenu>
         <button ngbDropdownItem (click)="unbindIssue()">Удалить</button>
       </div>
     </div>
-  </div>
-</form>
+  </td>
+</ng-container>

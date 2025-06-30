@@ -1,5 +1,5 @@
 import { Component, DestroyRef, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
-import { BIND_STATUS_LABELS, BIND_STATUS_VALUES, KanbanIssue } from '../../models/kanban-issue';
+import { BIND_STATUS_VALUES, KanbanIssue } from '../../models/kanban-issue';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
@@ -10,7 +10,7 @@ import { ToastService } from 'src/app/modules/core/services/toast.service';
 import { UserService } from '../../services/user.service';
 
 @Component({
-  selector: 'app-issue-table-row',
+  selector: 'app-issue-table-row, [app-issue-table-row]',
   standalone: false,
   templateUrl: './issue-table-row.component.html',
   styleUrl: './issue-table-row.component.scss'

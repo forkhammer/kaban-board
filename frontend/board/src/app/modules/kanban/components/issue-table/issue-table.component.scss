@@ -10,26 +10,71 @@
   bottom: 0;
 }
 
-.header {
-  display: grid;
-  grid-template-columns: 100px auto 200px 100px 100px 100px 100px 100px 180px 200px 100px;
-  background: $gray-300;
-}
-
-.column {
+.issue-table {
+  flex-flow: column;
   display: flex;
-  align-items: center;
-  padding: $pt;
-  @include fs-paragraph-xs();
-  text-transform: uppercase;
-  font-weight: 600;;
-  border-right: 1px solid $gray-200;
-}
-
-.scroll {
-  position: relative;
+  width: 100%;
   flex-grow: 1;
-  overflow-y: auto;
+
+  thead {
+    display: table;
+    table-layout: fixed;
+    flex: 0 0 auto;
+    width: calc(100% - 0.9em);
+
+    tr {
+      width: 100%;
+    }
+
+    th {
+      padding: $pt;
+      @include fs-paragraph-xs();
+      text-transform: uppercase;
+      font-weight: 600;
+      border-right: 1px solid $gray-200;
+      background: $gray-300;
+      text-align: center;
+    }
+  }
+
+  tbody {
+    background: $white;
+    display: block;
+    overflow-y: scroll;
+    flex-grow: 1;
+
+    tr {
+      width: 100%;
+      display: table;
+      table-layout: fixed;
+
+      &:hover {
+        background-color: $gray-100;;
+      }
+    }
+  }
+
+  thead th,
+  ::ng-deep tbody td {
+    &:nth-child(1),
+    &:nth-child(4),
+    &:nth-child(5),
+    &:nth-child(6),
+    &:nth-child(7),
+    &:nth-child(8),
+    &:nth-child(11) {
+      width: 100px;
+    }
+    &:nth-child(3) {
+      width: 200px;
+    }
+    &:nth-child(9) {
+      width: 180px;
+    }
+    &:nth-child(10) {
+      width: 200px;
+    }
+  }
 }
 
 .btn-append {

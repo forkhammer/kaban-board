@@ -5,20 +5,11 @@
       [itemFormatter]="projectService.formatter"
       [useSearch]="true"></app-select-model>
   </div>
-  <div class="column">
+  <div class="column position-relative">
     <app-select-model [service]="issueService" formControlName="issueId"
       [useSearch]="true"
       [filter]="issueFilter"
       [formatter]="issueService.formatter"
       [itemFormatter]="issueService.formatter"></app-select-model>
   </div>
-  <div class="column"></div>
-  <div class="column"></div>
-  <div class="column"></div>
-  <div class="column"></div>
-  <div class="column"></div>
-  <div class="column"></div>
-  <div class="column"></div>
-  <div class="column"></div>
-  <div class="column"></div>
 </form>

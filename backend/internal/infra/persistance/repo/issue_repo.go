@@ -9,6 +9,7 @@ import (
 	"main/internal/infra/persistance/models"
 	issuebinding_spec "main/internal/infra/persistance/spec/issue_binding"
 	"main/pkg/utils"
+	"slices"
 
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
@@ -114,15 +115,34 @@ func (r *IssueRepository) Update(issue *domain.Issue) (*domain.Issue, error) {
 		return nil, err
 	}
 
+	persistentBindings, err := r.preloadBindings([]domain.IssueId{issue.Id})
+	if err != nil {
+		return nil, err
+	}
+
+	existBindingIds := make([]domain.IssueBindingId, 0, len(issue.SprintBindings))
 	for _, domainBinding := range issue.SprintBindings {
-		var err error
+		var (
+			err     error
+			binding *domain.IssueBinding
+		)
 		if domainBinding.Id == 0 {
-			_, err = r.issueBindingRepo.Create(&domainBinding)
+			binding, err = r.issueBindingRepo.Create(&domainBinding)
 		} else {
-			_, err = r.issueBindingRepo.Update(&domainBinding)
+			binding, err = r.issueBindingRepo.Update(&domainBinding)
 		}
 		if err != nil {
 			return nil, err
+		}
+		existBindingIds = append(existBindingIds, binding.Id)
+	}
+
+	// remove non exist bindings
+	for _, persistentBinding := range *persistentBindings {
+		if !slices.Contains(existBindingIds, persistentBinding.Id) {
+			if err := r.issueBindingRepo.Delete(persistentBinding.Id); err != nil {
+				return nil, err
+			}
 		}
 	}
 

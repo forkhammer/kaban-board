@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, Input, OnInit } from '@angular/core';
+import { Component, DestroyRef, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
 import { BIND_STATUS_LABELS, BIND_STATUS_VALUES, KanbanIssue } from '../../models/kanban-issue';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -26,6 +26,7 @@ export class IssueTableRowComponent implements OnInit{
 
   private _issue!: KanbanIssue
   form: FormGroup
+  @Output() unbind = new EventEmitter<number>()
 
   @Input()
   set issue(value: KanbanIssue) {
@@ -68,5 +69,16 @@ export class IssueTableRowComponent implements OnInit{
     ).subscribe(data => {
       Object.assign(this._issue, data)
     })
+  }
+
+  unbindIssue() {
+    if (this._issue.bindingId && confirm('Удалить задачу из спринта?')) {
+      this.issueService.unbindFromSprint(this._issue.id, this._issue.bindingId).pipe(
+        catchErrorMessages(this.toast),
+        takeUntilDestroyed(this.destroyRef)
+      ).subscribe(_ => {
+        this.unbind.emit(this._issue.bindingId!)
+      })
+    }
   }
 }

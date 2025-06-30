@@ -19,6 +19,10 @@ type BindIssueRequest struct {
 	SprintId uint `json:"sprint_id"`
 }
 
+type UnbindIssueRequest struct {
+	BindingId uint `json:"binding_id"`
+}
+
 type SaveIssueRequest struct {
 	BindingId   *uint   `json:"bindingId"`
 	EstimateDev *uint   `json:"estimateDev"`

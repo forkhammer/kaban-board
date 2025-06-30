@@ -20,6 +20,7 @@ func (c *IssueController) RegisterRoutes(router *gin.Engine) error {
 	router.GET("/issue/:id", c.getIssue)
 	router.PUT("/issue/:id", c.saveIssue)
 	router.POST("/issue/:id/bind", c.bindIssue)
+	router.POST("/issue/:id/unbind", c.unbindIssue)
 	return nil
 }
 
@@ -74,6 +75,27 @@ func (c *IssueController) bindIssue(ctx *gin.Context) {
 	}
 
 	issue, err := c.issueUC.BindIssue(uint(id), request.SprintId)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, dto.SerializeIssue(issue))
+}
+
+func (c *IssueController) unbindIssue(ctx *gin.Context) {
+	id, err := strconv.ParseUint(ctx.Param("id"), 10, 32)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	var request dto.UnbindIssueRequest
+	if err := ctx.ShouldBindJSON(&request); err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	issue, err := c.issueUC.UnbindIssue(uint(id), request.BindingId)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
 		return

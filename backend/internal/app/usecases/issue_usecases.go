@@ -59,6 +59,20 @@ func (u *IssueUseCases) BindIssue(id uint, sprintId uint) (*domain.Issue, error)
 	return u.issueRepo.Update(issue)
 }
 
+func (u *IssueUseCases) UnbindIssue(id uint, bindingId uint) (*domain.Issue, error) {
+	issue, err := u.issueRepo.Get(domain.IssueId(id))
+	if err != nil {
+		return nil, err
+	}
+
+	err = issue.UnbindFromSprint(domain.IssueBindingId(bindingId))
+	if err != nil {
+		return nil, err
+	}
+
+	return u.issueRepo.Update(issue)
+}
+
 func (uc *IssueUseCases) SaveIssue(request SaveIssueRequest) (*domain.Issue, error) {
 	issue, err := uc.issueRepo.Get(domain.IssueId(request.Id))
 	if err != nil {
@@ -71,7 +85,9 @@ func (uc *IssueUseCases) SaveIssue(request SaveIssueRequest) (*domain.Issue, err
 
 	issue.SetEstimateDev(request.EstimateDev)
 	issue.SetEstimateQA(request.EstimateQA)
-	issue.SetBindStatus(*request.BindStatus)
+	if request.BindStatus != nil {
+		issue.SetBindStatus(*request.BindStatus)
+	}
 	issue.SetComment(request.Comment)
 
 	if request.Assignee != nil {

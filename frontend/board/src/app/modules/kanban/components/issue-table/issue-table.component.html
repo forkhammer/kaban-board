@@ -13,7 +13,7 @@
 </div>
 
 <div class="scroll">
-  <app-issue-table-row *ngFor="let issue of issues" [issue]="issue"></app-issue-table-row>
+  <app-issue-table-row *ngFor="let issue of issues" [issue]="issue" (unbind)="unbindIssue($event)"></app-issue-table-row>
 
   <ng-container *ngIf="sprint$ | async">
     <button class="btn-append" (click)="appendIssue()">

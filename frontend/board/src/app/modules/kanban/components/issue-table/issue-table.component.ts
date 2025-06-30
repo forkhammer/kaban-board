@@ -76,8 +76,11 @@ export class IssueTableComponent {
   }
 
   bindIssue(event: [number, KanbanIssue]) {
-    console.log(event)
     this.appendedIssues.splice(event[0], 1)
     this.issues.push(event[1])
+  }
+
+  unbindIssue(bindingId: number) {
+    this.issues = this.issues.filter(issue => issue.bindingId !== bindingId)
   }
 }

@@ -26,5 +26,12 @@
   <div class="column">
     <textarea rows="1" formControlName="comment" class="form-control"></textarea>
   </div>
-  <div class="column">&nbsp;</div>
+  <div class="column">
+    <div ngbDropdown>
+      <button class="btn btn-outline-secondary" ngbDropdownToggle>...</button>
+      <div ngbDropdownMenu>
+        <button ngbDropdownItem (click)="unbindIssue()">Удалить</button>
+      </div>
+    </div>
+  </div>
 </form>

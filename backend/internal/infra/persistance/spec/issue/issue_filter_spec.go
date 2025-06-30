@@ -41,12 +41,17 @@ func (s *IssueFilterSpec) Apply(conn any) (any, error) {
 
 		if s.Filter.AssigneeId != nil {
 			query = query.
-				Where("issue_bindings.assignee_id = ?", s.Filter.AssigneeId)
+				Joins("left join assignees on issues.id = assignees.issue_id").
+				Where("issue_bindings.assignee_id = @user_id OR (assignees.user_id = @user_id AND issue_bindings.assignee_id IS NULL)", map[string]any{
+					"user_id": s.Filter.AssigneeId,
+				})
 		}
 
 		if s.Filter.GroupId != nil {
 			query = query.
-				Joins("left join user_groups on user_groups.user_id = issue_bindings.assignee_id").
+				Joins("left join assignees on issues.id = assignees.issue_id").
+				Joins("left join users on assignees.user_id = users.id").
+				Joins("left join user_groups on user_groups.user_id = issue_bindings.assignee_id OR (user_groups.user_id = users.id AND issue_bindings.assignee_id IS NULL)").
 				Where("user_groups.group_id = ?", s.Filter.GroupId)
 		}
 	}

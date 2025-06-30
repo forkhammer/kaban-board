@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"main/pkg/utils"
 	"slices"
 	"time"
@@ -89,6 +90,20 @@ func (i *Issue) BindToSprint(sprint *Sprint) error {
 	}
 
 	i.SprintBindings = append(i.SprintBindings, binding)
+	return nil
+}
+
+func (i *Issue) UnbindFromSprint(bindingId IssueBindingId) error {
+	bindingCount := len(i.SprintBindings)
+	if bindingCount == 0 {
+		return fmt.Errorf("Issue %d has no binding %d", i.Id, bindingId)
+	}
+	i.SprintBindings = utils.Filter(i.SprintBindings, func(binding IssueBinding) bool {
+		return binding.Id != bindingId
+	})
+	if len(i.SprintBindings) == bindingCount {
+		return fmt.Errorf("Issue %d has no binding %d", i.Id, bindingId)
+	}
 	return nil
 }
 

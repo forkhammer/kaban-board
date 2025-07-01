@@ -13,7 +13,7 @@ type Config struct {
 	Port         int             `env:"PORT"`
 	Host         string          `env:"HOST"`
 	GitlabUrl    string          `env:"GITLAB_URL"`
-	GitlabToken  string          `env:"GITLAB_TOKEN"`
+	GitlabToken  string          `env:"GITLAB_TOKEN" json:"-"`
 	LogLevel     logger.LogLevel `env:"LOG_LEVEL" envDefault:"1"`
 	AllowOrigins []string        `env:"ALLOW_ORIGINS" envSeparator:","`
 	Logo         string          `env:"LOGO" envDefault:""`
@@ -25,21 +25,22 @@ type Config struct {
 	PostgresPort int    `env:"POSTGRES_PORT"`
 	PostgresDb   string `env:"POSTGRES_DB"`
 	PostgresUser string `env:"POSTGRES_USER"`
-	PostgresPass string `env:"POSTGRES_PASSWORD"`
+	PostgresPass string `env:"POSTGRES_PASSWORD" json:"-"`
 
 	MysqlHost string `env:"MYSQL_HOST"`
 	MysqlPort int    `env:"MYSQL_PORT"`
 	MysqlDb   string `env:"MYSQL_DATABASE"`
 	MysqlUser string `env:"MYSQL_USER"`
-	MysqlPass string `env:"MYSQL_PASSWORD"`
+	MysqlPass string `env:"MYSQL_PASSWORD" json:"-"`
 
 	SqliteDbFile string `env:"SQLITE_DB_FILE"`
 
 	JwtTokenLifespanHour uint   `env:"JWT_TOKEN_LIFESPAN_HOUR" envDefault:"24"`
-	ApiSecret            string `env:"API_SECRET"`
+	ApiSecret            string `env:"API_SECRET" json:"-"`
 
-	GitlabSyncPeriodMin    int `env:"GITLAB_SYNC_PERIOD_MIN" envDefault:"10"`
-	MemoryCacheDurationMin int `env:"MEMORY_CACHE_DURATION_MIN" envDefault:"15"`
+	GitlabSyncEnabled      bool `env:"GITLAB_SYNC_ENABLED" envDefault:"true"`
+	GitlabSyncPeriodMin    int  `env:"GITLAB_SYNC_PERIOD_MIN" envDefault:"10"`
+	MemoryCacheDurationMin int  `env:"MEMORY_CACHE_DURATION_MIN" envDefault:"15"`
 }
 
 func NewConfig() *Config {

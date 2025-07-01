@@ -23,7 +23,9 @@ func NewWorkerApplication() *WorkerApplication {
 }
 
 func (app *WorkerApplication) Run(ctx context.Context) {
-	app.startSync(ctx)
+	if app.config.GitlabSyncEnabled {
+		app.startSync(ctx)
+	}
 }
 
 func (app *WorkerApplication) startSync(ctx context.Context) {

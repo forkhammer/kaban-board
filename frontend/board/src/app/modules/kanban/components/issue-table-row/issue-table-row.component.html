@@ -13,7 +13,9 @@
   <td class="column">
     {{issue.milestone?.title}}
   </td>
-  <td class="column">&nbsp;</td>
+  <td class="column">
+    <app-select formControlName="priority" [values]="ISSUE_PRIORITY_VALUES"></app-select>
+  </td>
   <td class="column">
     <app-select-estimate formControlName="estimateDev"></app-select-estimate>
   </td>

@@ -137,28 +137,30 @@ func (i *Issue) GetEstimateQA() *uint {
 	return i.EstimateQA
 }
 
-func (i *Issue) SetEstimateDev(estimate *uint) {
+func (i *Issue) SetEstimateDev(estimate *uint) error {
 	if i.contextBindingId != nil {
 		binding := i.getBindingById(*i.contextBindingId)
 		if binding != nil {
 			binding.EstimateDev = estimate
-			return
+			return i.Validate()
 		}
 	}
 
 	i.EstimateDev = estimate
+	return i.Validate()
 }
 
-func (i *Issue) SetEstimateQA(estimate *uint) {
+func (i *Issue) SetEstimateQA(estimate *uint) error {
 	if i.contextBindingId != nil {
 		binding := i.getBindingById(*i.contextBindingId)
 		if binding != nil {
 			binding.EstimateQA = estimate
-			return
+			return i.Validate()
 		}
 	}
 
 	i.EstimateQA = estimate
+	return i.Validate()
 }
 
 func (i *Issue) GetBindStatus() *IssueBindingStatus {
@@ -171,14 +173,15 @@ func (i *Issue) GetBindStatus() *IssueBindingStatus {
 	return nil
 }
 
-func (i *Issue) SetBindStatus(status IssueBindingStatus) {
+func (i *Issue) SetBindStatus(status IssueBindingStatus) error {
 	if i.contextBindingId != nil {
 		binding := i.getBindingById(*i.contextBindingId)
 		if binding != nil {
 			binding.BindStatus = status
-			return
+			return i.Validate()
 		}
 	}
+	return nil
 }
 
 func (i *Issue) GetAssignee() *User {
@@ -216,14 +219,36 @@ func (i *Issue) GetComment() *string {
 	return nil
 }
 
-func (i *Issue) SetComment(comment *string) {
+func (i *Issue) SetComment(comment *string) error {
 	if i.contextBindingId != nil {
 		binding := i.getBindingById(*i.contextBindingId)
 		if binding != nil {
 			binding.Comment = comment
-			return
+			return i.Validate()
 		}
 	}
+	return nil
+}
+
+func (i *Issue) GetPriority() *IssueBindingPriority {
+	if i.contextBindingId != nil {
+		binding := i.getBindingById(*i.contextBindingId)
+		if binding != nil {
+			return binding.Priority
+		}
+	}
+	return nil
+}
+
+func (i *Issue) SetPriority(priority *IssueBindingPriority) error {
+	if i.contextBindingId != nil {
+		binding := i.getBindingById(*i.contextBindingId)
+		if binding != nil {
+			binding.Priority = priority
+			return i.Validate()
+		}
+	}
+	return nil
 }
 
 func (i *Issue) getBindingById(id IssueBindingId) *IssueBinding {

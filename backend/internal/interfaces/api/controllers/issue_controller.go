@@ -124,6 +124,7 @@ func (c *IssueController) saveIssue(ctx *gin.Context) {
 		BindStatus:  (*domain.IssueBindingStatus)(request.BindStatus),
 		Assignee:    request.Assignee,
 		Comment:     request.Comment,
+		Priority:    (*domain.IssueBindingPriority)(request.Priority),
 	})
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})

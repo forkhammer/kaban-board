@@ -4,27 +4,3 @@ td {
   padding: $pt;
   @include fs-paragraph-xs();
 }
-
-// :host {
-//   display: block;
-// }
-
-// .form {
-//   background: $white;
-//   display: grid;
-//   grid-template-columns: 100px auto 200px 100px 100px 100px 100px 100px 180px 200px 100px;
-
-//   &:hover {
-//     background-color: $gray-100;
-//   }
-// }
-
-// .column {
-//   border-right: 1px solid $gray-100;
-//   border-bottom: 1px solid $gray-100;
-//   padding: $pt;
-//   @include fs-paragraph-xs();
-//   display: flex;
-//   align-items: center;
-//   position: relative
-// }

@@ -1,5 +1,5 @@
 import { Component, DestroyRef, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
-import { BIND_STATUS_VALUES, KanbanIssue } from '../../models/kanban-issue';
+import { BIND_STATUS_VALUES, ISSUE_PRIORITY_VALUES, KanbanIssue } from '../../models/kanban-issue';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
@@ -23,6 +23,7 @@ export class IssueTableRowComponent implements OnInit{
   userService = inject(UserService)
 
   readonly BIND_STATUS_VALUES = BIND_STATUS_VALUES
+  readonly ISSUE_PRIORITY_VALUES = ISSUE_PRIORITY_VALUES
 
   private _issue!: KanbanIssue
   form: FormGroup
@@ -37,6 +38,7 @@ export class IssueTableRowComponent implements OnInit{
       bindStatus: value.bindStatus,
       assignee: value.assignee ? value.assignee.id : null,
       comment: value.comment,
+      priority: value.priority
     })
   }
 
@@ -50,7 +52,8 @@ export class IssueTableRowComponent implements OnInit{
       estimateQA: [null],
       bindStatus: [null],
       assignee: [null],
-      comment: [null]
+      comment: [null],
+      priority: [null],
     })
   }
 

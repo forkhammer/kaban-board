@@ -12,6 +12,16 @@ const (
 	IssueBindStatusDone       IssueBindingStatus = "done"
 )
 
+type IssueBindingPriority string
+
+const (
+	IssueBindingPriorityLowest   IssueBindingPriority = "lowest"
+	IssueBindingPriorityLow      IssueBindingPriority = "low"
+	IssueBindingPriorityMedium   IssueBindingPriority = "medium"
+	IssueBindingPriorityHigh     IssueBindingPriority = "high"
+	IssueBindingPriorityCritical IssueBindingPriority = "critical"
+)
+
 type IssueBinding struct {
 	Id          IssueBindingId
 	Sprint      *Sprint `validate:"required"`
@@ -19,6 +29,7 @@ type IssueBinding struct {
 	EstimateDev *uint
 	EstimateQA  *uint
 	BindStatus  IssueBindingStatus
+	Priority    *IssueBindingPriority `validate:"omitnil,oneof=lowest low medium high critical"`
 	Assignee    *User
 	Comment     *string
 }

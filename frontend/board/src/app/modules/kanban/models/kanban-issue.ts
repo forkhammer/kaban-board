@@ -20,6 +20,30 @@ export const BIND_STATUS_VALUES: SelectValue[] = [
   {id: BindStatus.DONE, title: BIND_STATUS_LABELS[BindStatus.DONE]},
 ]
 
+export enum IssuePriority {
+  LOWEST = 'lowest',
+  LOW = 'low',
+  MEDIUM = 'medium',
+  HIGH = 'high',
+  CRITICAL = 'critical'
+}
+
+export const ISSUE_PRIORITY_LABELS: Record<IssuePriority, string> = {
+  [IssuePriority.LOWEST]: 'Самый низкий',
+  [IssuePriority.LOW]: 'Низкий',
+  [IssuePriority.MEDIUM]: 'Средний',
+  [IssuePriority.HIGH]: 'Высокий',
+  [IssuePriority.CRITICAL]: 'Критический'
+}
+
+export const ISSUE_PRIORITY_VALUES: SelectValue[] = [
+  {id: IssuePriority.LOWEST, title: ISSUE_PRIORITY_LABELS[IssuePriority.LOWEST]},
+  {id: IssuePriority.LOW, title: ISSUE_PRIORITY_LABELS[IssuePriority.LOW]},
+  {id: IssuePriority.MEDIUM, title: ISSUE_PRIORITY_LABELS[IssuePriority.MEDIUM]},
+  {id: IssuePriority.HIGH, title: ISSUE_PRIORITY_LABELS[IssuePriority.HIGH]},
+  {id: IssuePriority.CRITICAL, title: ISSUE_PRIORITY_LABELS[IssuePriority.CRITICAL]},
+]
+
 export type KanbanIssue = {
   id: string
   iid: string
@@ -41,5 +65,6 @@ export type KanbanIssue = {
   estimateQA: number | null
   bindingId: number | null
   bindStatus: BindStatus | null
+  priority: IssuePriority | null,
   comment: string | null
 }

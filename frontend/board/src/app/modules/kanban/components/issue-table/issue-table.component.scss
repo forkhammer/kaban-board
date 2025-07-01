@@ -59,7 +59,6 @@
     &:nth-child(1),
     &:nth-child(4),
     &:nth-child(5),
-    &:nth-child(6),
     &:nth-child(7),
     &:nth-child(8),
     &:nth-child(11) {
@@ -68,6 +67,7 @@
     &:nth-child(3) {
       width: 200px;
     }
+    &:nth-child(6),
     &:nth-child(9) {
       width: 180px;
     }

@@ -108,6 +108,7 @@ func (r *IssueBindingRepository) toDomainIssueBinding(binding *models.IssueBindi
 		EstimateDev: binding.EstimateDev,
 		EstimateQA:  binding.EstimateQA,
 		BindStatus:  domain.IssueBindingStatus(binding.BindStatus),
+		Priority:    (*domain.IssueBindingPriority)(binding.Priority),
 		Assignee:    assignee,
 		Comment:     binding.Comment,
 	}
@@ -129,6 +130,7 @@ func (r *IssueBindingRepository) toIssueBinding(binding *domain.IssueBinding) (*
 		EstimateDev: binding.EstimateDev,
 		EstimateQA:  binding.EstimateQA,
 		BindStatus:  string(binding.BindStatus),
+		Priority:    (*string)(binding.Priority),
 		AssigneeId:  assigneeId,
 		Comment:     binding.Comment,
 	}, nil

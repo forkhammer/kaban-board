@@ -14,6 +14,7 @@ type SaveIssueRequest struct {
 	BindStatus  *domain.IssueBindingStatus
 	Assignee    *uint
 	Comment     *string
+	Priority    *domain.IssueBindingPriority
 }
 
 type IssueUseCases struct {
@@ -83,12 +84,23 @@ func (uc *IssueUseCases) SaveIssue(request SaveIssueRequest) (*domain.Issue, err
 		issue.SetContext((*domain.IssueBindingId)(request.BindingId))
 	}
 
-	issue.SetEstimateDev(request.EstimateDev)
-	issue.SetEstimateQA(request.EstimateQA)
-	if request.BindStatus != nil {
-		issue.SetBindStatus(*request.BindStatus)
+	if err = issue.SetEstimateDev(request.EstimateDev); err != nil {
+		return nil, err
 	}
-	issue.SetComment(request.Comment)
+	if err = issue.SetEstimateQA(request.EstimateQA); err != nil {
+		return nil, err
+	}
+	if request.BindStatus != nil {
+		if err = issue.SetBindStatus(*request.BindStatus); err != nil {
+			return nil, err
+		}
+	}
+	if err = issue.SetComment(request.Comment); err != nil {
+		return nil, err
+	}
+	if err = issue.SetPriority(request.Priority); err != nil {
+		return nil, err
+	}
 
 	if request.Assignee != nil {
 		assignee, err := uc.userRepo.Get((domain.UserId)(*request.Assignee))

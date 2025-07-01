@@ -9,6 +9,7 @@ type IssueBinding struct {
 	EstimateDev *uint   `gorm:"estimate_dev"`
 	EstimateQA  *uint   `gorm:"estimate_qa"`
 	BindStatus  string  `gorm:"bind_status;not null"`
+	Priority    *string `gorm:"priority"`
 	AssigneeId  *uint   `gorm:"assignee_id"`
 	Assignee    *User   `gorm:"foreignKey:assignee_id"`
 	Comment     *string `gorm:"comment"`

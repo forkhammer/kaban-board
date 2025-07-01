@@ -89,7 +89,7 @@ func (r *ReleaseRepository) toDomainRelease(release *models.Release) (*domain.Re
 
 func (r *ReleaseRepository) toRelease(release *domain.Release) *models.Release {
 	return &models.Release{
-		Id:        string(release.Id),
+		Id:        uint(release.Id),
 		Iid:       string(release.Iid),
 		Title:     release.Title,
 		ProjectId: uint(release.Project.Id),

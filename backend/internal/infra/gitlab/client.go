@@ -603,7 +603,8 @@ func (client *GitlabClient) toDomainIssue(
 	}
 
 	release := utils.Find(*releases, func(r domain.Release) bool {
-		return r.Id == domain.ReleaseId(issue.Milestone.Id)
+		releaseId, err := client.cleanReleaseId(issue.Milestone.Id)
+		return r.Id == domain.ReleaseId(releaseId) && err == nil
 	})
 
 	domainIssue := &domain.Issue{
@@ -657,8 +658,13 @@ func (client *GitlabClient) toDomainLabel(label *GitlabLabel) *domain.Label {
 }
 
 func (client *GitlabClient) toDomainRelease(milestone *GitlabMilestone, project *domain.Project) (*domain.Release, error) {
+	releaseId, err := client.cleanReleaseId(milestone.Id)
+	if err != nil {
+		return nil, err
+	}
+
 	result := &domain.Release{
-		Id:      domain.ReleaseId(milestone.Id),
+		Id:      domain.ReleaseId(releaseId),
 		Iid:     domain.ReleaseIid(milestone.Iid),
 		Title:   milestone.Title,
 		Project: *project,
@@ -684,4 +690,14 @@ func (client *GitlabClient) cleanUserAvatar(avatarUrl string) string {
 		return path.Join(client.config.GitlabUrl, avatarUrl)
 	}
 	return avatarUrl
+}
+
+func (client *GitlabClient) cleanReleaseId(gid string) (uint, error) {
+	id, err := strconv.ParseUint(strings.ReplaceAll(gid, "gid://gitlab/Milestone/", ""), 10, 32)
+
+	if err != nil {
+		return 0, err
+	}
+
+	return uint(id), nil
 }

@@ -1,5 +1,6 @@
 import { SelectValue } from "../../ui/models/select-value";
 import {KanbanLabel} from "./kanban-label";
+import { Release } from "./release";
 import { User } from "./user";
 
 export enum BindStatus {
@@ -55,11 +56,7 @@ export type KanbanIssue = {
   labels: KanbanLabel[]
   projectId: number
   projectName: string
-  milestone: {
-    id: number
-    title: string
-    webPath: string
-  }
+  release: Release | null
   taskType: KanbanLabel | null
   estimateDev: number | null
   estimateQA: number | null

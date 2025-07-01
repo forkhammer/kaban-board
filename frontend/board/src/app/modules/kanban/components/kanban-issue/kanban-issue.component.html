@@ -23,11 +23,11 @@
   <div class="footer pe-1 ps-2 pt-1 pb-1 border-top d-flex align-items-center">
     <a [href]="issue?.webUrl" target="_blank" class="fs-paragraph-xxxs text-nowrap me-auto ">{{issue?.projectName}}#{{issue?.iid}}</a>
 
-    <a [href]="issue?.milestone?.webPath" class="milestone text-truncate" target="_blank"
-      [title]="issue?.milestone?.title"
-      *ngIf="issue?.milestone?.id">
+    <a [href]="issue?.release?.webPath" class="milestone text-truncate" target="_blank"
+      [title]="issue?.release?.title"
+      *ngIf="issue?.release?.id">
       <fa-icon [icon]="faSquare"></fa-icon>
-      {{issue?.milestone?.title}}
+      {{issue?.release?.title}}
     </a>
 
     <div class="estimate-dev" ngbTooltip="Оценка разработки: {{issue?.estimateDev ? issue?.estimateDev + ' ч.' : '?'}}">

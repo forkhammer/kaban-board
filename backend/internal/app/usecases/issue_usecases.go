@@ -15,13 +15,15 @@ type SaveIssueRequest struct {
 	Assignee    *uint
 	Comment     *string
 	Priority    *domain.IssueBindingPriority
+	ReleaseId   *uint
 }
 
 type IssueUseCases struct {
-	issueQuery queries.IssueQuery `di.inject:"IssueQuery"`
-	issueRepo  repo.IssueRepo     `di.inject:"IssueRepository"`
-	sprintRepo repo.SprintRepo    `di.inject:"SprintRepository"`
-	userRepo   repo.UserRepo      `di.inject:"UserRepository"`
+	issueQuery  queries.IssueQuery `di.inject:"IssueQuery"`
+	issueRepo   repo.IssueRepo     `di.inject:"IssueRepository"`
+	sprintRepo  repo.SprintRepo    `di.inject:"SprintRepository"`
+	userRepo    repo.UserRepo      `di.inject:"UserRepository"`
+	releaseRepo repo.ReleaseRepo   `di.inject:"ReleaseRepository"`
 }
 
 func (u *IssueUseCases) GetIssues(filter *queries.IssueFilter) (*[]domain.Issue, error) {
@@ -99,6 +101,17 @@ func (uc *IssueUseCases) SaveIssue(request SaveIssueRequest) (*domain.Issue, err
 		return nil, err
 	}
 	if err = issue.SetPriority(request.Priority); err != nil {
+		return nil, err
+	}
+
+	var release *domain.Release
+	if request.ReleaseId != nil {
+		if release, err = uc.releaseRepo.Get(domain.ReleaseId(*request.ReleaseId)); err != nil {
+			return nil, err
+		}
+	}
+
+	if err = issue.SetRelease(release); err != nil {
 		return nil, err
 	}
 

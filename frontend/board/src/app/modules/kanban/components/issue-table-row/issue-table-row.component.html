@@ -11,7 +11,8 @@
   </td>
   <td class="column">&nbsp;</td>
   <td class="column">
-    {{issue.milestone?.title}}
+    <app-select-model formControlName="release" [service]="releaseService" [useSearch]="true" [useClear]="true"
+      [filter]="{project: issue.projectId}"></app-select-model>
   </td>
   <td class="column">
     <app-select formControlName="priority" [values]="ISSUE_PRIORITY_VALUES"></app-select>

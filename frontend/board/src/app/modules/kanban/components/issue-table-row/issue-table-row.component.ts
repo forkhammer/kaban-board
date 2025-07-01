@@ -8,6 +8,7 @@ import { IssueService } from '../../services/issue.service';
 import { catchErrorMessages } from 'src/app/modules/core/tools/catch-error';
 import { ToastService } from 'src/app/modules/core/services/toast.service';
 import { UserService } from '../../services/user.service';
+import { ReleaseService } from '../../services/release.service';
 
 @Component({
   selector: 'app-issue-table-row, [app-issue-table-row]',
@@ -21,6 +22,7 @@ export class IssueTableRowComponent implements OnInit{
   issueService = inject(IssueService)
   toast = inject(ToastService)
   userService = inject(UserService)
+  releaseService = inject(ReleaseService)
 
   readonly BIND_STATUS_VALUES = BIND_STATUS_VALUES
   readonly ISSUE_PRIORITY_VALUES = ISSUE_PRIORITY_VALUES
@@ -38,7 +40,8 @@ export class IssueTableRowComponent implements OnInit{
       bindStatus: value.bindStatus,
       assignee: value.assignee ? value.assignee.id : null,
       comment: value.comment,
-      priority: value.priority
+      priority: value.priority,
+      release: value.release ? value.release.id : null,
     })
   }
 
@@ -54,6 +57,7 @@ export class IssueTableRowComponent implements OnInit{
       assignee: [null],
       comment: [null],
       priority: [null],
+      release: [null],
     })
   }
 
@@ -63,7 +67,6 @@ export class IssueTableRowComponent implements OnInit{
       debounceTime(500),
       switchMap(data => {
         const query = Object.assign({}, this._issue, data)
-        console.log(query)
         return this.issueService.save(query).pipe(
           catchErrorMessages(this.toast)
         )

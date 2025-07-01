@@ -227,9 +227,9 @@ func (r *IssueRepository) toIssue(issue *domain.Issue) *models.Issue {
 			return *r.labelRepo.toLabel(&l)
 		}),
 		ProjectId: uint(issue.Project.Id),
-		ReleaseId: func() *string {
+		ReleaseId: func() *uint {
 			if issue.Release != (*domain.Release)(nil) {
-				val := string(issue.Release.Id)
+				val := uint(issue.Release.Id)
 				return &val
 			}
 			return nil

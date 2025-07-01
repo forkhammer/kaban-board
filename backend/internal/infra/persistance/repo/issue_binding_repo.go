@@ -10,10 +10,11 @@ import (
 )
 
 type IssueBindingRepository struct {
-	conn       interfaces.ConnectionInterface `di.inject:"db"`
-	sprintRepo *SprintRepository              `di.inject:"SprintRepository"`
-	issueRepo  *IssueRepository               `di.inject:"IssueRepository"`
-	userRepo   *UserRepository                `di.inject:"UserRepository"`
+	conn        interfaces.ConnectionInterface `di.inject:"db"`
+	sprintRepo  *SprintRepository              `di.inject:"SprintRepository"`
+	issueRepo   *IssueRepository               `di.inject:"IssueRepository"`
+	userRepo    *UserRepository                `di.inject:"UserRepository"`
+	releaseRepo *ReleaseRepository             `di.inject:"ReleaseRepository"`
 }
 
 func (r *IssueBindingRepository) Get(id domain.IssueBindingId) (*domain.IssueBinding, error) {
@@ -101,6 +102,14 @@ func (r *IssueBindingRepository) toDomainIssueBinding(binding *models.IssueBindi
 		assignee = r.userRepo.toDomainUser(binding.Assignee)
 	}
 
+	var release *domain.Release
+	if binding.Release != (*models.Release)(nil) {
+		release, err = r.releaseRepo.toDomainRelease(binding.Release)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	domainBinding := &domain.IssueBinding{
 		Id:          domain.IssueBindingId(binding.Id),
 		Issue:       issue,
@@ -111,6 +120,7 @@ func (r *IssueBindingRepository) toDomainIssueBinding(binding *models.IssueBindi
 		Priority:    (*domain.IssueBindingPriority)(binding.Priority),
 		Assignee:    assignee,
 		Comment:     binding.Comment,
+		Release:     release,
 	}
 
 	return domainBinding, domainBinding.Validate()
@@ -133,6 +143,13 @@ func (r *IssueBindingRepository) toIssueBinding(binding *domain.IssueBinding) (*
 		Priority:    (*string)(binding.Priority),
 		AssigneeId:  assigneeId,
 		Comment:     binding.Comment,
+		ReleaseId: func() *uint {
+			if binding.Release != (*domain.Release)(nil) {
+				val := uint(binding.Release.Id)
+				return &val
+			}
+			return nil
+		}(),
 	}, nil
 }
 
@@ -142,5 +159,6 @@ func (r *IssueBindingRepository) getQuery() *gorm.DB {
 		Preload("Sprint.Team").
 		Preload("Issue").
 		Preload("Assignee").
-		Preload("Assignee.Groups")
+		Preload("Assignee.Groups").
+		Preload("Release")
 }

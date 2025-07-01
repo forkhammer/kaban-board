@@ -58,6 +58,7 @@ func (app *ApiApplication) initRouter() error {
 		di.GetInstance("SettingsController").(api.Controller),
 		di.GetInstance("SprintController").(api.Controller),
 		di.GetInstance("IssueController").(api.Controller),
+		di.GetInstance("ReleaseController").(api.Controller),
 	}
 	for _, controller := range controllers {
 		err := controller.RegisterRoutes(app.router)

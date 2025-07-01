@@ -13,7 +13,7 @@ type Issue struct {
 	Labels      []Label  `gorm:"many2many:issue_labels;"`
 	ProjectId   uint     `gorm:"project_id;not null"`
 	Project     Project  `gorm:"foreignKey:ProjectId;not null"`
-	ReleaseId   *string  `gorm:"release_id"`
+	ReleaseId   *uint    `gorm:"release_id"`
 	Release     *Release `gorm:"foreignKey:ReleaseId"`
 	TaskTypeId  *string  `gorm:"task_type_id"`
 	TaskType    *Label   `gorm:"foreignKey:TaskTypeId"`

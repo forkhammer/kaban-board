@@ -31,6 +31,7 @@ type SaveIssueRequest struct {
 	Assignee    *uint   `json:"assignee"`
 	Comment     *string `json:"comment"`
 	Priority    *string `json:"priority"`
+	Release     *uint   `json:"release"`
 }
 
 type IssueDto struct {
@@ -44,7 +45,7 @@ type IssueDto struct {
 	Labels      []LabelDto  `json:"labels"`
 	ProjectId   int         `json:"projectId"`
 	ProjectName *string     `json:"projectName"`
-	Milestone   *ReleaseDto `json:"milestone"`
+	Release     *ReleaseDto `json:"release"`
 	TaskType    *LabelDto   `json:"taskType"`
 	EstimateDev *uint       `json:"estimateDev"`
 	EstimateQA  *uint       `json:"estimateQA"`
@@ -78,11 +79,12 @@ func SerializeIssue(issue *domain.Issue) *IssueDto {
 		Labels:      *SerializeLabels(&issue.Labels),
 		ProjectId:   int(issue.Project.Id),
 		ProjectName: &issue.Project.Name,
-		Milestone: func() *ReleaseDto {
-			if issue.Release == nil {
+		Release: func() *ReleaseDto {
+			release := issue.GetRelease()
+			if release == nil {
 				return nil
 			}
-			return SerializeRelease(issue.Release)
+			return SerializeRelease(release)
 		}(),
 		TaskType: func() *LabelDto {
 			if issue.TaskType == nil {

@@ -32,6 +32,7 @@ type IssueBinding struct {
 	Priority    *IssueBindingPriority `validate:"omitnil,oneof=lowest low medium high critical"`
 	Assignee    *User
 	Comment     *string
+	Release     *Release
 }
 
 func (ib *IssueBinding) Validate() error {

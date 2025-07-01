@@ -251,6 +251,27 @@ func (i *Issue) SetPriority(priority *IssueBindingPriority) error {
 	return nil
 }
 
+func (i *Issue) GetRelease() *Release {
+	if i.contextBindingId != nil {
+		binding := i.getBindingById(*i.contextBindingId)
+		if binding != nil {
+			return binding.Release
+		}
+	}
+	return i.Release
+}
+
+func (i *Issue) SetRelease(release *Release) error {
+	if i.contextBindingId != nil {
+		binding := i.getBindingById(*i.contextBindingId)
+		if binding != nil {
+			binding.Release = release
+			return i.Validate()
+		}
+	}
+	return nil
+}
+
 func (i *Issue) getBindingById(id IssueBindingId) *IssueBinding {
 	for index, binding := range i.SprintBindings {
 		if binding.Id == id {

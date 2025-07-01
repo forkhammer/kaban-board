@@ -1,6 +1,6 @@
 package models
 
-type ReleaseId string
+type ReleaseId uint
 type ReleaseIid string
 
 type Release struct {

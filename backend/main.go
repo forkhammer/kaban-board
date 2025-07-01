@@ -17,6 +17,7 @@ import (
 	issuebinding_spec "main/internal/infra/persistance/spec/issue_binding"
 	label_spec "main/internal/infra/persistance/spec/label"
 	project_spec "main/internal/infra/persistance/spec/project"
+	release_spec "main/internal/infra/persistance/spec/release"
 	sprint_spec "main/internal/infra/persistance/spec/sprint"
 	user_spec "main/internal/infra/persistance/spec/user"
 	"main/internal/infra/services"
@@ -73,6 +74,7 @@ func (app *Application) Init() {
 	di.RegisterBean("IssueQuery", reflect.TypeOf((*issue_spec.IssueQueryImpl)(nil)))
 	di.RegisterBean("ProjectQuery", reflect.TypeOf((*project_spec.ProjectQueryImpl)(nil)))
 	di.RegisterBean("IssueBindingQuery", reflect.TypeOf((*issuebinding_spec.IssueBindingQueryImpl)(nil)))
+	di.RegisterBean("ReleaseQuery", reflect.TypeOf((*release_spec.ReleaseQueryImpl)(nil)))
 
 	di.RegisterBean("JWTService", reflect.TypeOf((*services.JWTService)(nil)))
 	di.RegisterBean("PasswordService", reflect.TypeOf((*services.PasswordService)(nil)))
@@ -90,6 +92,7 @@ func (app *Application) Init() {
 	di.RegisterBean("KanbanUseCases", reflect.TypeOf((*usecases.KanbanUseCases)(nil)))
 	di.RegisterBean("SprintUseCases", reflect.TypeOf((*usecases.SprintUseCases)(nil)))
 	di.RegisterBean("IssueUseCases", reflect.TypeOf((*usecases.IssueUseCases)(nil)))
+	di.RegisterBean("ReleaseUseCases", reflect.TypeOf((*usecases.ReleaseUseCases)(nil)))
 
 	di.RegisterBean("AccountController", reflect.TypeOf((*controllers.AccountController)(nil)))
 	di.RegisterBean("ReportsController", reflect.TypeOf((*controllers.ReportsController)(nil)))
@@ -104,6 +107,7 @@ func (app *Application) Init() {
 	di.RegisterBean("KanbanController", reflect.TypeOf((*controllers.KanbanController)(nil)))
 	di.RegisterBean("SprintController", reflect.TypeOf((*controllers.SprintController)(nil)))
 	di.RegisterBean("IssueController", reflect.TypeOf((*controllers.IssueController)(nil)))
+	di.RegisterBean("ReleaseController", reflect.TypeOf((*controllers.ReleaseController)(nil)))
 
 	err = di.InitializeContainer()
 	if err != nil {

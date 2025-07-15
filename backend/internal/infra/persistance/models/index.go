@@ -13,4 +13,5 @@ var ALL_MODELS []any = []any{
 	&LabelHistory{},
 	&Sprint{},
 	&IssueBinding{},
+	&Epic{},
 }

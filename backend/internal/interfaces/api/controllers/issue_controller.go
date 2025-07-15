@@ -5,6 +5,7 @@ import (
 	"main/internal/app/usecases"
 	domain "main/internal/domain/models"
 	"main/internal/interfaces/api/dto"
+	"main/internal/interfaces/api/middleware"
 	"net/http"
 	"strconv"
 
@@ -18,9 +19,11 @@ type IssueController struct {
 func (c *IssueController) RegisterRoutes(router *gin.Engine) error {
 	router.GET("/issue", c.getIssues)
 	router.GET("/issue/:id", c.getIssue)
-	router.PUT("/issue/:id", c.saveIssue)
-	router.POST("/issue/:id/bind", c.bindIssue)
-	router.POST("/issue/:id/unbind", c.unbindIssue)
+	privateRoutes := router.Group("/")
+	privateRoutes.Use(middleware.AuthRequiredMiddleware())
+	privateRoutes.PUT("/issue/:id", c.saveIssue)
+	privateRoutes.POST("/issue/:id/bind", c.bindIssue)
+	privateRoutes.POST("/issue/:id/unbind", c.unbindIssue)
 	return nil
 }
 

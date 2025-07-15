@@ -16,10 +16,11 @@ type ProjectController struct {
 }
 
 func (c *ProjectController) RegisterRoutes(router *gin.Engine) error {
+	router.GET("/projects", c.getProjects)
+	router.GET("/projects/:id", c.getProject)
+
 	projectRoutes := router.Group("/")
 	projectRoutes.Use(middleware.AuthRequiredMiddleware())
-	projectRoutes.GET("/projects", c.getProjects)
-	projectRoutes.GET("/projects/:id", c.getProject)
 	projectRoutes.POST("/projects/:id/set_team", c.setProjectTeam)
 	return nil
 }

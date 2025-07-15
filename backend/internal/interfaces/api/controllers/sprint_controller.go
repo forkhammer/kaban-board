@@ -4,6 +4,7 @@ import (
 	"main/internal/app/queries"
 	"main/internal/app/usecases"
 	"main/internal/interfaces/api/dto"
+	"main/internal/interfaces/api/middleware"
 	"net/http"
 	"strconv"
 
@@ -18,11 +19,14 @@ func (c *SprintController) RegisterRoutes(router *gin.Engine) error {
 	router.GET("/sprint", c.GetSprints)
 	router.GET("/sprint/quarters", c.GetQuarters)
 	router.GET("/sprint/:id", c.GetSprint)
-	router.POST("/sprint", c.CreateSprint)
-	router.PUT("/sprint/:id", c.UpdateSprint)
-	router.DELETE("/sprint/:id", c.DeleteSprint)
-	router.POST("/sprint/:id/complete", c.CompleteSprint)
-	router.POST("/sprint/:id/run", c.RunSprint)
+
+	privateRoutes := router.Group("/")
+	privateRoutes.Use(middleware.AuthRequiredMiddleware())
+	privateRoutes.POST("/sprint", c.CreateSprint)
+	privateRoutes.PUT("/sprint/:id", c.UpdateSprint)
+	privateRoutes.DELETE("/sprint/:id", c.DeleteSprint)
+	privateRoutes.POST("/sprint/:id/complete", c.CompleteSprint)
+	privateRoutes.POST("/sprint/:id/run", c.RunSprint)
 	return nil
 }
 

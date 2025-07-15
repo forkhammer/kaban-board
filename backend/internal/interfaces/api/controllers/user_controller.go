@@ -3,7 +3,6 @@ package controllers
 import (
 	"main/internal/app/queries"
 	"main/internal/app/usecases"
-	"main/internal/domain/repo"
 	"main/internal/interfaces/api/dto"
 	"main/internal/interfaces/api/middleware"
 	"net/http"
@@ -13,15 +12,15 @@ import (
 )
 
 type UserController struct {
-	userRepo repo.UserRepo          `di.inject:"UserRepository"`
-	userUC   *usecases.UserUseCases `di.inject:"UserUseCases"`
+	userUC *usecases.UserUseCases `di.inject:"UserUseCases"`
 }
 
 func (c *UserController) RegisterRoutes(router *gin.Engine) error {
+	router.GET("/users", c.getUsers)
+	router.GET("/users/:id", c.getUser)
+
 	userRoutes := router.Group("/")
 	userRoutes.Use(middleware.AuthRequiredMiddleware())
-	userRoutes.GET("/users", c.getUsers)
-	userRoutes.GET("/users/:id", c.getUser)
 	userRoutes.POST("/users/:id/visibility", c.setUserVisibility)
 	userRoutes.POST("/users/:id/groups", c.setUserGroups)
 	return nil

@@ -272,6 +272,27 @@ func (i *Issue) SetRelease(release *Release) error {
 	return nil
 }
 
+func (i *Issue) GetEpic() *Epic {
+	if i.contextBindingId != nil {
+		binding := i.getBindingById(*i.contextBindingId)
+		if binding != nil {
+			return binding.Epic
+		}
+	}
+	return nil
+}
+
+func (i *Issue) SetEpic(epic *Epic) error {
+	if i.contextBindingId != nil {
+		binding := i.getBindingById(*i.contextBindingId)
+		if binding != nil {
+			binding.Epic = epic
+			return i.Validate()
+		}
+	}
+	return nil
+}
+
 func (i *Issue) getBindingById(id IssueBindingId) *IssueBinding {
 	for index, binding := range i.SprintBindings {
 		if binding.Id == id {

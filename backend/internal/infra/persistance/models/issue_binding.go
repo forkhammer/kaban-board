@@ -15,4 +15,6 @@ type IssueBinding struct {
 	Comment     *string  `gorm:"comment"`
 	ReleaseId   *uint    `gorm:"release_id"`
 	Release     *Release `gorm:"foreignKey:ReleaseId"`
+	EpicId      *uint    `gorm:"epic_id"`
+	Epic        *Epic    `gorm:"foreignKey:EpicId"`
 }

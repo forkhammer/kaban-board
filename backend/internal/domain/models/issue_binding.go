@@ -33,6 +33,7 @@ type IssueBinding struct {
 	Assignee    *User
 	Comment     *string
 	Release     *Release
+	Epic        *Epic
 }
 
 func (ib *IssueBinding) Validate() error {

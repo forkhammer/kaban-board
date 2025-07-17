@@ -32,6 +32,7 @@ type SaveIssueRequest struct {
 	Comment     *string `json:"comment"`
 	Priority    *string `json:"priority"`
 	Release     *uint   `json:"release"`
+	Epic        *uint   `json:"epic"`
 }
 
 type IssueDto struct {
@@ -46,6 +47,7 @@ type IssueDto struct {
 	ProjectId   int         `json:"projectId"`
 	ProjectName *string     `json:"projectName"`
 	Release     *ReleaseDto `json:"release"`
+	Epic        *EpicDto    `json:"epic"`
 	TaskType    *LabelDto   `json:"taskType"`
 	EstimateDev *uint       `json:"estimateDev"`
 	EstimateQA  *uint       `json:"estimateQA"`
@@ -85,6 +87,13 @@ func SerializeIssue(issue *domain.Issue) *IssueDto {
 				return nil
 			}
 			return SerializeRelease(release)
+		}(),
+		Epic: func() *EpicDto {
+			epic := issue.GetEpic()
+			if epic == nil {
+				return nil
+			}
+			return SerializeEpic(epic)
 		}(),
 		TaskType: func() *LabelDto {
 			if issue.TaskType == nil {

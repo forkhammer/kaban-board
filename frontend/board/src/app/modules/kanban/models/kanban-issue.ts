@@ -1,4 +1,5 @@
 import { SelectValue } from "../../ui/models/select-value";
+import { Epic } from "./epic";
 import {KanbanLabel} from "./kanban-label";
 import { Release } from "./release";
 import { User } from "./user";
@@ -57,6 +58,7 @@ export type KanbanIssue = {
   projectId: number
   projectName: string
   release: Release | null
+  epic: Epic | null
   taskType: KanbanLabel | null
   estimateDev: number | null
   estimateQA: number | null

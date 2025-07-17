@@ -9,7 +9,10 @@
     <app-select-model [service]="userService" formControlName="assignee" [useSearch]="true" [useClear]="true"
       [formatter]="userService.formatter" [itemFormatter]="userService.formatter"></app-select-model>
   </td>
-  <td class="column">&nbsp;</td>
+  <td class="column">
+    <app-select-model formControlName="epic" [service]="epicService" [useSearch]="true" [useClear]="true"
+      [filter]="{project: issue.projectId}"></app-select-model>
+  </td>
   <td class="column">
     <app-select-model formControlName="release" [service]="releaseService" [useSearch]="true" [useClear]="true"
       [filter]="{project: issue.projectId}"></app-select-model>

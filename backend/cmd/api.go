@@ -40,7 +40,10 @@ func (app *ApiApplication) Run() {
 		panic(err)
 	}
 
-	app.router.Run(config.Settings.GetHostPort())
+	err := app.router.Run(config.Settings.GetHostPort())
+	if err != nil {
+		panic(err)
+	}
 }
 
 func (app *ApiApplication) initRouter() error {
@@ -59,6 +62,7 @@ func (app *ApiApplication) initRouter() error {
 		di.GetInstance("SprintController").(api.Controller),
 		di.GetInstance("IssueController").(api.Controller),
 		di.GetInstance("ReleaseController").(api.Controller),
+		di.GetInstance("EpicController").(api.Controller),
 	}
 	for _, controller := range controllers {
 		err := controller.RegisterRoutes(app.router)

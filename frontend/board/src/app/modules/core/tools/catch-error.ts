@@ -31,6 +31,7 @@ export function catchErrorMessages<T>(toast: ToastService, callback?: catchError
   return (source: Observable<T>) =>
     source.pipe(
       catchError(err => {
+        console.log(err)
         if (isValidationError(err)) {
           toast.showMessages(getValidationErrors(err), 'error');
         }

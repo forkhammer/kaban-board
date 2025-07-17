@@ -12,6 +12,7 @@ import (
 	"main/internal/infra/persistance/models"
 	"main/internal/infra/persistance/repo"
 	column_spec "main/internal/infra/persistance/spec/column"
+	epic_spec "main/internal/infra/persistance/spec/epic"
 	group_spec "main/internal/infra/persistance/spec/group"
 	issue_spec "main/internal/infra/persistance/spec/issue"
 	issuebinding_spec "main/internal/infra/persistance/spec/issue_binding"
@@ -76,6 +77,7 @@ func (app *Application) Init() {
 	di.RegisterBean("ProjectQuery", reflect.TypeOf((*project_spec.ProjectQueryImpl)(nil)))
 	di.RegisterBean("IssueBindingQuery", reflect.TypeOf((*issuebinding_spec.IssueBindingQueryImpl)(nil)))
 	di.RegisterBean("ReleaseQuery", reflect.TypeOf((*release_spec.ReleaseQueryImpl)(nil)))
+	di.RegisterBean("EpicQuery", reflect.TypeOf((*epic_spec.EpicQueryImpl)(nil)))
 
 	di.RegisterBean("JWTService", reflect.TypeOf((*services.JWTService)(nil)))
 	di.RegisterBean("PasswordService", reflect.TypeOf((*services.PasswordService)(nil)))
@@ -94,6 +96,7 @@ func (app *Application) Init() {
 	di.RegisterBean("SprintUseCases", reflect.TypeOf((*usecases.SprintUseCases)(nil)))
 	di.RegisterBean("IssueUseCases", reflect.TypeOf((*usecases.IssueUseCases)(nil)))
 	di.RegisterBean("ReleaseUseCases", reflect.TypeOf((*usecases.ReleaseUseCases)(nil)))
+	di.RegisterBean("EpicUseCases", reflect.TypeOf((*usecases.EpicUseCases)(nil)))
 
 	di.RegisterBean("AccountController", reflect.TypeOf((*controllers.AccountController)(nil)))
 	di.RegisterBean("ReportsController", reflect.TypeOf((*controllers.ReportsController)(nil)))
@@ -109,6 +112,7 @@ func (app *Application) Init() {
 	di.RegisterBean("SprintController", reflect.TypeOf((*controllers.SprintController)(nil)))
 	di.RegisterBean("IssueController", reflect.TypeOf((*controllers.IssueController)(nil)))
 	di.RegisterBean("ReleaseController", reflect.TypeOf((*controllers.ReleaseController)(nil)))
+	di.RegisterBean("EpicController", reflect.TypeOf((*controllers.EpicController)(nil)))
 
 	err = di.InitializeContainer()
 	if err != nil {

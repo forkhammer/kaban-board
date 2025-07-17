@@ -9,6 +9,7 @@ import { catchErrorMessages } from 'src/app/modules/core/tools/catch-error';
 import { ToastService } from 'src/app/modules/core/services/toast.service';
 import { UserService } from '../../services/user.service';
 import { ReleaseService } from '../../services/release.service';
+import { EpicService } from '../../services/epic.service';
 
 @Component({
   selector: 'app-issue-table-row, [app-issue-table-row]',
@@ -23,6 +24,7 @@ export class IssueTableRowComponent implements OnInit{
   toast = inject(ToastService)
   userService = inject(UserService)
   releaseService = inject(ReleaseService)
+  epicService = inject(EpicService)
 
   readonly BIND_STATUS_VALUES = BIND_STATUS_VALUES
   readonly ISSUE_PRIORITY_VALUES = ISSUE_PRIORITY_VALUES
@@ -42,6 +44,7 @@ export class IssueTableRowComponent implements OnInit{
       comment: value.comment,
       priority: value.priority,
       release: value.release ? value.release.id : null,
+      epic: value.epic ? value.epic.id : null,
     })
   }
 
@@ -58,6 +61,7 @@ export class IssueTableRowComponent implements OnInit{
       comment: [null],
       priority: [null],
       release: [null],
+      epic: [null],
     })
   }
 

@@ -129,6 +129,7 @@ func (c *IssueController) saveIssue(ctx *gin.Context) {
 		Comment:     request.Comment,
 		Priority:    (*domain.IssueBindingPriority)(request.Priority),
 		ReleaseId:   request.Release,
+		EpicId:      request.Epic,
 	})
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})

@@ -16,6 +16,7 @@ type SaveIssueRequest struct {
 	Comment     *string
 	Priority    *domain.IssueBindingPriority
 	ReleaseId   *uint
+	EpicId      *uint
 }
 
 type IssueUseCases struct {
@@ -24,6 +25,7 @@ type IssueUseCases struct {
 	sprintRepo  repo.SprintRepo    `di.inject:"SprintRepository"`
 	userRepo    repo.UserRepo      `di.inject:"UserRepository"`
 	releaseRepo repo.ReleaseRepo   `di.inject:"ReleaseRepository"`
+	epicRepo    repo.EpicRepo      `di.inject:"EpicRepository"`
 }
 
 func (u *IssueUseCases) GetIssues(filter *queries.IssueFilter) (*[]domain.Issue, error) {
@@ -112,6 +114,17 @@ func (uc *IssueUseCases) SaveIssue(request SaveIssueRequest) (*domain.Issue, err
 	}
 
 	if err = issue.SetRelease(release); err != nil {
+		return nil, err
+	}
+
+	var epic *domain.Epic
+	if request.EpicId != nil {
+		if epic, err = uc.epicRepo.Get(domain.EpicId(*request.EpicId)); err != nil {
+			return nil, err
+		}
+	}
+
+	if err = issue.SetEpic(epic); err != nil {
 		return nil, err
 	}
 

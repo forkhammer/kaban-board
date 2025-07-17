@@ -15,6 +15,7 @@ type IssueBindingRepository struct {
 	issueRepo   *IssueRepository               `di.inject:"IssueRepository"`
 	userRepo    *UserRepository                `di.inject:"UserRepository"`
 	releaseRepo *ReleaseRepository             `di.inject:"ReleaseRepository"`
+	epicRepo    *EpicRepository                `di.inject:"EpicRepository"`
 }
 
 func (r *IssueBindingRepository) Get(id domain.IssueBindingId) (*domain.IssueBinding, error) {
@@ -110,6 +111,14 @@ func (r *IssueBindingRepository) toDomainIssueBinding(binding *models.IssueBindi
 		}
 	}
 
+	var epic *domain.Epic
+	if binding.Epic != (*models.Epic)(nil) {
+		epic, err = r.epicRepo.toDomainEpic(binding.Epic)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	domainBinding := &domain.IssueBinding{
 		Id:          domain.IssueBindingId(binding.Id),
 		Issue:       issue,
@@ -121,6 +130,7 @@ func (r *IssueBindingRepository) toDomainIssueBinding(binding *models.IssueBindi
 		Assignee:    assignee,
 		Comment:     binding.Comment,
 		Release:     release,
+		Epic:        epic,
 	}
 
 	return domainBinding, domainBinding.Validate()
@@ -150,6 +160,13 @@ func (r *IssueBindingRepository) toIssueBinding(binding *domain.IssueBinding) (*
 			}
 			return nil
 		}(),
+		EpicId: func() *uint {
+			if binding.Epic != (*domain.Epic)(nil) {
+				val := uint(binding.Epic.Id)
+				return &val
+			}
+			return nil
+		}(),
 	}, nil
 }
 
@@ -160,5 +177,6 @@ func (r *IssueBindingRepository) getQuery() *gorm.DB {
 		Preload("Issue").
 		Preload("Assignee").
 		Preload("Assignee.Groups").
-		Preload("Release")
+		Preload("Release").
+		Preload("Epic")
 }

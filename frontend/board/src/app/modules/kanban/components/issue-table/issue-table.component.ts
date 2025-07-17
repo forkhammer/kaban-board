@@ -46,6 +46,7 @@ export class IssueTableComponent {
   constructor() {
     this.timer$.pipe(
       combineLatestWith(this.user$, this.team$, this.sprint$),
+      debounceTime(100),
       filter(([_, user, team, sprint]) => {
         return !!team
       }),

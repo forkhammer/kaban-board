@@ -4,7 +4,7 @@ import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormGroup, FormBuilder } from 
 import { BehaviorSubject, of, EMPTY, distinctUntilChanged} from 'rxjs';
 import { BaseService } from '../../../core/services/base.service';
 import { BaseModel, BaseTitleModel, Pagination } from '../../../core/models/base';
-import { switchMap, pluck, debounceTime, catchError, map } from 'rxjs/operators';
+import { switchMap, pluck, debounceTime, catchError, map, combineLatestWith, filter } from 'rxjs/operators';
 import { HttpErrorResponse } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { catchErrorMessages } from 'src/app/modules/core/tools/catch-error';
@@ -49,6 +49,7 @@ export class SelectModelComponent implements ControlValueAccessor, OnInit {
   faTimes = faTimes;
   searchForm: FormGroup;
   protected errorValuesMessage: string | null = null;
+  initialLoad$ = new BehaviorSubject<boolean>(false);
 
   get selectValue(): BaseModel | null {
     return null;
@@ -67,6 +68,11 @@ export class SelectModelComponent implements ControlValueAccessor, OnInit {
     this.valuesFilter.next(value);
   }
 
+  @Input()
+  set valueModel(value: BaseModel | null) {
+    this.valueModel$.next(value);
+  }
+
   constructor(
   ) {
     this.searchForm = this.fb.group({
@@ -78,7 +84,8 @@ export class SelectModelComponent implements ControlValueAccessor, OnInit {
   ngOnInit() {
     this.valuesFilter
       .pipe(
-        switchMap(data => {
+        combineLatestWith(this.initialLoad$.pipe(filter(Boolean), distinctUntilChanged())),
+        switchMap(([data, _]) => {
           this.errorValuesMessage = null;
           const searchControl = this.searchForm.get('search');
           const query = Object.assign({}, data, {search: searchControl ? searchControl.value : null, all: this.all});
@@ -137,9 +144,14 @@ export class SelectModelComponent implements ControlValueAccessor, OnInit {
     this.value
       .pipe(
         distinctUntilChanged(),
+        debounceTime(10),
         switchMap(data => {
           if (data) {
-            return this.service.get(data);
+            if (this.valueModel$.value?.id === data) {
+              return of(this.valueModel$.value);
+            } else {
+              return this.service.get(data);
+            }
           } else {
             return [null];
           }
@@ -203,6 +215,12 @@ export class SelectModelComponent implements ControlValueAccessor, OnInit {
       return this.itemFormatter(item);
     }
     return (item as BaseTitleModel).title;
+  }
+
+  onOpenChange(open: boolean) {
+    if (open) {
+      this.initialLoad$.next(true);
+    }
   }
 
 }

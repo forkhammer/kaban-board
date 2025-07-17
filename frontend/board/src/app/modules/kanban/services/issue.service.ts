@@ -7,6 +7,7 @@ import { KanbanIssue } from '../models/kanban-issue';
 })
 export class IssueService extends BaseService<KanbanIssue>{
   public override usePagination = false
+  override useCache = false
 
   constructor(protected override injector: Injector) {
     super(injector)

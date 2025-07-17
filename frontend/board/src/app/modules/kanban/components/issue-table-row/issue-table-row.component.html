@@ -7,15 +7,18 @@
   </td>
   <td class="column">
     <app-select-model [service]="userService" formControlName="assignee" [useSearch]="true" [useClear]="true"
-      [formatter]="userService.formatter" [itemFormatter]="userService.formatter"></app-select-model>
+      [formatter]="userService.formatter" [itemFormatter]="userService.formatter"
+      [valueModel]="issue.assignee"></app-select-model>
   </td>
   <td class="column">
     <app-select-model formControlName="epic" [service]="epicService" [useSearch]="true" [useClear]="true"
-      [filter]="{project: issue.projectId}"></app-select-model>
+      [filter]="{project: issue.projectId}"
+      [valueModel]="issue.epic"></app-select-model>
   </td>
   <td class="column">
     <app-select-model formControlName="release" [service]="releaseService" [useSearch]="true" [useClear]="true"
-      [filter]="{project: issue.projectId}"></app-select-model>
+      [filter]="{project: issue.projectId}"
+      [valueModel]="issue.release"></app-select-model>
   </td>
   <td class="column">
     <app-select formControlName="priority" [values]="ISSUE_PRIORITY_VALUES"></app-select>

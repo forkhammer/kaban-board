@@ -18,12 +18,13 @@ export class BaseService<T extends BaseModel> {
   protected config =  inject(CoreConfigService);
   protected apiUrl: string;
   public usePagination = true;
-  protected readonly useCache = true;
-  protected cache = new CollectionCache<T>();
+  protected useCache = true;
+  protected cache: CollectionCache<T>;
 
   constructor(protected injector: Injector) {
     this.RESPONSE = injector.get('RESPONSE', null);
     this.apiUrl = this.config.apiUrl + '/api/base/';
+    this.cache = new CollectionCache<T>()
   }
 
   list(query?: RestQuery) {
@@ -57,7 +58,10 @@ export class BaseService<T extends BaseModel> {
         return of(item);
       }
     }
-    return this.http.get(`${this.apiUrl}/${id}`, {params: this.filterQuery(query)}).pipe(map(res => res as T));
+    return this.http.get(`${this.apiUrl}/${id}`, {params: this.filterQuery(query)}).pipe(
+      map(res => res as T),
+      tap(this.updateItemCache.bind(this)),
+    );
   }
 
   setNotFound() {
@@ -70,20 +74,12 @@ export class BaseService<T extends BaseModel> {
     if (data.id) {
       return this.http.put(`${this.apiUrl}/${data.id}`, data).pipe(
         map(res => res as T),
-        tap(data => {
-          if (this.useCache) {
-            this.cache.setItems([data]);
-          }
-        })
+        tap(this.updateItemCache.bind(this)),
       );
     } else {
       return this.http.post(`${this.apiUrl}`, data).pipe(
         map(res => res as T),
-        tap(data => {
-          if (this.useCache) {
-            this.cache.setItems([data]);
-          }
-        })
+        tap(this.updateItemCache.bind(this)),
       );
     }
   }
@@ -92,11 +88,7 @@ export class BaseService<T extends BaseModel> {
     if (data.id) {
       return this.http.patch(`${this.apiUrl}/${data.id}`, data).pipe(
         map(res => res as T),
-        tap(data => {
-          if (this.useCache) {
-            this.cache.setItems([data]);
-          }
-        })
+        tap(this.updateItemCache.bind(this)),
       );
     } else {
       return null;
@@ -106,11 +98,7 @@ export class BaseService<T extends BaseModel> {
   delete(data: T) {
     return this.http.delete(`${this.apiUrl}/${data.id}`).pipe(
       map(res => res as T),
-      tap(data => {
-        if (this.useCache) {
-          this.cache.invalidateItem(data.id);
-        }
-      })
+      tap(this.updateItemCache.bind(this)),
     );
   }
 
@@ -141,5 +129,11 @@ export class BaseService<T extends BaseModel> {
     }
 
     return params;
+  }
+
+  private updateItemCache(data: T) {
+    if (this.useCache) {
+      this.cache.setItems([data]);
+    }
   }
 }

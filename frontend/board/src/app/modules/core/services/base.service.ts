@@ -1,11 +1,13 @@
 import { inject, Injectable, Injector, PLATFORM_ID } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { BaseModel, Pagination } from '../models/base';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { isPlatformServer } from '@angular/common';
 import { CoreConfigService } from '../config';
 import { RestQuery } from '../models/rest';
+import { CollectionCache } from './collection-cache';
+import { of } from 'rxjs';
 
 @Injectable()
 export class BaseService<T extends BaseModel> {
@@ -16,6 +18,8 @@ export class BaseService<T extends BaseModel> {
   protected config =  inject(CoreConfigService);
   protected apiUrl: string;
   public usePagination = true;
+  protected readonly useCache = true;
+  protected cache = new CollectionCache<T>();
 
   constructor(protected injector: Injector) {
     this.RESPONSE = injector.get('RESPONSE', null);
@@ -24,7 +28,12 @@ export class BaseService<T extends BaseModel> {
 
   list(query?: RestQuery) {
     return this.http.get(this.apiUrl, { params: this.filterQuery(query) }).pipe(
-      map(res => this.usePagination ? res as Pagination<T> : res as T[])
+      map(res => this.usePagination ? res as Pagination<T> : res as T[]),
+      tap(data => {
+        if (this.useCache) {
+          this.cache.setItems(this.usePagination ? (data as Pagination<T>).results : (data as T[]));
+        }
+      })
     );
   }
 
@@ -32,11 +41,22 @@ export class BaseService<T extends BaseModel> {
     let params = this.filterQuery(query)
     params = params.set('all', 'true');
     return this.http.get(this.apiUrl, { params }).pipe(
-      map(res => this.usePagination ? res as Pagination<T> : res as T[])
+      map(res => this.usePagination ? res as Pagination<T> : res as T[]),
+      tap(data => {
+        if (this.useCache) {
+          this.cache.setItems(this.usePagination ? (data as Pagination<T>).results : (data as T[]));
+        }
+      })
     );
   }
 
   get(id: number | string, query?: RestQuery) {
+    if (this.useCache) {
+      const item = this.cache.get(id);
+      if (item) {
+        return of(item);
+      }
+    }
     return this.http.get(`${this.apiUrl}/${id}`, {params: this.filterQuery(query)}).pipe(map(res => res as T));
   }
 
@@ -48,22 +68,56 @@ export class BaseService<T extends BaseModel> {
 
   save(data: any) {
     if (data.id) {
-      return this.http.put(`${this.apiUrl}/${data.id}`, data).pipe(map(res => res as T));
+      return this.http.put(`${this.apiUrl}/${data.id}`, data).pipe(
+        map(res => res as T),
+        tap(data => {
+          if (this.useCache) {
+            this.cache.setItems([data]);
+          }
+        })
+      );
     } else {
-      return this.http.post(`${this.apiUrl}`, data).pipe(map(res => res as T));
+      return this.http.post(`${this.apiUrl}`, data).pipe(
+        map(res => res as T),
+        tap(data => {
+          if (this.useCache) {
+            this.cache.setItems([data]);
+          }
+        })
+      );
     }
   }
 
   patch(data: any) {
     if (data.id) {
-      return this.http.patch(`${this.apiUrl}/${data.id}`, data).pipe(map(res => res as T));
+      return this.http.patch(`${this.apiUrl}/${data.id}`, data).pipe(
+        map(res => res as T),
+        tap(data => {
+          if (this.useCache) {
+            this.cache.setItems([data]);
+          }
+        })
+      );
     } else {
       return null;
     }
   }
 
   delete(data: T) {
-    return this.http.delete(`${this.apiUrl}/${data.id}`).pipe(map(res => res as T));
+    return this.http.delete(`${this.apiUrl}/${data.id}`).pipe(
+      map(res => res as T),
+      tap(data => {
+        if (this.useCache) {
+          this.cache.invalidateItem(data.id);
+        }
+      })
+    );
+  }
+
+  invalidateCache() {
+    if (this.useCache) {
+      this.cache.invalidate();
+    }
   }
 
   /**

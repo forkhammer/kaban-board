@@ -1,5 +1,5 @@
 import { Component, inject, Input } from '@angular/core';
-import { BehaviorSubject, combineLatestWith, debounceTime, distinctUntilChanged, filter, switchMap, timer } from 'rxjs';
+import { BehaviorSubject, combineLatestWith, debounceTime, distinctUntilChanged, filter, switchMap, tap, timer } from 'rxjs';
 import { KanbanUser } from '../../models/kanban-user';
 import { Team } from '../../models/team';
 import { Sprint } from '../../models/sprint';

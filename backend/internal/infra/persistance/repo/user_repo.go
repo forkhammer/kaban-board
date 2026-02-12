@@ -47,7 +47,7 @@ func (r *UserRepository) List(spec repo.QuerySpec) ([]domain.User, error) {
 	return domainUsers, nil
 }
 
-func (r *UserRepository) Count(spec repo.QuerySpec) (int64, error) {
+func (r *UserRepository) Count(spec repo.QuerySpec) (int, error) {
 	var count int64
 	query := r.getQuery()
 
@@ -63,7 +63,7 @@ func (r *UserRepository) Count(spec repo.QuerySpec) (int64, error) {
 		return 0, err
 	}
 
-	return count, nil
+	return int(count), nil
 }
 
 func (r *UserRepository) Create(user *domain.User) (*domain.User, error) {

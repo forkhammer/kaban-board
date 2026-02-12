@@ -56,7 +56,7 @@ func (r *SprintRepository) List(spec repo.QuerySpec) ([]domain.Sprint, error) {
 	return domainSprints, nil
 }
 
-func (r *SprintRepository) Count(spec repo.QuerySpec) (int64, error) {
+func (r *SprintRepository) Count(spec repo.QuerySpec) (int, error) {
 	var count int64
 	query := r.getQuery()
 
@@ -72,7 +72,7 @@ func (r *SprintRepository) Count(spec repo.QuerySpec) (int64, error) {
 		return 0, err
 	}
 
-	return count, nil
+	return int(count), nil
 }
 
 func (r *SprintRepository) Create(sprint *domain.Sprint) (*domain.Sprint, error) {

@@ -59,7 +59,7 @@ func (r *AccountRepository) List(spec repo.QuerySpec) ([]domain.Account, error) 
 	return domainAccounts, nil
 }
 
-func (r *AccountRepository) Count(spec repo.QuerySpec) (int64, error) {
+func (r *AccountRepository) Count(spec repo.QuerySpec) (int, error) {
 	var count int64
 	query := r.conn.GetEngine().Model(&models.Account{})
 
@@ -75,7 +75,7 @@ func (r *AccountRepository) Count(spec repo.QuerySpec) (int64, error) {
 		return 0, err
 	}
 
-	return count, nil
+	return int(count), nil
 }
 
 func (r *AccountRepository) Create(account *domain.Account) (*domain.Account, error) {

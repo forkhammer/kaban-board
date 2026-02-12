@@ -6,7 +6,7 @@ type RetrieveRepo[T any, TID comparable] interface {
 
 type ListRepo[T any] interface {
 	List(spec QuerySpec) ([]T, error)
-	Count(spec QuerySpec) (int64, error)
+	Count(spec QuerySpec) (int, error)
 }
 
 type CreateRepo[T any] interface {

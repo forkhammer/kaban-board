@@ -34,19 +34,20 @@ func (c *IssueController) getIssues(ctx *gin.Context) {
 		return
 	}
 
-	issues, err := c.issueUC.GetIssues(&queries.IssueFilter{
+	issueFilter := queries.IssueFilter{
 		AssigneeId: request.Assignee,
 		TeamId:     request.Team,
 		SprintId:   request.Sprint,
 		GroupId:    request.Group,
 		ProjectId:  request.Project,
 		Search:     request.Search,
-	})
+	}
+	issuePage, err := c.issueUC.GetIssues(&issueFilter, request.Page, request.Limit)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
 		return
 	}
-	ctx.JSON(http.StatusOK, dto.SerializeIssues(issues))
+	ctx.JSON(http.StatusOK, dto.SerializeIssuePage(issuePage))
 }
 
 func (c *IssueController) getIssue(ctx *gin.Context) {

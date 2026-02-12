@@ -56,7 +56,7 @@ func (r *ProjectRepository) List(spec repo.QuerySpec) ([]domain.Project, error) 
 	return domainProjects, nil
 }
 
-func (r *ProjectRepository) Count(spec repo.QuerySpec) (int64, error) {
+func (r *ProjectRepository) Count(spec repo.QuerySpec) (int, error) {
 	var count int64
 	query := r.getQuery()
 
@@ -72,7 +72,7 @@ func (r *ProjectRepository) Count(spec repo.QuerySpec) (int64, error) {
 		return 0, err
 	}
 
-	return count, nil
+	return int(count), nil
 }
 
 func (r *ProjectRepository) Create(Project *domain.Project) (*domain.Project, error) {

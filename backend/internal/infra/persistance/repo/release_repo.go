@@ -50,7 +50,7 @@ func (r *ReleaseRepository) List(spec repo.QuerySpec) ([]domain.Release, error) 
 	return domainReleases, nil
 }
 
-func (r *ReleaseRepository) Count(spec repo.QuerySpec) (int64, error) {
+func (r *ReleaseRepository) Count(spec repo.QuerySpec) (int, error) {
 	var count int64
 	query := r.getQuery()
 
@@ -66,7 +66,7 @@ func (r *ReleaseRepository) Count(spec repo.QuerySpec) (int64, error) {
 		return 0, err
 	}
 
-	return count, nil
+	return int(count), nil
 }
 
 func (r *ReleaseRepository) Create(release *domain.Release) (*domain.Release, error) {

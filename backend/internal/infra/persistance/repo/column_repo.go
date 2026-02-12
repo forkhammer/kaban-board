@@ -56,7 +56,7 @@ func (r *ColumnRepository) List(spec repo.QuerySpec) ([]domain.Column, error) {
 	return domainColumns, nil
 }
 
-func (r *ColumnRepository) Count(spec repo.QuerySpec) (int64, error) {
+func (r *ColumnRepository) Count(spec repo.QuerySpec) (int, error) {
 	var count int64
 	query := r.getQuery()
 
@@ -72,7 +72,7 @@ func (r *ColumnRepository) Count(spec repo.QuerySpec) (int64, error) {
 		return 0, err
 	}
 
-	return count, nil
+	return int(count), nil
 }
 
 func (r *ColumnRepository) Create(column *domain.Column) (*domain.Column, error) {

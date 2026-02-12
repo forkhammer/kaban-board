@@ -16,6 +16,7 @@ import { environment } from 'src/environments/environment';
 import { catchErrorMessages } from 'src/app/modules/core/tools/catch-error';
 import { Sprint } from '../../models/sprint';
 import { isEqual } from 'lodash';
+import { Pagination } from 'src/app/modules/core/models/base';
 
 @Component({
     selector: 'app-user-board',
@@ -77,7 +78,8 @@ export class UserBoardComponent {
       debounceTime(1),
       switchMap(([_, user, team, sprint]) => {
         const query: Record<string, any> = {
-          'team': team!.id
+          'team': team!.id,
+          'limit': 1000,
         }
         if (user) {
           query['assignee'] = user.id
@@ -91,7 +93,7 @@ export class UserBoardComponent {
       }),
       takeUntilDestroyed()
     ).subscribe(data => {
-      this.issues = data as KanbanIssue[]
+      this.issues = (data as Pagination<KanbanIssue>).results
     })
   }
 

@@ -51,7 +51,7 @@ func (r *TeamRepository) List(spec repo.QuerySpec) ([]domain.Team, error) {
 	return domainTeams, nil
 }
 
-func (r *TeamRepository) Count(spec repo.QuerySpec) (int64, error) {
+func (r *TeamRepository) Count(spec repo.QuerySpec) (int, error) {
 	var count int64
 	query := r.getQuery()
 
@@ -67,7 +67,7 @@ func (r *TeamRepository) Count(spec repo.QuerySpec) (int64, error) {
 		return 0, err
 	}
 
-	return count, nil
+	return int(count), nil
 }
 
 func (r *TeamRepository) Create(team *domain.Team) (*domain.Team, error) {

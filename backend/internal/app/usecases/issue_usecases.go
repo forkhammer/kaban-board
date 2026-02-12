@@ -6,6 +6,8 @@ import (
 	"main/internal/domain/repo"
 )
 
+const DEFAULT_PAGE_SIZE int = 20
+
 type SaveIssueRequest struct {
 	Id          uint
 	BindingId   *uint
@@ -19,27 +21,53 @@ type SaveIssueRequest struct {
 	EpicId      *uint
 }
 
-type IssueUseCases struct {
-	issueQuery  queries.IssueQuery `di.inject:"IssueQuery"`
-	issueRepo   repo.IssueRepo     `di.inject:"IssueRepository"`
-	sprintRepo  repo.SprintRepo    `di.inject:"SprintRepository"`
-	userRepo    repo.UserRepo      `di.inject:"UserRepository"`
-	releaseRepo repo.ReleaseRepo   `di.inject:"ReleaseRepository"`
-	epicRepo    repo.EpicRepo      `di.inject:"EpicRepository"`
+type IssuePage struct {
+	Results []domain.Issue
+	Count   int
+	Page    int
+	Limit   int
 }
 
-func (u *IssueUseCases) GetIssues(filter *queries.IssueFilter) ([]domain.Issue, error) {
-	var query repo.QuerySpec
+type IssueUseCases struct {
+	issueQuery      queries.IssueQuery      `di.inject:"IssueQuery"`
+	issueRepo       repo.IssueRepo          `di.inject:"IssueRepository"`
+	sprintRepo      repo.SprintRepo         `di.inject:"SprintRepository"`
+	userRepo        repo.UserRepo           `di.inject:"UserRepository"`
+	releaseRepo     repo.ReleaseRepo        `di.inject:"ReleaseRepository"`
+	epicRepo        repo.EpicRepo           `di.inject:"EpicRepository"`
+	paginationQuery queries.PaginationQuery `di.inject:"PaginationQuery"`
+}
+
+func (u *IssueUseCases) GetIssues(filter *queries.IssueFilter, page int, limit int) (*IssuePage, error) {
+	queryPage := page
+	if page <= 0 {
+		queryPage = 1
+	}
+
+	queryLimit := limit
+	if queryLimit <= 0 {
+		queryLimit = DEFAULT_PAGE_SIZE
+	}
+	query := u.paginationQuery.GetSpec(queryPage, queryLimit)
 
 	if filter != nil {
-		query = u.issueQuery.GetSpec(*filter)
+		query = repo.And(query, u.issueQuery.GetSpec(*filter))
 	}
 	issues, err := u.issueRepo.List(query)
 	if err != nil {
 		return nil, err
 	}
+	count, err := u.issueRepo.Count(query)
+	if err != nil {
+		return nil, err
+	}
 
-	return issues, nil
+	return &IssuePage{
+		Results: issues,
+		Count:   count,
+		Page:    queryPage,
+		Limit:   queryLimit,
+	}, nil
 }
 
 func (u *IssueUseCases) GetIssue(id uint) (*domain.Issue, error) {

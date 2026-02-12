@@ -45,7 +45,7 @@ func (r *GroupRepository) List(spec repo.QuerySpec) ([]domain.Group, error) {
 	return domainGroups, nil
 }
 
-func (r *GroupRepository) Count(spec repo.QuerySpec) (int64, error) {
+func (r *GroupRepository) Count(spec repo.QuerySpec) (int, error) {
 	var count int64
 	query := r.conn.GetEngine().Model(&models.Group{})
 
@@ -61,7 +61,7 @@ func (r *GroupRepository) Count(spec repo.QuerySpec) (int64, error) {
 		return 0, err
 	}
 
-	return count, nil
+	return int(count), nil
 }
 
 func (r *GroupRepository) Create(group *domain.Group) (*domain.Group, error) {

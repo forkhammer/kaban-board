@@ -2,6 +2,7 @@ package dto
 
 import (
 	"fmt"
+	"main/internal/app/usecases"
 	domain "main/internal/domain/models"
 	"main/pkg/utils"
 )
@@ -13,6 +14,8 @@ type IssuesRequest struct {
 	Sprint   *uint   `form:"sprint"`
 	Project  *uint   `form:"project"`
 	Search   *string `form:"search"`
+	Page     int     `form:"page,default=1"`
+	Limit    int     `form:"limit,default=0"`
 }
 
 type BindIssueRequest struct {
@@ -55,6 +58,34 @@ type IssueDto struct {
 	BindStatus  *string     `json:"bindStatus"`
 	Priority    *string     `json:"priority"`
 	Comment     *string     `json:"comment"`
+}
+
+type IssuePageDto struct {
+	Count      int        `json:"count"`
+	Pages      int        `json:"pages"`
+	Page       int        `json:"page"`
+	StartIndex int        `json:"start_index"`
+	EndIndex   int        `json:"end_index"`
+	Results    []IssueDto `json:"results"`
+}
+
+func SerializeIssuePage(issuePage *usecases.IssuePage) *IssuePageDto {
+	totalPages := int(issuePage.Count / issuePage.Limit)
+	if issuePage.Count%issuePage.Limit > 0 {
+		totalPages++
+	}
+
+	startIndex := int((issuePage.Page - 1) * issuePage.Limit)
+	endIndex := startIndex + len(issuePage.Results)
+
+	return &IssuePageDto{
+		Count:      int(issuePage.Count),
+		Pages:      totalPages,
+		Page:       int(issuePage.Page),
+		StartIndex: startIndex,
+		EndIndex:   endIndex,
+		Results:    SerializeIssues(issuePage.Results),
+	}
 }
 
 func SerializeIssues(issues []domain.Issue) []IssueDto {

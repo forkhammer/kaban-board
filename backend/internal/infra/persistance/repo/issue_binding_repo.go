@@ -58,7 +58,7 @@ func (r *IssueBindingRepository) List(spec repo.QuerySpec) ([]domain.IssueBindin
 	return domainIssueBindings, nil
 }
 
-func (r *IssueBindingRepository) Count(spec repo.QuerySpec) (int64, error) {
+func (r *IssueBindingRepository) Count(spec repo.QuerySpec) (int, error) {
 	var count int64
 	query := r.getQuery()
 
@@ -74,7 +74,7 @@ func (r *IssueBindingRepository) Count(spec repo.QuerySpec) (int64, error) {
 		return 0, err
 	}
 
-	return count, nil
+	return int(count), nil
 }
 
 func (r *IssueBindingRepository) Create(binding *domain.IssueBinding) (*domain.IssueBinding, error) {

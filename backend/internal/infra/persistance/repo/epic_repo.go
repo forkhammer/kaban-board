@@ -50,7 +50,7 @@ func (r *EpicRepository) List(spec repo.QuerySpec) ([]domain.Epic, error) {
 	return domainEpics, nil
 }
 
-func (r *EpicRepository) Count(spec repo.QuerySpec) (int64, error) {
+func (r *EpicRepository) Count(spec repo.QuerySpec) (int, error) {
 	var count int64
 	query := r.getQuery()
 
@@ -66,7 +66,7 @@ func (r *EpicRepository) Count(spec repo.QuerySpec) (int64, error) {
 		return 0, err
 	}
 
-	return count, nil
+	return int(count), nil
 }
 
 func (r *EpicRepository) Create(epic *domain.Epic) (*domain.Epic, error) {

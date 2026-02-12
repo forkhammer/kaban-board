@@ -45,7 +45,7 @@ func (r *LabelRepository) List(spec repo.QuerySpec) ([]domain.Label, error) {
 	return domainLabels, nil
 }
 
-func (r *LabelRepository) Count(spec repo.QuerySpec) (int64, error) {
+func (r *LabelRepository) Count(spec repo.QuerySpec) (int, error) {
 	var count int64
 	query := r.conn.GetEngine().Model(&models.Label{})
 
@@ -61,7 +61,7 @@ func (r *LabelRepository) Count(spec repo.QuerySpec) (int64, error) {
 		return 0, err
 	}
 
-	return count, nil
+	return int(count), nil
 }
 
 func (r *LabelRepository) Create(label *domain.Label) (*domain.Label, error) {

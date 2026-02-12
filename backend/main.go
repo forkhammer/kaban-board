@@ -11,6 +11,7 @@ import (
 	"main/internal/infra/gitlab"
 	"main/internal/infra/persistance/models"
 	"main/internal/infra/persistance/repo"
+	"main/internal/infra/persistance/spec"
 	column_spec "main/internal/infra/persistance/spec/column"
 	epic_spec "main/internal/infra/persistance/spec/epic"
 	group_spec "main/internal/infra/persistance/spec/group"
@@ -78,6 +79,7 @@ func (app *Application) Init() {
 	di.RegisterBean("IssueBindingQuery", reflect.TypeOf((*issuebinding_spec.IssueBindingQueryImpl)(nil)))
 	di.RegisterBean("ReleaseQuery", reflect.TypeOf((*release_spec.ReleaseQueryImpl)(nil)))
 	di.RegisterBean("EpicQuery", reflect.TypeOf((*epic_spec.EpicQueryImpl)(nil)))
+	di.RegisterBean("PaginationQuery", reflect.TypeOf((*spec.PaginationQueryImpl)(nil)))
 
 	di.RegisterBean("JWTService", reflect.TypeOf((*services.JWTService)(nil)))
 	di.RegisterBean("PasswordService", reflect.TypeOf((*services.PasswordService)(nil)))

@@ -73,7 +73,7 @@ func (r *IssueRepository) List(spec repo.QuerySpec) ([]domain.Issue, error) {
 	return domainIssues, nil
 }
 
-func (r *IssueRepository) Count(spec repo.QuerySpec) (int64, error) {
+func (r *IssueRepository) Count(spec repo.QuerySpec) (int, error) {
 	var count int64
 	query := r.getQuery()
 
@@ -89,7 +89,7 @@ func (r *IssueRepository) Count(spec repo.QuerySpec) (int64, error) {
 		return 0, err
 	}
 
-	return count, nil
+	return int(count), nil
 }
 
 func (r *IssueRepository) Create(issue *domain.Issue) (*domain.Issue, error) {

@@ -45,7 +45,7 @@ func (c *SprintController) GetSprints(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
 		return
 	}
-	ctx.JSON(http.StatusOK, dto.SerializeSprints(*sprints))
+	ctx.JSON(http.StatusOK, dto.SerializeSprints(sprints))
 }
 
 func (c *SprintController) GetSprint(ctx *gin.Context) {

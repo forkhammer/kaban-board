@@ -12,7 +12,7 @@ type ProjectUseCases struct {
 	projectQuery queries.ProjectQuery `di.inject:"ProjectQuery"`
 }
 
-func (uc *ProjectUseCases) GetProjects(filter *queries.ProjectFilter) (*[]domain.Project, error) {
+func (uc *ProjectUseCases) GetProjects(filter *queries.ProjectFilter) ([]domain.Project, error) {
 	var spec repo.QuerySpec
 	if filter != nil {
 		spec = uc.projectQuery.GetSpec(*filter)

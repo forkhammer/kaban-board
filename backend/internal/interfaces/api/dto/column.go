@@ -37,11 +37,11 @@ func SerializeColumn(column *domain.Column) *ColumnDto {
 	}
 }
 
-func SerializeColumns(columns *[]domain.Column) *[]ColumnDto {
-	result := utils.Map(*columns, func(column domain.Column) ColumnDto {
+func SerializeColumns(columns []domain.Column) []ColumnDto {
+	result := utils.Map(columns, func(column domain.Column) ColumnDto {
 		return *SerializeColumn(&column)
 	})
-	return &result
+	return result
 }
 
 type CreateColumnRequest struct {

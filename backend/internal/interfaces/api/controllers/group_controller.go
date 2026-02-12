@@ -27,7 +27,7 @@ func (c *GroupController) getGroups(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, dto.SerializeGroups(*groups))
+	ctx.JSON(http.StatusOK, dto.SerializeGroups(groups))
 }
 
 func (c *GroupController) getGroupById(ctx *gin.Context) {

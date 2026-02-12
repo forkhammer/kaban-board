@@ -23,7 +23,7 @@ func (r *UserRepository) Get(id domain.UserId) (*domain.User, error) {
 	return r.toDomainUser(user), nil
 }
 
-func (r *UserRepository) List(spec repo.QuerySpec) (*[]domain.User, error) {
+func (r *UserRepository) List(spec repo.QuerySpec) ([]domain.User, error) {
 	users := make([]models.User, 0)
 	query := r.getQuery()
 
@@ -44,7 +44,7 @@ func (r *UserRepository) List(spec repo.QuerySpec) (*[]domain.User, error) {
 		domainUsers[i] = *r.toDomainUser(&user)
 	}
 
-	return &domainUsers, nil
+	return domainUsers, nil
 }
 
 func (r *UserRepository) Create(user *domain.User) (*domain.User, error) {

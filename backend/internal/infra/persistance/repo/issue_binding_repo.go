@@ -30,7 +30,7 @@ func (r *IssueBindingRepository) Get(id domain.IssueBindingId) (*domain.IssueBin
 	return model, nil
 }
 
-func (r *IssueBindingRepository) List(spec repo.QuerySpec) (*[]domain.IssueBinding, error) {
+func (r *IssueBindingRepository) List(spec repo.QuerySpec) ([]domain.IssueBinding, error) {
 	сolumns := make([]models.IssueBinding, 0)
 	query := r.getQuery().Model(&models.IssueBinding{})
 
@@ -55,7 +55,7 @@ func (r *IssueBindingRepository) List(spec repo.QuerySpec) (*[]domain.IssueBindi
 		}
 	}
 
-	return &domainIssueBindings, nil
+	return domainIssueBindings, nil
 }
 
 func (r *IssueBindingRepository) Create(binding *domain.IssueBinding) (*domain.IssueBinding, error) {
@@ -93,7 +93,7 @@ func (r *IssueBindingRepository) toDomainIssueBinding(binding *models.IssueBindi
 		return nil, err
 	}
 
-	issue, err := r.issueRepo.toDomainIssue(binding.Issue, nil)
+	issue, err := r.issueRepo.toDomainIssue(binding.Issue, []domain.IssueBinding{})
 	if err != nil {
 		return nil, err
 	}

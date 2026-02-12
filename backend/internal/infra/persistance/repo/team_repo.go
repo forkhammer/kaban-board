@@ -23,7 +23,7 @@ func (r *TeamRepository) Get(id domain.TeamId) (*domain.Team, error) {
 	return r.ToDomainTeam(team)
 }
 
-func (r *TeamRepository) List(spec repo.QuerySpec) (*[]domain.Team, error) {
+func (r *TeamRepository) List(spec repo.QuerySpec) ([]domain.Team, error) {
 	teams := make([]models.Team, 0)
 	query := r.getQuery()
 
@@ -48,7 +48,7 @@ func (r *TeamRepository) List(spec repo.QuerySpec) (*[]domain.Team, error) {
 		domainTeams[i] = *team
 	}
 
-	return &domainTeams, nil
+	return domainTeams, nil
 }
 
 func (r *TeamRepository) Create(team *domain.Team) (*domain.Team, error) {

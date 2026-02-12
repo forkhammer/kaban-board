@@ -11,7 +11,7 @@ type EpicUseCases struct {
 	epicQuery queries.EpicQuery `di.inject:"EpicQuery"`
 }
 
-func (uc *EpicUseCases) GetEpics(filter *queries.EpicFilter) (*[]domain.Epic, error) {
+func (uc *EpicUseCases) GetEpics(filter *queries.EpicFilter) ([]domain.Epic, error) {
 	var spec repo.QuerySpec
 	if filter != nil {
 		spec = uc.epicQuery.GetSpec(*filter)

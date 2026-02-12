@@ -560,10 +560,10 @@ func (client *GitlabClient) cleanProjectId(gid string) (uint, error) {
 
 func (client *GitlabClient) toDomainIssue(
 	issue *GitlabIssue,
-	users *[]domain.User,
-	projects *[]domain.Project,
-	labels *[]domain.Label,
-	releases *[]domain.Release,
+	users []domain.User,
+	projects []domain.Project,
+	labels []domain.Label,
+	releases []domain.Release,
 	settings *domain.Settings,
 ) (*domain.Issue, error) {
 	issueId, err := client.cleanIssueId(issue.Id)
@@ -573,7 +573,7 @@ func (client *GitlabClient) toDomainIssue(
 
 	assignees := make([]domain.User, 0)
 	for _, a := range issue.Assignees.Nodes {
-		for _, user := range *users {
+		for _, user := range users {
 			assigneeId, err := client.cleanUserId(a.UserId)
 			if err != nil {
 				continue
@@ -586,7 +586,7 @@ func (client *GitlabClient) toDomainIssue(
 	}
 
 	projectId := domain.ProjectId(uint(issue.ProjectId))
-	project := utils.Find(*projects, func(p domain.Project) bool {
+	project := utils.Find(projects, func(p domain.Project) bool {
 		return p.Id == projectId
 	})
 	if project == nil {
@@ -595,14 +595,14 @@ func (client *GitlabClient) toDomainIssue(
 
 	issueLabels := make([]domain.Label, 0)
 	for _, l := range issue.Labels.Nodes {
-		for _, label := range *labels {
+		for _, label := range labels {
 			if domain.LabelId(l.Id) == label.Id {
 				issueLabels = append(issueLabels, label)
 			}
 		}
 	}
 
-	release := utils.Find(*releases, func(r domain.Release) bool {
+	release := utils.Find(releases, func(r domain.Release) bool {
 		releaseId, err := client.cleanReleaseId(issue.Milestone.Id)
 		return r.Id == domain.ReleaseId(releaseId) && err == nil
 	})

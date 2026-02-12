@@ -144,7 +144,7 @@ func (c *ColumnController) saveColumnOrdering(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, utils.Map(*columns, func(column domain.Column) dto.ColumnDto {
+	ctx.JSON(http.StatusOK, utils.Map(columns, func(column domain.Column) dto.ColumnDto {
 		return *dto.SerializeColumn(&column)
 	}))
 }

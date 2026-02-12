@@ -28,7 +28,7 @@ func (r *ColumnRepository) Get(id domain.ColumnId) (*domain.Column, error) {
 	return model, nil
 }
 
-func (r *ColumnRepository) List(spec repo.QuerySpec) (*[]domain.Column, error) {
+func (r *ColumnRepository) List(spec repo.QuerySpec) ([]domain.Column, error) {
 	сolumns := make([]models.Column, 0)
 	query := r.getQuery().Model(&models.Column{})
 
@@ -53,7 +53,7 @@ func (r *ColumnRepository) List(spec repo.QuerySpec) (*[]domain.Column, error) {
 		}
 	}
 
-	return &domainColumns, nil
+	return domainColumns, nil
 }
 
 func (r *ColumnRepository) Create(column *domain.Column) (*domain.Column, error) {

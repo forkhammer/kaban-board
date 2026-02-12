@@ -34,11 +34,11 @@ func SerializeLabel(label *domain.Label) *LabelDto {
 	}
 }
 
-func SerializeLabels(labels *[]domain.Label) *[]LabelDto {
-	result := utils.Map(*labels, func(label domain.Label) LabelDto {
+func SerializeLabels(labels []domain.Label) []LabelDto {
+	result := utils.Map(labels, func(label domain.Label) LabelDto {
 		return *SerializeLabel(&label)
 	})
-	return &result
+	return result
 }
 
 func SerializeKanbanLabel(label *usecases.KanbanLabel) *KanbanLabelDto {
@@ -49,9 +49,9 @@ func SerializeKanbanLabel(label *usecases.KanbanLabel) *KanbanLabelDto {
 	}
 }
 
-func SerializeKanbanLabels(labels *[]usecases.KanbanLabel) *[]KanbanLabelDto {
-	result := utils.Map(*labels, func(label usecases.KanbanLabel) KanbanLabelDto {
+func SerializeKanbanLabels(labels []usecases.KanbanLabel) []KanbanLabelDto {
+	result := utils.Map(labels, func(label usecases.KanbanLabel) KanbanLabelDto {
 		return *SerializeKanbanLabel(&label)
 	})
-	return &result
+	return result
 }

@@ -28,7 +28,7 @@ type IssueUseCases struct {
 	epicRepo    repo.EpicRepo      `di.inject:"EpicRepository"`
 }
 
-func (u *IssueUseCases) GetIssues(filter *queries.IssueFilter) (*[]domain.Issue, error) {
+func (u *IssueUseCases) GetIssues(filter *queries.IssueFilter) ([]domain.Issue, error) {
 	var query repo.QuerySpec
 
 	if filter != nil {

@@ -5,7 +5,7 @@ type RetrieveRepo[T any, TID comparable] interface {
 }
 
 type ListRepo[T any] interface {
-	List(spec QuerySpec) (*[]T, error)
+	List(spec QuerySpec) ([]T, error)
 }
 
 type CreateRepo[T any] interface {

@@ -78,7 +78,7 @@ func SerializeIssue(issue *domain.Issue) *IssueDto {
 			return SerializeUser(assignee)
 		}(),
 		WebUrl:      issue.WebUrl,
-		Labels:      *SerializeLabels(&issue.Labels),
+		Labels:      SerializeLabels(issue.Labels),
 		ProjectId:   int(issue.Project.Id),
 		ProjectName: &issue.Project.Name,
 		Release: func() *ReleaseDto {

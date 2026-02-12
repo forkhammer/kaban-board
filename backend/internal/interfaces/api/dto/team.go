@@ -29,9 +29,9 @@ func SerializeTeam(team *domain.Team) *TeamDto {
 	}
 }
 
-func SerializeTeams(teams *[]domain.Team) *[]TeamDto {
-	result := utils.Map(*teams, func(team domain.Team) TeamDto {
+func SerializeTeams(teams []domain.Team) []TeamDto {
+	result := utils.Map(teams, func(team domain.Team) TeamDto {
 		return *SerializeTeam(&team)
 	})
-	return &result
+	return result
 }

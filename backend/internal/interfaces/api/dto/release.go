@@ -23,10 +23,10 @@ func SerializeRelease(release *domain.Release) *ReleaseDto {
 	}
 }
 
-func SerializeReleases(releases *[]domain.Release) *[]ReleaseDto {
-	result := make([]ReleaseDto, len(*releases))
-	for i, release := range *releases {
+func SerializeReleases(releases []domain.Release) []ReleaseDto {
+	result := make([]ReleaseDto, len(releases))
+	for i, release := range releases {
 		result[i] = *SerializeRelease(&release)
 	}
-	return &result
+	return result
 }

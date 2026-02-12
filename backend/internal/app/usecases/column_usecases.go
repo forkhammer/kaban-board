@@ -87,7 +87,7 @@ func (c *ColumnUseCases) Delete(id uint) error {
 	return c.columnRepo.Delete(domain.ColumnId(id))
 }
 
-func (uc *ColumnUseCases) List() (*[]domain.Column, error) {
+func (uc *ColumnUseCases) List() ([]domain.Column, error) {
 	columns, err := uc.columnRepo.List(nil)
 	if err != nil {
 		return nil, fmt.Errorf("Error retrieving columns: %w", err)
@@ -95,7 +95,7 @@ func (uc *ColumnUseCases) List() (*[]domain.Column, error) {
 	return columns, nil
 }
 
-func (uc *ColumnUseCases) Ordering(ordering ColumnOrderingSet) (*[]domain.Column, error) {
+func (uc *ColumnUseCases) Ordering(ordering ColumnOrderingSet) ([]domain.Column, error) {
 	columnIds := utils.Map(ordering, func(o ColumnOrdering) domain.ColumnId {
 		return domain.ColumnId(o.Id)
 	})
@@ -104,9 +104,9 @@ func (uc *ColumnUseCases) Ordering(ordering ColumnOrderingSet) (*[]domain.Column
 		return nil, err
 	}
 
-	result := make([]domain.Column, len(*columns))
+	result := make([]domain.Column, len(columns))
 
-	for index, row := range *columns {
+	for index, row := range columns {
 		column := &row
 		o := utils.Find(ordering, func(o ColumnOrdering) bool {
 			return o.Id == uint(column.Id)
@@ -126,7 +126,7 @@ func (uc *ColumnUseCases) Ordering(ordering ColumnOrderingSet) (*[]domain.Column
 		result[index] = *column
 	}
 
-	return &result, nil
+	return result, nil
 }
 
 func (uc *ColumnUseCases) Retrieve(id uint) (*domain.Column, error) {

@@ -28,7 +28,7 @@ func (r *ProjectRepository) Get(id domain.ProjectId) (*domain.Project, error) {
 	return model, nil
 }
 
-func (r *ProjectRepository) List(spec repo.QuerySpec) (*[]domain.Project, error) {
+func (r *ProjectRepository) List(spec repo.QuerySpec) ([]domain.Project, error) {
 	projects := make([]models.Project, 0)
 	query := r.getQuery()
 
@@ -53,7 +53,7 @@ func (r *ProjectRepository) List(spec repo.QuerySpec) (*[]domain.Project, error)
 		}
 	}
 
-	return &domainProjects, nil
+	return domainProjects, nil
 }
 
 func (r *ProjectRepository) Create(Project *domain.Project) (*domain.Project, error) {

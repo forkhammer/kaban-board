@@ -22,7 +22,7 @@ func (r *EpicRepository) Get(id domain.EpicId) (*domain.Epic, error) {
 	return r.toDomainEpic(epic)
 }
 
-func (r *EpicRepository) List(spec repo.QuerySpec) (*[]domain.Epic, error) {
+func (r *EpicRepository) List(spec repo.QuerySpec) ([]domain.Epic, error) {
 	epics := make([]models.Epic, 0)
 	query := r.getQuery()
 
@@ -47,7 +47,7 @@ func (r *EpicRepository) List(spec repo.QuerySpec) (*[]domain.Epic, error) {
 		domainEpics[i] = *val
 	}
 
-	return &domainEpics, nil
+	return domainEpics, nil
 }
 
 func (r *EpicRepository) Create(epic *domain.Epic) (*domain.Epic, error) {

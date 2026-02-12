@@ -21,10 +21,10 @@ func SerializeEpic(release *domain.Epic) *EpicDto {
 	}
 }
 
-func SerializeEpics(releases *[]domain.Epic) *[]EpicDto {
-	result := make([]EpicDto, len(*releases))
-	for i, release := range *releases {
+func SerializeEpics(releases []domain.Epic) []EpicDto {
+	result := make([]EpicDto, len(releases))
+	for i, release := range releases {
 		result[i] = *SerializeEpic(&release)
 	}
-	return &result
+	return result
 }

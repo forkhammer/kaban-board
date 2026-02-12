@@ -21,7 +21,7 @@ func (r *LabelRepository) Get(id domain.LabelId) (*domain.Label, error) {
 	return r.toDomainLabel(label), nil
 }
 
-func (r *LabelRepository) List(spec repo.QuerySpec) (*[]domain.Label, error) {
+func (r *LabelRepository) List(spec repo.QuerySpec) ([]domain.Label, error) {
 	labels := make([]models.Label, 0)
 	query := r.conn.GetEngine().Model(&models.Label{})
 
@@ -42,7 +42,7 @@ func (r *LabelRepository) List(spec repo.QuerySpec) (*[]domain.Label, error) {
 		domainLabels[i] = *r.toDomainLabel(&label)
 	}
 
-	return &domainLabels, nil
+	return domainLabels, nil
 }
 
 func (r *LabelRepository) Create(label *domain.Label) (*domain.Label, error) {

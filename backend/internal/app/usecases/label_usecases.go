@@ -25,13 +25,13 @@ type LabelUseCases struct {
 	groupQuery queries.GroupQuery `di.inject:"GroupQuery"`
 }
 
-func (uc *LabelUseCases) GetLabels() (*[]KanbanLabel, error) {
+func (uc *LabelUseCases) GetLabels() ([]KanbanLabel, error) {
 	labels, err := uc.labelRepo.List(nil)
 	if err != nil {
 		return nil, err
 	}
 	kanbanLabels := utils.Map(
-		utils.Unique(*labels, func(l domain.Label) string {
+		utils.Unique(labels, func(l domain.Label) string {
 			return l.Name
 		}),
 		func(l domain.Label) KanbanLabel {
@@ -42,7 +42,7 @@ func (uc *LabelUseCases) GetLabels() (*[]KanbanLabel, error) {
 			}
 		},
 	)
-	return &kanbanLabels, nil
+	return kanbanLabels, nil
 }
 
 func (uc *LabelUseCases) GetLabel(id string) (*domain.Label, error) {
@@ -55,7 +55,7 @@ func (uc *LabelUseCases) Update(request *UpdateLabelRequest) error {
 		return err
 	}
 
-	for _, label := range *labels {
+	for _, label := range labels {
 		label.AltName = request.AltName
 		if err := label.Validate(); err != nil {
 			return err

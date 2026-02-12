@@ -43,7 +43,7 @@ func (c *UserController) getUsers(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, dto.SerializeUsers(*users))
+	ctx.JSON(http.StatusOK, dto.SerializeUsers(users))
 }
 
 func (c *UserController) getUser(ctx *gin.Context) {

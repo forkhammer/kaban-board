@@ -11,7 +11,7 @@ type ReleaseUseCases struct {
 	releaseQuery queries.ReleaseQuery `di.inject:"ReleaseQuery"`
 }
 
-func (uc *ReleaseUseCases) GetReleases(filter *queries.ReleaseFilter) (*[]domain.Release, error) {
+func (uc *ReleaseUseCases) GetReleases(filter *queries.ReleaseFilter) ([]domain.Release, error) {
 	var spec repo.QuerySpec
 	if filter != nil {
 		spec = uc.releaseQuery.GetSpec(*filter)

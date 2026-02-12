@@ -21,7 +21,7 @@ func (r *GroupRepository) Get(id domain.GroupId) (*domain.Group, error) {
 	return r.toDomainGroup(group), nil
 }
 
-func (r *GroupRepository) List(spec repo.QuerySpec) (*[]domain.Group, error) {
+func (r *GroupRepository) List(spec repo.QuerySpec) ([]domain.Group, error) {
 	groups := make([]models.Group, 0)
 	query := r.conn.GetEngine().Model(&models.Group{})
 
@@ -42,7 +42,7 @@ func (r *GroupRepository) List(spec repo.QuerySpec) (*[]domain.Group, error) {
 		domainGroups[i] = *r.toDomainGroup(&group)
 	}
 
-	return &domainGroups, nil
+	return domainGroups, nil
 }
 
 func (r *GroupRepository) Create(group *domain.Group) (*domain.Group, error) {

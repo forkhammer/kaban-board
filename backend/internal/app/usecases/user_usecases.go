@@ -14,7 +14,7 @@ type UserUseCases struct {
 	userQuery  queries.UserQuery  `di.inject:"UserQuery"`
 }
 
-func (uc *UserUseCases) GetUsers(filter *queries.UserFilter) (*[]domain.User, error) {
+func (uc *UserUseCases) GetUsers(filter *queries.UserFilter) ([]domain.User, error) {
 	var spec repo.QuerySpec
 	if filter != nil {
 		spec = uc.userQuery.GetSpec(*filter)
@@ -53,7 +53,7 @@ func (uc *UserUseCases) SetGroups(id uint, groupIds []uint) (*domain.User, error
 	if err != nil {
 		return nil, err
 	}
-	user.Groups = *groups
+	user.Groups = groups
 
 	if err := user.Validate(); err != nil {
 		return nil, err

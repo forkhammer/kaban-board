@@ -23,7 +23,7 @@ func (uc *KanbanUseCases) GetBoard() (*models.Board, error) {
 		return nil, err
 	}
 
-	kanban, err := models.NewKanban(*users, *issues)
+	kanban, err := models.NewKanban(users, issues)
 	if err != nil {
 		return nil, err
 	}

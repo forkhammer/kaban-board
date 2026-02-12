@@ -22,7 +22,7 @@ func (r *ReleaseRepository) Get(id domain.ReleaseId) (*domain.Release, error) {
 	return r.toDomainRelease(release)
 }
 
-func (r *ReleaseRepository) List(spec repo.QuerySpec) (*[]domain.Release, error) {
+func (r *ReleaseRepository) List(spec repo.QuerySpec) ([]domain.Release, error) {
 	releases := make([]models.Release, 0)
 	query := r.getQuery()
 
@@ -47,7 +47,7 @@ func (r *ReleaseRepository) List(spec repo.QuerySpec) (*[]domain.Release, error)
 		domainReleases[i] = *val
 	}
 
-	return &domainReleases, nil
+	return domainReleases, nil
 }
 
 func (r *ReleaseRepository) Create(release *domain.Release) (*domain.Release, error) {

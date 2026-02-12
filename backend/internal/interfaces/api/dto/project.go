@@ -36,9 +36,9 @@ func SerializeProject(project *domain.Project) *ProjectDto {
 	}
 }
 
-func SerializeProjects(projects *[]domain.Project) *[]ProjectDto {
-	result := utils.Map(*projects, func(project domain.Project) ProjectDto {
+func SerializeProjects(projects []domain.Project) []ProjectDto {
+	result := utils.Map(projects, func(project domain.Project) ProjectDto {
 		return *SerializeProject(&project)
 	})
-	return &result
+	return result
 }

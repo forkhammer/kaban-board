@@ -31,7 +31,7 @@ type SprintUseCases struct {
 	sprintQuery queries.SprintQuery `di.inject:"SprintQuery"`
 }
 
-func (uc *SprintUseCases) GetSprints(filter *queries.SprintFilter) (*[]domain.Sprint, error) {
+func (uc *SprintUseCases) GetSprints(filter *queries.SprintFilter) ([]domain.Sprint, error) {
 	var spec repo.QuerySpec
 	if filter != nil {
 		spec = uc.sprintQuery.GetSpec(*filter)

@@ -35,7 +35,7 @@ func (r *AccountRepository) GetByUsername(username string) (*domain.Account, err
 	return r.toDomainAccount(account), nil
 }
 
-func (r *AccountRepository) List(spec repo.QuerySpec) (*[]domain.Account, error) {
+func (r *AccountRepository) List(spec repo.QuerySpec) ([]domain.Account, error) {
 	accounts := make([]models.Account, 0)
 	query := r.conn.GetEngine().Model(&models.Account{})
 
@@ -56,7 +56,7 @@ func (r *AccountRepository) List(spec repo.QuerySpec) (*[]domain.Account, error)
 		domainAccounts[i] = *r.toDomainAccount(&account)
 	}
 
-	return &domainAccounts, nil
+	return domainAccounts, nil
 }
 
 func (r *AccountRepository) Create(account *domain.Account) (*domain.Account, error) {

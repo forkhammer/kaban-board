@@ -9,7 +9,7 @@ type GroupUseCases struct {
 	groupRepo repo.GroupRepo `di.inject:"GroupRepository"`
 }
 
-func (uc *GroupUseCases) GetGroups() (*[]domain.Group, error) {
+func (uc *GroupUseCases) GetGroups() ([]domain.Group, error) {
 	return uc.groupRepo.List(nil)
 }
 

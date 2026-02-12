@@ -25,7 +25,7 @@ func (s *LabelService) ExistNames(names []string) (bool, []string, error) {
 		return false, []string{}, err
 	}
 	existNames := utils.Unique(
-		utils.Map(*labels, func(l domain.Label) string {
+		utils.Map(labels, func(l domain.Label) string {
 			return l.Name
 		}), func(name string) string {
 			return name

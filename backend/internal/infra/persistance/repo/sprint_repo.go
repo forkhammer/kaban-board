@@ -28,7 +28,7 @@ func (r *SprintRepository) Get(id domain.SprintId) (*domain.Sprint, error) {
 	return r.toDomainSprint(sprint)
 }
 
-func (r *SprintRepository) List(spec repo.QuerySpec) (*[]domain.Sprint, error) {
+func (r *SprintRepository) List(spec repo.QuerySpec) ([]domain.Sprint, error) {
 	sprints := make([]models.Sprint, 0)
 	query := r.getQuery()
 
@@ -53,7 +53,7 @@ func (r *SprintRepository) List(spec repo.QuerySpec) (*[]domain.Sprint, error) {
 		domainSprints[i] = *val
 	}
 
-	return &domainSprints, nil
+	return domainSprints, nil
 }
 
 func (r *SprintRepository) Create(sprint *domain.Sprint) (*domain.Sprint, error) {

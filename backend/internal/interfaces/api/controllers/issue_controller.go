@@ -46,7 +46,7 @@ func (c *IssueController) getIssues(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
 		return
 	}
-	ctx.JSON(http.StatusOK, dto.SerializeIssues(*issues))
+	ctx.JSON(http.StatusOK, dto.SerializeIssues(issues))
 }
 
 func (c *IssueController) getIssue(ctx *gin.Context) {

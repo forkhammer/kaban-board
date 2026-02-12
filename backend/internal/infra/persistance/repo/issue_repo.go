@@ -37,7 +37,7 @@ func (r *IssueRepository) Get(id domain.IssueId) (*domain.Issue, error) {
 	return r.toDomainIssue(issue, bindings)
 }
 
-func (r *IssueRepository) List(spec repo.QuerySpec) (*[]domain.Issue, error) {
+func (r *IssueRepository) List(spec repo.QuerySpec) ([]domain.Issue, error) {
 	issues := make([]models.Issue, 0)
 	query := r.getQuery()
 
@@ -70,7 +70,7 @@ func (r *IssueRepository) List(spec repo.QuerySpec) (*[]domain.Issue, error) {
 		domainIssues[i] = *model
 	}
 
-	return &domainIssues, nil
+	return domainIssues, nil
 }
 
 func (r *IssueRepository) Create(issue *domain.Issue) (*domain.Issue, error) {
@@ -138,7 +138,7 @@ func (r *IssueRepository) Update(issue *domain.Issue) (*domain.Issue, error) {
 	}
 
 	// remove non exist bindings
-	for _, persistentBinding := range *persistentBindings {
+	for _, persistentBinding := range persistentBindings {
 		if !slices.Contains(existBindingIds, persistentBinding.Id) {
 			if err := r.issueBindingRepo.Delete(persistentBinding.Id); err != nil {
 				return nil, err
@@ -162,7 +162,7 @@ func (r *IssueRepository) Delete(id domain.IssueId) error {
 	return r.conn.GetEngine().Where("id = ?", id).Delete(&models.Issue{}).Error
 }
 
-func (r *IssueRepository) toDomainIssue(issue *models.Issue, preloadBindings *[]domain.IssueBinding) (*domain.Issue, error) {
+func (r *IssueRepository) toDomainIssue(issue *models.Issue, preloadBindings []domain.IssueBinding) (*domain.Issue, error) {
 	project, err := r.projectRepo.toDomainProject(&issue.Project)
 	if err != nil {
 		return nil, err
@@ -176,10 +176,7 @@ func (r *IssueRepository) toDomainIssue(issue *models.Issue, preloadBindings *[]
 		}
 	}
 
-	bindings := make([]domain.IssueBinding, 0)
-	if preloadBindings != nil {
-		bindings = r.filterBindbinsByIssue(*preloadBindings, domain.IssueId(issue.Id))
-	}
+	bindings := r.filterBindbinsByIssue(preloadBindings, domain.IssueId(issue.Id))
 
 	domainIssue := &domain.Issue{
 		Id:        domain.IssueId(issue.Id),
@@ -293,7 +290,7 @@ func (r *IssueRepository) toDomainLabelHistory(history *models.LabelHistory) *do
 	}
 }
 
-func (r *IssueRepository) preloadBindings(ids []domain.IssueId) (*[]domain.IssueBinding, error) {
+func (r *IssueRepository) preloadBindings(ids []domain.IssueId) ([]domain.IssueBinding, error) {
 	return r.issueBindingRepo.List(r.issueBindingQuery.GetSpec(queries.IssueBindingFilter{
 		Issues: utils.Map(ids, func(id domain.IssueId) uint {
 			return uint(id)

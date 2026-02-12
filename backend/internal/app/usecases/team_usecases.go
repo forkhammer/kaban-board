@@ -24,7 +24,7 @@ type TeamUseCases struct {
 	groupQuery queries.GroupQuery `di.inject:"GroupQuery"`
 }
 
-func (uc *TeamUseCases) GetTeams() (*[]domain.Team, error) {
+func (uc *TeamUseCases) GetTeams() ([]domain.Team, error) {
 	return uc.teamRepo.List(nil)
 }
 
@@ -37,17 +37,17 @@ func (uc *TeamUseCases) Create(request *CreateTeamRequest) (*domain.Team, error)
 		return domain.GroupId(g)
 	})
 
-	var groups *[]domain.Group
+	var groups []domain.Group
 	if len(groupIds) > 0 {
 		var err error
 		if groups, err = uc.groupRepo.List(uc.groupQuery.GetSpec(queries.GroupFilter{Ids: groupIds})); err != nil {
 
 		}
 	} else {
-		groups = &[]domain.Group{}
+		groups = []domain.Group{}
 	}
 
-	team, err := domain.NewTeam(0, request.Title, *groups)
+	team, err := domain.NewTeam(0, request.Title, groups)
 	if err != nil {
 		return nil, err
 	}
@@ -65,17 +65,17 @@ func (uc *TeamUseCases) Update(request *UpdateTeamRequest) (*domain.Team, error)
 		return domain.GroupId(g)
 	})
 
-	var groups *[]domain.Group
+	var groups []domain.Group
 	if len(groupIds) > 0 {
 		var err error
 		if groups, err = uc.groupRepo.List(uc.groupQuery.GetSpec(queries.GroupFilter{Ids: groupIds})); err != nil {
 
 		}
 	} else {
-		groups = &[]domain.Group{}
+		groups = []domain.Group{}
 	}
 
-	team.Groups = *groups
+	team.Groups = groups
 
 	if err := team.Validate(); err != nil {
 		return nil, err

@@ -1,4 +1,4 @@
-import {Component, DestroyRef, ElementRef, EventEmitter, inject, Input, Output, ViewChild} from '@angular/core';
+import {Component, DestroyRef, ElementRef, inject, Input, ViewChild} from '@angular/core';
 import {KanbanUser} from "../../models/kanban-user";
 import {KanbanColumn} from "../../models/kanban-column";
 import {KanbanColumnModalService} from "../../services/kanban-column-modal.service";
@@ -37,7 +37,6 @@ export class UserBoardComponent {
   faArrowRight = faArrowRight
   COLUMN_WIDTH = 340
 
-  @Input() search: string | null = null
   @ViewChild('UserBoardInner') userBoardInner: ElementRef | null = null
   public slidePosition = 0
   private isDrag$ = new BehaviorSubject<boolean>(false)

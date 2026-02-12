@@ -75,8 +75,7 @@
         <app-user-board *ngSwitchCase="KanbanView.BOARD"
           [user]="selectedUser"
           [team]="selectedTeam"
-          [sprint]="selectedSprint"
-          [search]="search$ | async"></app-user-board>
+          [sprint]="selectedSprint"></app-user-board>
 
         <app-issue-table *ngSwitchCase="KanbanView.LIST"
           [user]="selectedUser"

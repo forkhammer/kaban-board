@@ -1,11 +1,8 @@
 import {Component, DestroyRef, EventEmitter, inject, Input, OnDestroy, Output} from '@angular/core';
 import {KanbanColumn} from "../../models/kanban-column";
-import {KanbanUser} from "../../models/kanban-user";
 import { faEllipsis } from '@fortawesome/free-solid-svg-icons'
 import {KanbanColumnModalService} from "../../services/kanban-column-modal.service";
 import {KanbanColumnService} from "../../services/kanban-column.service";
-import {takeUntil} from "rxjs/operators";
-import {Subject} from "rxjs";
 import {AccountService} from "../../../core/services/account.service";
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { KanbanIssue } from '../../models/kanban-issue';
@@ -24,7 +21,6 @@ export class KanbanColumnComponent{
 
   @Input() column!: KanbanColumn
   @Input() issues: KanbanIssue[] = []
-  @Input() search: string | null = null
   @Output() onDelete = new EventEmitter<KanbanColumn>()
 
   faEllipsis = faEllipsis

@@ -45,6 +45,25 @@ func (r *LabelRepository) List(spec repo.QuerySpec) ([]domain.Label, error) {
 	return domainLabels, nil
 }
 
+func (r *LabelRepository) Count(spec repo.QuerySpec) (int64, error) {
+	var count int64
+	query := r.conn.GetEngine().Model(&models.Label{})
+
+	if spec != nil {
+		if result, err := spec.Apply(query); err != nil {
+			return 0, err
+		} else {
+			query = result.(*gorm.DB)
+		}
+	}
+
+	if err := query.Count(&count).Error; err != nil {
+		return 0, err
+	}
+
+	return count, nil
+}
+
 func (r *LabelRepository) Create(label *domain.Label) (*domain.Label, error) {
 	model := r.toLabel(label)
 	err := r.conn.GetEngine().Create(model).Error

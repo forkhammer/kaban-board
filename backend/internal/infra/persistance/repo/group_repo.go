@@ -45,6 +45,25 @@ func (r *GroupRepository) List(spec repo.QuerySpec) ([]domain.Group, error) {
 	return domainGroups, nil
 }
 
+func (r *GroupRepository) Count(spec repo.QuerySpec) (int64, error) {
+	var count int64
+	query := r.conn.GetEngine().Model(&models.Group{})
+
+	if spec != nil {
+		if result, err := spec.Apply(query); err != nil {
+			return 0, err
+		} else {
+			query = result.(*gorm.DB)
+		}
+	}
+
+	if err := query.Count(&count).Error; err != nil {
+		return 0, err
+	}
+
+	return count, nil
+}
+
 func (r *GroupRepository) Create(group *domain.Group) (*domain.Group, error) {
 	model := r.toGroup(group)
 	err := r.conn.GetEngine().Create(model).Error

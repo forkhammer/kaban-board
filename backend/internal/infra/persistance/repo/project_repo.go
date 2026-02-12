@@ -56,6 +56,25 @@ func (r *ProjectRepository) List(spec repo.QuerySpec) ([]domain.Project, error) 
 	return domainProjects, nil
 }
 
+func (r *ProjectRepository) Count(spec repo.QuerySpec) (int64, error) {
+	var count int64
+	query := r.getQuery()
+
+	if spec != nil {
+		if result, err := spec.Apply(query); err != nil {
+			return 0, err
+		} else {
+			query = result.(*gorm.DB)
+		}
+	}
+
+	if err := query.Count(&count).Error; err != nil {
+		return 0, err
+	}
+
+	return count, nil
+}
+
 func (r *ProjectRepository) Create(Project *domain.Project) (*domain.Project, error) {
 	model, err := r.toProject(Project)
 	if err != nil {

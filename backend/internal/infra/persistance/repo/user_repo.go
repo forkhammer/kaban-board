@@ -47,6 +47,25 @@ func (r *UserRepository) List(spec repo.QuerySpec) ([]domain.User, error) {
 	return domainUsers, nil
 }
 
+func (r *UserRepository) Count(spec repo.QuerySpec) (int64, error) {
+	var count int64
+	query := r.getQuery()
+
+	if spec != nil {
+		if result, err := spec.Apply(query); err != nil {
+			return 0, err
+		} else {
+			query = result.(*gorm.DB)
+		}
+	}
+
+	if err := query.Count(&count).Error; err != nil {
+		return 0, err
+	}
+
+	return count, nil
+}
+
 func (r *UserRepository) Create(user *domain.User) (*domain.User, error) {
 	model := r.toUser(user)
 	err := r.conn.GetEngine().Create(model).Error

@@ -50,6 +50,25 @@ func (r *ReleaseRepository) List(spec repo.QuerySpec) ([]domain.Release, error) 
 	return domainReleases, nil
 }
 
+func (r *ReleaseRepository) Count(spec repo.QuerySpec) (int64, error) {
+	var count int64
+	query := r.getQuery()
+
+	if spec != nil {
+		if result, err := spec.Apply(query); err != nil {
+			return 0, err
+		} else {
+			query = result.(*gorm.DB)
+		}
+	}
+
+	if err := query.Count(&count).Error; err != nil {
+		return 0, err
+	}
+
+	return count, nil
+}
+
 func (r *ReleaseRepository) Create(release *domain.Release) (*domain.Release, error) {
 	model := r.toRelease(release)
 	err := r.conn.GetEngine().Create(model).Error

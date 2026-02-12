@@ -56,6 +56,25 @@ func (r *ColumnRepository) List(spec repo.QuerySpec) ([]domain.Column, error) {
 	return domainColumns, nil
 }
 
+func (r *ColumnRepository) Count(spec repo.QuerySpec) (int64, error) {
+	var count int64
+	query := r.getQuery()
+
+	if spec != nil {
+		if result, err := spec.Apply(query); err != nil {
+			return 0, err
+		} else {
+			query = result.(*gorm.DB)
+		}
+	}
+
+	if err := query.Count(&count).Error; err != nil {
+		return 0, err
+	}
+
+	return count, nil
+}
+
 func (r *ColumnRepository) Create(column *domain.Column) (*domain.Column, error) {
 	model, err := r.toColumn(column)
 	if err != nil {

@@ -58,6 +58,25 @@ func (r *IssueBindingRepository) List(spec repo.QuerySpec) ([]domain.IssueBindin
 	return domainIssueBindings, nil
 }
 
+func (r *IssueBindingRepository) Count(spec repo.QuerySpec) (int64, error) {
+	var count int64
+	query := r.getQuery()
+
+	if spec != nil {
+		if result, err := spec.Apply(query); err != nil {
+			return 0, err
+		} else {
+			query = result.(*gorm.DB)
+		}
+	}
+
+	if err := query.Count(&count).Error; err != nil {
+		return 0, err
+	}
+
+	return count, nil
+}
+
 func (r *IssueBindingRepository) Create(binding *domain.IssueBinding) (*domain.IssueBinding, error) {
 	model, err := r.toIssueBinding(binding)
 	if err != nil {

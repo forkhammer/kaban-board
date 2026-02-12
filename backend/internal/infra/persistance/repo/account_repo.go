@@ -59,6 +59,25 @@ func (r *AccountRepository) List(spec repo.QuerySpec) ([]domain.Account, error) 
 	return domainAccounts, nil
 }
 
+func (r *AccountRepository) Count(spec repo.QuerySpec) (int64, error) {
+	var count int64
+	query := r.conn.GetEngine().Model(&models.Account{})
+
+	if spec != nil {
+		if result, err := spec.Apply(query); err != nil {
+			return 0, err
+		} else {
+			query = result.(*gorm.DB)
+		}
+	}
+
+	if err := query.Count(&count).Error; err != nil {
+		return 0, err
+	}
+
+	return count, nil
+}
+
 func (r *AccountRepository) Create(account *domain.Account) (*domain.Account, error) {
 	model := r.toAccount(account)
 	err := r.conn.GetEngine().Create(model).Error

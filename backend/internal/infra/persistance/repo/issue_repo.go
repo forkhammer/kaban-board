@@ -73,6 +73,25 @@ func (r *IssueRepository) List(spec repo.QuerySpec) ([]domain.Issue, error) {
 	return domainIssues, nil
 }
 
+func (r *IssueRepository) Count(spec repo.QuerySpec) (int64, error) {
+	var count int64
+	query := r.getQuery()
+
+	if spec != nil {
+		if result, err := spec.Apply(query); err != nil {
+			return 0, err
+		} else {
+			query = result.(*gorm.DB)
+		}
+	}
+
+	if err := query.Count(&count).Error; err != nil {
+		return 0, err
+	}
+
+	return count, nil
+}
+
 func (r *IssueRepository) Create(issue *domain.Issue) (*domain.Issue, error) {
 	model := r.toIssue(issue)
 	err := r.conn.GetEngine().Create(model).Error

@@ -11,6 +11,7 @@ import { KanbanIssue } from '../../models/kanban-issue';
 import { IssueService } from '../../services/issue.service';
 import { ToastService } from 'src/app/modules/core/services/toast.service';
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
+import { Pagination } from 'src/app/modules/core/models/base';
 
 @Component({
   selector: 'app-issue-table',
@@ -68,7 +69,7 @@ export class IssueTableComponent {
       }),
       takeUntilDestroyed()
     ).subscribe(data => {
-      this.issues = data as KanbanIssue[]
+      this.issues = (data as Pagination<KanbanIssue>).results
     })
   }
 

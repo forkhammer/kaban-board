@@ -27,7 +27,7 @@
         <span *ngIf='nullTitle'>{{nullTitle}}</span>
       </div>
       <div ngbDropdownItem
-        *ngFor='let item of valuesModel'
+        *ngFor='let item of valuesModel; trackBy: trackByItem'
         [class.active]='item.id === value.value'
         (click)='select($event, item)'
         [innerHTML]="getItemTitle(item) | safe">

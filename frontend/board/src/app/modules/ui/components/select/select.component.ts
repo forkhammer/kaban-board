@@ -108,4 +108,8 @@ export class SelectComponent implements ControlValueAccessor {
     }
     return item.title;
   }
+
+  trackByItem(_: number, item: SelectValue) {
+      return item.id;
+  }
 }

@@ -8,6 +8,7 @@
   left: 0;
   right: 0;
   bottom: 0;
+  padding: $pt2;
 }
 
 .issue-table {
@@ -16,12 +17,13 @@
   width: 100%;
   flex-grow: 1;
   max-height: 100%;
+  border-radius: $pt;
+  overflow: hidden;
 
   thead {
     display: table;
     table-layout: fixed;
     flex: 0 0 auto;
-    width: calc(100% - 0.9em);
 
     tr {
       width: 100%;
@@ -29,11 +31,12 @@
 
     th {
       padding: $pt;
-      @include fs-paragraph-xs();
+      @include fs-paragraph-xxs();
       text-transform: uppercase;
       font-weight: 600;
-      border-right: 1px solid $gray-200;
-      background: $gray-300;
+      border-right: 1px solid $gray-100;
+      border-bottom: 1px solid $gray-100;
+      background: $white;
       text-align: center;
     }
   }
@@ -57,23 +60,29 @@
 
   thead th,
   ::ng-deep tbody td {
+    // border: 1px solid $black;
+
     &:nth-child(1),
     &:nth-child(7),
     &:nth-child(8),
     &:nth-child(11) {
       width: 100px;
+      max-width: 100px;
     }
     &:nth-child(3) {
       width: 200px;
+      max-width: 200px;
     }
     &:nth-child(4),
     &:nth-child(5),
     &:nth-child(6),
     &:nth-child(9) {
       width: 180px;
+      max-width: 180px;
     }
     &:nth-child(10) {
       width: 200px;
+      max-width: 200px;
     }
   }
 }

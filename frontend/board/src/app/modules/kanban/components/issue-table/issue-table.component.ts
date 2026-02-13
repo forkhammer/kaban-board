@@ -55,7 +55,8 @@ export class IssueTableComponent {
       debounceTime(1),
       switchMap(([_, user, team, sprint]) => {
         const query: Record<string, any> = {
-          'team': team!.id
+          'team': team!.id,
+          'limit': 50,
         }
         if (user) {
           query['assignee'] = user.id
@@ -84,5 +85,9 @@ export class IssueTableComponent {
 
   unbindIssue(bindingId: number) {
     this.issues = this.issues.filter(issue => issue.bindingId !== bindingId)
+  }
+
+  trackByIssue(index: number, issue: KanbanIssue) {
+    return issue.id
   }
 }

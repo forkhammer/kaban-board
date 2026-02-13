@@ -223,4 +223,8 @@ export class SelectModelComponent implements ControlValueAccessor, OnInit {
     }
   }
 
+  trackByItem(_: number, item: BaseModel) {
+    return item.id;
+  }
+
 }

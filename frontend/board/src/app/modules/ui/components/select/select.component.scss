@@ -58,6 +58,7 @@
   display: flex;
   position: relative;
   cursor: pointer;
+  max-width: 100%;
 
   &:after {
     display: none;

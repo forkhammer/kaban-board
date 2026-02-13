@@ -2,7 +2,7 @@ import { Component, DestroyRef, EventEmitter, inject, Input, OnInit, Output } fr
 import { BIND_STATUS_VALUES, ISSUE_PRIORITY_VALUES, KanbanIssue } from '../../models/kanban-issue';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
+import { debounceTime, filter, switchMap } from 'rxjs';
 import { isEqual } from 'lodash';
 import { IssueService } from '../../services/issue.service';
 import { catchErrorMessages } from 'src/app/modules/core/tools/catch-error';
@@ -36,16 +36,7 @@ export class IssueTableRowComponent implements OnInit{
   @Input()
   set issue(value: KanbanIssue) {
     this._issue = value
-    this.form.patchValue({
-      estimateDev: value.estimateDev,
-      estimateQA: value.estimateQA,
-      bindStatus: value.bindStatus,
-      assignee: value.assignee ? value.assignee.id : null,
-      comment: value.comment,
-      priority: value.priority,
-      release: value.release ? value.release.id : null,
-      epic: value.epic ? value.epic.id : null,
-    })
+    this.form.patchValue(this.getSaveData(value), {emitEvent: false})
   }
 
   get issue(): KanbanIssue {
@@ -67,10 +58,12 @@ export class IssueTableRowComponent implements OnInit{
 
   ngOnInit(): void {
     this.form.valueChanges.pipe(
-      distinctUntilChanged(isEqual),
       debounceTime(500),
+      filter(data => {
+        return !isEqual(data, this.getSaveData(this._issue))
+      }),
       switchMap(data => {
-        const query = Object.assign({}, this._issue, data)
+        const query = Object.assign({id: this._issue.id}, this.getSaveData(this._issue), data)
         return this.issueService.save(query).pipe(
           catchErrorMessages(this.toast)
         )
@@ -89,6 +82,19 @@ export class IssueTableRowComponent implements OnInit{
       ).subscribe(_ => {
         this.unbind.emit(this._issue.bindingId!)
       })
+    }
+  }
+
+  private getSaveData(issue: KanbanIssue) {
+    return {
+      estimateDev: issue.estimateDev,
+      estimateQA: issue.estimateQA,
+      bindStatus: issue.bindStatus,
+      assignee: issue.assignee ? issue.assignee.id : null,
+      comment: issue.comment,
+      priority: issue.priority,
+      release: issue.release ? issue.release.id : null,
+      epic: issue.epic ? issue.epic.id : null,
     }
   }
 }

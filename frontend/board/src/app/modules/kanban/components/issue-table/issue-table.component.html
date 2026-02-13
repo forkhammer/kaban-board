@@ -15,7 +15,7 @@
     </tr>
   </thead>
   <tbody>
-    <tr app-issue-table-row *ngFor="let issue of issues" [issue]="issue" (unbind)="unbindIssue($event)"></tr>
+    <tr app-issue-table-row *ngFor="let issue of issues; trackBy: trackByIssue" [issue]="issue" (unbind)="unbindIssue($event)"></tr>
     <tr *ngIf="sprint$ | async">
       <td colspan="11">
 

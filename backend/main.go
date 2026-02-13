@@ -79,7 +79,7 @@ func (app *Application) Init() {
 	di.RegisterBean("IssueBindingQuery", reflect.TypeOf((*issuebinding_spec.IssueBindingQueryImpl)(nil)))
 	di.RegisterBean("ReleaseQuery", reflect.TypeOf((*release_spec.ReleaseQueryImpl)(nil)))
 	di.RegisterBean("EpicQuery", reflect.TypeOf((*epic_spec.EpicQueryImpl)(nil)))
-	di.RegisterBean("PaginationQuery", reflect.TypeOf((*spec.PaginationQueryImpl)(nil)))
+	di.RegisterBean("CommonQuery", reflect.TypeOf((*spec.CommonQueryImpl)(nil)))
 
 	di.RegisterBean("JWTService", reflect.TypeOf((*services.JWTService)(nil)))
 	di.RegisterBean("PasswordService", reflect.TypeOf((*services.PasswordService)(nil)))

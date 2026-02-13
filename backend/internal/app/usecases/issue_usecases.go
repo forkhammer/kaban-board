@@ -29,13 +29,13 @@ type IssuePage struct {
 }
 
 type IssueUseCases struct {
-	issueQuery      queries.IssueQuery      `di.inject:"IssueQuery"`
-	issueRepo       repo.IssueRepo          `di.inject:"IssueRepository"`
-	sprintRepo      repo.SprintRepo         `di.inject:"SprintRepository"`
-	userRepo        repo.UserRepo           `di.inject:"UserRepository"`
-	releaseRepo     repo.ReleaseRepo        `di.inject:"ReleaseRepository"`
-	epicRepo        repo.EpicRepo           `di.inject:"EpicRepository"`
-	paginationQuery queries.PaginationQuery `di.inject:"PaginationQuery"`
+	issueQuery  queries.IssueQuery  `di.inject:"IssueQuery"`
+	issueRepo   repo.IssueRepo      `di.inject:"IssueRepository"`
+	sprintRepo  repo.SprintRepo     `di.inject:"SprintRepository"`
+	userRepo    repo.UserRepo       `di.inject:"UserRepository"`
+	releaseRepo repo.ReleaseRepo    `di.inject:"ReleaseRepository"`
+	epicRepo    repo.EpicRepo       `di.inject:"EpicRepository"`
+	commonQuery queries.CommonQuery `di.inject:"CommonQuery"`
 }
 
 func (u *IssueUseCases) GetIssues(filter *queries.IssueFilter, page int, limit int) (*IssuePage, error) {
@@ -48,7 +48,10 @@ func (u *IssueUseCases) GetIssues(filter *queries.IssueFilter, page int, limit i
 	if queryLimit <= 0 {
 		queryLimit = DEFAULT_PAGE_SIZE
 	}
-	query := u.paginationQuery.GetSpec(queryPage, queryLimit)
+	query := repo.And(
+		u.commonQuery.PaginationSpec(queryPage, queryLimit),
+		u.commonQuery.OrderSpec("issues.created_at DESC"),
+	)
 
 	if filter != nil {
 		query = repo.And(query, u.issueQuery.GetSpec(*filter))

@@ -28,10 +28,29 @@ func (s *PaginationSpec) Apply(conn any) (any, error) {
 	return query, nil
 }
 
-type PaginationQueryImpl struct {
-	queries.PaginationQuery
+type OrderSpec struct {
+	repo.BaseQuerySpec
+	order string
 }
 
-func (q *PaginationQueryImpl) GetSpec(page, limit int) repo.QuerySpec {
+func (s *OrderSpec) Apply(conn any) (any, error) {
+	query := conn.(*gorm.DB)
+
+	if s.order != "" {
+		query = query.Order(s.order)
+	}
+
+	return query, nil
+}
+
+type CommonQueryImpl struct {
+	queries.CommonQuery
+}
+
+func (q *CommonQueryImpl) PaginationSpec(page, limit int) repo.QuerySpec {
 	return &PaginationSpec{page: page, limit: limit}
+}
+
+func (q *CommonQueryImpl) OrderSpec(order string) repo.QuerySpec {
+	return &OrderSpec{order: order}
 }

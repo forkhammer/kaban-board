@@ -51,9 +51,10 @@
       width: 100%;
       display: table;
       table-layout: fixed;
+      border-bottom: 1px solid $gray-100;
 
       &:hover {
-        background-color: $gray-100;;
+        background-color: $gray-100;
       }
     }
   }

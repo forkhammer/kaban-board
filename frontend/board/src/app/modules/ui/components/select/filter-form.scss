@@ -1,5 +1,15 @@
 @import '../../../../../styles/imports';
 
 .filter-form {
-  padding: 0 $pt2;
+  padding: 0;
+
+  &__input {
+    border-radius: 0;
+    border-style: none none solid none;
+
+    &:focus {
+      box-shadow: none;
+      border-color: $border-color;
+    }
+  }
 }

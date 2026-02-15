@@ -2,7 +2,7 @@
   <div class="btn-group dropdown-toggle-group">
     <div ngbDropdownToggle class='btn btn-outline-secondary btn-block flex-grow-1'>
       <span class="caption text-truncate text-gray300" *ngIf='!valueModel$.value'>
-        <span *ngIf='!title && !nullTitle'>Выберите</span>
+        <span *ngIf='!title && !nullTitle'>...</span>
         <span *ngIf='nullTitle'>{{nullTitle}}</span>
         <span *ngIf='!nullTitle && title'>{{title}}</span>
       </span>

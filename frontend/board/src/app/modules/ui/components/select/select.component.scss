@@ -3,37 +3,20 @@
 :host {
   max-width: 100%;
 
-  &.input-height {
-    .btn-dropdown-toggle {
-      line-height: 62px;
-    }
+  &.flat {
+    .dropdown-toggle {
+      border-color: transparent;
+      border-radius: $pt2;
+      line-height: 34px;
 
-    .dropdown-menu {
-      transform: translate(0, 62px) !important;
-    }
-  }
-
-  &.select-inline {
-    .btn-dropdown-toggle {
-      padding: $pt;
-      line-height: 1.5em;
-      border: none;
-      color: $gray-700;
-      background: transparent;
-    }
-
-    .dropdown-menu {
-      transform: translate(0, 30px) !important;
-    }
-
-    .dropdown {
+      &:hover,
       &.show {
-        .btn-dropdown-toggle {
-          border: 1px $border-color;
-          border-style: solid solid none solid;
-          background: $white;
-        }
+        background: $white;
       }
+    }
+
+    .caret {
+      display: none;
     }
   }
 }
@@ -71,6 +54,8 @@
   max-width: calc(100% - 10px);
   min-width: 100px;
   margin-right: $pt2;
+  font-weight: 400;
+  @include fs-paragraph-xs();
 }
 
 .dropdown-menu {

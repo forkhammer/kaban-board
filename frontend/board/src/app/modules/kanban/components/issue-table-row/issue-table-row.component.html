@@ -11,26 +11,26 @@
       [valueModel]="issue.assignee"></app-assignee-select>
   </td>
   <td class="column">
-    <app-select-model formControlName="epic" [service]="epicService" [useSearch]="true" [useClear]="true"
+    <app-select-model class="flat" formControlName="epic" [service]="epicService" [useSearch]="true" [useClear]="true"
       [filter]="{project: issue.projectId}"
       [valueModel]="issue.epic"></app-select-model>
   </td>
   <td class="column">
-    <app-select-model formControlName="release" [service]="releaseService" [useSearch]="true" [useClear]="true"
+    <app-select-model class="flat" formControlName="release" [service]="releaseService" [useSearch]="true" [useClear]="true"
       [filter]="{project: issue.projectId}"
       [valueModel]="issue.release"></app-select-model>
   </td>
   <td class="column">
-    <app-select formControlName="priority" [values]="ISSUE_PRIORITY_VALUES"></app-select>
+    <app-select class="flat" formControlName="priority" [values]="ISSUE_PRIORITY_VALUES"></app-select>
   </td>
   <td class="column">
-    <app-select-estimate formControlName="estimateDev"></app-select-estimate>
+    <app-select-estimate class="flat" formControlName="estimateDev"></app-select-estimate>
   </td>
   <td class="column">
-    <app-select-estimate formControlName="estimateQA"></app-select-estimate>
+    <app-select-estimate class="flat" formControlName="estimateQA"></app-select-estimate>
   </td>
   <td class="column">
-    <app-select [values]="BIND_STATUS_VALUES" formControlName="bindStatus"></app-select>
+    <app-select class="flat" [values]="BIND_STATUS_VALUES" formControlName="bindStatus"></app-select>
   </td>
   <td class="column">
     <textarea rows="1" formControlName="comment" class="form-control"></textarea>

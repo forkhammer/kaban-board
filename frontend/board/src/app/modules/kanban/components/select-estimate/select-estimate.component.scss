@@ -5,6 +5,30 @@
   width: 100%;
 }
 
+.dropdown-toggle {
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 4px;
+  border-radius: $pt2;
+  transition-duration: .2s;
+
+  &:hover,
+  &.show {
+    background: $white;
+  }
+
+  &:after {
+    display: none;
+  }
+}
+
+.caption {
+  text-align: center;
+}
+
 .dropdown-menu {
   padding: 0;
 }

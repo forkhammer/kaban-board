@@ -16,6 +16,7 @@
   </thead>
   <tbody>
     <tr app-issue-table-row *ngFor="let issue of issues; trackBy: trackByIssue" [issue]="issue" (unbind)="unbindIssue($event)"></tr>
+
     <tr *ngIf="sprint$ | async">
       <td colspan="11">
 
@@ -27,6 +28,12 @@
         <app-issue-table-append-row *ngFor="let issue of appendedIssues; let i = index" (issue)="bindIssue($event)"
           [sprint]="(sprint$ | async)!"
           [index]="i"></app-issue-table-append-row>
+      </td>
+    </tr>
+
+    <tr *ngIf="!(sprint$ | async)">
+      <td colspan="11">
+        <div class="end" observeVisibility [debounceTime]="100" [threshold]="0.5" (visible)="onEnd($event)"></div>
       </td>
     </tr>
   </tbody>

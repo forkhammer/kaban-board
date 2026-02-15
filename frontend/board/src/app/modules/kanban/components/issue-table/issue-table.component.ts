@@ -1,5 +1,5 @@
 import { Component, inject, Input } from '@angular/core';
-import { BehaviorSubject, combineLatestWith, debounceTime, distinctUntilChanged, filter, switchMap, tap, timer } from 'rxjs';
+import { BehaviorSubject, combineLatestWith, debounceTime, distinctUntilChanged, filter, of, switchMap, tap, timer } from 'rxjs';
 import { KanbanUser } from '../../models/kanban-user';
 import { Team } from '../../models/team';
 import { Sprint } from '../../models/sprint';
@@ -12,6 +12,7 @@ import { IssueService } from '../../services/issue.service';
 import { ToastService } from 'src/app/modules/core/services/toast.service';
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { Pagination } from 'src/app/modules/core/models/base';
+import { User } from '../../models/user';
 
 @Component({
   selector: 'app-issue-table',
@@ -30,7 +31,11 @@ export class IssueTableComponent {
   public sprint$ = new BehaviorSubject<Sprint | null | undefined>(null)
   private timer$ = timer(0, environment.autoUpdateIssuesMin * 60 * 1000)
   public issues: KanbanIssue[] = []
+  public issuePage: Pagination<KanbanIssue> | null = null
   public appendedIssues: (number | null)[] = []
+  public isLoading = false
+  isPageMore$ = new BehaviorSubject<boolean>(false);
+  isLoadMore$ = new BehaviorSubject<boolean>(false);
 
   @Input() set user(value : KanbanUser | undefined | null) {
     this.user$.next(value)
@@ -45,6 +50,13 @@ export class IssueTableComponent {
   }
 
   constructor() {
+    this.isPageMore$.pipe(
+      filter(Boolean),
+      takeUntilDestroyed()
+    ).subscribe(data => {
+      this.isLoadMore$.next(data)
+    })
+
     this.timer$.pipe(
       combineLatestWith(this.user$, this.team$, this.sprint$),
       debounceTime(100),
@@ -53,10 +65,13 @@ export class IssueTableComponent {
       }),
       distinctUntilChanged(isEqual),
       debounceTime(1),
-      switchMap(([_, user, team, sprint]) => {
+      combineLatestWith(this.isLoadMore$),
+      switchMap(([data, isLoadingMore]) => {
+        const [_, user, team, sprint] = data as [any, KanbanUser, Team, Sprint]
         const query: Record<string, any> = {
           'team': team!.id,
-          'limit': 50,
+          'limit': sprint ? 10000 : 50,
+          'page': this.isPageMore$.value ? this.issuePage!.page + 1 : 1
         }
         if (user) {
           query['assignee'] = user.id
@@ -64,13 +79,24 @@ export class IssueTableComponent {
         if (sprint) {
           query['sprint'] = sprint.id
         }
+        this.isLoading = true
         return this.issueService.list(query).pipe(
-          catchErrorMessages(this.toast)
+          combineLatestWith(of(this.isPageMore$.value)),
+          catchErrorMessages(this.toast, () => this.isLoading = false)
         )
       }),
       takeUntilDestroyed()
-    ).subscribe(data => {
-      this.issues = (data as Pagination<KanbanIssue>).results
+    ).subscribe(([data, isLoadingMore]) => {
+      this.isLoading = false
+
+      if (isLoadingMore && this.issuePage) {
+        this.issuePage = (data as Pagination<KanbanIssue>)
+        this.issues = this.issues.concat(this.issuePage.results)
+        this.isPageMore$.next(false)
+      } else {
+        this.issuePage = (data as Pagination<KanbanIssue>)
+        this.issues = this.issuePage.results
+      }
     })
   }
 
@@ -89,5 +115,15 @@ export class IssueTableComponent {
 
   trackByIssue(index: number, issue: KanbanIssue) {
     return issue.id
+  }
+
+  loadMore() {
+    if (this.issuePage && (this.issuePage!.page < this.issuePage!.pages)) {
+      this.isPageMore$.next(true);
+    }
+  }
+
+  onEnd(el: HTMLElement) {
+    this.loadMore()
   }
 }

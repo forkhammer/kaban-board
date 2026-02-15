@@ -53,14 +53,17 @@ func (u *IssueUseCases) GetIssues(filter *queries.IssueFilter, page int, limit i
 		u.commonQuery.OrderSpec("issues.created_at DESC"),
 	)
 
+	var filterQuery repo.QuerySpec
 	if filter != nil {
-		query = repo.And(query, u.issueQuery.GetSpec(*filter))
+		filterQuery = u.issueQuery.GetSpec(*filter)
 	}
+
+	query = repo.And(query, filterQuery)
 	issues, err := u.issueRepo.List(query)
 	if err != nil {
 		return nil, err
 	}
-	count, err := u.issueRepo.Count(query)
+	count, err := u.issueRepo.Count(filterQuery)
 	if err != nil {
 		return nil, err
 	}

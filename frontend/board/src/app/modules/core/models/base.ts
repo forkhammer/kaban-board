@@ -3,13 +3,11 @@ export interface BaseModel {
 }
 
 export interface Pagination<T> {
-  count?: number;
-  next?: string;
-  pages?: number;
+  count: number;
+  pages: number;
   page: number;
-  previous?: string;
-  start_index?: number;
-  end_index?: number;
+  start_index: number;
+  end_index: number;
   results: T[];
 }
 

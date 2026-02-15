@@ -18,6 +18,7 @@ import {SelectItemsPipe} from "./pipes/select-items.pipe";
 import { ElapsedTimePipe } from './pipes/elapsed-time.pipe';
 import { FormatDatePipe } from './pipes/format-date.pipe';
 import { InputErrorComponent } from './components/input-error/input-error.component';
+import { ObserveVisibilityDirective } from './directives/observe-visibility.directive';
 
 
 
@@ -37,6 +38,7 @@ import { InputErrorComponent } from './components/input-error/input-error.compon
     ElapsedTimePipe,
     FormatDatePipe,
     InputErrorComponent,
+    ObserveVisibilityDirective,
   ],
   exports: [
     HeaderComponent,
@@ -51,6 +53,7 @@ import { InputErrorComponent } from './components/input-error/input-error.compon
     ElapsedTimePipe,
     FormatDatePipe,
     InputErrorComponent,
+    ObserveVisibilityDirective
   ],
   imports: [
     CommonModule,

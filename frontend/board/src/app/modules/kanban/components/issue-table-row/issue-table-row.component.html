@@ -6,9 +6,9 @@
     {{issue.title}}
   </td>
   <td class="column">
-    <app-select-model [service]="userService" formControlName="assignee" [useSearch]="true" [useClear]="true"
+    <app-assignee-select formControlName="assignee" [useSearch]="true" [useClear]="true"
       [formatter]="userService.formatter" [itemFormatter]="userService.formatter"
-      [valueModel]="issue.assignee"></app-select-model>
+      [valueModel]="issue.assignee"></app-assignee-select>
   </td>
   <td class="column">
     <app-select-model formControlName="epic" [service]="epicService" [useSearch]="true" [useClear]="true"

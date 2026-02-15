@@ -1,14 +1,20 @@
 <div ngbDropdown #dropdown='ngbDropdown' autoClose='outside' (openChange)="onOpenChange($event)">
   <div class="btn-group dropdown-toggle-group">
-    <div ngbDropdownToggle class='btn btn-outline-secondary btn-block flex-grow-1'>
-      <span class="caption text-truncate text-gray300" *ngIf='!valueModel$.value'>
-        <span *ngIf='!title && !nullTitle'>Выберите</span>
-        <span *ngIf='nullTitle'>{{nullTitle}}</span>
-        <span *ngIf='!nullTitle && title'>{{title}}</span>
-      </span>
-      <span class="caption text-truncate" *ngIf='valueModel$.value' [innerHTML]="getTitle(valueModel$.value) | safe"></span>
-      <fa-icon class='caret ml-1' [icon]='faAngleDown' *ngIf='dropdown.isOpen() === false'></fa-icon>
-      <fa-icon class='caret ml-1' [icon]='faAngleUp' *ngIf='dropdown.isOpen() === true'></fa-icon>
+    <div ngbDropdownToggle>
+      <ng-container *ngIf="valueModel$.value">
+        <div class="avatar">
+          <img [src]="valueModel$.value.avatar_url">
+        </div>
+        <div class="name">
+          {{valueModel$.value.name}}
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="!valueModel$.value">
+        <div class="empty-avatar">
+          <fa-icon [icon]="faUser"></fa-icon>
+        </div>
+      </ng-container>
     </div>
   </div>
   <div ngbDropdownMenu class='shadow'>
@@ -24,8 +30,13 @@
       <div ngbDropdownItem
         *ngFor='let item of valuesModel; trackBy: trackByItem'
         [class.active]='item.id === value.value'
-        (click)='select($event, item)'
-        [innerHTML]="getItemTitle(item) | safe">
+        (click)='select($event, item)'>
+        <div class="item-avatar">
+          <img [src]="item.avatar_url">
+        </div>
+        <div class="item-name">
+          {{item.name}}
+        </div>
       </div>
     </div>
 

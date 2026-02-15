@@ -50,19 +50,20 @@
     <div class="board-header" [formGroup]="filterForm">
       <div class="btn-group me-3">
         <button class="btn" (click)="viewBoard()"
-          [class.btn-primary]="view === KanbanView.BOARD"
-          [class.btn-light]="view !== KanbanView.BOARD">
+          [class.btn-primary]="view === KanbanView.BOARD">
           <fa-icon [icon]="faTableColumns"></fa-icon>
+          Доска
         </button>
         <button class="btn" (click)="viewList()"
-          [class.btn-primary]="view === KanbanView.LIST"
-          [class.btn-light]="view !== KanbanView.LIST">
+          [class.btn-primary]="view === KanbanView.LIST">
           <fa-icon [icon]="faTableList"></fa-icon>
+          Список
         </button>
       </div>
 
       <app-select-model [service]="sprintService" formControlName="sprint" [useClear]="true" title="Спринт"
         [itemFormatter]="sprintService.formatter" [formatter]="sprintService.formatter"
+        [filter]="sprintFilter"
         class="me-1" #sprintSelect></app-select-model>
 
       <button class="btn btn-outline-secondary me-3"><fa-icon [icon]="faPlus"></fa-icon></button>

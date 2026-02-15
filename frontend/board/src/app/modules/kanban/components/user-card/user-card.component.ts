@@ -10,8 +10,4 @@ import {KanbanUser} from "../../models/kanban-user";
 export class UserCardComponent {
   @Input() user!: KanbanUser
   @Input() selected: boolean = false
-
-  getIssuesCount() {
-    return 0
-  }
 }

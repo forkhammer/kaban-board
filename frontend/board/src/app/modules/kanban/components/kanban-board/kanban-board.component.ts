@@ -63,6 +63,7 @@ export class KanbanBoardComponent implements OnInit, AfterViewInit {
 
   users: KanbanUser[] = []
   teams$ = new BehaviorSubject<Team[]>([])
+  sprintFilter: Record<string, any>  = {}
 
   public isLoading = false
   public selectedUser: KanbanUser | undefined = undefined
@@ -156,6 +157,12 @@ export class KanbanBoardComponent implements OnInit, AfterViewInit {
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(value => {
       this.filterForm.patchValue({team: value})
+
+      if (value) {
+        this.sprintFilter = {team: value}
+      } else {
+        this.sprintFilter = {}
+      }
     })
 
     this.teamId$.pipe(
@@ -163,6 +170,13 @@ export class KanbanBoardComponent implements OnInit, AfterViewInit {
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(([teamId, teams]) => {
       this.selectedTeam = teams.find(team => team.id === teamId) ?? teams[0]
+
+      if (this.selectedTeam.id !== teamId) {
+        this.router.navigate([], {
+          queryParams: {team: this.selectedTeam.id},
+          queryParamsHandling: 'merge'
+        })
+      }
     })
 
     this.sprintId$.pipe(

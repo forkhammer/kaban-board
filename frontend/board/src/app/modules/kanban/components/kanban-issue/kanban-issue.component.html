@@ -1,7 +1,7 @@
 <div class="issue">
   <div class="header">
     <div class="assignee" *ngIf="assignee" ngbTooltip="{{assignee.name}}">
-      <img [src]="assignee.avatar_url" [alt]="assignee.name">
+      <img [src]="assignee.avatar_url">
     </div>
 
     <div class="task-type fs-paragraph-xxs" *ngIf="issue?.taskType">

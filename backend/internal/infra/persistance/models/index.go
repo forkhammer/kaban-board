@@ -14,4 +14,5 @@ var ALL_MODELS []any = []any{
 	&Sprint{},
 	&IssueBinding{},
 	&Epic{},
+	&KVElement{},
 }

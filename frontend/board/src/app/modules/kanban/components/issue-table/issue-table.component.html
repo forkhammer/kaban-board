@@ -17,7 +17,7 @@
   <tbody>
     <tr app-issue-table-row *ngFor="let issue of issues; trackBy: trackByIssue" [issue]="issue" (unbind)="unbindIssue($event)"></tr>
 
-    <tr *ngIf="sprint$ | async">
+    <tr *ngIf="(sprint$ | async) && (accountService.isAdmin$ | async)">
       <td colspan="11">
 
         <button class="btn-append" (click)="appendIssue()">
@@ -25,9 +25,11 @@
           <span>Добавить задачу</span>
         </button>
 
-        <app-issue-table-append-row *ngFor="let issue of appendedIssues; let i = index" (issue)="bindIssue($event)"
-          [sprint]="(sprint$ | async)!"
-          [index]="i"></app-issue-table-append-row>
+        <ng-container>
+          <app-issue-table-append-row *ngFor="let issue of appendedIssues; let i = index" (issue)="bindIssue($event)"
+            [sprint]="(sprint$ | async)!"
+            [index]="i"></app-issue-table-append-row>
+        </ng-container>
       </td>
     </tr>
 

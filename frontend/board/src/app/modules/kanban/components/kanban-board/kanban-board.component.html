@@ -66,7 +66,9 @@
         [filter]="sprintFilter"
         class="me-1" #sprintSelect></app-select-model>
 
-      <button class="btn btn-outline-secondary me-3"><fa-icon [icon]="faPlus"></fa-icon></button>
+      <button class="btn btn-outline-secondary me-3" *ngIf="accountService.isAdmin$ | async">
+        <fa-icon [icon]="faPlus"></fa-icon>
+      </button>
 
       <a routerLink="/reports" class="btn btn-light ms-auto">Отчеты по спринту</a>
     </div>

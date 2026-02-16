@@ -1,5 +1,5 @@
 import { Component, DestroyRef, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
-import { BIND_STATUS_VALUES, ISSUE_PRIORITY_VALUES, KanbanIssue } from '../../models/kanban-issue';
+import { BIND_STATUS_LABELS, BIND_STATUS_VALUES, ISSUE_PRIORITY_LABELS, ISSUE_PRIORITY_VALUES, KanbanIssue } from '../../models/kanban-issue';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { debounceTime, filter, switchMap } from 'rxjs';
@@ -10,6 +10,8 @@ import { ToastService } from 'src/app/modules/core/services/toast.service';
 import { UserService } from '../../services/user.service';
 import { ReleaseService } from '../../services/release.service';
 import { EpicService } from '../../services/epic.service';
+import { AccountService } from 'src/app/modules/core/services/account.service';
+import {faUser} from '@fortawesome/free-regular-svg-icons';
 
 @Component({
   selector: 'app-issue-table-row, [app-issue-table-row]',
@@ -25,13 +27,18 @@ export class IssueTableRowComponent implements OnInit{
   userService = inject(UserService)
   releaseService = inject(ReleaseService)
   epicService = inject(EpicService)
+  accountService = inject(AccountService)
 
   readonly BIND_STATUS_VALUES = BIND_STATUS_VALUES
+  readonly BIND_STATUS_LABELS =  BIND_STATUS_LABELS
   readonly ISSUE_PRIORITY_VALUES = ISSUE_PRIORITY_VALUES
+  readonly ISSUE_PRIORITY_LABELS = ISSUE_PRIORITY_LABELS
+  readonly faUser = faUser
 
   private _issue!: KanbanIssue
   form: FormGroup
   @Output() unbind = new EventEmitter<number>()
+  isAdmin = false
 
   @Input()
   set issue(value: KanbanIssue) {
@@ -54,6 +61,8 @@ export class IssueTableRowComponent implements OnInit{
       release: [null],
       epic: [null],
     })
+
+    this.accountService.isAdmin$.pipe(takeUntilDestroyed()).subscribe(data => this.isAdmin = data)
   }
 
   ngOnInit(): void {

@@ -13,6 +13,7 @@ import { ToastService } from 'src/app/modules/core/services/toast.service';
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { Pagination } from 'src/app/modules/core/models/base';
 import { User } from '../../models/user';
+import { AccountService } from 'src/app/modules/core/services/account.service';
 
 @Component({
   selector: 'app-issue-table',
@@ -23,6 +24,7 @@ import { User } from '../../models/user';
 export class IssueTableComponent {
   private issueService = inject(IssueService)
   private toast = inject(ToastService)
+  public accountService = inject(AccountService)
 
   faPlus = faPlus
 

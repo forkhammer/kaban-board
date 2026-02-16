@@ -15,5 +15,5 @@ RUN npm i -g --unsafe-perm @angular/cli@19.2.13 \
 
 FROM caddy:2.10.0-alpine
 
-COPY --from=build /var/www/dist/board/ /var/www/board/
+COPY --from=build /var/www/dist/board/browser/ /var/www/board/
 COPY Caddyfile /etc/caddy/Caddyfile

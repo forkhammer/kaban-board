@@ -20,11 +20,17 @@ $board-header-height: 100px;
 }
 
 .teams {
-  background: $gray-300;
+  background: $gray-100;
   padding: $pt;
   display: flex;
   flex-direction: column;
   gap: $pt;
+
+  :host-context([data-bs-theme="dark"]) {
+    .teams {
+      background: $gray-900;
+    }
+  }
 }
 
 .team {
@@ -40,6 +46,18 @@ $board-header-height: 100px;
   font-weight: 600;
   cursor: pointer;
 
+  :host-context([data-bs-theme="dark"]) {
+    .team {
+      background: $gray-800;
+      color: $white;
+      border-color: $gray-800;
+
+      &.active {
+        border-color: $gray-300;
+      }
+    }
+  }
+
   &:hover {
     border-color: $primary;
   }
@@ -47,6 +65,21 @@ $board-header-height: 100px;
   &.active {
     border-color: $primary;
     color: $primary;
+  }
+}
+
+.workarea {
+  display: flex;
+  align-items: stretch;
+  flex-grow: 1;
+  border: 1px solid $gray-200;
+  border-radius: 4px;
+  overflow: hidden;
+
+  :host-context([data-bs-theme="dark"]) {
+    .workarea {
+      border-color: $gray-800;
+    }
   }
 }
 
@@ -61,6 +94,7 @@ $board-header-height: 100px;
   :host-context([data-bs-theme="dark"]) {
     .user-list  {
       background: $gray-900;
+      border-right-color: $gray-800;
     }
   }
 
@@ -86,6 +120,17 @@ $board-header-height: 100px;
     display: flex;
     align-items: center;
     color: $gray-700;
+
+    :host-context([data-bs-theme="dark"]) {
+      .user-list__team-link {
+        background: $gray-900;
+        color: $white;
+
+        &.active {
+          background-color: $gray-800;
+        }
+      }
+    }
 
     > span {
       flex-grow: 1;
@@ -137,8 +182,18 @@ $board-header-height: 100px;
 }
 
 .board-header {
-  padding: $pt2 $pt3;
+  padding: $pt;
   background: $white;
   display: flex;
   align-items: center;
+
+  :host-context([data-bs-theme="dark"]) {
+    .board-header {
+      background: $gray-900;
+    }
+  }
+}
+
+.sprint-select {
+  width: 300px;
 }

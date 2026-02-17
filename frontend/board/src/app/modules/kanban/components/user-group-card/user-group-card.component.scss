@@ -1,7 +1,7 @@
 @import '../../../../../styles/imports.scss';
 
 .card {
-  background: $light;
+  background: transparent;
   cursor: pointer;
 
   :host-context([data-bs-theme="dark"]) {
@@ -20,4 +20,8 @@
   &.open {
     height: auto;
   }
+}
+
+.icon {
+  @include fs-paragraph-xxs();
 }

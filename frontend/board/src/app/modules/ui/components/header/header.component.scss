@@ -3,7 +3,7 @@
 :host {
   position: relative;
   z-index: 10;
-  background: $white;
+  background: $gray-100;
 
   :host-context([data-bs-theme="dark"]) {
     background: $gray-900;

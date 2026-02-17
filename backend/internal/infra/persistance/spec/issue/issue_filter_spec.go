@@ -28,7 +28,7 @@ func (s *IssueFilterSpec) Apply(conn any) (any, error) {
 			Joins("left join user_groups on users.id = user_groups.user_id").
 			Where("user_groups.group_id = ?", s.Filter.GroupId)
 	}
-	if s.Filter.TeamId != nil {
+	if s.Filter.TeamId != nil && s.Filter.SprintId == nil {
 		query = query.
 			Joins("left join projects on issues.project_id = projects.id").
 			Where("projects.team_id = ?", s.Filter.TeamId)

@@ -72,7 +72,10 @@ export class IssueTableRowComponent implements OnInit{
         return !isEqual(data, this.getSaveData(this._issue))
       }),
       switchMap(data => {
-        const query = Object.assign({id: this._issue.id}, this.getSaveData(this._issue), data)
+        const query = Object.assign({
+          id: this._issue.id,
+          bindingId: this._issue.bindingId,
+        }, this.getSaveData(this._issue), data)
         return this.issueService.save(query).pipe(
           catchErrorMessages(this.toast)
         )

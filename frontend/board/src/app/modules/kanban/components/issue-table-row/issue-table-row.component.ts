@@ -2,7 +2,7 @@ import { Component, DestroyRef, EventEmitter, inject, Input, OnInit, Output } fr
 import { BIND_STATUS_LABELS, BIND_STATUS_VALUES, ISSUE_PRIORITY_LABELS, ISSUE_PRIORITY_VALUES, KanbanIssue } from '../../models/kanban-issue';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { debounceTime, filter, switchMap } from 'rxjs';
+import { BehaviorSubject, debounceTime, filter, switchMap } from 'rxjs';
 import { isEqual } from 'lodash';
 import { IssueService } from '../../services/issue.service';
 import { catchErrorMessages } from 'src/app/modules/core/tools/catch-error';
@@ -12,6 +12,7 @@ import { ReleaseService } from '../../services/release.service';
 import { EpicService } from '../../services/epic.service';
 import { AccountService } from 'src/app/modules/core/services/account.service';
 import {faUser} from '@fortawesome/free-regular-svg-icons';
+import { Team } from '../../models/team';
 
 @Component({
   selector: 'app-issue-table-row, [app-issue-table-row]',
@@ -39,6 +40,8 @@ export class IssueTableRowComponent implements OnInit{
   form: FormGroup
   @Output() unbind = new EventEmitter<number>()
   isAdmin = false
+  assigneeFilter: Record<string, any> = {}
+  team$ = new BehaviorSubject<Team | null | undefined>(null)
 
   @Input()
   set issue(value: KanbanIssue) {
@@ -48,6 +51,10 @@ export class IssueTableRowComponent implements OnInit{
 
   get issue(): KanbanIssue {
     return this._issue
+  }
+
+  @Input() set team(value: Team | undefined | null) {
+    this.team$.next(value)
   }
 
   constructor() {
@@ -63,6 +70,14 @@ export class IssueTableRowComponent implements OnInit{
     })
 
     this.accountService.isAdmin$.pipe(takeUntilDestroyed()).subscribe(data => this.isAdmin = data)
+
+    this.team$.pipe(takeUntilDestroyed()).subscribe(data => {
+      if (data) {
+        this.assigneeFilter = {team_id: data.id}
+      } else {
+        this.assigneeFilter = {}
+      }
+    })
   }
 
   ngOnInit(): void {

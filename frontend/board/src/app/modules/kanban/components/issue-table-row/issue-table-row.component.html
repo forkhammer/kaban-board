@@ -19,6 +19,7 @@
     <app-assignee-select formControlName="assignee" [useSearch]="true" [useClear]="true"
       [formatter]="userService.formatter" [itemFormatter]="userService.formatter"
       [valueModel]="issue.assignee"
+      [filter]="assigneeFilter"
       *ngIf="isAdmin"></app-assignee-select>
   </td>
   <td class="column">

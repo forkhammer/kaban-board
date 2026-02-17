@@ -29,6 +29,21 @@ func (s *UserFilterSpec) Apply(conn any) (any, error) {
 		query = query.Where("name like ?", fmt.Sprintf("%%%s%%", *s.Filter.Search))
 	}
 
+	if s.Filter.TeamId != nil {
+		query = query.Where(
+			`
+				id IN (
+					SELECT user_id 
+					FROM assignees 
+					INNER JOIN issues ON issues.id = assignees.issue_id
+					INNER JOIN projects ON projects.id = issues.project_id
+					WHERE projects.team_id = ?
+				)
+			`,
+			*s.Filter.TeamId,
+		)
+	}
+
 	return query, nil
 }
 

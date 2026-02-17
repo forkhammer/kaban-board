@@ -65,7 +65,7 @@
         [filter]="sprintFilter"
         class="me-1" #sprintSelect></app-sprint-select>
 
-      <button class="btn btn-outline-secondary me-3" *ngIf="accountService.isAdmin$ | async" (click)="addSprint()">
+      <button class="btn me-3" *ngIf="accountService.isAdmin$ | async" (click)="addSprint()" ngbTooltip="Добавить спринт">
         <fa-icon [icon]="faPlus"></fa-icon>
       </button>
 

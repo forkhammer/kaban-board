@@ -18,6 +18,22 @@
     .caret {
       display: none;
     }
+
+    .clear {
+      display: none;
+    }
+
+    .dropdown-toggle-group {
+      &:hover {
+        .clear {
+          display: flex;
+        }
+
+        .dropdown-toggle {
+          background: $white;
+        }
+      }
+    }
   }
 }
 
@@ -42,6 +58,7 @@
   position: relative;
   cursor: pointer;
   max-width: 100%;
+  border-color: $gray-300;
 
   &:after {
     display: none;
@@ -79,4 +96,24 @@
 .scroll {
   max-height: 400px;
   overflow-y: auto;
+}
+
+.clear {
+  background: $white;
+  border: none;
+  width: $pt3;
+  height: $pt3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $gray-500;
+  border-radius: 100%;
+  position: absolute;
+  right: $pt;
+  top: calc(50% - $pt3 / 2);
+  transition-duration: .2s;
+
+  &:hover {
+    background: $gray-100;
+  }
 }

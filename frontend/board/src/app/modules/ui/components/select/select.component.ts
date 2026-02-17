@@ -1,6 +1,6 @@
 import { Component, forwardRef, Input, ViewChild, ElementRef, inject } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR, FormBuilder, FormGroup } from '@angular/forms';
-import { faAngleDown, faAngleUp, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { SelectValue, SelectValueIdentity } from '../../models/select-value';
 
 
@@ -27,8 +27,6 @@ export class SelectComponent implements ControlValueAccessor {
 
   public value: SelectValueIdentity | null = null;
   private onChange: any;
-  faAngleDown = faAngleDown;
-  faAngleUp = faAngleUp;
   faTimes = faTimes;
   searchForm: FormGroup;
 

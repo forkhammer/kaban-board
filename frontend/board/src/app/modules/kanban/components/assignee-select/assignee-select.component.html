@@ -16,6 +16,9 @@
         </div>
       </ng-container>
     </div>
+    <button class="clear" *ngIf='useClear' (click)='clear($event)'>
+      <fa-icon [icon]="faTimes"></fa-icon>
+    </button>
   </div>
   <div ngbDropdownMenu class='shadow'>
     <div [formGroup]='searchForm' class='input-group filter-form' *ngIf='useSearch'>
@@ -23,10 +26,6 @@
     </div>
 
     <div class="scroll">
-      <div ngbDropdownItem *ngIf='useClear' (click)='clear($event)'>
-        <span *ngIf='!nullTitle'>Нет</span>
-        <span *ngIf='nullTitle'>{{nullTitle}}</span>
-      </div>
       <div ngbDropdownItem
         *ngFor='let item of valuesModel; trackBy: trackByItem'
         [class.active]='item.id === value.value'

@@ -4,7 +4,7 @@ import { BehaviorSubject, catchError, combineLatestWith, debounceTime, distinctU
 import { Sprint, SprintStatus } from '../../models/sprint';
 import { ToastService } from 'src/app/modules/core/services/toast.service';
 import { SprintService } from '../../services/sprint.service';
-import { faAngleDown, faAngleUp, faTimes, faRunning } from '@fortawesome/free-solid-svg-icons';
+import { faTimes, faRunning } from '@fortawesome/free-solid-svg-icons';
 import { Pagination } from 'src/app/modules/core/models/base';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/module.d-CnjH8Dlt';
@@ -48,8 +48,6 @@ export class SprintSelectComponent implements ControlValueAccessor, OnInit {
   valuesModel: Sprint[] = [];
   valuesFilter = new BehaviorSubject<any>(null);
   private onChange: any;
-  faAngleDown = faAngleDown;
-  faAngleUp = faAngleUp;
   faTimes = faTimes;
   faRunning = faRunning;
   searchForm: FormGroup;

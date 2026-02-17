@@ -4,7 +4,7 @@ import { BehaviorSubject, catchError, combineLatestWith, debounceTime, distinctU
 import { User } from '../../models/user';
 import { ToastService } from 'src/app/modules/core/services/toast.service';
 import { UserService } from '../../services/user.service';
-import { faAngleDown, faAngleUp, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { faUser } from '@fortawesome/free-regular-svg-icons';
 import { Pagination } from 'src/app/modules/core/models/base';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -44,8 +44,6 @@ export class AssigneeSelectComponent implements ControlValueAccessor, OnInit {
   valuesModel: User[] = [];
   valuesFilter = new BehaviorSubject<any>(null);
   private onChange: any;
-  faAngleDown = faAngleDown;
-  faAngleUp = faAngleUp;
   faTimes = faTimes;
   faUser = faUser;
   searchForm: FormGroup;

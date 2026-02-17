@@ -28,8 +28,9 @@
         </div>
       </ng-container>
 
-      <fa-icon class='caret ms-1' [icon]='faAngleDown' *ngIf='dropdown.isOpen() === false'></fa-icon>
-      <fa-icon class='caret ms-1' [icon]='faAngleUp' *ngIf='dropdown.isOpen() === true'></fa-icon>
+      <button class="clear" *ngIf='useClear' (click)='clear($event)'>
+        <fa-icon [icon]="faTimes"></fa-icon>
+      </button>
     </div>
   </div>
   <div ngbDropdownMenu class='shadow'>
@@ -38,10 +39,6 @@
     </div>
 
     <div class="scroll">
-      <div ngbDropdownItem *ngIf='useClear' (click)='clear($event)'>
-        <span *ngIf='!nullTitle'>Нет</span>
-        <span *ngIf='nullTitle'>{{nullTitle}}</span>
-      </div>
       <div ngbDropdownItem
         *ngFor='let item of valuesModel; trackBy: trackByItem'
         [class.active]='item.id === value.value'

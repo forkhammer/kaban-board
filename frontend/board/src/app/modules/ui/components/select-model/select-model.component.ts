@@ -1,5 +1,5 @@
 import { Component, Input, ViewChild, ElementRef, forwardRef, inject, OnInit, DestroyRef } from '@angular/core';
-import { faAngleDown, faAngleUp, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormGroup, FormBuilder } from '@angular/forms';
 import { BehaviorSubject, of, EMPTY, distinctUntilChanged} from 'rxjs';
 import { BaseService } from '../../../core/services/base.service';
@@ -44,8 +44,6 @@ export class SelectModelComponent implements ControlValueAccessor, OnInit {
   valuesModel: BaseModel[] = [];
   valuesFilter = new BehaviorSubject<any>(null);
   private onChange: any;
-  faAngleDown = faAngleDown;
-  faAngleUp = faAngleUp;
   faTimes = faTimes;
   searchForm: FormGroup;
   protected errorValuesMessage: string | null = null;
@@ -201,6 +199,7 @@ export class SelectModelComponent implements ControlValueAccessor, OnInit {
   clear(e: MouseEvent) {
     this.selectValue = null;
     (this.dropdown as any).close();
+    e.preventDefault();
     return false;
   }
 

@@ -11,7 +11,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type SprintQuerterRow struct {
+type SprintQuarterRow struct {
 	StartDate time.Time
 }
 
@@ -105,13 +105,14 @@ func (r *SprintRepository) toDomainSprint(sprint *models.Sprint) (*domain.Sprint
 		return nil, err
 	}
 	return &domain.Sprint{
-		Id:           domain.SprintId(sprint.Id),
-		Status:       domain.SprintStatus(sprint.Status),
-		Title:        sprint.Title,
-		StartDate:    sprint.StartDate,
-		EndDate:      sprint.EndDate,
-		HoursPerUser: sprint.HoursPerUser,
-		Team:         *team,
+		Id:            domain.SprintId(sprint.Id),
+		Status:        domain.SprintStatus(sprint.Status),
+		Title:         sprint.Title,
+		StartDate:     sprint.StartDate,
+		EndDate:       sprint.EndDate,
+		HoursPerUser:  sprint.HoursPerUser,
+		Team:          *team,
+		CountBindings: sprint.CountBindings,
 	}, nil
 }
 
@@ -128,17 +129,19 @@ func (r *SprintRepository) toSprint(sprint *domain.Sprint) *models.Sprint {
 }
 
 func (r *SprintRepository) getQuery() *gorm.DB {
-	return r.conn.GetEngine().Model(&models.Sprint{}).Preload("Team")
+	return r.conn.GetEngine().Model(&models.Sprint{}).
+		Select("*", "(SELECT COUNT(*) FROM issue_bindings WHERE sprint_id = sprints.id) AS count_bindings").
+		Preload("Team")
 }
 
 func (r *SprintRepository) GetQuarters() ([]domain.Quarter, error) {
-	rows := make([]SprintQuerterRow, 0)
+	rows := make([]SprintQuarterRow, 0)
 	err := r.conn.GetEngine().Raw("SELECT DISTINCT start_date FROM sprints ORDER BY start_date").Find(&rows).Error
 	if err != nil {
 		return nil, err
 	}
 
-	quarters := utils.Map(rows, func(row SprintQuerterRow) domain.Quarter {
+	quarters := utils.Map(rows, func(row SprintQuarterRow) domain.Quarter {
 		return *domain.NewQuarterFromDate(row.StartDate)
 	})
 

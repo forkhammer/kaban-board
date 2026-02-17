@@ -15,7 +15,9 @@
 </div>
 
 <div class="desc">
-  <div class="title">{{sprint.represent}}</div>
+  <ng-container *ngIf="urls.getSprintUrl(sprint.id, sprint.team_id) as nav">
+    <a [routerLink]="nav.url" [queryParams]="nav.query" class="title">{{sprint.represent}}</a>
+  </ng-container>
 
   <div class="d-flex">
     <div class="date">{{sprint.start_date | formatDate}} - {{sprint.end_date | formatDate}}</div>
@@ -34,7 +36,7 @@
   Завершить
 </button>
 
-<div class="count ms-3 me-3">9 задач</div>
+<div class="count ms-3 me-3">{{sprint.count_bindings}} задач</div>
 
 <div ngbDropdown>
   <button type="button" class="btn btn-light" id="sprint-dropdown" ngbDropdownToggle>...</button>

@@ -8,19 +8,20 @@ import (
 )
 
 type SprintDto struct {
-	Id           int        `json:"id"`
-	Title        string     `json:"title"`
-	Represent    string     `json:"represent"`
-	StartDate    string     `json:"start_date"`
-	EndDate      string     `json:"end_date"`
-	TeamId       int        `json:"team_id"`
-	Team         TeamDto    `json:"team"`
-	Status       string     `json:"status"`
-	HoursPerUser int        `json:"hours_per_user"`
-	Quarter      QuarterDto `json:"quarter"`
-	CanRun       bool       `json:"can_run"`
-	CanDelete    bool       `json:"can_delete"`
-	CanComplete  bool       `json:"can_complete"`
+	Id            int        `json:"id"`
+	Title         string     `json:"title"`
+	Represent     string     `json:"represent"`
+	StartDate     string     `json:"start_date"`
+	EndDate       string     `json:"end_date"`
+	TeamId        int        `json:"team_id"`
+	Team          TeamDto    `json:"team"`
+	Status        string     `json:"status"`
+	HoursPerUser  int        `json:"hours_per_user"`
+	Quarter       QuarterDto `json:"quarter"`
+	CanRun        bool       `json:"can_run"`
+	CanDelete     bool       `json:"can_delete"`
+	CanComplete   bool       `json:"can_complete"`
+	CountBindings int        `json:"count_bindings"`
 }
 
 type GetSprintsRequest struct {
@@ -67,19 +68,20 @@ type UpdateSprintRequest struct {
 
 func SerializeSprint(sprint *domain.Sprint) *SprintDto {
 	return &SprintDto{
-		Id:           int(sprint.Id),
-		Title:        sprint.Title,
-		Represent:    sprint.GetTitle(),
-		StartDate:    sprint.StartDate.Format("2006-01-02"),
-		EndDate:      sprint.EndDate.Format("2006-01-02"),
-		TeamId:       int(sprint.Team.Id),
-		Team:         *SerializeTeam(&sprint.Team),
-		Status:       string(sprint.Status),
-		HoursPerUser: int(sprint.HoursPerUser),
-		Quarter:      *SerializeQuarter(sprint.GetQuarter()),
-		CanRun:       sprint.CanRun(),
-		CanDelete:    sprint.CanDelete(),
-		CanComplete:  sprint.CanComplete(),
+		Id:            int(sprint.Id),
+		Title:         sprint.Title,
+		Represent:     sprint.GetTitle(),
+		StartDate:     sprint.StartDate.Format("2006-01-02"),
+		EndDate:       sprint.EndDate.Format("2006-01-02"),
+		TeamId:        int(sprint.Team.Id),
+		Team:          *SerializeTeam(&sprint.Team),
+		Status:        string(sprint.Status),
+		HoursPerUser:  int(sprint.HoursPerUser),
+		Quarter:       *SerializeQuarter(sprint.GetQuarter()),
+		CanRun:        sprint.CanRun(),
+		CanDelete:     sprint.CanDelete(),
+		CanComplete:   sprint.CanComplete(),
+		CountBindings: sprint.CountBindings,
 	}
 }
 

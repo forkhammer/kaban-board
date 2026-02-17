@@ -18,14 +18,15 @@ const (
 type SprintId int
 
 type Sprint struct {
-	Id           SprintId
-	HoursPerUser uint `validate:"required,gt=0"`
-	Title        string
-	StartDate    time.Time `validate:"required"`
-	EndDate      time.Time
-	Team         Team `validate:"required"`
-	Status       SprintStatus
-	Bindings     []IssueBinding
+	Id            SprintId
+	HoursPerUser  uint `validate:"required,gt=0"`
+	Title         string
+	StartDate     time.Time `validate:"required"`
+	EndDate       time.Time
+	Team          Team `validate:"required"`
+	Status        SprintStatus
+	Bindings      []IssueBinding
+	CountBindings int
 }
 
 func NewSprint(id SprintId, title string, startDate time.Time, endDate time.Time, team Team, status SprintStatus, hoursPerUser uint) (*Sprint, error) {

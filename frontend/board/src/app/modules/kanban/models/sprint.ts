@@ -21,6 +21,7 @@ export type Sprint = {
   can_run: boolean
   can_delete: boolean
   can_complete: boolean
+  count_bindings: number
 }
 
 export type SaveSprintRequest = {

@@ -18,9 +18,11 @@
 }
 
 .title {
+  display: block;
   font-weight: 600;
   @include fs-paragraph-m();
   margin-bottom: $pt;
+  color: $body-color;
 }
 
 .date,

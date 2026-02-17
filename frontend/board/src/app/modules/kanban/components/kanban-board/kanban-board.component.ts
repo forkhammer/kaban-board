@@ -28,6 +28,7 @@ import { isEqual } from 'lodash';
 import { Sprint } from '../../models/sprint';
 import { SelectModelComponent } from 'src/app/modules/ui/components/select-model/select-model.component';
 import { AccountService } from 'src/app/modules/core/services/account.service';
+import { SprintModalServiceService } from '../../services/sprint-modal.service';
 
 enum KanbanView {
   LIST = 'list',
@@ -53,6 +54,7 @@ export class KanbanBoardComponent implements OnInit, AfterViewInit {
   private toast = inject(ToastService)
   sprintService = inject(SprintService)
   accountService = inject(AccountService)
+  sprintModal = inject(SprintModalServiceService)
 
   faXmark = faXmark
   faArrowLeft = faArrowLeft
@@ -243,5 +245,16 @@ export class KanbanBoardComponent implements OnInit, AfterViewInit {
 
   goToTeamBoard() {
     this.router.navigate(['/'], {queryParams: {user: null}, queryParamsHandling: 'merge'})
+  }
+
+  addSprint() {
+    this.sprintModal.show()
+      .then(sprint => {
+        if (sprint) {
+          this.filterForm.patchValue({sprint: sprint.id})
+          this.sprintSelect.reload()
+        }
+      })
+      .catch(() => {})
   }
 }

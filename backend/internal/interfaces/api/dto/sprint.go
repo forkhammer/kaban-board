@@ -1,6 +1,7 @@
 package dto
 
 import (
+	"fmt"
 	domain "main/internal/domain/models"
 	"main/pkg/utils"
 	"time"
@@ -40,9 +41,14 @@ func (r *CreateSprintRequest) Validate() error {
 	if err != nil {
 		return err
 	}
+
 	_, err = r.GetEndDate()
 	if err != nil {
 		return err
+	}
+
+	if r.TeamId == 0 {
+		return fmt.Errorf("Укажите название команды")
 	}
 	return nil
 }

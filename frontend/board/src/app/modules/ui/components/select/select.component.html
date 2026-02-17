@@ -31,7 +31,7 @@
       </div>
     </div>
 
-    <div class="empty" *ngIf='(values | selectItemsFilter: getSearchText()).length === 0 && !nullTitle'>
+    <div class="empty" *ngIf='(values | selectItemsFilter: getSearchText()).length === 0 && !nullTitle && !useClear'>
       Ничего не найдено
     </div>
   </div>

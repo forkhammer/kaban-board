@@ -50,6 +50,7 @@ export class SelectModelComponent implements ControlValueAccessor, OnInit {
   searchForm: FormGroup;
   protected errorValuesMessage: string | null = null;
   initialLoad$ = new BehaviorSubject<boolean>(false);
+  reload$ = new BehaviorSubject<null>(null);
 
   get selectValue(): BaseModel | null {
     return null;
@@ -84,8 +85,8 @@ export class SelectModelComponent implements ControlValueAccessor, OnInit {
   ngOnInit() {
     this.valuesFilter
       .pipe(
-        combineLatestWith(this.initialLoad$.pipe(filter(Boolean), distinctUntilChanged())),
-        switchMap(([data, _]) => {
+        combineLatestWith(this.initialLoad$.pipe(filter(Boolean), distinctUntilChanged()), this.reload$),
+        switchMap(([data, _, _1]) => {
           this.errorValuesMessage = null;
           const searchControl = this.searchForm.get('search');
           const query = Object.assign({}, data, {search: searchControl ? searchControl.value : null, all: this.all});
@@ -225,6 +226,10 @@ export class SelectModelComponent implements ControlValueAccessor, OnInit {
 
   trackByItem(_: number, item: BaseModel) {
     return item.id;
+  }
+
+  reload() {
+    this.reload$.next(null)
   }
 
 }

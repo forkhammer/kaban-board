@@ -5,12 +5,6 @@
 
 <div class="modal-body"  [formGroup]='form'>
   <div class="mb-3">
-    <label for="id_title" class="form-label">Название</label>
-    <input type="text" formControlName='title' id="id_title" class="form-control">
-    <app-input-error [errorData]="errors" code="title"></app-input-error>
-  </div>
-
-  <div class="mb-3">
     <label for="id_start_date" class="form-label">Старт спринта</label>
     <input type="date" formControlName='start_date' id="id_start_date" class="form-control">
     <app-input-error [errorData]="errors" code="start_date"></app-input-error>
@@ -33,6 +27,12 @@
     <label for="id_hours_per_user" class="form-label">Количество часов на сотрудника</label>
     <input type="number" formControlName='hours_per_user' id="id_hours_per_user" class="form-control">
     <app-input-error [errorData]="errors" code="hours_per_user"></app-input-error>
+  </div>
+
+  <div class="mb-3">
+    <label for="id_title" class="form-label">Название (необязательно)</label>
+    <input type="text" formControlName='title' id="id_title" class="form-control">
+    <app-input-error [errorData]="errors" code="title"></app-input-error>
   </div>
 
   <app-input-error [errorData]="errors" code="error"></app-input-error>

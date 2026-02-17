@@ -44,6 +44,7 @@ import { IssueTableRowComponent } from './components/issue-table-row/issue-table
 import { IssueTableAppendRowComponent } from './components/issue-table-append-row/issue-table-append-row.component';
 import { SelectEstimateComponent } from './components/select-estimate/select-estimate.component';
 import { AssigneeSelectComponent } from './components/assignee-select/assignee-select.component';
+import { SprintSelectComponent } from './components/sprint-select/sprint-select.component';
 
 
 @NgModule({
@@ -86,6 +87,7 @@ import { AssigneeSelectComponent } from './components/assignee-select/assignee-s
     IssueTableAppendRowComponent,
     SelectEstimateComponent,
     AssigneeSelectComponent,
+    SprintSelectComponent,
   ],
   exports: [
     UserBoardComponent,
@@ -93,7 +95,9 @@ import { AssigneeSelectComponent } from './components/assignee-select/assignee-s
     OffcanvasAdminComponent,
     SprintListComponent,
     SprintCardComponent,
-    FilterSprintsByQuarterPipe
+    FilterSprintsByQuarterPipe,
+    AssigneeSelectComponent,
+    SprintSelectComponent,
   ],
   imports: [
     CommonModule,

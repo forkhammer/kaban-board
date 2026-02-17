@@ -1,0 +1,59 @@
+@import '../../../../../styles/imports';
+
+.dropdown-toggle {
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+  background: transparent;
+  border: 1px solid $border-color;
+  transition-duration: .2s;
+
+  &:hover,
+  &.show {
+    background: $white;
+  }
+}
+
+.empty-sprint {
+  @include fs-paragraph-s();
+  color: $gray-500;
+}
+
+.sprint {
+  display: flex;
+  align-items: center;
+  gap: $pt;
+
+  &-title {
+    @include fs-paragraph-s();
+  }
+
+  &-icon {
+    @include fs-paragraph-xs();
+  }
+}
+
+
+.dropdown-menu {
+  transform: translate(0, 47px) !important;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: $pt;
+
+  &-title {
+    @include fs-paragraph-s();
+  }
+
+  &-icon {
+    @include fs-paragraph-xs();
+  }
+}
+

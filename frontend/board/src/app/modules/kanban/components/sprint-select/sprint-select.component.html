@@ -1,0 +1,74 @@
+<div ngbDropdown #dropdown='ngbDropdown' autoClose='outside' (openChange)="onOpenChange($event)">
+  <div class="btn-group dropdown-toggle-group">
+    <div ngbDropdownToggle class="btn">
+      <ng-container *ngIf="valueModel$.value">
+        <div class="sprint">
+          <div class="sprint-icon">
+            <div [ngSwitch]="valueModel$.value.status">
+              <div *ngSwitchCase="SprintStatus.WAITING">
+                <fa-icon [icon]="faClock" class="text-body"></fa-icon>
+              </div>
+
+              <div *ngSwitchCase="SprintStatus.RUNNING">
+                <fa-icon [icon]="faPlay" class="text-success"></fa-icon>
+              </div>
+
+              <div *ngSwitchCase="SprintStatus.COMPLETED">
+                <fa-icon [icon]="faStop" class="text-secondary"></fa-icon>
+              </div>
+            </div>
+          </div>
+          <div class="sprint-title">{{valueModel$.value.represent}}</div>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="!valueModel$.value">
+        <div class="empty-sprint">
+          Выберите спринт
+        </div>
+      </ng-container>
+
+      <fa-icon class='caret ms-1' [icon]='faAngleDown' *ngIf='dropdown.isOpen() === false'></fa-icon>
+      <fa-icon class='caret ms-1' [icon]='faAngleUp' *ngIf='dropdown.isOpen() === true'></fa-icon>
+    </div>
+  </div>
+  <div ngbDropdownMenu class='shadow'>
+    <div [formGroup]='searchForm' class='input-group filter-form' *ngIf='useSearch'>
+      <input type="text" class='form-control filter-form__input' formControlName='search' placeholder='Найти...'>
+    </div>
+
+    <div class="scroll">
+      <div ngbDropdownItem *ngIf='useClear' (click)='clear($event)'>
+        <span *ngIf='!nullTitle'>Нет</span>
+        <span *ngIf='nullTitle'>{{nullTitle}}</span>
+      </div>
+      <div ngbDropdownItem
+        *ngFor='let item of valuesModel; trackBy: trackByItem'
+        [class.active]='item.id === value.value'
+        (click)='select($event, item)'>
+        <div class="item">
+          <div class="item-icon">
+            <div [ngSwitch]="item.status">
+              <div *ngSwitchCase="SprintStatus.WAITING">
+                <fa-icon [icon]="faClock" class="text-body"></fa-icon>
+              </div>
+
+              <div *ngSwitchCase="SprintStatus.RUNNING">
+                <fa-icon [icon]="faPlay" class="text-success"></fa-icon>
+              </div>
+
+              <div *ngSwitchCase="SprintStatus.COMPLETED">
+                <fa-icon [icon]="faStop" class="text-secondary"></fa-icon>
+              </div>
+            </div>
+          </div>
+          <div class="item-title">{{item.represent}}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="empty" *ngIf='valuesModel?.length === 0 && !useClear'>
+      Ничего не найдено
+    </div>
+  </div>
+</div>

@@ -61,10 +61,9 @@
         </button>
       </div>
 
-      <app-select-model [service]="sprintService" formControlName="sprint" [useClear]="true" title="Спринт"
-        [itemFormatter]="sprintService.formatter" [formatter]="sprintService.formatter"
+      <app-sprint-select formControlName="sprint" [useClear]="true" title="Спринт"
         [filter]="sprintFilter"
-        class="me-1" #sprintSelect></app-select-model>
+        class="me-1" #sprintSelect></app-sprint-select>
 
       <button class="btn btn-outline-secondary me-3" *ngIf="accountService.isAdmin$ | async" (click)="addSprint()">
         <fa-icon [icon]="faPlus"></fa-icon>

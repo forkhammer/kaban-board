@@ -13,6 +13,7 @@ import { EpicService } from '../../services/epic.service';
 import { AccountService } from 'src/app/modules/core/services/account.service';
 import {faUser} from '@fortawesome/free-regular-svg-icons';
 import { Team } from '../../models/team';
+import { Sprint } from '../../models/sprint';
 
 @Component({
   selector: 'app-issue-table-row, [app-issue-table-row]',
@@ -42,6 +43,7 @@ export class IssueTableRowComponent implements OnInit{
   isAdmin = false
   assigneeFilter: Record<string, any> = {}
   team$ = new BehaviorSubject<Team | null | undefined>(null)
+  sprint$ = new BehaviorSubject<Sprint | null | undefined>(null)
 
   @Input()
   set issue(value: KanbanIssue) {
@@ -55,6 +57,10 @@ export class IssueTableRowComponent implements OnInit{
 
   @Input() set team(value: Team | undefined | null) {
     this.team$.next(value)
+  }
+
+  @Input() set sprint(value: Sprint | undefined | null) {
+    this.sprint$.next(value)
   }
 
   constructor() {
@@ -99,6 +105,10 @@ export class IssueTableRowComponent implements OnInit{
     ).subscribe(data => {
       Object.assign(this._issue, data)
     })
+  }
+
+  canEdit(): boolean {
+    return this.isAdmin && Boolean(this.sprint$.value)
   }
 
   unbindIssue() {

@@ -18,6 +18,7 @@
     <tr app-issue-table-row *ngFor="let issue of issues; trackBy: trackByIssue"
       [issue]="issue"
       [team]="team$.value"
+      [sprint]="sprint$.value"
       (unbind)="unbindIssue($event)"></tr>
 
     <tr *ngIf="(sprint$ | async) && (accountService.isAdmin$ | async)">

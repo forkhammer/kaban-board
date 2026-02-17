@@ -6,7 +6,7 @@
     {{issue.title}}
   </td>
   <td class="column">
-    <div class="assignee" *ngIf="!isAdmin">
+    <div class="assignee" *ngIf="!canEdit()">
       <div class="avatar" *ngIf="issue.assignee?.avatar_url">
         <img [src]="issue.assignee?.avatar_url">
       </div>
@@ -20,55 +20,55 @@
       [formatter]="userService.formatter" [itemFormatter]="userService.formatter"
       [valueModel]="issue.assignee"
       [filter]="assigneeFilter"
-      *ngIf="isAdmin"></app-assignee-select>
+      *ngIf="canEdit()"></app-assignee-select>
   </td>
   <td class="column">
-    <div class="epic" *ngIf="!isAdmin">
+    <div class="epic" *ngIf="!canEdit()">
       {{issue.epic?.title}}
     </div>
 
     <app-select-model class="flat" formControlName="epic" [service]="epicService" [useSearch]="true" [useClear]="true"
       [filter]="{project: issue.projectId}"
       [valueModel]="issue.epic"
-      *ngIf="isAdmin"></app-select-model>
+      *ngIf="canEdit()"></app-select-model>
   </td>
   <td class="column">
-    <div class="release" *ngIf="!isAdmin">
+    <div class="release" *ngIf="!canEdit()">
       {{issue.release?.title}}
     </div>
 
     <app-select-model class="flat" formControlName="release" [service]="releaseService" [useSearch]="true" [useClear]="true"
       [filter]="{project: issue.projectId}"
       [valueModel]="issue.release"
-      *ngIf="isAdmin"></app-select-model>
+      *ngIf="canEdit()"></app-select-model>
   </td>
   <td class="column">
-    <div class="priority" *ngIf="issue.priority && !isAdmin">{{ISSUE_PRIORITY_LABELS[issue.priority]}}</div>
+    <div class="priority" *ngIf="issue.priority && !canEdit()">{{ISSUE_PRIORITY_LABELS[issue.priority]}}</div>
 
-    <app-select class="flat" formControlName="priority" [values]="ISSUE_PRIORITY_VALUES" *ngIf="isAdmin"></app-select>
+    <app-select class="flat" formControlName="priority" [values]="ISSUE_PRIORITY_VALUES" *ngIf="canEdit()"></app-select>
   </td>
   <td class="column">
-    <span *ngIf="issue.estimateDev && !isAdmin">{{issue.estimateDev}} ч.</span>
+    <span *ngIf="issue.estimateDev && !canEdit()">{{issue.estimateDev}} ч.</span>
 
-    <app-select-estimate class="flat" formControlName="estimateDev" *ngIf="isAdmin"></app-select-estimate>
+    <app-select-estimate class="flat" formControlName="estimateDev" *ngIf="canEdit()"></app-select-estimate>
   </td>
   <td class="column">
-    <span *ngIf="issue.estimateQA && !isAdmin">{{issue.estimateQA}} ч.</span>
+    <span *ngIf="issue.estimateQA && !canEdit()">{{issue.estimateQA}} ч.</span>
 
-    <app-select-estimate class="flat" formControlName="estimateQA" *ngIf="isAdmin"></app-select-estimate>
+    <app-select-estimate class="flat" formControlName="estimateQA" *ngIf="canEdit()"></app-select-estimate>
   </td>
   <td class="column">
-    <div class="status" *ngIf="issue.bindStatus && !isAdmin">{{BIND_STATUS_LABELS[issue.bindStatus]}}</div>
+    <div class="status" *ngIf="issue.bindStatus && !canEdit()">{{BIND_STATUS_LABELS[issue.bindStatus]}}</div>
 
-    <app-select class="flat" [values]="BIND_STATUS_VALUES" formControlName="bindStatus" *ngIf="isAdmin"></app-select>
+    <app-select class="flat" [values]="BIND_STATUS_VALUES" formControlName="bindStatus" *ngIf="canEdit()"></app-select>
   </td>
   <td class="column">
-    <div class="comment" *ngIf="issue.comment && !isAdmin">{{issue.comment}}</div>
+    <div class="comment" *ngIf="issue.comment && !canEdit()">{{issue.comment}}</div>
 
-    <textarea rows="1" formControlName="comment" class="form-control" *ngIf="isAdmin"></textarea>
+    <textarea rows="1" formControlName="comment" class="form-control" *ngIf="canEdit()"></textarea>
   </td>
   <td class="column">
-    <div ngbDropdown *ngIf="isAdmin">
+    <div ngbDropdown *ngIf="canEdit()">
       <button class="btn" ngbDropdownToggle>...</button>
       <div ngbDropdownMenu>
         <button ngbDropdownItem (click)="unbindIssue()">Удалить</button>

@@ -9,7 +9,7 @@
       <span class="caption text-truncate" *ngIf='valueModel$.value' [innerHTML]="getTitle(valueModel$.value) | safe"></span>
     </div>
 
-    <button class="clear" *ngIf='useClear' (click)='clear($event)'>
+    <button class="clear" *ngIf='useClear && valueModel$.value' (click)='clear($event)'>
       <fa-icon [icon]="faTimes"></fa-icon>
     </button>
   </div>

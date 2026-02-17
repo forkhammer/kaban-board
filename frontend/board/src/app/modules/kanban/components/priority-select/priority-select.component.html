@@ -1,0 +1,32 @@
+<div ngbDropdown #dropdown='ngbDropdown' autoClose='outside'>
+  <div class="btn-group dropdown-toggle-group">
+    <div ngbDropdownToggle class="btn">
+      <ng-container *ngIf="value !== null">
+        <app-priority-badge [priority]="value"></app-priority-badge>
+      </ng-container>
+
+      <ng-container *ngIf="value === null">
+        <div class="empty-priority">...</div>
+      </ng-container>
+    </div>
+
+    <button class="clear" *ngIf="useClear && value !== null" (click)="clear($event)">
+      <fa-icon [icon]="faTimes"></fa-icon>
+    </button>
+  </div>
+
+  <div ngbDropdownMenu class="shadow">
+    <div class="scroll">
+      <div ngbDropdownItem *ngIf="useClear" (click)="clear($event)">
+        <span *ngIf="nullTitle">{{nullTitle}}</span>
+        <span *ngIf="!nullTitle">Нет</span>
+      </div>
+      <div ngbDropdownItem
+        *ngFor="let item of values"
+        [class.active]="item.id === value"
+        (click)="select($event, $any(item.id))">
+        {{item.title}}
+      </div>
+    </div>
+  </div>
+</div>

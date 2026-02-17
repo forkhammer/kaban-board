@@ -43,9 +43,9 @@
       *ngIf="canEdit()"></app-select-model>
   </td>
   <td class="column">
-    <div class="priority" *ngIf="issue.priority && !canEdit()">{{ISSUE_PRIORITY_LABELS[issue.priority]}}</div>
+    <app-priority-badge [priority]="issue.priority" *ngIf="issue.priority && !canEdit()"></app-priority-badge>
 
-    <app-select class="flat" formControlName="priority" [values]="ISSUE_PRIORITY_VALUES" *ngIf="canEdit()"></app-select>
+    <app-priority-select class="flat" formControlName="priority" *ngIf="canEdit()" [useClear]="true"></app-priority-select>
   </td>
   <td class="column">
     <span *ngIf="issue.estimateDev && !canEdit()">{{issue.estimateDev}} ч.</span>

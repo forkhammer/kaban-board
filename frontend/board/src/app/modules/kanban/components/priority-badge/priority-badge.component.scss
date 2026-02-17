@@ -1,0 +1,69 @@
+@import '../../../../../styles/imports';
+
+:host {
+  // border: 1px solid $gray-100;
+  // background: $white;
+  border-radius: $pt2;
+  padding: 2px 12px 2px 4px;
+  font-weight: 400;
+  @include fs-paragraph-xs();
+  line-height: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.icon {
+  width: 18px;
+  height: 18px;
+  background: $gray-300;
+  border-radius: 100%;
+  margin-right: 4px;
+  position: relative;
+
+  &.lowest {
+    background-color: $gray-200;
+  }
+
+  &.low {
+    background-color: $gray-400;
+  }
+
+  &.medium {
+    background-color: #79CE69;
+  }
+
+  &.high {
+    background-color: #FF8C8C;
+  }
+
+  &.critical {
+    background-color: #D92400;
+  }
+
+  &-line1 {
+    position: absolute;
+    width: 2px;
+    background-color: $white;
+    left: 4px;
+    top: 9px;
+    bottom: 3px;
+  }
+
+  &-line2 {
+    position: absolute;
+    width: 2px;
+    background-color: $white;
+    left: 8px;
+    top: 6px;
+    bottom: 3px;
+  }
+
+  &-line3 {
+    position: absolute;
+    width: 2px;
+    background-color: $white;
+    left: 12px;
+    top: 3px;
+    bottom: 3px;
+  }
+}

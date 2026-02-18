@@ -38,6 +38,7 @@ export class SelectModelComponent implements ControlValueAccessor, OnInit {
   @Input() formatter: any = null;
   @Input() itemFormatter: any = null;
   @ViewChild('dropdown') dropdown!: ElementRef;
+  @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
 
   value = new BehaviorSubject<string | number | null>(null);
   valueModel$ = new BehaviorSubject<BaseModel | null>(null);
@@ -220,6 +221,9 @@ export class SelectModelComponent implements ControlValueAccessor, OnInit {
   onOpenChange(open: boolean) {
     if (open) {
       this.initialLoad$.next(true);
+      if (this.useSearch && this.searchInput) {
+        setTimeout(() => this.searchInput.nativeElement.focus(), 0);
+      }
     }
   }
 

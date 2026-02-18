@@ -301,3 +301,13 @@ func (i *Issue) getBindingById(id IssueBindingId) *IssueBinding {
 	}
 	return nil
 }
+
+func (i *Issue) GetLastBinding() *IssueBinding {
+	var last *IssueBinding
+	for index, binding := range i.SprintBindings {
+		if last == nil || binding.Id > last.Id {
+			last = &i.SprintBindings[index]
+		}
+	}
+	return last
+}

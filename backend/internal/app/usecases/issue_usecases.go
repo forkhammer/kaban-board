@@ -95,7 +95,14 @@ func (u *IssueUseCases) BindIssue(id uint, sprintId uint) (*domain.Issue, error)
 	if err != nil {
 		return nil, err
 	}
-	return u.issueRepo.Update(issue)
+	issue, err = u.issueRepo.Update(issue)
+
+	lastBinding := issue.GetLastBinding()
+	if lastBinding != nil {
+		issue.SetContext(&lastBinding.Id)
+	}
+
+	return issue, err
 }
 
 func (u *IssueUseCases) UnbindIssue(id uint, bindingId uint) (*domain.Issue, error) {

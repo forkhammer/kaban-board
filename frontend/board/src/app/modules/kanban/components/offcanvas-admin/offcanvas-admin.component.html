@@ -1,7 +1,7 @@
 <div class="offcanvas p-3" [class.open]="settingsService.isOpen$ | async">
   <ul class="nav-tabs" ngbNav #nav="ngbNav">
     <li ngbNavItem>
-      <button ngbNavLink>Группы</button>
+      <button ngbNavLink>Команды</button>
       <ng-template ngbNavContent>
         <div>
           <app-admin-team-list></app-admin-team-list>

@@ -17,15 +17,11 @@
 
   <div ngbDropdownMenu class="shadow">
     <div class="scroll">
-      <div ngbDropdownItem *ngIf="useClear" (click)="clear($event)">
-        <span *ngIf="nullTitle">{{nullTitle}}</span>
-        <span *ngIf="!nullTitle">Нет</span>
-      </div>
       <div ngbDropdownItem
         *ngFor="let item of values"
         [class.active]="item.id === value"
         (click)="select($event, $any(item.id))">
-        {{item.title}}
+        <app-priority-badge [priority]="$any(item.id)"></app-priority-badge>
       </div>
     </div>
   </div>

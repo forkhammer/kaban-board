@@ -22,7 +22,7 @@
   </div>
   <div ngbDropdownMenu class='shadow'>
     <div [formGroup]='searchForm' class='input-group filter-form' *ngIf='useSearch'>
-      <input type="text" class='form-control filter-form__input' formControlName='search' placeholder='Найти...'>
+      <input #searchInput type="text" class='form-control filter-form__input' formControlName='search' placeholder='Найти...'>
     </div>
 
     <div class="scroll">

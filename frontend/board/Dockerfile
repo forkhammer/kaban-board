@@ -7,8 +7,7 @@ WORKDIR /var/www/
 
 COPY ./ /var/www/
 
-RUN npm i -g --unsafe-perm @angular/cli@19.2.13 \
-    && npm i -g \
+RUN npm ci \
     && npm i -g envsub \
     && envsub /var/www/src/assets/env.template.js /var/www/src/assets/env.js \
     && npm run build

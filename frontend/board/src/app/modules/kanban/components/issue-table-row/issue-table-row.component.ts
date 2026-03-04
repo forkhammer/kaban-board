@@ -14,6 +14,7 @@ import { AccountService } from 'src/app/modules/core/services/account.service';
 import {faUser} from '@fortawesome/free-regular-svg-icons';
 import { Team } from '../../models/team';
 import { Sprint } from '../../models/sprint';
+import { IssueBindingService } from '../../services/issue-binding.service';
 
 @Component({
   selector: 'app-issue-table-row, [app-issue-table-row]',
@@ -25,6 +26,7 @@ export class IssueTableRowComponent implements OnInit{
   fb = inject(FormBuilder)
   destroyRef = inject(DestroyRef)
   issueService = inject(IssueService)
+  issueBindingService = inject(IssueBindingService)
   toast = inject(ToastService)
   userService = inject(UserService)
   releaseService = inject(ReleaseService)
@@ -97,7 +99,7 @@ export class IssueTableRowComponent implements OnInit{
           id: this._issue.id,
           bindingId: this._issue.bindingId,
         }, this.getSaveData(this._issue), data)
-        return this.issueService.save(query).pipe(
+        return this.issueBindingService.save(query).pipe(
           catchErrorMessages(this.toast)
         )
       }),
@@ -113,7 +115,7 @@ export class IssueTableRowComponent implements OnInit{
 
   unbindIssue() {
     if (this._issue.bindingId && confirm('Удалить задачу из спринта?')) {
-      this.issueService.unbindFromSprint(this._issue.id, this._issue.bindingId).pipe(
+      this.issueBindingService.delete(this._issue).pipe(
         catchErrorMessages(this.toast),
         takeUntilDestroyed(this.destroyRef)
       ).subscribe(_ => {

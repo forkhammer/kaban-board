@@ -3,7 +3,6 @@ package controllers
 import (
 	"main/internal/app/queries"
 	"main/internal/app/usecases"
-	domain "main/internal/domain/models"
 	"main/internal/interfaces/api/dto"
 	"main/internal/interfaces/api/middleware"
 	"net/http"
@@ -21,9 +20,7 @@ func (c *IssueController) RegisterRoutes(router *gin.Engine) error {
 	router.GET("/issue/:id", c.getIssue)
 	privateRoutes := router.Group("/")
 	privateRoutes.Use(middleware.AuthRequiredMiddleware())
-	privateRoutes.PUT("/issue/:id", c.saveIssue)
 	privateRoutes.POST("/issue/:id/bind", c.bindIssue)
-	privateRoutes.POST("/issue/:id/unbind", c.unbindIssue)
 	return nil
 }
 
@@ -78,63 +75,10 @@ func (c *IssueController) bindIssue(ctx *gin.Context) {
 		return
 	}
 
-	issue, err := c.issueUC.BindIssue(uint(id), request.SprintId)
+	binding, err := c.issueUC.BindIssue(uint(id), request.SprintId)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
 		return
 	}
-	ctx.JSON(http.StatusOK, dto.SerializeIssue(issue))
-}
-
-func (c *IssueController) unbindIssue(ctx *gin.Context) {
-	id, err := strconv.ParseUint(ctx.Param("id"), 10, 32)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
-		return
-	}
-
-	var request dto.UnbindIssueRequest
-	if err := ctx.ShouldBindJSON(&request); err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
-		return
-	}
-
-	issue, err := c.issueUC.UnbindIssue(uint(id), request.BindingId)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
-		return
-	}
-	ctx.JSON(http.StatusOK, dto.SerializeIssue(issue))
-}
-
-func (c *IssueController) saveIssue(ctx *gin.Context) {
-	id, err := strconv.ParseUint(ctx.Param("id"), 10, 32)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
-		return
-	}
-
-	var request dto.SaveIssueRequest
-	if err := ctx.ShouldBindJSON(&request); err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
-		return
-	}
-
-	issue, err := c.issueUC.SaveIssue(usecases.SaveIssueRequest{
-		Id:          uint(id),
-		BindingId:   request.BindingId,
-		EstimateDev: request.EstimateDev,
-		EstimateQA:  request.EstimateQA,
-		BindStatus:  (*domain.IssueBindingStatus)(request.BindStatus),
-		Assignee:    request.Assignee,
-		Comment:     request.Comment,
-		Priority:    (*domain.IssueBindingPriority)(request.Priority),
-		ReleaseId:   request.Release,
-		EpicId:      request.Epic,
-	})
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
-		return
-	}
-	ctx.JSON(http.StatusOK, dto.SerializeIssue(issue))
+	ctx.JSON(http.StatusOK, dto.SerializeIssueBinding(binding))
 }

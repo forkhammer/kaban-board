@@ -97,6 +97,7 @@ func (app *Application) Init() {
 	di.RegisterBean("KanbanUseCases", reflect.TypeOf((*usecases.KanbanUseCases)(nil)))
 	di.RegisterBean("SprintUseCases", reflect.TypeOf((*usecases.SprintUseCases)(nil)))
 	di.RegisterBean("IssueUseCases", reflect.TypeOf((*usecases.IssueUseCases)(nil)))
+	di.RegisterBean("IssueBindingUseCases", reflect.TypeOf((*usecases.IssueBindingUseCases)(nil)))
 	di.RegisterBean("ReleaseUseCases", reflect.TypeOf((*usecases.ReleaseUseCases)(nil)))
 	di.RegisterBean("EpicUseCases", reflect.TypeOf((*usecases.EpicUseCases)(nil)))
 
@@ -113,6 +114,7 @@ func (app *Application) Init() {
 	di.RegisterBean("KanbanController", reflect.TypeOf((*controllers.KanbanController)(nil)))
 	di.RegisterBean("SprintController", reflect.TypeOf((*controllers.SprintController)(nil)))
 	di.RegisterBean("IssueController", reflect.TypeOf((*controllers.IssueController)(nil)))
+	di.RegisterBean("IssueBindingController", reflect.TypeOf((*controllers.IssueBindingController)(nil)))
 	di.RegisterBean("ReleaseController", reflect.TypeOf((*controllers.ReleaseController)(nil)))
 	di.RegisterBean("EpicController", reflect.TypeOf((*controllers.EpicController)(nil)))
 

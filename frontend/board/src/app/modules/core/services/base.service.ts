@@ -131,7 +131,7 @@ export class BaseService<T extends BaseModel> {
     return params;
   }
 
-  private updateItemCache(data: T) {
+  protected updateItemCache(data: T) {
     if (this.useCache) {
       this.cache.setItems([data]);
     }

@@ -14,6 +14,7 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { Pagination } from 'src/app/modules/core/models/base';
 import { User } from '../../models/user';
 import { AccountService } from 'src/app/modules/core/services/account.service';
+import { IssueBindingService } from '../../services/issue-binding.service';
 
 @Component({
   selector: 'app-issue-table',
@@ -23,6 +24,7 @@ import { AccountService } from 'src/app/modules/core/services/account.service';
 })
 export class IssueTableComponent {
   private issueService = inject(IssueService)
+  private issueBindingService = inject(IssueBindingService)
   private toast = inject(ToastService)
   public accountService = inject(AccountService)
 
@@ -82,10 +84,19 @@ export class IssueTableComponent {
           query['sprint'] = sprint.id
         }
         this.isLoading = true
-        return this.issueService.list(query).pipe(
-          combineLatestWith(of(this.isPageMore$.value)),
-          catchErrorMessages(this.toast, () => this.isLoading = false)
-        )
+
+        if (sprint) {
+          return this.issueBindingService.list(query).pipe(
+            combineLatestWith(of(this.isPageMore$.value)),
+            catchErrorMessages(this.toast, () => this.isLoading = false)
+          )
+        } else {
+          return this.issueService.list(query).pipe(
+            combineLatestWith(of(this.isPageMore$.value)),
+            catchErrorMessages(this.toast, () => this.isLoading = false)
+          )
+        }
+
       }),
       takeUntilDestroyed()
     ).subscribe(([data, isLoadingMore]) => {

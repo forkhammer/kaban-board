@@ -17,6 +17,7 @@ import { catchErrorMessages } from 'src/app/modules/core/tools/catch-error';
 import { Sprint } from '../../models/sprint';
 import { isEqual } from 'lodash';
 import { Pagination } from 'src/app/modules/core/models/base';
+import { IssueBindingService } from '../../services/issue-binding.service';
 
 @Component({
     selector: 'app-user-board',
@@ -31,6 +32,7 @@ export class UserBoardComponent {
   private destroyRef = inject(DestroyRef)
   private kanbanColumnsService = inject(KanbanColumnService)
   private issueService = inject(IssueService)
+  private issueBindingService = inject(IssueBindingService)
   private toast = inject(ToastService)
 
   faPlus = faPlus
@@ -87,9 +89,16 @@ export class UserBoardComponent {
         if (sprint) {
           query['sprint'] = sprint.id
         }
-        return this.issueService.list(query).pipe(
-          catchErrorMessages(this.toast)
-        )
+
+        if (sprint) {
+          return this.issueBindingService.list(query).pipe(
+            catchErrorMessages(this.toast)
+          )
+        } else {
+          return this.issueService.list(query).pipe(
+            catchErrorMessages(this.toast)
+          )
+        }
       }),
       takeUntilDestroyed()
     ).subscribe(data => {

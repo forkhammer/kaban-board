@@ -61,6 +61,7 @@ func (app *ApiApplication) initRouter() error {
 		di.GetInstance("SettingsController").(api.Controller),
 		di.GetInstance("SprintController").(api.Controller),
 		di.GetInstance("IssueController").(api.Controller),
+		di.GetInstance("IssueBindingController").(api.Controller),
 		di.GetInstance("ReleaseController").(api.Controller),
 		di.GetInstance("EpicController").(api.Controller),
 	}

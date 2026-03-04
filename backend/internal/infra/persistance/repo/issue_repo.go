@@ -2,14 +2,12 @@ package repo
 
 import (
 	"errors"
-	"main/internal/app/queries"
 	domain "main/internal/domain/models"
 	"main/internal/domain/repo"
 	"main/internal/infra/db/interfaces"
 	"main/internal/infra/persistance/models"
 	issuebinding_spec "main/internal/infra/persistance/spec/issue_binding"
 	"main/pkg/utils"
-	"slices"
 
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
@@ -30,11 +28,7 @@ func (r *IssueRepository) Get(id domain.IssueId) (*domain.Issue, error) {
 	if err := r.getQuery().Where("id = ?", id).First(issue).Error; err != nil {
 		return nil, err
 	}
-	bindings, err := r.preloadBindings([]domain.IssueId{id})
-	if err != nil {
-		return nil, err
-	}
-	return r.toDomainIssue(issue, bindings)
+	return r.toDomainIssue(issue)
 }
 
 func (r *IssueRepository) List(spec repo.QuerySpec) ([]domain.Issue, error) {
@@ -53,17 +47,9 @@ func (r *IssueRepository) List(spec repo.QuerySpec) ([]domain.Issue, error) {
 		return nil, err
 	}
 
-	ids := utils.Map(issues, func(issue models.Issue) domain.IssueId {
-		return domain.IssueId(issue.Id)
-	})
-	bindings, err := r.preloadBindings(ids)
-	if err != nil {
-		return nil, err
-	}
-
 	domainIssues := make([]domain.Issue, len(issues))
 	for i, issue := range issues {
-		model, err := r.toDomainIssue(&issue, bindings)
+		model, err := r.toDomainIssue(&issue)
 		if err != nil {
 			return nil, err
 		}
@@ -134,42 +120,10 @@ func (r *IssueRepository) Update(issue *domain.Issue) (*domain.Issue, error) {
 		return nil, err
 	}
 
-	persistentBindings, err := r.preloadBindings([]domain.IssueId{issue.Id})
-	if err != nil {
-		return nil, err
-	}
-
-	existBindingIds := make([]domain.IssueBindingId, 0, len(issue.SprintBindings))
-	for _, domainBinding := range issue.SprintBindings {
-		var (
-			err     error
-			binding *domain.IssueBinding
-		)
-		if domainBinding.Id == 0 {
-			binding, err = r.issueBindingRepo.Create(&domainBinding)
-		} else {
-			binding, err = r.issueBindingRepo.Update(&domainBinding)
-		}
-		if err != nil {
-			return nil, err
-		}
-		existBindingIds = append(existBindingIds, binding.Id)
-	}
-
-	// remove non exist bindings
-	for _, persistentBinding := range persistentBindings {
-		if !slices.Contains(existBindingIds, persistentBinding.Id) {
-			if err := r.issueBindingRepo.Delete(persistentBinding.Id); err != nil {
-				return nil, err
-			}
-		}
-	}
-
 	domainIssue, err := r.Get(domain.IssueId(model.Id))
 	if err != nil {
 		return nil, err
 	}
-	domainIssue.SetContext(issue.GetContextBindingId())
 
 	if err := r.saveLabelHistory(domainIssue); err != nil {
 		return nil, err
@@ -181,7 +135,7 @@ func (r *IssueRepository) Delete(id domain.IssueId) error {
 	return r.conn.GetEngine().Where("id = ?", id).Delete(&models.Issue{}).Error
 }
 
-func (r *IssueRepository) toDomainIssue(issue *models.Issue, preloadBindings []domain.IssueBinding) (*domain.Issue, error) {
+func (r *IssueRepository) toDomainIssue(issue *models.Issue) (*domain.Issue, error) {
 	project, err := r.projectRepo.toDomainProject(&issue.Project)
 	if err != nil {
 		return nil, err
@@ -194,8 +148,6 @@ func (r *IssueRepository) toDomainIssue(issue *models.Issue, preloadBindings []d
 			return nil, err
 		}
 	}
-
-	bindings := r.filterBindbinsByIssue(preloadBindings, domain.IssueId(issue.Id))
 
 	domainIssue := &domain.Issue{
 		Id:        domain.IssueId(issue.Id),
@@ -217,13 +169,8 @@ func (r *IssueRepository) toDomainIssue(issue *models.Issue, preloadBindings []d
 			}
 			return nil
 		}(),
-		EstimateDev:    issue.EstimateDev,
-		EstimateQA:     issue.EstimateQA,
-		SprintBindings: bindings,
-	}
-
-	if issue.BindingId != nil {
-		domainIssue.SetContext((*domain.IssueBindingId)(issue.BindingId))
+		EstimateDev: issue.EstimateDev,
+		EstimateQA:  issue.EstimateQA,
 	}
 
 	return domainIssue, nil
@@ -307,18 +254,4 @@ func (r *IssueRepository) toDomainLabelHistory(history *models.LabelHistory) *do
 		}),
 		CreatedAt: history.CreatedAt,
 	}
-}
-
-func (r *IssueRepository) preloadBindings(ids []domain.IssueId) ([]domain.IssueBinding, error) {
-	return r.issueBindingRepo.List(r.issueBindingQuery.GetSpec(queries.IssueBindingFilter{
-		Issues: utils.Map(ids, func(id domain.IssueId) uint {
-			return uint(id)
-		}),
-	}))
-}
-
-func (r *IssueRepository) filterBindbinsByIssue(bindings []domain.IssueBinding, issueId domain.IssueId) []domain.IssueBinding {
-	return utils.Filter(bindings, func(b domain.IssueBinding) bool {
-		return b.Issue.Id == issueId
-	})
 }

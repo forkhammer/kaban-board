@@ -112,7 +112,7 @@ func (r *IssueBindingRepository) toDomainIssueBinding(binding *models.IssueBindi
 		return nil, err
 	}
 
-	issue, err := r.issueRepo.toDomainIssue(binding.Issue, []domain.IssueBinding{})
+	issue, err := r.issueRepo.toDomainIssue(binding.Issue)
 	if err != nil {
 		return nil, err
 	}
@@ -194,6 +194,7 @@ func (r *IssueBindingRepository) getQuery() *gorm.DB {
 		Preload("Sprint").
 		Preload("Sprint.Team").
 		Preload("Issue").
+		Preload("Issue.Labels").
 		Preload("Assignee").
 		Preload("Assignee.Groups").
 		Preload("Release").

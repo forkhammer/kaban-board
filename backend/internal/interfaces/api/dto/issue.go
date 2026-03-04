@@ -22,12 +22,7 @@ type BindIssueRequest struct {
 	SprintId uint `json:"sprint_id"`
 }
 
-type UnbindIssueRequest struct {
-	BindingId uint `json:"binding_id"`
-}
-
-type SaveIssueRequest struct {
-	BindingId   *uint   `json:"bindingId"`
+type SaveIssueBindingRequest struct {
 	EstimateDev *uint   `json:"estimateDev"`
 	EstimateQA  *uint   `json:"estimateQA"`
 	BindStatus  *string `json:"bindStatus"`
@@ -113,30 +108,24 @@ func SerializeIssue(issue *domain.Issue) *IssueDto {
 		ProjectId:   int(issue.Project.Id),
 		ProjectName: &issue.Project.Name,
 		Release: func() *ReleaseDto {
-			release := issue.GetRelease()
+			release := issue.Release
 			if release == nil {
 				return nil
 			}
 			return SerializeRelease(release)
 		}(),
-		Epic: func() *EpicDto {
-			epic := issue.GetEpic()
-			if epic == nil {
-				return nil
-			}
-			return SerializeEpic(epic)
-		}(),
+		Epic: nil,
 		TaskType: func() *LabelDto {
 			if issue.TaskType == nil {
 				return nil
 			}
 			return SerializeLabel(issue.TaskType)
 		}(),
-		EstimateDev: issue.GetEstimateDev(),
-		EstimateQA:  issue.GetEstimateQA(),
-		BindingId:   (*uint)(issue.GetContextBindingId()),
-		BindStatus:  (*string)(issue.GetBindStatus()),
-		Priority:    (*string)(issue.GetPriority()),
-		Comment:     issue.GetComment(),
+		EstimateDev: nil,
+		EstimateQA:  nil,
+		BindingId:   nil,
+		BindStatus:  nil,
+		Priority:    nil,
+		Comment:     nil,
 	}
 }

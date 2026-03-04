@@ -1,7 +1,6 @@
 package models
 
 import (
-	"fmt"
 	"main/pkg/utils"
 	"slices"
 	"time"
@@ -24,22 +23,19 @@ const (
 )
 
 type Issue struct {
-	Id               IssueId
-	Iid              IssueIid
-	Title            string
-	IssueType        IssueType
-	Assignees        []User
-	WebUrl           string
-	Labels           []Label
-	LabelHistory     []LabelHistory
-	Project          Project
-	Release          *Release
-	TaskType         *Label
-	EstimateDev      *uint
-	EstimateQA       *uint
-	SprintBindings   []IssueBinding
-	contextSprintId  *SprintId
-	contextBindingId *IssueBindingId
+	Id           IssueId
+	Iid          IssueIid
+	Title        string
+	IssueType    IssueType
+	Assignees    []User
+	WebUrl       string
+	Labels       []Label
+	LabelHistory []LabelHistory
+	Project      Project
+	Release      *Release
+	TaskType     *Label
+	EstimateDev  *uint
+	EstimateQA   *uint
 }
 
 func (i *Issue) Validate() error {
@@ -74,7 +70,7 @@ func (i *Issue) GetAddedHistory() []LabelHistory {
 	return addedHistory
 }
 
-func (i *Issue) BindToSprint(sprint *Sprint) error {
+func (i *Issue) BindToSprint(sprint *Sprint) (*IssueBinding, error) {
 	binding := IssueBinding{
 		Id:          0,
 		Issue:       i,
@@ -86,228 +82,15 @@ func (i *Issue) BindToSprint(sprint *Sprint) error {
 	}
 
 	if err := binding.Validate(); err != nil {
-		return err
+		return nil, err
 	}
 
-	i.SprintBindings = append(i.SprintBindings, binding)
-	return nil
-}
-
-func (i *Issue) UnbindFromSprint(bindingId IssueBindingId) error {
-	bindingCount := len(i.SprintBindings)
-	if bindingCount == 0 {
-		return fmt.Errorf("Issue %d has no binding %d", i.Id, bindingId)
-	}
-	i.SprintBindings = utils.Filter(i.SprintBindings, func(binding IssueBinding) bool {
-		return binding.Id != bindingId
-	})
-	if len(i.SprintBindings) == bindingCount {
-		return fmt.Errorf("Issue %d has no binding %d", i.Id, bindingId)
-	}
-	return nil
-}
-
-func (i *Issue) SetContext(bindingId *IssueBindingId) {
-	i.contextBindingId = bindingId
-}
-
-func (i *Issue) GetContextBindingId() *IssueBindingId {
-	return i.contextBindingId
-}
-
-func (i *Issue) GetEstimateDev() *uint {
-	if i.contextBindingId != nil {
-		binding := i.getBindingById(*i.contextBindingId)
-		if binding != nil {
-			return binding.EstimateDev
-		}
-	}
-
-	return i.EstimateDev
-}
-
-func (i *Issue) GetEstimateQA() *uint {
-	if i.contextBindingId != nil {
-		binding := i.getBindingById(*i.contextBindingId)
-		if binding != nil {
-			return binding.EstimateQA
-		}
-	}
-
-	return i.EstimateQA
-}
-
-func (i *Issue) SetEstimateDev(estimate *uint) error {
-	if i.contextBindingId != nil {
-		binding := i.getBindingById(*i.contextBindingId)
-		if binding != nil {
-			binding.EstimateDev = estimate
-			return i.Validate()
-		}
-	}
-
-	i.EstimateDev = estimate
-	return i.Validate()
-}
-
-func (i *Issue) SetEstimateQA(estimate *uint) error {
-	if i.contextBindingId != nil {
-		binding := i.getBindingById(*i.contextBindingId)
-		if binding != nil {
-			binding.EstimateQA = estimate
-			return i.Validate()
-		}
-	}
-
-	i.EstimateQA = estimate
-	return i.Validate()
-}
-
-func (i *Issue) GetBindStatus() *IssueBindingStatus {
-	if i.contextBindingId != nil {
-		binding := i.getBindingById(*i.contextBindingId)
-		if binding != nil {
-			return &binding.BindStatus
-		}
-	}
-	return nil
-}
-
-func (i *Issue) SetBindStatus(status IssueBindingStatus) error {
-	if i.contextBindingId != nil {
-		binding := i.getBindingById(*i.contextBindingId)
-		if binding != nil {
-			binding.BindStatus = status
-			return i.Validate()
-		}
-	}
-	return nil
+	return &binding, nil
 }
 
 func (i *Issue) GetAssignee() *User {
-	if i.contextBindingId != nil {
-		binding := i.getBindingById(*i.contextBindingId)
-		if binding != nil && binding.Assignee != nil {
-			return binding.Assignee
-		}
-	}
-
 	if len(i.Assignees) > 0 {
 		return &i.Assignees[0]
 	}
-
 	return nil
-}
-
-func (i *Issue) SetAssignee(assignee *User) {
-	if i.contextBindingId != nil {
-		binding := i.getBindingById(*i.contextBindingId)
-		if binding != nil {
-			binding.Assignee = assignee
-			return
-		}
-	}
-}
-
-func (i *Issue) GetComment() *string {
-	if i.contextBindingId != nil {
-		binding := i.getBindingById(*i.contextBindingId)
-		if binding != nil {
-			return binding.Comment
-		}
-	}
-	return nil
-}
-
-func (i *Issue) SetComment(comment *string) error {
-	if i.contextBindingId != nil {
-		binding := i.getBindingById(*i.contextBindingId)
-		if binding != nil {
-			binding.Comment = comment
-			return i.Validate()
-		}
-	}
-	return nil
-}
-
-func (i *Issue) GetPriority() *IssueBindingPriority {
-	if i.contextBindingId != nil {
-		binding := i.getBindingById(*i.contextBindingId)
-		if binding != nil {
-			return binding.Priority
-		}
-	}
-	return nil
-}
-
-func (i *Issue) SetPriority(priority *IssueBindingPriority) error {
-	if i.contextBindingId != nil {
-		binding := i.getBindingById(*i.contextBindingId)
-		if binding != nil {
-			binding.Priority = priority
-			return i.Validate()
-		}
-	}
-	return nil
-}
-
-func (i *Issue) GetRelease() *Release {
-	if i.contextBindingId != nil {
-		binding := i.getBindingById(*i.contextBindingId)
-		if binding != nil {
-			return binding.Release
-		}
-	}
-	return i.Release
-}
-
-func (i *Issue) SetRelease(release *Release) error {
-	if i.contextBindingId != nil {
-		binding := i.getBindingById(*i.contextBindingId)
-		if binding != nil {
-			binding.Release = release
-			return i.Validate()
-		}
-	}
-	return nil
-}
-
-func (i *Issue) GetEpic() *Epic {
-	if i.contextBindingId != nil {
-		binding := i.getBindingById(*i.contextBindingId)
-		if binding != nil {
-			return binding.Epic
-		}
-	}
-	return nil
-}
-
-func (i *Issue) SetEpic(epic *Epic) error {
-	if i.contextBindingId != nil {
-		binding := i.getBindingById(*i.contextBindingId)
-		if binding != nil {
-			binding.Epic = epic
-			return i.Validate()
-		}
-	}
-	return nil
-}
-
-func (i *Issue) getBindingById(id IssueBindingId) *IssueBinding {
-	for index, binding := range i.SprintBindings {
-		if binding.Id == id {
-			return &i.SprintBindings[index]
-		}
-	}
-	return nil
-}
-
-func (i *Issue) GetLastBinding() *IssueBinding {
-	var last *IssueBinding
-	for index, binding := range i.SprintBindings {
-		if last == nil || binding.Id > last.Id {
-			last = &i.SprintBindings[index]
-		}
-	}
-	return last
 }

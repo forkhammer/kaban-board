@@ -65,7 +65,10 @@
   <td class="column">
     <div class="comment" *ngIf="issue.comment && !canEdit()">{{issue.comment}}</div>
 
-    <textarea rows="1" formControlName="comment" class="form-control" *ngIf="canEdit()"></textarea>
+    <div #commentEl contenteditable="true" class="comment-edit"
+      *ngIf="canEdit()"
+      (input)="onCommentInput($event)"
+      (keydown.enter)="$event.preventDefault()"></div>
   </td>
   <td class="column">
     <div ngbDropdown *ngIf="canEdit()">

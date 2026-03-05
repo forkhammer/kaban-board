@@ -39,6 +39,29 @@ td {
   }
 }
 
+.comment-edit {
+  min-height: 1.5em;
+  width: 100%;
+  outline: none;
+  white-space: pre-wrap;
+  word-break: break-word;
+  cursor: text;
+  border: 1px solid transparent;
+  padding: 4px;
+  border-radius: 4px;
+  background-color: transparent;
+  @include fs-paragraph-xs();
+
+  &:hover,
+  &:focus {
+    border-color: $gray-300;
+  }
+
+  &:focus {
+    background-color: $white;
+  }
+}
+
 .btn-row-actions {
   color: $gray-500;
 

@@ -1,4 +1,4 @@
-import { Component, DestroyRef, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
+import { AfterViewChecked, Component, DestroyRef, ElementRef, EventEmitter, inject, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { BIND_STATUS_LABELS, BIND_STATUS_VALUES, ISSUE_PRIORITY_LABELS, ISSUE_PRIORITY_VALUES, KanbanIssue } from '../../models/kanban-issue';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -23,7 +23,7 @@ import { faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
   templateUrl: './issue-table-row.component.html',
   styleUrl: './issue-table-row.component.scss'
 })
-export class IssueTableRowComponent implements OnInit{
+export class IssueTableRowComponent implements OnInit, AfterViewChecked {
   fb = inject(FormBuilder)
   destroyRef = inject(DestroyRef)
   issueService = inject(IssueService)
@@ -41,7 +41,10 @@ export class IssueTableRowComponent implements OnInit{
   readonly faUser = faUser
   readonly faEllipsisVertical = faEllipsisVertical
 
+  @ViewChild('commentEl') commentEl?: ElementRef<HTMLElement>
+
   private _issue!: KanbanIssue
+  private _commentPending = false
   form: FormGroup
   @Output() unbind = new EventEmitter<number>()
   isAdmin = false
@@ -53,6 +56,7 @@ export class IssueTableRowComponent implements OnInit{
   set issue(value: KanbanIssue) {
     this._issue = value
     this.form.patchValue(this.getSaveData(value), {emitEvent: false})
+    this._commentPending = true
   }
 
   get issue(): KanbanIssue {
@@ -113,6 +117,18 @@ export class IssueTableRowComponent implements OnInit{
 
   canEdit(): boolean {
     return this.isAdmin && Boolean(this.sprint$.value)
+  }
+
+  ngAfterViewChecked() {
+    if (this._commentPending && this.commentEl) {
+      this.commentEl.nativeElement.innerText = this._issue.comment ?? ''
+      this._commentPending = false
+    }
+  }
+
+  onCommentInput(event: Event) {
+    const text = (event.target as HTMLElement).innerText
+    this.form.get('comment')?.setValue(text, {emitEvent: true})
   }
 
   unbindIssue() {

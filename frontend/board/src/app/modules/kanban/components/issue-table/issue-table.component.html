@@ -32,6 +32,7 @@
         <ng-container>
           <app-issue-table-append-row *ngFor="let issue of appendedIssues; let i = index" (issue)="bindIssue($event)"
             [sprint]="(sprint$ | async)!"
+            [assignee]="user$ | async"
             [index]="i"></app-issue-table-append-row>
         </ng-container>
       </td>

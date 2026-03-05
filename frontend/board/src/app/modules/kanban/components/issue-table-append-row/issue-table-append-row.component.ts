@@ -8,6 +8,7 @@ import { Sprint } from '../../models/sprint';
 import { filter, switchMap } from 'rxjs';
 import { catchErrorMessages } from 'src/app/modules/core/tools/catch-error';
 import { ToastService } from 'src/app/modules/core/services/toast.service';
+import { KanbanUser } from '../../models/kanban-user';
 
 @Component({
   selector: 'app-issue-table-append-row',
@@ -23,6 +24,7 @@ export class IssueTableAppendRowComponent {
 
   @Input() index: number = 0
   @Input() sprint!: Sprint
+  @Input() assignee: KanbanUser | null | undefined = null
   @Output() issue = new EventEmitter<[number, KanbanIssue]>()
 
   form: FormGroup
@@ -43,7 +45,7 @@ export class IssueTableAppendRowComponent {
     this.form.get('issueId')?.valueChanges.pipe(
       filter(Boolean),
       switchMap(issueId => {
-        return this.issueService.bindToSprint(issueId, this.sprint.id).pipe(
+        return this.issueService.bindToSprint(issueId, this.sprint.id, this.assignee?.id ?? null).pipe(
           catchErrorMessages(this.toast)
         )
       }),

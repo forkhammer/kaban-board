@@ -70,7 +70,7 @@ func (i *Issue) GetAddedHistory() []LabelHistory {
 	return addedHistory
 }
 
-func (i *Issue) BindToSprint(sprint *Sprint) (*IssueBinding, error) {
+func (i *Issue) BindToSprint(sprint *Sprint, assignee *User) (*IssueBinding, error) {
 	binding := IssueBinding{
 		Id:          0,
 		Issue:       i,
@@ -78,7 +78,7 @@ func (i *Issue) BindToSprint(sprint *Sprint) (*IssueBinding, error) {
 		EstimateDev: nil,
 		EstimateQA:  nil,
 		BindStatus:  IssueBindStatusBacklog,
-		Assignee:    nil,
+		Assignee:    assignee,
 	}
 
 	if err := binding.Validate(); err != nil {

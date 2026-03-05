@@ -75,7 +75,7 @@ func (c *IssueController) bindIssue(ctx *gin.Context) {
 		return
 	}
 
-	binding, err := c.issueUC.BindIssue(uint(id), request.SprintId)
+	binding, err := c.issueUC.BindIssue(uint(id), request.SprintId, request.AssigneeId)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
 		return

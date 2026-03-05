@@ -18,7 +18,7 @@ export class IssueService extends BaseService<KanbanIssue>{
     return `#${item.projectName}${item.iid} - ${item.title}`
   }
 
-  bindToSprint(issueId: string, sprintId: number) {
-    return this.http.post<KanbanIssue>(`${this.apiUrl}/${issueId}/bind`, {sprint_id: sprintId})
+  bindToSprint(issueId: string, sprintId: number, assigneeId: number | null) {
+    return this.http.post<KanbanIssue>(`${this.apiUrl}/${issueId}/bind`, {sprint_id: sprintId, assignee_id: assigneeId})
   }
 }

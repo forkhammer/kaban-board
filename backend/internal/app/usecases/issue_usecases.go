@@ -21,6 +21,7 @@ type IssueUseCases struct {
 	issueBindingRepo repo.IssueBindingRepo `di.inject:"IssueBindingRepository"`
 	sprintRepo       repo.SprintRepo       `di.inject:"SprintRepository"`
 	commonQuery      queries.CommonQuery   `di.inject:"CommonQuery"`
+	userRepo         repo.UserRepo         `di.inject:"UserRepository"`
 }
 
 func (u *IssueUseCases) GetIssues(filter *queries.IssueFilter, page int, limit int) (*IssuePage, error) {
@@ -65,7 +66,7 @@ func (u *IssueUseCases) GetIssue(id uint) (*domain.Issue, error) {
 	return u.issueRepo.Get(domain.IssueId(id))
 }
 
-func (u *IssueUseCases) BindIssue(id uint, sprintId uint) (*domain.IssueBinding, error) {
+func (u *IssueUseCases) BindIssue(id uint, sprintId uint, assigneeId uint) (*domain.IssueBinding, error) {
 	issue, err := u.issueRepo.Get(domain.IssueId(id))
 	if err != nil {
 		return nil, err
@@ -76,7 +77,15 @@ func (u *IssueUseCases) BindIssue(id uint, sprintId uint) (*domain.IssueBinding,
 		return nil, err
 	}
 
-	binding, err := issue.BindToSprint(sprint)
+	var assignee *domain.User
+	if assigneeId > 0 {
+		assignee, err = u.userRepo.Get(domain.UserId(assigneeId))
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	binding, err := issue.BindToSprint(sprint, assignee)
 	if err != nil {
 		return nil, err
 	}

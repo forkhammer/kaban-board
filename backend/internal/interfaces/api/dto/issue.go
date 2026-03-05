@@ -19,7 +19,8 @@ type IssuesRequest struct {
 }
 
 type BindIssueRequest struct {
-	SprintId uint `json:"sprint_id"`
+	SprintId   uint `json:"sprint_id"`
+	AssigneeId uint `json:"assignee_id"`
 }
 
 type SaveIssueBindingRequest struct {

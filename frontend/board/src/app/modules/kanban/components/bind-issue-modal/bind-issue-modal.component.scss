@@ -29,7 +29,8 @@
   cursor: pointer;
   transition: background-color 0.15s;
 
-  &:hover {
+  &:hover,
+  &.active {
     background-color: var(--bs-secondary-bg);
   }
 }

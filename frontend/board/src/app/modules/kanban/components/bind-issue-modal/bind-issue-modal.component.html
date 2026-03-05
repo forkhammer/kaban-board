@@ -9,6 +9,7 @@
       placeholder="Поиск по задачам..."
       [(ngModel)]="searchQuery"
       (ngModelChange)="onSearchChange($event)"
+      (keydown)="onKeyDown($event)"
     >
   </div>
 
@@ -26,8 +27,13 @@
       Введите запрос для поиска задач
     </div>
 
-    <div class="item" *ngFor="let issue of issues">
-      <div class="issue-item" (click)="select(issue)">
+    <div class="item" *ngFor="let issue of issues; let i = index">
+      <div
+        #issueItem
+        class="issue-item"
+        [class.active]="i === activeIndex"
+        (click)="select(issue)"
+      >
         <div class="issue-id text-muted">{{issue.projectName}}#{{issue.iid}}</div>
         <div class="issue-title">{{issue.title}}</div>
       </div>

@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject } from '@angular/core';
+import { Component, DestroyRef, ElementRef, inject, AfterViewInit, ViewChild } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { IssueService } from '../../services/issue.service';
 import { KanbanIssue } from '../../models/kanban-issue';
@@ -12,7 +12,9 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   styleUrl: './bind-issue-modal.component.scss',
   standalone: false
 })
-export class BindIssueModalComponent {
+export class BindIssueModalComponent implements AfterViewInit {
+  @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
+
   modal = inject(NgbActiveModal);
   issueService = inject(IssueService);
   destroyRef = inject(DestroyRef);
@@ -49,6 +51,10 @@ export class BindIssueModalComponent {
         this.issues = [];
       }
     });
+  }
+
+  ngAfterViewInit() {
+    this.searchInput.nativeElement.focus();
   }
 
   onSearchChange(query: string) {

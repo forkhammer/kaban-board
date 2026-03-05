@@ -3,12 +3,12 @@
 <div class="modal-body">
   <div class="mb-3">
     <input
+      #searchInput
       type="text"
       class="form-control"
       placeholder="Поиск по задачам..."
       [(ngModel)]="searchQuery"
       (ngModelChange)="onSearchChange($event)"
-      autofocus
     >
   </div>
 

@@ -7,24 +7,26 @@ import { KanbanIssue } from "../models/kanban-issue";
   providedIn: 'root'
 })
 export class BindIssueModalService {
+  lastProjectId: number | null = null;
+
   constructor(private modal: NgbModal) { }
 
-    show() {
-      return new Promise((resolve, reject) => {
-        const ref = this.modal.open(BindIssueModalComponent, {container: 'app-root', centered: true, size: 'lg'});
-        // ref.componentInstance.init(column);
-        ref.result.then(
-          (result: KanbanIssue) => {
-            if (resolve) {
-              resolve(result);
-            }
-          },
-          () => {
-            if (reject) {
-              reject(null);
-            }
-          }
-        );
-      });
-    }
+  show() {
+    return new Promise((resolve, reject) => {
+      const ref = this.modal.open(BindIssueModalComponent, {container: 'app-root', centered: true, size: 'lg'});
+      ref.componentInstance.selectedProjectId = this.lastProjectId;
+      ref.result.then(
+        (result: KanbanIssue) => {
+          resolve(result);
+        },
+        () => {
+          reject(null);
+        }
+      );
+    });
+  }
+
+  saveProjectId(projectId: number | null) {
+    this.lastProjectId = projectId;
+  }
 }

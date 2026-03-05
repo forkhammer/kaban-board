@@ -2,6 +2,7 @@ import { Component, DestroyRef, ElementRef, inject, AfterViewInit, ViewChild, Qu
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { IssueService } from '../../services/issue.service';
 import { ProjectService } from '../../services/project.service';
+import { BindIssueModalService } from '../../services/bind-issue-modal.service';
 import { KanbanIssue } from '../../models/kanban-issue';
 import { Pagination } from 'src/app/modules/core/models/base';
 import { Subject, debounceTime, switchMap, of, catchError } from 'rxjs';
@@ -20,6 +21,7 @@ export class BindIssueModalComponent implements AfterViewInit {
   modal = inject(NgbActiveModal);
   issueService = inject(IssueService);
   projectService = inject(ProjectService);
+  bindIssueModalService = inject(BindIssueModalService);
   destroyRef = inject(DestroyRef);
 
   searchQuery = '';
@@ -71,6 +73,7 @@ export class BindIssueModalComponent implements AfterViewInit {
   }
 
   onProjectChange() {
+    this.bindIssueModalService.saveProjectId(this.selectedProjectId);
     this.search$.next();
   }
 

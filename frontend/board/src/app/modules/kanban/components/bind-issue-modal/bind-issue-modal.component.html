@@ -1,7 +1,7 @@
 <button type="button" class="btn-close" aria-label="Закрыть" (click)="close()"></button>
 
 <div class="modal-body">
-  <div class="mb-3 d-flex gap-2">
+  <div class="d-flex gap-2">
     <div class="project-select">
       <app-select-model
         [service]="projectService"
@@ -26,28 +26,26 @@
   </div>
 
   <div class="issue-list">
-    <div class="text-center text-muted py-3" *ngIf="isLoading">
+    <div class="text-center text-muted py-3 mt-3" *ngIf="isLoading">
       <div class="spinner-border spinner-border-sm me-2"></div>
       Поиск...
     </div>
 
-    <div class="text-center text-muted py-3" *ngIf="!isLoading && searchQuery && issues.length === 0">
+    <div class="text-center text-muted py-3 mt-3" *ngIf="!isLoading && searchQuery && issues.length === 0">
       Ничего не найдено
     </div>
 
-    <div class="text-center text-muted py-3" *ngIf="!isLoading && !searchQuery">
-      Введите запрос для поиска задач
-    </div>
-
-    <div class="item" *ngFor="let issue of issues; let i = index">
-      <div
-        #issueItem
-        class="issue-item"
-        [class.active]="i === activeIndex"
-        (click)="select(issue)"
-      >
-        <div class="issue-id text-muted">{{issue.projectName}}#{{issue.iid}}</div>
-        <div class="issue-title">{{issue.title}}</div>
+    <div class="mt-3" *ngIf="issues.length > 0">
+      <div class="item" *ngFor="let issue of issues; let i = index">
+        <div
+          #issueItem
+          class="issue-item"
+          [class.active]="i === activeIndex"
+          (click)="select(issue)"
+          >
+          <div class="issue-id text-muted">{{issue.projectName}}#{{issue.iid}}</div>
+          <div class="issue-title">{{issue.title}}</div>
+        </div>
       </div>
     </div>
   </div>

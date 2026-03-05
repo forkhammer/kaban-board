@@ -50,7 +50,7 @@ td {
   padding: 4px;
   border-radius: 4px;
   background-color: transparent;
-  @include fs-paragraph-xs();
+  @include fs-paragraph-xxs();
 
   &:hover,
   &:focus {

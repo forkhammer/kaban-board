@@ -1,5 +1,6 @@
 @import '../../../../../styles/imports';
 
+
 :host {
   display: block;
   width: 100%;
@@ -24,6 +25,49 @@
   &:after {
     display: none;
   }
+
+  @for $i from 1 through 8 {
+    &.val-#{$i} {
+      background-color: $estimate-low-color;
+      color: darken($color: $estimate-low-color, $amount: 50);
+
+      &:hover,
+      &.show {
+        border-color: darken($color: $estimate-low-color, $amount: 20);
+      }
+    }
+  }
+
+  @for $i from 12 through 24 {
+    &.val-#{$i} {
+      background-color: $estimate-mid-color;
+      color: darken($color: $estimate-mid-color, $amount: 50);
+
+      &:hover,
+      &.show {
+        border-color: darken($color: $estimate-mid-color, $amount: 20);
+      }
+    }
+  }
+
+  @for $i from 25 through 40 {
+    &.val-#{$i} {
+      background-color: $estimate-hard-color;
+      color: darken($color: $estimate-hard-color, $amount: 50);
+
+      &:hover,
+      &.show {
+        border-color: darken($color: $estimate-hard-color, $amount: 20);
+      }
+    }
+  }
+}
+
+.dropdown-menu {
+  border: none;
+  border-radius: 4px;
+  box-shadow: 0 4px 10px rgba($black, 0.15);
+  overflow: hidden;
 }
 
 .caption {
@@ -41,12 +85,35 @@
 
 .cell {
   background: $white;
-  border: none;
+  border: 1px $white;
+  border-style: none solid solid none;
   padding: $pt2;
-  @include fs-paragraph-xs();
+  @include fs-paragraph-s();
   text-align: center;
   cursor: pointer;
   white-space: nowrap;
+  transition-duration: .2s;
+
+  @for $i from 1 through 8 {
+    &.val-#{$i} {
+      // background-color: $estimate-low-color;
+      color: darken($color: $estimate-low-color, $amount: 50);
+    }
+  }
+
+  @for $i from 12 through 24 {
+    &.val-#{$i} {
+      // background-color: $estimate-mid-color;
+      color: darken($color: $estimate-mid-color, $amount: 40);
+    }
+  }
+
+  @for $i from 25 through 40 {
+    &.val-#{$i} {
+      // background-color: $estimate-hard-color;
+      color: darken($color: $estimate-hard-color, $amount: 50);
+    }
+  }
 
   &:hover {
     background: $gray-100;

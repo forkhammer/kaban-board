@@ -1,12 +1,12 @@
 <div ngbDropdown #dropdown='ngbDropdown' autoClose='outside'>
-  <div ngbDropdownToggle>
+  <div ngbDropdownToggle class="val-{{selectValue}}">
     <span class="caption text-truncate text-gray300 flex-grow-1">
       {{selectValue ?? "?"}}
     </span>
   </div>
   <div ngbDropdownMenu class='shadow'>
     <div class="cells">
-      <button *ngFor="let val of ESTIMATE_VALUES" (click)="select(val)" class="cell" ngbDropdownItem
+      <button *ngFor="let val of ESTIMATE_VALUES" (click)="select(val)" class="cell val-{{val}}" ngbDropdownItem
         [class.active]="selectValue === val">
         {{val}} час
       </button>

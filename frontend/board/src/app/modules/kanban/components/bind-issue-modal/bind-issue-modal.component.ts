@@ -1,9 +1,10 @@
 import { Component, DestroyRef, ElementRef, inject, AfterViewInit, ViewChild, QueryList, ViewChildren } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { IssueService } from '../../services/issue.service';
+import { ProjectService } from '../../services/project.service';
 import { KanbanIssue } from '../../models/kanban-issue';
 import { Pagination } from 'src/app/modules/core/models/base';
-import { Subject, debounceTime, distinctUntilChanged, switchMap, of, catchError } from 'rxjs';
+import { Subject, debounceTime, switchMap, of, catchError } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
@@ -18,27 +19,32 @@ export class BindIssueModalComponent implements AfterViewInit {
 
   modal = inject(NgbActiveModal);
   issueService = inject(IssueService);
+  projectService = inject(ProjectService);
   destroyRef = inject(DestroyRef);
 
   searchQuery = '';
+  selectedProjectId: number | null = null;
   issues: KanbanIssue[] = [];
   isLoading = false;
   activeIndex = -1;
 
-  private search$ = new Subject<string>();
+  private search$ = new Subject<void>();
 
   constructor() {
     this.search$.pipe(
       debounceTime(300),
-      distinctUntilChanged(),
-      switchMap(query => {
+      switchMap(() => {
         this.isLoading = true;
         this.activeIndex = -1;
-        if (!query.trim()) {
+        if (!this.searchQuery.trim()) {
           this.isLoading = false;
           return of(null);
         }
-        return this.issueService.list({ search: query }).pipe(
+        const query: any = { search: this.searchQuery };
+        if (this.selectedProjectId) {
+          query['project'] = this.selectedProjectId;
+        }
+        return this.issueService.list(query).pipe(
           catchError(() => {
             this.isLoading = false;
             return of(null);
@@ -60,8 +66,12 @@ export class BindIssueModalComponent implements AfterViewInit {
     this.searchInput.nativeElement.focus();
   }
 
-  onSearchChange(query: string) {
-    this.search$.next(query);
+  onSearchChange() {
+    this.search$.next();
+  }
+
+  onProjectChange() {
+    this.search$.next();
   }
 
   onKeyDown(event: KeyboardEvent) {

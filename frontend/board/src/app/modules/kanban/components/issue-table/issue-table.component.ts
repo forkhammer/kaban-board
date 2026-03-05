@@ -12,7 +12,6 @@ import { IssueService } from '../../services/issue.service';
 import { ToastService } from 'src/app/modules/core/services/toast.service';
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { Pagination } from 'src/app/modules/core/models/base';
-import { User } from '../../models/user';
 import { AccountService } from 'src/app/modules/core/services/account.service';
 import { IssueBindingService } from '../../services/issue-binding.service';
 import { BindIssueModalService } from '../../services/bind-issue-modal.service';
@@ -39,7 +38,6 @@ export class IssueTableComponent {
   private timer$ = timer(0, environment.autoUpdateIssuesMin * 60 * 1000)
   public issues: KanbanIssue[] = []
   public issuePage: Pagination<KanbanIssue> | null = null
-  public appendedIssues: (number | null)[] = []
   public isLoading = false
   isPageMore$ = new BehaviorSubject<boolean>(false);
   isLoadMore$ = new BehaviorSubject<boolean>(false);
@@ -127,11 +125,6 @@ export class IssueTableComponent {
         })
       }
     }, () => {})
-  }
-
-  bindIssue(event: [number, KanbanIssue]) {
-    this.appendedIssues.splice(event[0], 1)
-    this.issues.push(event[1])
   }
 
   unbindIssue(bindingId: number) {

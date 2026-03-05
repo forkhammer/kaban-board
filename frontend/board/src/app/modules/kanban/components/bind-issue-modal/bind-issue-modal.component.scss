@@ -12,6 +12,11 @@
   opacity: 1;
 }
 
+.project-select {
+  flex-shrink: 0;
+  width: 160px;
+}
+
 .issue-list {
   max-height: 400px;
   overflow-y: auto;

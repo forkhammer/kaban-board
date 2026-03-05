@@ -1,14 +1,26 @@
 <button type="button" class="btn-close" aria-label="Закрыть" (click)="close()"></button>
 
 <div class="modal-body">
-  <div class="mb-3">
+  <div class="mb-3 d-flex gap-2">
+    <div class="project-select">
+      <app-select-model
+        [service]="projectService"
+        [useClear]="true"
+        title="Проект"
+        [(ngModel)]="selectedProjectId"
+        (ngModelChange)="onProjectChange()"
+        [formatter]="projectService.formatter"
+        [itemFormatter]="projectService.formatter"
+        [useSearch]="true"
+      ></app-select-model>
+    </div>
     <input
       #searchInput
       type="text"
       class="form-control"
       placeholder="Поиск по задачам..."
       [(ngModel)]="searchQuery"
-      (ngModelChange)="onSearchChange($event)"
+      (ngModelChange)="onSearchChange()"
       (keydown)="onKeyDown($event)"
     >
   </div>

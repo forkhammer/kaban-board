@@ -41,7 +41,6 @@ import { SprintCardComponent } from './components/sprint-card/sprint-card.compon
 import { FilterSprintsByQuarterPipe } from './pipes/filter-sprints-by-quarter.pipe';
 import { IssueTableComponent } from './components/issue-table/issue-table.component';
 import { IssueTableRowComponent } from './components/issue-table-row/issue-table-row.component';
-import { IssueTableAppendRowComponent } from './components/issue-table-append-row/issue-table-append-row.component';
 import { SelectEstimateComponent } from './components/select-estimate/select-estimate.component';
 import { AssigneeSelectComponent } from './components/assignee-select/assignee-select.component';
 import { SprintSelectComponent } from './components/sprint-select/sprint-select.component';
@@ -87,7 +86,6 @@ import { BindIssueModalComponent } from './components/bind-issue-modal/bind-issu
     FilterSprintsByQuarterPipe,
     IssueTableComponent,
     IssueTableRowComponent,
-    IssueTableAppendRowComponent,
     SelectEstimateComponent,
     AssigneeSelectComponent,
     SprintSelectComponent,

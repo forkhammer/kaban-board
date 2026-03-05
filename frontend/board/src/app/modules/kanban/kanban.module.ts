@@ -47,6 +47,7 @@ import { AssigneeSelectComponent } from './components/assignee-select/assignee-s
 import { SprintSelectComponent } from './components/sprint-select/sprint-select.component';
 import { PriorityBadgeComponent } from './components/priority-badge/priority-badge.component';
 import { PrioritySelectComponent } from './components/priority-select/priority-select.component';
+import { BindIssueModalComponent } from './components/bind-issue-modal/bind-issue-modal.component';
 
 
 @NgModule({
@@ -92,6 +93,7 @@ import { PrioritySelectComponent } from './components/priority-select/priority-s
     SprintSelectComponent,
     PriorityBadgeComponent,
     PrioritySelectComponent,
+    BindIssueModalComponent,
   ],
   exports: [
     UserBoardComponent,

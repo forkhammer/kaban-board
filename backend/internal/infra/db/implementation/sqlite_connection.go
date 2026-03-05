@@ -1,15 +1,28 @@
 package implementation
 
 import (
+	"database/sql"
 	"log"
 	"main/config"
 	"os"
+	"strings"
 	"time"
 
+	"github.com/mattn/go-sqlite3"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
+
+func init() {
+	sql.Register("sqlite3_unicode", &sqlite3.SQLiteDriver{
+		ConnectHook: func(conn *sqlite3.SQLiteConn) error {
+			return conn.RegisterFunc("lower_unicode", func(s string) string {
+				return strings.ToLower(s)
+			}, true)
+		},
+	})
+}
 
 type SqliteConnection struct {
 	dbfile string
@@ -32,7 +45,7 @@ func NewSqliteConnection(dbfile string) (*SqliteConnection, error) {
 		},
 	)
 
-	db, err := gorm.Open(sqlite.Open(dbfile), &gorm.Config{
+	db, err := gorm.Open(sqlite.Dialector{DSN: dbfile, DriverName: "sqlite3_unicode"}, &gorm.Config{
 		Logger: newLogger,
 	})
 

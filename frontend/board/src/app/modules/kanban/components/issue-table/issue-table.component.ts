@@ -1,4 +1,4 @@
-import { Component, inject, Input } from '@angular/core';
+import { Component, DestroyRef, inject, Input } from '@angular/core';
 import { BehaviorSubject, combineLatestWith, debounceTime, distinctUntilChanged, filter, of, switchMap, tap, timer } from 'rxjs';
 import { KanbanUser } from '../../models/kanban-user';
 import { Team } from '../../models/team';
@@ -15,6 +15,7 @@ import { Pagination } from 'src/app/modules/core/models/base';
 import { User } from '../../models/user';
 import { AccountService } from 'src/app/modules/core/services/account.service';
 import { IssueBindingService } from '../../services/issue-binding.service';
+import { BindIssueModalService } from '../../services/bind-issue-modal.service';
 
 @Component({
   selector: 'app-issue-table',
@@ -27,6 +28,8 @@ export class IssueTableComponent {
   private issueBindingService = inject(IssueBindingService)
   private toast = inject(ToastService)
   public accountService = inject(AccountService)
+  private bindIssueModal = inject(BindIssueModalService)
+  private destroyRef = inject(DestroyRef)
 
   faPlus = faPlus
 
@@ -114,7 +117,16 @@ export class IssueTableComponent {
   }
 
   appendIssue() {
-    this.appendedIssues.push(null)
+    this.bindIssueModal.show().then(issue => {
+      if (issue && this.sprint$.value) {
+        this.issueService.bindToSprint((issue as KanbanIssue).id, this.sprint$.value.id, this.user$.value?.id ?? null).pipe(
+          catchErrorMessages(this.toast),
+          takeUntilDestroyed(this.destroyRef),
+        ).subscribe(data => {
+          this.issues.push(data)
+        })
+      }
+    }, () => {})
   }
 
   bindIssue(event: [number, KanbanIssue]) {

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"main/internal/app/queries"
 	"main/internal/domain/repo"
+	"strings"
 
 	"gorm.io/gorm"
 )
@@ -59,7 +60,8 @@ func (s *IssueFilterSpec) Apply(conn any) (any, error) {
 		query = query.Where("issues.project_id = ?", s.Filter.ProjectId)
 	}
 	if s.Filter.Search != nil {
-		query = query.Where("(issues.title like ?) or (issues.iid = ?)", fmt.Sprintf("%%%s%%", *s.Filter.Search), s.Filter.Search)
+		searchText := strings.ToLower(*s.Filter.Search)
+		query = query.Where("(lower_unicode(issues.title) like ?) or (issues.iid = ?)", fmt.Sprintf("%%%s%%", searchText), searchText)
 	}
 
 	return query, nil

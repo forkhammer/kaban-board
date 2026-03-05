@@ -1,0 +1,36 @@
+<button type="button" class="btn-close" aria-label="Закрыть" (click)="close()"></button>
+
+<div class="modal-body">
+  <div class="mb-3">
+    <input
+      type="text"
+      class="form-control"
+      placeholder="Поиск по задачам..."
+      [(ngModel)]="searchQuery"
+      (ngModelChange)="onSearchChange($event)"
+      autofocus
+    >
+  </div>
+
+  <div class="issue-list">
+    <div class="text-center text-muted py-3" *ngIf="isLoading">
+      <div class="spinner-border spinner-border-sm me-2"></div>
+      Поиск...
+    </div>
+
+    <div class="text-center text-muted py-3" *ngIf="!isLoading && searchQuery && issues.length === 0">
+      Ничего не найдено
+    </div>
+
+    <div class="text-center text-muted py-3" *ngIf="!isLoading && !searchQuery">
+      Введите запрос для поиска задач
+    </div>
+
+    <div class="item" *ngFor="let issue of issues">
+      <div class="issue-item" (click)="select(issue)">
+        <div class="issue-id text-muted">{{issue.projectName}}#{{issue.iid}}</div>
+        <div class="issue-title">{{issue.title}}</div>
+      </div>
+    </div>
+  </div>
+</div>

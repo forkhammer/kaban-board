@@ -38,3 +38,11 @@ td {
     color: $gray-300;
   }
 }
+
+.btn-row-actions {
+  color: $gray-500;
+
+  &:after {
+    display: none;
+  }
+}

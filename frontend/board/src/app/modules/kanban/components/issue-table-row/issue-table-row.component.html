@@ -69,7 +69,9 @@
   </td>
   <td class="column">
     <div ngbDropdown *ngIf="canEdit()">
-      <button class="btn" ngbDropdownToggle>...</button>
+      <button class="btn btn-row-actions" ngbDropdownToggle>
+        <fa-icon [icon]="faEllipsisVertical"></fa-icon>
+      </button>
       <div ngbDropdownMenu>
         <button ngbDropdownItem (click)="unbindIssue()">Удалить</button>
       </div>

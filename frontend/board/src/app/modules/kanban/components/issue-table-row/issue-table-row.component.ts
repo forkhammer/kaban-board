@@ -15,6 +15,7 @@ import {faUser} from '@fortawesome/free-regular-svg-icons';
 import { Team } from '../../models/team';
 import { Sprint } from '../../models/sprint';
 import { IssueBindingService } from '../../services/issue-binding.service';
+import { faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-issue-table-row, [app-issue-table-row]',
@@ -38,6 +39,7 @@ export class IssueTableRowComponent implements OnInit{
   readonly ISSUE_PRIORITY_VALUES = ISSUE_PRIORITY_VALUES
   readonly ISSUE_PRIORITY_LABELS = ISSUE_PRIORITY_LABELS
   readonly faUser = faUser
+  readonly faEllipsisVertical = faEllipsisVertical
 
   private _issue!: KanbanIssue
   form: FormGroup

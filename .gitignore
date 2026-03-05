@@ -3,3 +3,4 @@ frontend/board/node_modules
 .env
 backend/__debug*
 .tmp
+.vscode/settings.json

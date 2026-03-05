@@ -195,6 +195,10 @@ func (r *IssueBindingRepository) getQuery() *gorm.DB {
 		Preload("Sprint.Team").
 		Preload("Issue").
 		Preload("Issue.Labels").
+		Preload("Issue.Project").
+		Preload("Issue.Project.Team").
+		Preload("Issue.TaskType").
+		Preload("Issue.Release").
 		Preload("Assignee").
 		Preload("Assignee.Groups").
 		Preload("Release").

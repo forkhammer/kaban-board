@@ -71,6 +71,7 @@ func (i *Issue) GetAddedHistory() []LabelHistory {
 }
 
 func (i *Issue) BindToSprint(sprint *Sprint, assignee *User) (*IssueBinding, error) {
+	priority := IssueBindingPriorityMedium
 	binding := IssueBinding{
 		Id:          0,
 		Issue:       i,
@@ -79,6 +80,7 @@ func (i *Issue) BindToSprint(sprint *Sprint, assignee *User) (*IssueBinding, err
 		EstimateQA:  nil,
 		BindStatus:  IssueBindStatusBacklog,
 		Assignee:    assignee,
+		Priority:    &priority,
 	}
 
 	if err := binding.Validate(); err != nil {

@@ -75,6 +75,7 @@ export class KanbanBoardComponent implements OnInit, AfterViewInit {
   public filterForm: FormGroup
   public teamId$: Observable<number | null>
   public sprintId$: Observable<number | null>
+  public userId$: Observable<number | null>
   public selectedTeam: Team | null = null
   public view$: Observable<KanbanView | null>
   public selectedSprint: Sprint | null = null
@@ -96,6 +97,7 @@ export class KanbanBoardComponent implements OnInit, AfterViewInit {
     this.filterForm = this.builder.group({
       team: [null],
       sprint: [null],
+      user: [null],
       view: [KanbanView.BOARD],
     })
     this.teamId$ = this.route.queryParams.pipe(
@@ -103,6 +105,9 @@ export class KanbanBoardComponent implements OnInit, AfterViewInit {
     );
     this.sprintId$ = this.route.queryParams.pipe(
       map(params => params['sprint'] ? Number(params['sprint']) : null)
+    );
+    this.userId$ = this.route.queryParams.pipe(
+      map(params => params['user'] ? Number(params['user']) : null)
     );
     this.view$ = this.route.queryParams.pipe(
       map(params => params['view'] ? params['view'] : null)
@@ -189,6 +194,12 @@ export class KanbanBoardComponent implements OnInit, AfterViewInit {
       this.filterForm.patchValue({sprint: value})
     })
 
+    this.userId$.pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(value => {
+      this.filterForm.patchValue({user: value})
+    })
+
     this.view$.pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(value => {
@@ -240,7 +251,7 @@ export class KanbanBoardComponent implements OnInit, AfterViewInit {
   }
 
   selectTeam(team: Team) {
-    this.filterForm.patchValue({team: team.id})
+    this.filterForm.patchValue({team: team.id, sprint: null, user: null})
   }
 
   goToTeamBoard() {

@@ -32,6 +32,24 @@ import (
 	"github.com/goioc/di"
 )
 
+func mustRegisterBean(beanID string, beanType reflect.Type) {
+	if _, err := di.RegisterBean(beanID, beanType); err != nil {
+		panic(fmt.Sprintf("failed to register bean %q: %v", beanID, err))
+	}
+}
+
+func mustRegisterBeanInstance(beanID string, beanInstance any) {
+	if _, err := di.RegisterBeanInstance(beanID, beanInstance); err != nil {
+		panic(fmt.Sprintf("failed to register bean instance %q: %v", beanID, err))
+	}
+}
+
+func mustRegisterBeanFactory(beanID string, scope di.Scope, beanFactory func(ctx context.Context) (any, error)) {
+	if _, err := di.RegisterBeanFactory(beanID, scope, beanFactory); err != nil {
+		panic(fmt.Sprintf("failed to register bean factory %q: %v", beanID, err))
+	}
+}
+
 type Application struct {
 	api    *cmd.ApiApplication
 	worker *cmd.WorkerApplication
@@ -64,81 +82,80 @@ func (app *Application) Init() {
 	initSentry()
 
 	connection, err := implementation.GetConnectionByType(interfaces.DbType(config.Settings.DbType), config.Settings)
-	di.RegisterBeanInstance("connection", connection)
-
 	if err != nil {
 		panic(err)
 	}
 
-	di.RegisterBeanInstance("config", config.Settings)
-	di.RegisterBeanInstance("db", connection)
-	di.RegisterBeanFactory("gitlab", di.Singleton, func(ctx context.Context) (interface{}, error) {
+	mustRegisterBeanInstance("connection", connection)
+	mustRegisterBeanInstance("config", config.Settings)
+	mustRegisterBeanInstance("db", connection)
+	mustRegisterBeanFactory("gitlab", di.Singleton, func(ctx context.Context) (any, error) {
 		return gitlab.NewGitlabClient(config.Settings.GitlabUrl, config.Settings.GitlabToken), nil
 	})
 
-	di.RegisterBean("AccountRepository", reflect.TypeOf((*repo.AccountRepository)(nil)))
-	di.RegisterBean("ColumnRepository", reflect.TypeOf((*repo.ColumnRepository)(nil)))
-	di.RegisterBean("GroupRepository", reflect.TypeOf((*repo.GroupRepository)(nil)))
-	di.RegisterBean("IssueRepository", reflect.TypeOf((*repo.IssueRepository)(nil)))
-	di.RegisterBean("KeyValueRepository", reflect.TypeOf((*repo.KeyValueRepository)(nil)))
-	di.RegisterBean("LabelRepository", reflect.TypeOf((*repo.LabelRepository)(nil)))
-	di.RegisterBean("ProjectRepository", reflect.TypeOf((*repo.ProjectRepository)(nil)))
-	di.RegisterBean("ReleaseRepository", reflect.TypeOf((*repo.ReleaseRepository)(nil)))
-	di.RegisterBean("TeamRepository", reflect.TypeOf((*repo.TeamRepository)(nil)))
-	di.RegisterBean("UserRepository", reflect.TypeOf((*repo.UserRepository)(nil)))
-	di.RegisterBean("SettingsRepository", reflect.TypeOf((*repo.SettingsRepository)(nil)))
-	di.RegisterBean("SprintRepository", reflect.TypeOf((*repo.SprintRepository)(nil)))
-	di.RegisterBean("IssueBindingRepository", reflect.TypeOf((*repo.IssueBindingRepository)(nil)))
-	di.RegisterBean("EpicRepository", reflect.TypeOf((*repo.EpicRepository)(nil)))
+	mustRegisterBean("AccountRepository", reflect.TypeFor[*repo.AccountRepository]())
+	mustRegisterBean("ColumnRepository", reflect.TypeFor[*repo.ColumnRepository]())
+	mustRegisterBean("GroupRepository", reflect.TypeFor[*repo.GroupRepository]())
+	mustRegisterBean("IssueRepository", reflect.TypeFor[*repo.IssueRepository]())
+	mustRegisterBean("KeyValueRepository", reflect.TypeFor[*repo.KeyValueRepository]())
+	mustRegisterBean("LabelRepository", reflect.TypeFor[*repo.LabelRepository]())
+	mustRegisterBean("ProjectRepository", reflect.TypeFor[*repo.ProjectRepository]())
+	mustRegisterBean("ReleaseRepository", reflect.TypeFor[*repo.ReleaseRepository]())
+	mustRegisterBean("TeamRepository", reflect.TypeFor[*repo.TeamRepository]())
+	mustRegisterBean("UserRepository", reflect.TypeFor[*repo.UserRepository]())
+	mustRegisterBean("SettingsRepository", reflect.TypeFor[*repo.SettingsRepository]())
+	mustRegisterBean("SprintRepository", reflect.TypeFor[*repo.SprintRepository]())
+	mustRegisterBean("IssueBindingRepository", reflect.TypeFor[*repo.IssueBindingRepository]())
+	mustRegisterBean("EpicRepository", reflect.TypeFor[*repo.EpicRepository]())
 
-	di.RegisterBean("LabelQuery", reflect.TypeOf((*label_spec.LabelQueryImpl)(nil)))
-	di.RegisterBean("ColumnQuery", reflect.TypeOf((*column_spec.ColumnQueryImpl)(nil)))
-	di.RegisterBean("GroupQuery", reflect.TypeOf((*group_spec.GroupQueryImpl)(nil)))
-	di.RegisterBean("UserQuery", reflect.TypeOf((*user_spec.UserQueryImpl)(nil)))
-	di.RegisterBean("SprintQuery", reflect.TypeOf((*sprint_spec.SprintQueryImpl)(nil)))
-	di.RegisterBean("IssueQuery", reflect.TypeOf((*issue_spec.IssueQueryImpl)(nil)))
-	di.RegisterBean("ProjectQuery", reflect.TypeOf((*project_spec.ProjectQueryImpl)(nil)))
-	di.RegisterBean("IssueBindingQuery", reflect.TypeOf((*issuebinding_spec.IssueBindingQueryImpl)(nil)))
-	di.RegisterBean("ReleaseQuery", reflect.TypeOf((*release_spec.ReleaseQueryImpl)(nil)))
-	di.RegisterBean("EpicQuery", reflect.TypeOf((*epic_spec.EpicQueryImpl)(nil)))
-	di.RegisterBean("CommonQuery", reflect.TypeOf((*spec.CommonQueryImpl)(nil)))
+	mustRegisterBean("LabelQuery", reflect.TypeFor[*label_spec.LabelQueryImpl]())
+	mustRegisterBean("ColumnQuery", reflect.TypeFor[*column_spec.ColumnQueryImpl]())
+	mustRegisterBean("GroupQuery", reflect.TypeFor[*group_spec.GroupQueryImpl]())
+	mustRegisterBean("UserQuery", reflect.TypeFor[*user_spec.UserQueryImpl]())
+	mustRegisterBean("SprintQuery", reflect.TypeFor[*sprint_spec.SprintQueryImpl]())
+	mustRegisterBean("IssueQuery", reflect.TypeFor[*issue_spec.IssueQueryImpl]())
+	mustRegisterBean("ProjectQuery", reflect.TypeFor[*project_spec.ProjectQueryImpl]())
+	mustRegisterBean("IssueBindingQuery", reflect.TypeFor[*issuebinding_spec.IssueBindingQueryImpl]())
+	mustRegisterBean("ReleaseQuery", reflect.TypeFor[*release_spec.ReleaseQueryImpl]())
+	mustRegisterBean("EpicQuery", reflect.TypeFor[*epic_spec.EpicQueryImpl]())
+	mustRegisterBean("CommonQuery", reflect.TypeFor[*spec.CommonQueryImpl]())
 
-	di.RegisterBean("JWTService", reflect.TypeOf((*services.JWTService)(nil)))
-	di.RegisterBean("PasswordService", reflect.TypeOf((*services.PasswordService)(nil)))
-	di.RegisterBean("LabelService", reflect.TypeOf((*app_services.LabelService)(nil)))
+	mustRegisterBean("JWTService", reflect.TypeFor[*services.JWTService]())
+	mustRegisterBean("PasswordService", reflect.TypeFor[*services.PasswordService]())
+	mustRegisterBean("LabelService", reflect.TypeFor[*app_services.LabelService]())
 
-	di.RegisterBean("AccountUseCases", reflect.TypeOf((*usecases.AccountUseCases)(nil)))
-	di.RegisterBean("ColumnUseCases", reflect.TypeOf((*usecases.ColumnUseCases)(nil)))
-	di.RegisterBean("TeamUseCases", reflect.TypeOf((*usecases.TeamUseCases)(nil)))
-	di.RegisterBean("LabelUseCases", reflect.TypeOf((*usecases.LabelUseCases)(nil)))
-	di.RegisterBean("UserUseCases", reflect.TypeOf((*usecases.UserUseCases)(nil)))
-	di.RegisterBean("GroupUseCases", reflect.TypeOf((*usecases.GroupUseCases)(nil)))
-	di.RegisterBean("ProjectUseCases", reflect.TypeOf((*usecases.ProjectUseCases)(nil)))
-	di.RegisterBean("SettingsUseCases", reflect.TypeOf((*usecases.SettingsUseCases)(nil)))
-	di.RegisterBean("SyncUseCases", reflect.TypeOf((*usecases.SyncUseCases)(nil)))
-	di.RegisterBean("KanbanUseCases", reflect.TypeOf((*usecases.KanbanUseCases)(nil)))
-	di.RegisterBean("SprintUseCases", reflect.TypeOf((*usecases.SprintUseCases)(nil)))
-	di.RegisterBean("IssueUseCases", reflect.TypeOf((*usecases.IssueUseCases)(nil)))
-	di.RegisterBean("IssueBindingUseCases", reflect.TypeOf((*usecases.IssueBindingUseCases)(nil)))
-	di.RegisterBean("ReleaseUseCases", reflect.TypeOf((*usecases.ReleaseUseCases)(nil)))
-	di.RegisterBean("EpicUseCases", reflect.TypeOf((*usecases.EpicUseCases)(nil)))
+	mustRegisterBean("AccountUseCases", reflect.TypeFor[*usecases.AccountUseCases]())
+	mustRegisterBean("ColumnUseCases", reflect.TypeFor[*usecases.ColumnUseCases]())
+	mustRegisterBean("TeamUseCases", reflect.TypeFor[*usecases.TeamUseCases]())
+	mustRegisterBean("LabelUseCases", reflect.TypeFor[*usecases.LabelUseCases]())
+	mustRegisterBean("UserUseCases", reflect.TypeFor[*usecases.UserUseCases]())
+	mustRegisterBean("GroupUseCases", reflect.TypeFor[*usecases.GroupUseCases]())
+	mustRegisterBean("ProjectUseCases", reflect.TypeFor[*usecases.ProjectUseCases]())
+	mustRegisterBean("SettingsUseCases", reflect.TypeFor[*usecases.SettingsUseCases]())
+	mustRegisterBean("SyncUseCases", reflect.TypeFor[*usecases.SyncUseCases]())
+	mustRegisterBean("KanbanUseCases", reflect.TypeFor[*usecases.KanbanUseCases]())
+	mustRegisterBean("SprintUseCases", reflect.TypeFor[*usecases.SprintUseCases]())
+	mustRegisterBean("IssueUseCases", reflect.TypeFor[*usecases.IssueUseCases]())
+	mustRegisterBean("IssueBindingUseCases", reflect.TypeFor[*usecases.IssueBindingUseCases]())
+	mustRegisterBean("ReleaseUseCases", reflect.TypeFor[*usecases.ReleaseUseCases]())
+	mustRegisterBean("EpicUseCases", reflect.TypeFor[*usecases.EpicUseCases]())
 
-	di.RegisterBean("AccountController", reflect.TypeOf((*controllers.AccountController)(nil)))
-	di.RegisterBean("ReportsController", reflect.TypeOf((*controllers.ReportsController)(nil)))
-	di.RegisterBean("HealthController", reflect.TypeOf((*controllers.HealthController)(nil)))
-	di.RegisterBean("ColumnController", reflect.TypeOf((*controllers.ColumnController)(nil)))
-	di.RegisterBean("TeamController", reflect.TypeOf((*controllers.TeamController)(nil)))
-	di.RegisterBean("LabelController", reflect.TypeOf((*controllers.LabelController)(nil)))
-	di.RegisterBean("UserController", reflect.TypeOf((*controllers.UserController)(nil)))
-	di.RegisterBean("GroupController", reflect.TypeOf((*controllers.GroupController)(nil)))
-	di.RegisterBean("ProjectController", reflect.TypeOf((*controllers.ProjectController)(nil)))
-	di.RegisterBean("SettingsController", reflect.TypeOf((*controllers.SettingsController)(nil)))
-	di.RegisterBean("KanbanController", reflect.TypeOf((*controllers.KanbanController)(nil)))
-	di.RegisterBean("SprintController", reflect.TypeOf((*controllers.SprintController)(nil)))
-	di.RegisterBean("IssueController", reflect.TypeOf((*controllers.IssueController)(nil)))
-	di.RegisterBean("IssueBindingController", reflect.TypeOf((*controllers.IssueBindingController)(nil)))
-	di.RegisterBean("ReleaseController", reflect.TypeOf((*controllers.ReleaseController)(nil)))
-	di.RegisterBean("EpicController", reflect.TypeOf((*controllers.EpicController)(nil)))
+	mustRegisterBean("AccountController", reflect.TypeFor[*controllers.AccountController]())
+	mustRegisterBean("ReportsController", reflect.TypeFor[*controllers.ReportsController]())
+	mustRegisterBean("HealthController", reflect.TypeFor[*controllers.HealthController]())
+	mustRegisterBean("ColumnController", reflect.TypeFor[*controllers.ColumnController]())
+	mustRegisterBean("TeamController", reflect.TypeFor[*controllers.TeamController]())
+	mustRegisterBean("LabelController", reflect.TypeFor[*controllers.LabelController]())
+	mustRegisterBean("UserController", reflect.TypeFor[*controllers.UserController]())
+	mustRegisterBean("GroupController", reflect.TypeFor[*controllers.GroupController]())
+	mustRegisterBean("ProjectController", reflect.TypeFor[*controllers.ProjectController]())
+	mustRegisterBean("SettingsController", reflect.TypeFor[*controllers.SettingsController]())
+	mustRegisterBean("KanbanController", reflect.TypeFor[*controllers.KanbanController]())
+	mustRegisterBean("SprintController", reflect.TypeFor[*controllers.SprintController]())
+	mustRegisterBean("IssueController", reflect.TypeFor[*controllers.IssueController]())
+	mustRegisterBean("IssueBindingController", reflect.TypeFor[*controllers.IssueBindingController]())
+	mustRegisterBean("ReleaseController", reflect.TypeFor[*controllers.ReleaseController]())
+	mustRegisterBean("EpicController", reflect.TypeFor[*controllers.EpicController]())
 
 	err = di.InitializeContainer()
 	if err != nil {

@@ -13,7 +13,7 @@ type LabelController struct {
 	labelUC *usecases.LabelUseCases `di.inject:"LabelUseCases"`
 }
 
-func (c *LabelController) RegisterRoutes(router *gin.Engine) error {
+func (c *LabelController) RegisterRoutes(router gin.IRouter) error {
 	router.GET("/labels", c.getLabels)
 
 	protectedRoutes := router.Group("/")

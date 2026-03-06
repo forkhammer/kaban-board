@@ -15,7 +15,7 @@ type SprintController struct {
 	sprintUC *usecases.SprintUseCases `di.inject:"SprintUseCases"`
 }
 
-func (c *SprintController) RegisterRoutes(router *gin.Engine) error {
+func (c *SprintController) RegisterRoutes(router gin.IRouter) error {
 	router.GET("/sprint", c.GetSprints)
 	router.GET("/sprint/quarters", c.GetQuarters)
 	router.GET("/sprint/:id", c.GetSprint)

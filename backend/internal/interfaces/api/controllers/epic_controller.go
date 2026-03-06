@@ -14,7 +14,7 @@ type EpicController struct {
 	epicUC *usecases.EpicUseCases `di.inject:"EpicUseCases"`
 }
 
-func (c *EpicController) RegisterRoutes(router *gin.Engine) error {
+func (c *EpicController) RegisterRoutes(router gin.IRouter) error {
 	routes := router.Group("/")
 	routes.GET("/epic", c.getEpics)
 	routes.GET("/epic/:id", c.getEpic)

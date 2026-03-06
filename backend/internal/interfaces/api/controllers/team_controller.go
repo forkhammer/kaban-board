@@ -14,7 +14,7 @@ type TeamController struct {
 	teamUC *usecases.TeamUseCases `di.inject:"TeamUseCases"`
 }
 
-func (c *TeamController) RegisterRoutes(router *gin.Engine) error {
+func (c *TeamController) RegisterRoutes(router gin.IRouter) error {
 	router.GET("/teams", c.getTeams)
 	router.GET("/teams/:id", c.getTeamById)
 

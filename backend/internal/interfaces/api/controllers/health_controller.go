@@ -5,6 +5,6 @@ import "github.com/gin-gonic/gin"
 type HealthController struct {
 }
 
-func (c *HealthController) RegisterRoutes(router *gin.Engine) error {
+func (c *HealthController) RegisterRoutes(router gin.IRouter) error {
 	return nil
 }

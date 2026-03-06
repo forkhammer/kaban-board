@@ -16,7 +16,7 @@ type IssueBindingController struct {
 	bindingUC *usecases.IssueBindingUseCases `di.inject:"IssueBindingUseCases"`
 }
 
-func (c *IssueBindingController) RegisterRoutes(router *gin.Engine) error {
+func (c *IssueBindingController) RegisterRoutes(router gin.IRouter) error {
 	router.GET("/binding", c.getBindings)
 	router.GET("/binding/:id", c.getBinding)
 	privateRoutes := router.Group("/")

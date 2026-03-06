@@ -14,7 +14,7 @@ type ReleaseController struct {
 	releaseUC *usecases.ReleaseUseCases `di.inject:"ReleaseUseCases"`
 }
 
-func (c *ReleaseController) RegisterRoutes(router *gin.Engine) error {
+func (c *ReleaseController) RegisterRoutes(router gin.IRouter) error {
 	releaseRoutes := router.Group("/")
 	releaseRoutes.GET("/release", c.getReleases)
 	releaseRoutes.GET("/release/:id", c.getRelease)

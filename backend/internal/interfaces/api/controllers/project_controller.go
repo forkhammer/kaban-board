@@ -15,7 +15,7 @@ type ProjectController struct {
 	projectUC *usecases.ProjectUseCases `di.inject:"ProjectUseCases"`
 }
 
-func (c *ProjectController) RegisterRoutes(router *gin.Engine) error {
+func (c *ProjectController) RegisterRoutes(router gin.IRouter) error {
 	router.GET("/projects", c.getProjects)
 	router.GET("/projects/:id", c.getProject)
 

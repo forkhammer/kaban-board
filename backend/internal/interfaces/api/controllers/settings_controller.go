@@ -13,7 +13,7 @@ type SettingsController struct {
 	settingsUC *usecases.SettingsUseCases `di.inject:"SettingsUseCases"`
 }
 
-func (c *SettingsController) RegisterRoutes(router *gin.Engine) error {
+func (c *SettingsController) RegisterRoutes(router gin.IRouter) error {
 	router.GET("/settings", c.getSettings)
 
 	protectedRoutes := router.Group("/")

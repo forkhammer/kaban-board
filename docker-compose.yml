@@ -21,7 +21,7 @@ services:
     build:
       context: ./frontend/board
       args:
-        - API_URL=http://localhost:8080
+        - API_URL=http://localhost:8080/api
     ports:
       - "4200:4200"
     depends_on:

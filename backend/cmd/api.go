@@ -5,9 +5,9 @@ import (
 	"main/internal/interfaces/api"
 	"main/internal/interfaces/api/middleware"
 
+	sentrygin "github.com/getsentry/sentry-go/gin"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	sentrygin "github.com/getsentry/sentry-go/gin"
 	"github.com/goioc/di"
 )
 
@@ -69,8 +69,9 @@ func (app *ApiApplication) initRouter() error {
 		di.GetInstance("ReleaseController").(api.Controller),
 		di.GetInstance("EpicController").(api.Controller),
 	}
+	apiGroup := app.router.Group("/api")
 	for _, controller := range controllers {
-		err := controller.RegisterRoutes(app.router)
+		err := controller.RegisterRoutes(apiGroup)
 		if err != nil {
 			return err
 		}

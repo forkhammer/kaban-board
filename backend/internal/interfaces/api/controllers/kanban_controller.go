@@ -12,7 +12,7 @@ type KanbanController struct {
 	kanbanUC *usecases.KanbanUseCases `di.inject:"KanbanUseCases"`
 }
 
-func (c *KanbanController) RegisterRoutes(router *gin.Engine) error {
+func (c *KanbanController) RegisterRoutes(router gin.IRouter) error {
 	router.GET("/kanban-users", c.getKanbanUsers)
 	return nil
 }

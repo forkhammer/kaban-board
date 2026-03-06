@@ -13,7 +13,7 @@ type GroupController struct {
 	groupUC *usecases.GroupUseCases `di.inject:"GroupUseCases"`
 }
 
-func (c *GroupController) RegisterRoutes(router *gin.Engine) error {
+func (c *GroupController) RegisterRoutes(router gin.IRouter) error {
 	router.GET("/groups", c.getGroups)
 	router.GET("/groups/:id", c.getGroupById)
 	return nil

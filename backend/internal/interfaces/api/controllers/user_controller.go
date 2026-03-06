@@ -15,7 +15,7 @@ type UserController struct {
 	userUC *usecases.UserUseCases `di.inject:"UserUseCases"`
 }
 
-func (c *UserController) RegisterRoutes(router *gin.Engine) error {
+func (c *UserController) RegisterRoutes(router gin.IRouter) error {
 	router.GET("/users", c.getUsers)
 	router.GET("/users/:id", c.getUser)
 

@@ -5,6 +5,6 @@ import "github.com/gin-gonic/gin"
 type ReportsController struct {
 }
 
-func (c *ReportsController) RegisterRoutes(router *gin.Engine) error {
+func (c *ReportsController) RegisterRoutes(router gin.IRouter) error {
 	return nil
 }

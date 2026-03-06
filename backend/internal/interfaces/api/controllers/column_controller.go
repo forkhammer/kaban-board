@@ -16,7 +16,7 @@ type ColumnController struct {
 	columnUC *usecases.ColumnUseCases `di.inject:"ColumnUseCases"`
 }
 
-func (c *ColumnController) RegisterRoutes(router *gin.Engine) error {
+func (c *ColumnController) RegisterRoutes(router gin.IRouter) error {
 	router.GET("/columns", c.getColumns)
 	router.GET("/columns/:id", c.getColumnById)
 

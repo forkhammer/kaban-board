@@ -15,7 +15,7 @@ type IssueController struct {
 	issueUC *usecases.IssueUseCases `di.inject:"IssueUseCases"`
 }
 
-func (c *IssueController) RegisterRoutes(router *gin.Engine) error {
+func (c *IssueController) RegisterRoutes(router gin.IRouter) error {
 	router.GET("/issue", c.getIssues)
 	router.GET("/issue/:id", c.getIssue)
 	privateRoutes := router.Group("/")

@@ -14,7 +14,7 @@ type AccountController struct {
 	accountUC *usecases.AccountUseCases `di.inject:"AccountUseCases"`
 }
 
-func (c *AccountController) RegisterRoutes(router *gin.Engine) error {
+func (c *AccountController) RegisterRoutes(router gin.IRouter) error {
 	router.POST("/account/login", c.Login)
 	router.GET("/account/user", c.GetActiveAccount)
 	router.POST("/account/register", c.Register)

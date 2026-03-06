@@ -1,8 +1,6 @@
 <ng-container [formGroup]="form">
-  <td class="column project">
-    {{issue.projectName}}
-  </td>
   <td class="column">
+    <a [href]="issue.webUrl" target="_blank" class="project">{{issue.projectName}}#{{issue.iid}}</a>
     {{issue.title}}
   </td>
   <td class="column">

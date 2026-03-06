@@ -63,25 +63,24 @@
   ::ng-deep tbody td {
     // border: 1px solid $black;
 
-    &:nth-child(1),
+    &:nth-child(6),
     &:nth-child(7),
-    &:nth-child(8),
-    &:nth-child(11) {
+    &:nth-child(10) {
       width: 55px;
       max-width: 55px;
     }
-    &:nth-child(3) {
+    &:nth-child(2) {
       width: 200px;
       max-width: 200px;
     }
+    &:nth-child(3),
     &:nth-child(4),
     &:nth-child(5),
-    &:nth-child(6),
-    &:nth-child(9) {
+    &:nth-child(8) {
       width: 130px;
       max-width: 130px;
     }
-    &:nth-child(10) {
+    &:nth-child(9) {
       width: 300px;
       max-width: 300px;
     }
@@ -97,7 +96,7 @@
   @include fs-paragraph-xs();
   text-transform: uppercase;
   font-weight: 600;
-  border: 1px dashed $gray-300;
+  border: 1px solid transparent;
   background: $white;
 }
 

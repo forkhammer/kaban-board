@@ -5,6 +5,12 @@ td {
   @include fs-paragraph-xs();
 }
 
+.project {
+  display: block;
+  @include fs-paragraph-xxs();
+  font-weight: 600;
+}
+
 .assignee {
   display: flex;
   align-items: center;

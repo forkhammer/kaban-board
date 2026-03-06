@@ -15,7 +15,7 @@ type LabelRepository struct {
 
 func (r *LabelRepository) Get(id domain.LabelId) (*domain.Label, error) {
 	label := &models.Label{}
-	if err := r.conn.GetEngine().Where("id = ?", id).First(label).Error; err != nil {
+	if err := r.conn.GetEngine().Where("labels.id = ?", id).First(label).Error; err != nil {
 		return nil, err
 	}
 	return r.toDomainLabel(label), nil

@@ -16,7 +16,7 @@ type EpicRepository struct {
 
 func (r *EpicRepository) Get(id domain.EpicId) (*domain.Epic, error) {
 	epic := &models.Epic{}
-	if err := r.getQuery().Where("id = ?", id).First(epic).Error; err != nil {
+	if err := r.getQuery().Where("epics.id = ?", id).First(epic).Error; err != nil {
 		return nil, err
 	}
 	return r.toDomainEpic(epic)
@@ -113,5 +113,5 @@ func (r *EpicRepository) toEpic(epic *domain.Epic) *models.Epic {
 }
 
 func (r *EpicRepository) getQuery() *gorm.DB {
-	return r.conn.GetEngine().Model(&models.Epic{}).Preload("Project")
+	return r.conn.GetEngine().Model(&models.Epic{}).Joins("Project")
 }

@@ -21,7 +21,7 @@ func NewAccountRepository(conn interfaces.ConnectionInterface) *AccountRepositor
 
 func (r *AccountRepository) Get(id domain.AccountId) (*domain.Account, error) {
 	account := &models.Account{}
-	if err := r.conn.GetEngine().Where("id = ?", id).First(account).Error; err != nil {
+	if err := r.conn.GetEngine().Where("accounts.id = ?", id).First(account).Error; err != nil {
 		return nil, err
 	}
 	return r.toDomainAccount(account), nil
@@ -29,7 +29,7 @@ func (r *AccountRepository) Get(id domain.AccountId) (*domain.Account, error) {
 
 func (r *AccountRepository) GetByUsername(username string) (*domain.Account, error) {
 	account := &models.Account{}
-	if err := r.conn.GetEngine().Where("username = ?", username).First(account).Error; err != nil {
+	if err := r.conn.GetEngine().Where("accounts.username = ?", username).First(account).Error; err != nil {
 		return nil, err
 	}
 	return r.toDomainAccount(account), nil

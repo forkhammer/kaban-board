@@ -18,7 +18,7 @@ type ProjectRepository struct {
 
 func (r *ProjectRepository) Get(id domain.ProjectId) (*domain.Project, error) {
 	project := &models.Project{}
-	if err := r.getQuery().Where("id = ?", id).First(project).Error; err != nil {
+	if err := r.getQuery().Where("projects.id = ?", id).First(project).Error; err != nil {
 		return nil, err
 	}
 	model, err := r.toDomainProject(project)
@@ -146,5 +146,5 @@ func (r *ProjectRepository) toProject(project *domain.Project) (*models.Project,
 }
 
 func (r *ProjectRepository) getQuery() *gorm.DB {
-	return r.conn.GetEngine().Model(&models.Project{}).Preload("Team")
+	return r.conn.GetEngine().Model(&models.Project{}).Joins("Team")
 }

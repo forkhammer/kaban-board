@@ -17,7 +17,7 @@ type TeamRepository struct {
 
 func (r *TeamRepository) Get(id domain.TeamId) (*domain.Team, error) {
 	team := &models.Team{}
-	if err := r.getQuery().Where("id = ?", id).First(team).Error; err != nil {
+	if err := r.getQuery().Where("teams.id = ?", id).First(team).Error; err != nil {
 		return nil, err
 	}
 	return r.ToDomainTeam(team)

@@ -16,7 +16,7 @@ type ReleaseRepository struct {
 
 func (r *ReleaseRepository) Get(id domain.ReleaseId) (*domain.Release, error) {
 	release := &models.Release{}
-	if err := r.getQuery().Where("id = ?", id).First(release).Error; err != nil {
+	if err := r.getQuery().Where("releases.id = ?", id).First(release).Error; err != nil {
 		return nil, err
 	}
 	return r.toDomainRelease(release)
@@ -117,5 +117,5 @@ func (r *ReleaseRepository) toRelease(release *domain.Release) *models.Release {
 }
 
 func (r *ReleaseRepository) getQuery() *gorm.DB {
-	return r.conn.GetEngine().Model(&models.Release{}).Preload("Project")
+	return r.conn.GetEngine().Model(&models.Release{}).Joins("Project")
 }

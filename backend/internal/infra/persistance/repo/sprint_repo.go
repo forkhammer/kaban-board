@@ -22,7 +22,7 @@ type SprintRepository struct {
 
 func (r *SprintRepository) Get(id domain.SprintId) (*domain.Sprint, error) {
 	sprint := &models.Sprint{}
-	if err := r.getQuery().Where("id = ?", id).First(sprint).Error; err != nil {
+	if err := r.getQuery().Where("sprints.id = ?", id).First(sprint).Error; err != nil {
 		return nil, err
 	}
 	return r.toDomainSprint(sprint)
@@ -130,8 +130,8 @@ func (r *SprintRepository) toSprint(sprint *domain.Sprint) *models.Sprint {
 
 func (r *SprintRepository) getQuery() *gorm.DB {
 	return r.conn.GetEngine().Model(&models.Sprint{}).
-		Select("*", "(SELECT COUNT(*) FROM issue_bindings WHERE sprint_id = sprints.id) AS count_bindings").
-		Preload("Team")
+		Select("sprints.*", "(SELECT COUNT(*) FROM issue_bindings WHERE sprint_id = sprints.id) AS count_bindings").
+		Joins("Team")
 }
 
 func (r *SprintRepository) GetQuarters() ([]domain.Quarter, error) {

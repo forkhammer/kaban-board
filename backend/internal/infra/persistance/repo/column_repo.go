@@ -18,7 +18,7 @@ type ColumnRepository struct {
 
 func (r *ColumnRepository) Get(id domain.ColumnId) (*domain.Column, error) {
 	сolumn := &models.Column{}
-	if err := r.getQuery().Where("id = ?", id).First(сolumn).Error; err != nil {
+	if err := r.getQuery().Where("columns.id = ?", id).First(сolumn).Error; err != nil {
 		return nil, err
 	}
 	model, err := r.toDomainColumn(сolumn)
@@ -144,5 +144,5 @@ func (r *ColumnRepository) toColumn(column *domain.Column) (*models.Column, erro
 }
 
 func (r *ColumnRepository) getQuery() *gorm.DB {
-	return r.conn.GetEngine().Model(&models.Column{}).Preload("Team")
+	return r.conn.GetEngine().Model(&models.Column{}).Joins("Team")
 }

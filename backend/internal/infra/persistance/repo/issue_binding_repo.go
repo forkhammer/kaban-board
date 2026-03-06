@@ -20,7 +20,7 @@ type IssueBindingRepository struct {
 
 func (r *IssueBindingRepository) Get(id domain.IssueBindingId) (*domain.IssueBinding, error) {
 	binding := &models.IssueBinding{}
-	if err := r.getQuery().Where("id = ?", id).First(binding).Error; err != nil {
+	if err := r.getQuery().Where("issue_bindings.id = ?", id).First(binding).Error; err != nil {
 		return nil, err
 	}
 	model, err := r.toDomainIssueBinding(binding)
@@ -32,7 +32,7 @@ func (r *IssueBindingRepository) Get(id domain.IssueBindingId) (*domain.IssueBin
 
 func (r *IssueBindingRepository) List(spec repo.QuerySpec) ([]domain.IssueBinding, error) {
 	сolumns := make([]models.IssueBinding, 0)
-	query := r.getQuery().Model(&models.IssueBinding{})
+	query := r.getQuery()
 
 	if spec != nil {
 		if result, err := spec.Apply(query); err != nil {
@@ -191,16 +191,16 @@ func (r *IssueBindingRepository) toIssueBinding(binding *domain.IssueBinding) (*
 
 func (r *IssueBindingRepository) getQuery() *gorm.DB {
 	return r.conn.GetEngine().Model(&models.IssueBinding{}).
-		Preload("Sprint").
-		Preload("Sprint.Team").
-		Preload("Issue").
+		Joins("Sprint").
+		Joins("Sprint.Team").
+		Joins("Issue").
 		Preload("Issue.Labels").
-		Preload("Issue.Project").
-		Preload("Issue.Project.Team").
-		Preload("Issue.TaskType").
-		Preload("Issue.Release").
-		Preload("Assignee").
+		Joins("Issue.Project").
+		Joins("Issue.Project.Team").
+		Joins("Issue.TaskType").
+		Joins("Issue.Release").
+		Joins("Assignee").
 		Preload("Assignee.Groups").
-		Preload("Release").
-		Preload("Epic")
+		Joins("Release").
+		Joins("Epic")
 }

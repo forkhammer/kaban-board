@@ -17,7 +17,7 @@ type UserRepository struct {
 
 func (r *UserRepository) Get(id domain.UserId) (*domain.User, error) {
 	user := &models.User{}
-	if err := r.getQuery().Where("id = ?", id).First(user).Error; err != nil {
+	if err := r.getQuery().Where("users.id = ?", id).First(user).Error; err != nil {
 		return nil, err
 	}
 	return r.toDomainUser(user), nil

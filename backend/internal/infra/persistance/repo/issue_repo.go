@@ -25,7 +25,7 @@ type IssueRepository struct {
 
 func (r *IssueRepository) Get(id domain.IssueId) (*domain.Issue, error) {
 	issue := &models.Issue{}
-	if err := r.getQuery().Where("id = ?", id).First(issue).Error; err != nil {
+	if err := r.getQuery().Where("issues.id = ?", id).First(issue).Error; err != nil {
 		return nil, err
 	}
 	return r.toDomainIssue(issue)
@@ -213,10 +213,10 @@ func (r *IssueRepository) getQuery() *gorm.DB {
 	return r.conn.GetEngine().Model(&models.Issue{}).
 		Preload("Assignees").
 		Preload("Labels").
-		Preload("Project").
-		Preload("Project.Team").
-		Preload("Release").
-		Preload("TaskType")
+		Joins("Project").
+		Joins("Project.Team").
+		Joins("Release").
+		Joins("TaskType")
 }
 
 func (r *IssueRepository) saveLabelHistory(domainIssue *domain.Issue) error {

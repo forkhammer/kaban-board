@@ -15,7 +15,7 @@ type GroupRepository struct {
 
 func (r *GroupRepository) Get(id domain.GroupId) (*domain.Group, error) {
 	group := &models.Group{}
-	if err := r.conn.GetEngine().Where("id = ?", id).First(group).Error; err != nil {
+	if err := r.conn.GetEngine().Where("groups.id = ?", id).First(group).Error; err != nil {
 		return nil, err
 	}
 	return r.toDomainGroup(group), nil

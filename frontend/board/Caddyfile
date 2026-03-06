@@ -1,5 +1,0 @@
-:4200 {
-    root * /var/www/board/
-    file_server
-    try_files {path} /
-}

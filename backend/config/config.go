@@ -41,6 +41,10 @@ type Config struct {
 	GitlabSyncEnabled      bool `env:"GITLAB_SYNC_ENABLED" envDefault:"true"`
 	GitlabSyncPeriodMin    int  `env:"GITLAB_SYNC_PERIOD_MIN" envDefault:"10"`
 	MemoryCacheDurationMin int  `env:"MEMORY_CACHE_DURATION_MIN" envDefault:"15"`
+
+	SentryDSN         string  `env:"SENTRY_DSN" envDefault:""`
+	SentrySampleRate  float64 `env:"SENTRY_SAMPLE_RATE" envDefault:"1.0"`
+	SentryEnvironment string  `env:"SENTRY_ENVIRONMENT" envDefault:"production"`
 }
 
 func NewConfig() *Config {

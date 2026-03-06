@@ -7,6 +7,7 @@ import (
 	"main/internal/app/usecases"
 	"time"
 
+	sentry "github.com/getsentry/sentry-go"
 	"github.com/goioc/di"
 )
 
@@ -30,6 +31,7 @@ func (app *WorkerApplication) Run(ctx context.Context) {
 
 func (app *WorkerApplication) startSync(ctx context.Context) {
 	go func() {
+		defer sentry.Recover()
 		ticker := time.NewTicker(time.Minute * time.Duration(config.Settings.GitlabSyncPeriodMin))
 		defer ticker.Stop()
 
@@ -52,5 +54,6 @@ func (app *WorkerApplication) syncIteration() {
 
 	if err != nil {
 		fmt.Println(err.Error())
+		sentry.CaptureException(err)
 	}
 }

@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	sentrygin "github.com/getsentry/sentry-go/gin"
 	"github.com/goioc/di"
 )
 
@@ -22,6 +23,9 @@ func NewApiApplication() *ApiApplication {
 	corsConfig.AllowOrigins = config.Settings.AllowOrigins
 	corsConfig.AllowHeaders = append(corsConfig.AllowHeaders, "Authorization")
 	router.Use(cors.New(corsConfig))
+	if config.Settings.SentryDSN != "" {
+		router.Use(sentrygin.New(sentrygin.Options{Repanic: true}))
+	}
 	router.Use(middleware.JwtMiddleware())
 
 	app := ApiApplication{

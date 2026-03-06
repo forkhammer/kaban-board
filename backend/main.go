@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"main/cmd"
 	"main/config"
 	app_services "main/internal/app/services"
@@ -25,7 +26,9 @@ import (
 	"main/internal/infra/services"
 	"main/internal/interfaces/api/controllers"
 	"reflect"
+	"time"
 
+	sentry "github.com/getsentry/sentry-go"
 	"github.com/goioc/di"
 )
 
@@ -40,7 +43,26 @@ func NewApplication() *Application {
 	return app
 }
 
+func initSentry() {
+	dsn := config.Settings.SentryDSN
+	if dsn == "" {
+		return
+	}
+	err := sentry.Init(sentry.ClientOptions{
+		Dsn:              dsn,
+		Environment:      config.Settings.SentryEnvironment,
+		TracesSampleRate: config.Settings.SentrySampleRate,
+	})
+	if err != nil {
+		fmt.Printf("Sentry init failed: %v\n", err)
+		return
+	}
+	fmt.Println("Sentry initialized")
+}
+
 func (app *Application) Init() {
+	initSentry()
+
 	connection, err := implementation.GetConnectionByType(interfaces.DbType(config.Settings.DbType), config.Settings)
 	di.RegisterBeanInstance("connection", connection)
 
@@ -125,6 +147,8 @@ func (app *Application) Init() {
 }
 
 func (app *Application) Run() {
+	defer sentry.Flush(2 * time.Second)
+
 	err := app.migrate()
 	if err != nil {
 		panic(err)

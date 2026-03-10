@@ -118,6 +118,7 @@ func (r *AccountRepository) toDomainAccount(account *models.Account) *domain.Acc
 		GitlabID:     account.GitlabID,
 		AuthProvider: domain.AuthProvider(account.AuthProvider),
 		AvatarURL:    account.AvatarURL,
+		Role:         domain.AccountRole(account.Role),
 	}
 }
 
@@ -131,5 +132,6 @@ func (r *AccountRepository) toAccount(account *domain.Account) *models.Account {
 		GitlabID:     account.GitlabID,
 		AuthProvider: string(account.AuthProvider),
 		AvatarURL:    account.AvatarURL,
+		Role:         string(account.Role),
 	}
 }

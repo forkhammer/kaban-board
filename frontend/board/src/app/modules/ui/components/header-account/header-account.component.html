@@ -8,7 +8,7 @@
       <span class="username">{{account.username}}</span>
     </button>
     <div ngbDropdownMenu class="light">
-      <a routerLink="/" ngbDropdownItem (click)="openSettings()">Настройки</a>
+      <a routerLink="/" ngbDropdownItem (click)="openSettings()" *ngIf="accountService.isAdmin$ | async">Настройки</a>
       <button ngbDropdownItem (click)="logout()">Выйти</button>
     </div>
   </div>

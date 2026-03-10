@@ -3,7 +3,8 @@ import {
   RegistrationRequest,
   RegistrationResult,
   Account,
-  AccountAuthResult
+  AccountAuthResult,
+  AccountRole
 } from '../models/account';
 import { HttpErrorResponse } from '@angular/common/http';
 import { BehaviorSubject, EMPTY, Observable, of } from 'rxjs';
@@ -61,7 +62,7 @@ export class AccountService extends BaseService<Account> {
     });
 
     this.user$.subscribe(user => {
-      this.isAdmin$.next(user != null)
+      this.isAdmin$.next(user?.role == AccountRole.ADMIN)
     })
 
     this.update();

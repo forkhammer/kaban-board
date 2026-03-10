@@ -18,4 +18,5 @@ type Account struct {
 	GitlabID     *uint          `gorm:"gitlab_id;unique"`
 	AuthProvider string         `gorm:"auth_provider;not null;default:password"`
 	AvatarURL    string         `gorm:"avatar_url"`
+	Role         string         `gorm:"role;not null;default:viewer"`
 }

@@ -11,6 +11,7 @@ type AccountDto struct {
 	IsActive     bool   `json:"isActive"`
 	AvatarURL    string `json:"avatarUrl,omitempty"`
 	AuthProvider string `json:"authProvider,omitempty"`
+	Role         string `json:"role,omitempty"`
 }
 
 type RegisterRequest struct {
@@ -53,5 +54,6 @@ func SerializeAccount(account *domain.Account) *AccountDto {
 		IsActive:     account.IsActive,
 		AvatarURL:    account.AvatarURL,
 		AuthProvider: string(account.AuthProvider),
+		Role:         string(account.Role),
 	}
 }

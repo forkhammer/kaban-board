@@ -1,3 +1,9 @@
+export enum AccountRole {
+  ADMIN = 'admin',
+  EMPLOYEE = 'employee',
+  VIEWER = 'viewer',
+}
+
 export interface Account {
   id: number;
   name: string;
@@ -5,6 +11,7 @@ export interface Account {
   isActive: boolean;
   avatarUrl: string | null
   authProvider: string
+  role: AccountRole
 }
 
 export interface AccountAuthResult {

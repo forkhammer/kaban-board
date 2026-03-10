@@ -20,7 +20,13 @@
           <app-input-alert  *ngIf='form.get("password")?.hasError("required") && form.get("password")?.dirty'>Это поле обязательно</app-input-alert>
         </div>
 
-        <button class="btn btn-primary w-100 mb-4" [class.loading]='isLoading'>Войти</button>
+        <button class="btn btn-primary w-100 mb-1" [class.loading]='isLoading'>Войти</button>
+
+        <button class="btn btn-outline-secondary w-100 mb-4 btn-auth-gitlab" [class.loading]='isLoadingGitlab'
+          (click)="loginGitlab($event)">
+          <img src="/assets/gitlab-logo.png" class="me-1">
+          Войти через Gitlab
+        </button>
 
         <app-input-alert class="mt-4" *ngIf='authErrorMessage'>{{authErrorMessage}}</app-input-alert>
       </form>

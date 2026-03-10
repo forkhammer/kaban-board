@@ -1,4 +1,4 @@
-import { Injectable, Injector } from '@angular/core';
+import { DestroyRef, inject, Injectable, Injector } from '@angular/core';
 import {
   RegistrationRequest,
   RegistrationResult,
@@ -13,6 +13,8 @@ import { JWTResponse } from '../models/jwt';
 import { JWTService } from './jwt.service';
 import { BaseService } from './base.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { GitlabAuthCallbackResponse, GitlabAuthResponse } from '../models/gitlab';
+import { ToastService } from './toast.service';
 
 @Injectable({
   providedIn: 'root',
@@ -22,8 +24,13 @@ export class AccountService extends BaseService<Account> {
   isAdmin$ = new BehaviorSubject<boolean>(false);
   userObservable: Observable<Account | null>;
   updateSignal$ = new Subject<any>();
-  protected tokenUrl;
-  private jwt: JWTService;
+  protected tokenUrl: string
+  protected loginGitlabUrl: string
+  protected callbackGitlabUrl: string
+  private jwt: JWTService
+
+  destroyRef = inject(DestroyRef)
+  toast = inject(ToastService)
 
   constructor(
     protected override injector: Injector,
@@ -33,6 +40,8 @@ export class AccountService extends BaseService<Account> {
 
     this.apiUrl = this.config.apiUrl + '/account/user';
     this.tokenUrl = this.config.apiUrl + '/account/login';
+    this.loginGitlabUrl = this.config.apiUrl + '/auth/gitlab';
+    this.callbackGitlabUrl = this.config.apiUrl + '/auth/gitlab/callback';
 
     this.userObservable = this.updateSignal$
       .pipe(
@@ -116,6 +125,20 @@ export class AccountService extends BaseService<Account> {
       );
   }
 
+  loginGitlab() {
+    return this.http.get<GitlabAuthResponse>(this.loginGitlabUrl)
+      .pipe(
+        tap(data => {
+          if (!data.enabled) {
+            this.toast.show(this.toast.createErrorToast('Авторизация через Gitlab отключена'))
+          } else if (data.url) {
+            window.location.href = data.url
+          }
+        }),
+        takeUntilDestroyed(this.destroyRef)
+      )
+  }
+
   register(data: RegistrationRequest) {
     return this.http.post(`${this.apiUrl}/register/`, data).pipe(
       map(data => data as RegistrationResult)
@@ -137,5 +160,15 @@ export class AccountService extends BaseService<Account> {
       map(data => data as AccountAuthResult),
       shareReplay(),
     );
+  }
+
+  exchangeGitlabCode(code: string) {
+    return this.http.get<GitlabAuthCallbackResponse>(`${this.callbackGitlabUrl}?code=${code}`)
+      .pipe(
+        tap(data => {
+          this.jwt.setTokens({ token: data.token });
+          this.update();
+        })
+      )
   }
 }

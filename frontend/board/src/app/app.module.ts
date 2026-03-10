@@ -27,6 +27,7 @@ import * as Hammer from 'hammerjs';
 import { SprintsPageComponent } from './components/sprints-page/sprints-page.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ReportsPageComponent } from './components/reports-page/reports-page.component';
+import { AuthGitlabCallbackPageComponent } from './components/auth-gitlab-callback-page/auth-gitlab-callback-page.component';
 
 export class MyHammerConfig extends HammerGestureConfig {
   override overrides = <any>{
@@ -35,7 +36,14 @@ export class MyHammerConfig extends HammerGestureConfig {
 }
 
 @NgModule({
-  declarations: [AppComponent, IndexPageComponent, AuthPageComponent, SprintsPageComponent, ReportsPageComponent],
+  declarations: [
+    AppComponent,
+    IndexPageComponent,
+    AuthPageComponent,
+    SprintsPageComponent,
+    ReportsPageComponent,
+    AuthGitlabCallbackPageComponent,
+  ],
   bootstrap: [AppComponent],
   imports: [
     BrowserModule,

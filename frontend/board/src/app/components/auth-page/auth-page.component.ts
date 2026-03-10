@@ -4,6 +4,8 @@ import {TitleService} from "../../modules/core/services/title.service";
 import {AccountService} from "../../modules/core/services/account.service";
 import {Router} from "@angular/router";
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import { faSquareGitlab } from '@fortawesome/free-brands-svg-icons';
+import { catchError, EMPTY } from 'rxjs';
 
 @Component({
     selector: 'app-auth-page',
@@ -18,8 +20,11 @@ export class AuthPageComponent {
   router = inject(Router)
   destroyRef = inject(DestroyRef)
 
+  faSquareGitlab = faSquareGitlab
+
   form: FormGroup;
   isLoading = false;
+  isLoadingGitlab = false
   authErrorMessage: string = '';
 
   constructor() {
@@ -53,5 +58,19 @@ export class AuthPageComponent {
         }
       });
     return false;
+  }
+
+  loginGitlab(e: MouseEvent) {
+    this.isLoadingGitlab = true
+    this.accountService.loginGitlab().pipe(
+      catchError(err => {
+        this.isLoadingGitlab = false
+        return EMPTY
+      })
+    ).subscribe(data => {
+      this.isLoadingGitlab = false
+    })
+    e.preventDefault()
+    return false
   }
 }

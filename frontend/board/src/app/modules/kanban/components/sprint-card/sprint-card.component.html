@@ -39,7 +39,7 @@
 <div class="count ms-3 me-3">{{sprint.count_bindings}} задач</div>
 
 <div ngbDropdown>
-  <button type="button" class="btn btn-light" id="sprint-dropdown" ngbDropdownToggle>...</button>
+  <button type="button" class="btn" id="sprint-dropdown" ngbDropdownToggle>...</button>
   <div ngbDropdownMenu>
     <button ngbDropdownItem (click)="change()">Изменить</button>
     <button ngbDropdownItem *ngIf="sprint.can_delete" (click)="delete()">Удалить</button>

@@ -7,6 +7,11 @@
   padding: $pt3;
   background: $white;
   border-radius: $pt;
+
+  :host-context([data-bs-theme="dark"]) & {
+    background: $gray-800;
+    border-color: $gray-700;
+  }
 }
 
 .status {
@@ -23,6 +28,10 @@
   @include fs-paragraph-m();
   margin-bottom: $pt;
   color: $body-color;
+
+  :host-context([data-bs-theme="dark"]) & {
+    color: $gray-100;
+  }
 }
 
 .date,
@@ -32,4 +41,15 @@
   border-radius: 4px;
   margin-right: $pt3;
   @include fs-paragraph-xs();
+
+  :host-context([data-bs-theme="dark"]) & {
+    background: $gray-700;
+    color: $gray-300;
+  }
+}
+
+.count {
+  :host-context([data-bs-theme="dark"]) & {
+    color: $gray-200;
+  }
 }

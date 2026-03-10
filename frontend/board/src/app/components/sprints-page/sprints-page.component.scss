@@ -11,7 +11,11 @@
 }
 
 .header {
+  background-color: $white;
 
+  :host-context([data-bs-theme="dark"]) & {
+    background-color: $gray-800;
+  }
 }
 
 .content {
@@ -19,7 +23,11 @@
   flex-grow: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: $pt3
+  padding: $pt3;
+
+  :host-context([data-bs-theme="dark"]) & {
+    background: $gray-900;
+  }
 }
 
 .quarter {
@@ -30,6 +38,10 @@
     @include fs-paragraph-m();
     padding: $pt $pt3;
     margin-bottom: $pt3;
+
+    :host-context([data-bs-theme="dark"]) & {
+      color: $gray-100;
+    }
   }
 
   &-content {
@@ -47,7 +59,17 @@
   display: block;
   transition-duration: .2s;
 
+  :host-context([data-bs-theme="dark"]) & {
+    background: $gray-800;
+    border-color: $gray-600;
+    color: $gray-300;
+  }
+
   &:hover {
     background: $white;
+
+    :host-context([data-bs-theme="dark"]) & {
+      background: $gray-700;
+    }
   }
 }

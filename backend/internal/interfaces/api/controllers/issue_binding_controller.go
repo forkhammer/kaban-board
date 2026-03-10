@@ -33,6 +33,9 @@ func (c *IssueBindingController) getBindings(ctx *gin.Context) {
 		return
 	}
 
+	account, _ := ctx.Get("account")
+	currentAccount := account.(*domain.Account)
+
 	issueFilter := queries.IssueBindingFilter{
 		AssigneeId: request.Assignee,
 		TeamId:     request.Team,
@@ -41,12 +44,12 @@ func (c *IssueBindingController) getBindings(ctx *gin.Context) {
 		ProjectId:  request.Project,
 		Search:     request.Search,
 	}
-	bindingPage, err := c.bindingUC.GetBindings(&issueFilter, request.Page, request.Limit)
+	bindingPage, err := c.bindingUC.GetBindings(&issueFilter, request.Page, request.Limit, currentAccount)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
 		return
 	}
-	ctx.JSON(http.StatusOK, dto.SerializeIssueBindingPage(bindingPage))
+	ctx.JSON(http.StatusOK, dto.SerializeIssueBindingPage(bindingPage, currentAccount))
 }
 
 func (c *IssueBindingController) getBinding(ctx *gin.Context) {
@@ -56,12 +59,15 @@ func (c *IssueBindingController) getBinding(ctx *gin.Context) {
 		return
 	}
 
-	issue, err := c.bindingUC.GetBinding(uint(id))
+	account, _ := ctx.Get("account")
+	currentAccount := account.(*domain.Account)
+
+	issue, err := c.bindingUC.GetBinding(uint(id), currentAccount)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
 		return
 	}
-	ctx.JSON(http.StatusOK, dto.SerializeIssueBinding(issue))
+	ctx.JSON(http.StatusOK, dto.SerializeIssueBinding(issue, currentAccount))
 }
 
 func (c *IssueBindingController) deleteBinding(ctx *gin.Context) {
@@ -92,6 +98,9 @@ func (c *IssueBindingController) saveBinding(ctx *gin.Context) {
 		return
 	}
 
+	account, _ := ctx.Get("account")
+	currentAccount := account.(*domain.Account)
+
 	binding, err := c.bindingUC.SaveBinding(usecases.SaveIssueBindingRequest{
 		Id:          uint(id),
 		EstimateDev: request.EstimateDev,
@@ -107,5 +116,5 @@ func (c *IssueBindingController) saveBinding(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
 		return
 	}
-	ctx.JSON(http.StatusOK, dto.SerializeIssueBinding(binding))
+	ctx.JSON(http.StatusOK, dto.SerializeIssueBinding(binding, currentAccount))
 }

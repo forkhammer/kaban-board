@@ -34,7 +34,7 @@ type IssueBindingUseCases struct {
 	userRepo          repo.UserRepo             `di.inject:"UserRepository"`
 }
 
-func (u *IssueBindingUseCases) GetBindings(filter *queries.IssueBindingFilter, page int, limit int) (*IssueBindingPage, error) {
+func (u *IssueBindingUseCases) GetBindings(filter *queries.IssueBindingFilter, page int, limit int, account *domain.Account) (*IssueBindingPage, error) {
 	queryPage := page
 	if page <= 0 {
 		queryPage = 1
@@ -72,7 +72,7 @@ func (u *IssueBindingUseCases) GetBindings(filter *queries.IssueBindingFilter, p
 	}, nil
 }
 
-func (u *IssueBindingUseCases) GetBinding(id uint) (*domain.IssueBinding, error) {
+func (u *IssueBindingUseCases) GetBinding(id uint, account *domain.Account) (*domain.IssueBinding, error) {
 	return u.issueBindingRepo.Get(domain.IssueBindingId(id))
 }
 

@@ -27,6 +27,7 @@ type IssueBindingDto struct {
 	BindStatus  string      `json:"bindStatus"`
 	Priority    *string     `json:"priority"`
 	Comment     *string     `json:"comment"`
+	CanUpdate   bool        `json:"can_update"`
 }
 
 type IssueBindingPageDto struct {
@@ -38,7 +39,7 @@ type IssueBindingPageDto struct {
 	Results    []IssueBindingDto `json:"results"`
 }
 
-func SerializeIssueBindingPage(issueBindingPage *usecases.IssueBindingPage) *IssueBindingPageDto {
+func SerializeIssueBindingPage(issueBindingPage *usecases.IssueBindingPage, account *domain.Account) *IssueBindingPageDto {
 	totalPages := int(issueBindingPage.Count / issueBindingPage.Limit)
 	if issueBindingPage.Count%issueBindingPage.Limit > 0 {
 		totalPages++
@@ -53,23 +54,24 @@ func SerializeIssueBindingPage(issueBindingPage *usecases.IssueBindingPage) *Iss
 		Page:       int(issueBindingPage.Page),
 		StartIndex: startIndex,
 		EndIndex:   endIndex,
-		Results:    SerializeIssueBindings(issueBindingPage.Results),
+		Results:    SerializeIssueBindings(issueBindingPage.Results, account),
 	}
 }
 
-func SerializeIssueBindings(bindings []domain.IssueBinding) []IssueBindingDto {
+func SerializeIssueBindings(bindings []domain.IssueBinding, account *domain.Account) []IssueBindingDto {
 	return utils.Map(bindings, func(binding domain.IssueBinding) IssueBindingDto {
-		return *SerializeIssueBinding(&binding)
+		return *SerializeIssueBinding(&binding, account)
 	})
 }
 
-func SerializeIssueBinding(binding *domain.IssueBinding) *IssueBindingDto {
+func SerializeIssueBinding(binding *domain.IssueBinding, account *domain.Account) *IssueBindingDto {
 	dto := &IssueBindingDto{
 		Id:          fmt.Sprintf("%d", binding.Issue.Id),
 		EstimateDev: binding.EstimateDev,
 		EstimateQA:  binding.EstimateQA,
 		BindingId:   (uint)(binding.Id),
 		BindStatus:  (string)(binding.BindStatus),
+		CanUpdate:   binding.CanUpdate(account),
 	}
 
 	if binding.Priority != nil {

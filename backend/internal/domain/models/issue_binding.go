@@ -44,3 +44,21 @@ func (ib *IssueBinding) Validate() error {
 
 	return nil
 }
+
+func (ib *IssueBinding) CanUpdate(account *Account) bool {
+	if account == nil {
+		return false
+	}
+
+	if account.Role == AccountRoleAdmin {
+		return true
+	}
+
+	if account.Role == AccountRoleEmployee && account.GitlabID != nil && ib.Assignee != nil {
+		if ib.Assignee.Id == UserId(*account.GitlabID) {
+			return true
+		}
+	}
+
+	return false
+}

@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
 import { AccountService } from '../../modules/core/services/account.service';
-import { catchError, EMPTY, filter, map, switchMap, tap } from 'rxjs';
+import { catchError, EMPTY, filter, map, switchMap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ToastService } from 'src/app/modules/core/services/toast.service';
 

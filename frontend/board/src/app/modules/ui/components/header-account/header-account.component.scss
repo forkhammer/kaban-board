@@ -1,3 +1,37 @@
+@import "../../../../../styles/imports.scss";
+
+.btn-user {
+  display: flex;
+  align-items: center;
+  line-height: 1rem;
+  background: $white;
+  border-radius: $pt3;
+  border: 1px solid $gray-200;
+  padding: 4px $pt2 4px $pt;
+
+  &:after {
+    display: none;
+  }
+}
+
 .user-icon {
   margin-right: 4px;
+}
+
+.avatar {
+  display: block;
+  margin-right: 4px;
+
+  img {
+    max-height: 24px;
+    max-width: 24px;
+    border-radius: 100%;
+    overflow: hidden;
+    border: 1px solid $gray-100;
+  }
+}
+
+.username {
+  display: block;
+  color: $body-color;
 }

@@ -2,7 +2,9 @@ export interface Account {
   id: number;
   name: string;
   username: string;
-  is_active: boolean;
+  isActive: boolean;
+  avatarUrl: string | null
+  authProvider: string
 }
 
 export interface AccountAuthResult {

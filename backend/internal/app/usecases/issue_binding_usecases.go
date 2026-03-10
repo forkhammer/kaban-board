@@ -1,6 +1,7 @@
 package usecases
 
 import (
+	"fmt"
 	"main/internal/app/queries"
 	domain "main/internal/domain/models"
 	"main/internal/domain/repo"
@@ -46,7 +47,7 @@ func (u *IssueBindingUseCases) GetBindings(filter *queries.IssueBindingFilter, p
 	}
 	query := repo.And(
 		u.commonQuery.PaginationSpec(queryPage, queryLimit),
-		u.commonQuery.OrderSpec("Issue.created_at DESC"),
+		u.commonQuery.OrderSpec("issue_bindings.assignee_id, Issue.created_at DESC"),
 	)
 
 	var filterQuery repo.QuerySpec
@@ -80,10 +81,18 @@ func (u *IssueBindingUseCases) DeleteBinding(id uint) error {
 	return u.issueBindingRepo.Delete(domain.IssueBindingId(id))
 }
 
-func (uc *IssueBindingUseCases) SaveBinding(request SaveIssueBindingRequest) (*domain.IssueBinding, error) {
+func (uc *IssueBindingUseCases) SaveBinding(request SaveIssueBindingRequest, account *domain.Account) (*domain.IssueBinding, error) {
+	if account == nil {
+		return nil, fmt.Errorf("cannot be changed for an anonymous user")
+	}
+
 	binding, err := uc.issueBindingRepo.Get(domain.IssueBindingId(request.Id))
 	if err != nil {
 		return nil, err
+	}
+
+	if !binding.CanUpdate(account) {
+		return nil, fmt.Errorf("cannot be changed for this user")
 	}
 
 	binding.EstimateDev = request.EstimateDev
@@ -115,12 +124,22 @@ func (uc *IssueBindingUseCases) SaveBinding(request SaveIssueBindingRequest) (*d
 	}
 
 	if request.Assignee != nil {
+		if binding.Assignee != nil && *request.Assignee != (uint)(binding.Assignee.Id) {
+			if !binding.CanManage(account) {
+				return nil, fmt.Errorf("cannot be managed for this user")
+			}
+		}
 		assignee, err := uc.userRepo.Get(domain.UserId(*request.Assignee))
 		if err != nil {
 			return nil, err
 		}
 		binding.Assignee = assignee
 	} else {
+		if binding.Assignee != nil {
+			if !binding.CanManage(account) {
+				return nil, fmt.Errorf("cannot be managed for this user")
+			}
+		}
 		binding.Assignee = nil
 	}
 

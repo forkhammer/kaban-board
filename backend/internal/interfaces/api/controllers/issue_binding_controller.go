@@ -6,6 +6,7 @@ import (
 	domain "main/internal/domain/models"
 	"main/internal/interfaces/api/dto"
 	"main/internal/interfaces/api/middleware"
+	"main/internal/interfaces/api/utils"
 	"net/http"
 	"strconv"
 
@@ -71,6 +72,10 @@ func (c *IssueBindingController) getBinding(ctx *gin.Context) {
 }
 
 func (c *IssueBindingController) deleteBinding(ctx *gin.Context) {
+	if !utils.IsAdminAccount(ctx) {
+		ctx.Status(http.StatusForbidden)
+	}
+
 	id, err := strconv.ParseUint(ctx.Param("id"), 10, 32)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
@@ -111,7 +116,7 @@ func (c *IssueBindingController) saveBinding(ctx *gin.Context) {
 		Priority:    (*domain.IssueBindingPriority)(request.Priority),
 		ReleaseId:   request.Release,
 		EpicId:      request.Epic,
-	})
+	}, currentAccount)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
 		return

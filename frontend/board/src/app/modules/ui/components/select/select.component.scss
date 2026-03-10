@@ -42,7 +42,11 @@
           background: $white;
 
           :host-context([data-bs-theme="dark"]) & {
-            background: $gray-700;
+            background: lighten($gray-900, 8);
+
+             &:hover {
+              background: $gray-800;
+            }
           }
         }
       }

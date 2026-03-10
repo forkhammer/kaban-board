@@ -5,10 +5,12 @@ import (
 )
 
 type AccountDto struct {
-	Id       uint   `json:"id"`
-	Username string `json:"username"`
-	Name     string `json:"name"`
-	IsActive bool   `json:"isActive"`
+	Id           uint   `json:"id"`
+	Username     string `json:"username"`
+	Name         string `json:"name"`
+	IsActive     bool   `json:"isActive"`
+	AvatarURL    string `json:"avatarUrl,omitempty"`
+	AuthProvider string `json:"authProvider,omitempty"`
 }
 
 type RegisterRequest struct {
@@ -45,9 +47,11 @@ func NewActiveUserResponse(account *domain.Account) ActiveUserResponse {
 
 func SerializeAccount(account *domain.Account) *AccountDto {
 	return &AccountDto{
-		Id:       uint(account.Id),
-		Username: account.Username,
-		Name:     account.Name,
-		IsActive: account.IsActive,
+		Id:           uint(account.Id),
+		Username:     account.Username,
+		Name:         account.Name,
+		IsActive:     account.IsActive,
+		AvatarURL:    account.AvatarURL,
+		AuthProvider: string(account.AuthProvider),
 	}
 }

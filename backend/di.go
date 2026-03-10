@@ -119,10 +119,12 @@ func registerServices() {
 	mustRegisterBean("JWTService", reflect.TypeFor[*services.JWTService]())
 	mustRegisterBean("PasswordService", reflect.TypeFor[*services.PasswordService]())
 	mustRegisterBean("LabelService", reflect.TypeFor[*app_services.LabelService]())
+	mustRegisterBean("GitLabAuthService", reflect.TypeFor[*services.GitLabAuthService]())
 }
 
 func registerUseCases() {
 	mustRegisterBean("AccountUseCases", reflect.TypeFor[*usecases.AccountUseCases]())
+	mustRegisterBean("GitLabAuthUseCases", reflect.TypeFor[*usecases.GitLabAuthUseCases]())
 	mustRegisterBean("ColumnUseCases", reflect.TypeFor[*usecases.ColumnUseCases]())
 	mustRegisterBean("TeamUseCases", reflect.TypeFor[*usecases.TeamUseCases]())
 	mustRegisterBean("LabelUseCases", reflect.TypeFor[*usecases.LabelUseCases]())
@@ -141,6 +143,7 @@ func registerUseCases() {
 
 func registerControllers() {
 	mustRegisterBean("AccountController", reflect.TypeFor[*controllers.AccountController]())
+	mustRegisterBean("GitLabAuthController", reflect.TypeFor[*controllers.GitLabAuthController]())
 	mustRegisterBean("ReportsController", reflect.TypeFor[*controllers.ReportsController]())
 	mustRegisterBean("HealthController", reflect.TypeFor[*controllers.HealthController]())
 	mustRegisterBean("ColumnController", reflect.TypeFor[*controllers.ColumnController]())

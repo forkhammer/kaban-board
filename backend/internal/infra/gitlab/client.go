@@ -710,3 +710,72 @@ func (client *GitlabClient) cleanReleaseId(gid string) (uint, error) {
 
 	return uint(id), nil
 }
+
+func (client *GitlabClient) ExchangeCodeForToken(code string) (*interfaces.GitLabOAuthToken, error) {
+	data := url.Values{}
+	data.Set("client_id", client.config.GitLabAuthClientID)
+	data.Set("client_secret", client.config.GitLabAuthClientSecret)
+	data.Set("code", code)
+	data.Set("grant_type", "authorization_code")
+	data.Set("redirect_uri", client.config.GitLabAuthRedirectURL)
+
+	tokenURL := fmt.Sprintf("%s/oauth/token", client.config.GitlabUrl)
+
+	req, err := http.NewRequest(http.MethodPost, tokenURL, strings.NewReader(data.Encode()))
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Set("Accept", "application/json")
+
+	httpClient := http.Client{Timeout: 30 * time.Second}
+	resp, err := httpClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to exchange code for token: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("failed to exchange code for token: status %d, body: %s", resp.StatusCode, string(body))
+	}
+
+	var token interfaces.GitLabOAuthToken
+	if err := json.NewDecoder(resp.Body).Decode(&token); err != nil {
+		return nil, fmt.Errorf("failed to decode token response: %w", err)
+	}
+
+	return &token, nil
+}
+
+func (client *GitlabClient) GetUserInfo(accessToken string) (*interfaces.GitLabUserInfo, error) {
+	userInfoURL := fmt.Sprintf("%s/api/v4/user", client.config.GitlabUrl)
+
+	req, err := http.NewRequest(http.MethodGet, userInfoURL, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", accessToken))
+	req.Header.Set("Accept", "application/json")
+
+	httpClient := http.Client{Timeout: 30 * time.Second}
+	resp, err := httpClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get user info: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("failed to get user info: status %d, body: %s", resp.StatusCode, string(body))
+	}
+
+	var userInfo interfaces.GitLabUserInfo
+	if err := json.NewDecoder(resp.Body).Decode(&userInfo); err != nil {
+		return nil, fmt.Errorf("failed to decode user info: %w", err)
+	}
+
+	return &userInfo, nil
+}

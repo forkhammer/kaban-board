@@ -42,6 +42,12 @@ type Config struct {
 	GitlabSyncPeriodMin    int  `env:"GITLAB_SYNC_PERIOD_MIN" envDefault:"10"`
 	MemoryCacheDurationMin int  `env:"MEMORY_CACHE_DURATION_MIN" envDefault:"15"`
 
+	GitLabAuthEnabled      bool   `env:"GITLAB_AUTH_ENABLED" envDefault:"true"`
+	GitLabAuthClientID     string `env:"GITLAB_AUTH_CLIENT_ID"`
+	GitLabAuthClientSecret string `env:"GITLAB_AUTH_CLIENT_SECRET" json:"-"`
+	GitLabAuthRedirectURL  string `env:"GITLAB_AUTH_REDIRECT_URL"`
+	GitLabAuthScope        string `env:"GITLAB_AUTH_SCOPE" envDefault:"api"`
+
 	SentryDSN         string  `env:"SENTRY_DSN" envDefault:""`
 	SentrySampleRate  float64 `env:"SENTRY_SAMPLE_RATE" envDefault:"1.0"`
 	SentryEnvironment string  `env:"SENTRY_ENVIRONMENT" envDefault:"production"`

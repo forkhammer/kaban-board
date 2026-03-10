@@ -35,6 +35,14 @@ func (r *AccountRepository) GetByUsername(username string) (*domain.Account, err
 	return r.toDomainAccount(account), nil
 }
 
+func (r *AccountRepository) GetByGitlabID(gitlabID uint) (*domain.Account, error) {
+	account := &models.Account{}
+	if err := r.conn.GetEngine().Where("accounts.gitlab_id = ?", gitlabID).First(account).Error; err != nil {
+		return nil, err
+	}
+	return r.toDomainAccount(account), nil
+}
+
 func (r *AccountRepository) List(spec repo.QuerySpec) ([]domain.Account, error) {
 	accounts := make([]models.Account, 0)
 	query := r.conn.GetEngine().Model(&models.Account{})
@@ -102,20 +110,26 @@ func (r *AccountRepository) Delete(id domain.AccountId) error {
 
 func (r *AccountRepository) toDomainAccount(account *models.Account) *domain.Account {
 	return &domain.Account{
-		Id:       domain.AccountId(account.Id),
-		Username: account.Username,
-		Password: account.Password,
-		Name:     account.Name,
-		IsActive: account.IsActive,
+		Id:           domain.AccountId(account.Id),
+		Username:     account.Username,
+		Password:     account.Password,
+		Name:         account.Name,
+		IsActive:     account.IsActive,
+		GitlabID:     account.GitlabID,
+		AuthProvider: domain.AuthProvider(account.AuthProvider),
+		AvatarURL:    account.AvatarURL,
 	}
 }
 
 func (r *AccountRepository) toAccount(account *domain.Account) *models.Account {
 	return &models.Account{
-		Id:       uint(account.Id),
-		Username: account.Username,
-		Password: account.Password,
-		Name:     account.Name,
-		IsActive: account.IsActive,
+		Id:           uint(account.Id),
+		Username:     account.Username,
+		Password:     account.Password,
+		Name:         account.Name,
+		IsActive:     account.IsActive,
+		GitlabID:     account.GitlabID,
+		AuthProvider: string(account.AuthProvider),
+		AvatarURL:    account.AvatarURL,
 	}
 }

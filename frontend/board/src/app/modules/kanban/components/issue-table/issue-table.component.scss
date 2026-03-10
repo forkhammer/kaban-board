@@ -9,6 +9,10 @@
   right: 0;
   bottom: 0;
   padding: $pt2;
+
+  :host-context([data-bs-theme="dark"]) & {
+    background: $gray-900;
+  }
 }
 
 .issue-table {
@@ -38,6 +42,12 @@
       border-bottom: 1px solid $gray-100;
       background: $white;
       text-align: center;
+
+      :host-context([data-bs-theme="dark"]) & {
+        background: $gray-800;
+        border-color: $gray-700;
+        color: $gray-300;
+      }
     }
   }
 
@@ -47,14 +57,26 @@
     overflow-y: scroll;
     flex-grow: 1;
 
+    :host-context([data-bs-theme="dark"]) & {
+      background: $gray-900;
+    }
+
     tr {
       width: 100%;
       display: table;
       table-layout: fixed;
       border-bottom: 1px solid $gray-100;
 
+      :host-context([data-bs-theme="dark"]) & {
+        border-color: lighten($gray-900, 5);
+      }
+
       &:hover {
         background-color: $gray-100;
+
+        :host-context([data-bs-theme="dark"]) & {
+          background-color: lighten($gray-900, 5);
+        }
       }
     }
   }
@@ -98,6 +120,17 @@
   font-weight: 600;
   border: 1px solid transparent;
   background: $white;
+
+  :host-context([data-bs-theme="dark"]) & {
+    background: $gray-800;
+    color: $gray-400;
+  }
+
+  &:hover {
+    :host-context([data-bs-theme="dark"]) & {
+      background: $gray-700;
+    }
+  }
 }
 
 .end {

@@ -26,10 +26,18 @@
     display: none;
   }
 
+  :host-context([data-bs-theme="dark"]) & {
+    background-color: lighten($gray-900, 8);
+  }
+
   @for $i from 1 through 8 {
     &.val-#{$i} {
       background-color: $estimate-low-color;
       color: darken($color: $estimate-low-color, $amount: 50);
+
+      :host-context([data-bs-theme="dark"]) & {
+        background-color: $estimate-low-color;
+      }
 
       &:hover,
       &.show {
@@ -43,6 +51,10 @@
       background-color: $estimate-mid-color;
       color: darken($color: $estimate-mid-color, $amount: 50);
 
+      :host-context([data-bs-theme="dark"]) & {
+        background-color: $estimate-mid-color;
+      }
+
       &:hover,
       &.show {
         border-color: darken($color: $estimate-mid-color, $amount: 20);
@@ -54,6 +66,10 @@
     &.val-#{$i} {
       background-color: $estimate-hard-color;
       color: darken($color: $estimate-hard-color, $amount: 50);
+
+      :host-context([data-bs-theme="dark"]) & {
+        background-color: $estimate-hard-color;
+      }
 
       &:hover,
       &.show {

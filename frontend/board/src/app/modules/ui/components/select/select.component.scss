@@ -15,7 +15,12 @@
       }
 
       :host-context([data-bs-theme="dark"]) & {
-        background: $gray-800;
+        background: lighten($gray-900, 8);
+        border-color: transparent;
+
+        &:hover {
+          background: $gray-800;
+        }
       }
     }
 
@@ -67,11 +72,16 @@
   cursor: pointer;
   max-width: 100%;
   border-color: $gray-300;
+  overflow: hidden;
 
   :host-context([data-bs-theme="dark"]) & {
-    background: $gray-800;
+    background: lighten($gray-900, 8);
     border-color: $gray-700;
     color: $gray-100;
+
+    &:hover {
+      background: $gray-800;
+    }
   }
 
   &:after {

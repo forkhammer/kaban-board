@@ -1,6 +1,11 @@
 <ng-container [formGroup]="form">
   <td class="column">
-    <a [href]="issue.webUrl" target="_blank" class="project">{{issue.projectName}}#{{issue.iid}}</a>
+    <div class="project">
+      <a [href]="issue.webUrl" target="_blank">
+        <fa-icon [icon]="faArrowUpRightFromSquare"></fa-icon>
+        {{issue.projectName}}#{{issue.iid}}
+      </a>
+    </div>
     {{issue.title}}
   </td>
   <td class="column">

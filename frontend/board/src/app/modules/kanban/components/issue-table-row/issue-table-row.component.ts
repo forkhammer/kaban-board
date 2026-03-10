@@ -15,7 +15,7 @@ import {faUser} from '@fortawesome/free-regular-svg-icons';
 import { Team } from '../../models/team';
 import { Sprint } from '../../models/sprint';
 import { IssueBindingService } from '../../services/issue-binding.service';
-import { faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
+import { faEllipsisVertical, faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-issue-table-row, [app-issue-table-row]',
@@ -40,6 +40,7 @@ export class IssueTableRowComponent implements OnInit, AfterViewChecked {
   readonly ISSUE_PRIORITY_LABELS = ISSUE_PRIORITY_LABELS
   readonly faUser = faUser
   readonly faEllipsisVertical = faEllipsisVertical
+  readonly faArrowUpRightFromSquare = faArrowUpRightFromSquare
 
   @ViewChild('commentEl') commentEl?: ElementRef<HTMLElement>
 

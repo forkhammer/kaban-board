@@ -3,12 +3,21 @@
 td {
   padding: $pt;
   @include fs-paragraph-xs();
+
+  :host-context([data-bs-theme="dark"]) & {
+    color: $gray-300;
+    border-color: $gray-700;
+  }
 }
 
 .project {
   display: block;
   @include fs-paragraph-xxs();
   font-weight: 600;
+
+  :host-context([data-bs-theme="dark"]) & {
+    color: $gray-100;
+  }
 }
 
 .assignee {
@@ -42,6 +51,10 @@ td {
     justify-content: center;
     @include fs-paragraph-xxs();
     color: $gray-300;
+
+    :host-context([data-bs-theme="dark"]) & {
+      border-color: $gray-600;
+    }
   }
 }
 
@@ -58,6 +71,10 @@ td {
   background-color: transparent;
   @include fs-paragraph-xxs();
 
+  :host-context([data-bs-theme="dark"]) & {
+    color: $gray-300;
+  }
+
   &:hover,
   &:focus {
     border-color: $gray-300;
@@ -65,11 +82,19 @@ td {
 
   &:focus {
     background-color: $white;
+
+    :host-context([data-bs-theme="dark"]) & {
+      background-color: $gray-800;
+    }
   }
 }
 
 .btn-row-actions {
   color: $gray-500;
+
+  :host-context([data-bs-theme="dark"]) & {
+    color: $gray-400;
+  }
 
   &:after {
     display: none;

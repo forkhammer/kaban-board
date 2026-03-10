@@ -13,6 +13,10 @@
       &.show {
         background: $white;
       }
+
+      :host-context([data-bs-theme="dark"]) & {
+        background: $gray-800;
+      }
     }
 
     .caret {
@@ -31,6 +35,10 @@
 
         .dropdown-toggle {
           background: $white;
+
+          :host-context([data-bs-theme="dark"]) & {
+            background: $gray-700;
+          }
         }
       }
     }
@@ -60,6 +68,12 @@
   max-width: 100%;
   border-color: $gray-300;
 
+  :host-context([data-bs-theme="dark"]) & {
+    background: $gray-800;
+    border-color: $gray-700;
+    color: $gray-100;
+  }
+
   &:after {
     display: none;
   }
@@ -73,6 +87,10 @@
   margin-right: $pt2;
   font-weight: 400;
   @include fs-paragraph-xs();
+
+  :host-context([data-bs-theme="dark"]) & {
+    color: $gray-100;
+  }
 }
 
 .dropdown-menu {
@@ -82,15 +100,32 @@
   transform: translate(0, 47px) !important;
   border-color: $border-color;
   min-width: 100%;
+
+  :host-context([data-bs-theme="dark"]) & {
+    background: $gray-800;
+    border-color: $gray-700;
+  }
 }
 
 .dropdown-item {
   padding: $pt $pt2;
   cursor: pointer;
+
+  :host-context([data-bs-theme="dark"]) & {
+    color: $gray-100;
+
+    &:hover {
+      background: $gray-700;
+    }
+  }
 }
 
 .empty {
   padding: $pt $pt2;
+
+  :host-context([data-bs-theme="dark"]) & {
+    color: $gray-500;
+  }
 }
 
 .scroll {
@@ -113,7 +148,16 @@
   top: calc(50% - $pt3 / 2);
   transition-duration: .2s;
 
+  :host-context([data-bs-theme="dark"]) & {
+    background: $gray-800;
+    color: $gray-400;
+  }
+
   &:hover {
     background: $gray-100;
+
+    :host-context([data-bs-theme="dark"]) & {
+      background: $gray-700;
+    }
   }
 }

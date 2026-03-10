@@ -13,21 +13,17 @@
     display: none;
   }
 
-  :host-context([data-bs-theme="dark"]) {
-    .btn-user {
-      background: $gray-800;
-      border-color: $gray-800;
-    }
+  :host-context([data-bs-theme="dark"]) & {
+    background: $gray-800;
+    border-color: $gray-800;
   }
 }
 
 .user-icon {
   margin-right: 4px;
 
-  :host-context([data-bs-theme="dark"]) {
-    .user-icon {
-      color: $gray-400;
-    }
+  :host-context([data-bs-theme="dark"]) & {
+    color: $gray-400;
   }
 }
 
@@ -42,10 +38,8 @@
     overflow: hidden;
     border: 1px solid $gray-100;
 
-    :host-context([data-bs-theme="dark"]) {
-      img {
-        border-color: $gray-700;
-      }
+    :host-context([data-bs-theme="dark"]) & {
+      border-color: $gray-700;
     }
   }
 }
@@ -54,9 +48,7 @@
   display: block;
   color: $body-color;
 
-  :host-context([data-bs-theme="dark"]) {
-    .username {
-      color: $gray-100;
-    }
+  :host-context([data-bs-theme="dark"]) & {
+    color: $gray-100;
   }
 }

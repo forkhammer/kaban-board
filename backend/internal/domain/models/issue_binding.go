@@ -62,3 +62,15 @@ func (ib *IssueBinding) CanUpdate(account *Account) bool {
 
 	return false
 }
+
+func (ib *IssueBinding) CanManage(account *Account) bool {
+	if account == nil {
+		return false
+	}
+
+	if account.Role == AccountRoleAdmin {
+		return true
+	}
+
+	return false
+}

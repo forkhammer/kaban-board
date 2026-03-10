@@ -10,7 +10,6 @@ import { ToastService } from 'src/app/modules/core/services/toast.service';
 import { UserService } from '../../services/user.service';
 import { ReleaseService } from '../../services/release.service';
 import { EpicService } from '../../services/epic.service';
-import { AccountService } from 'src/app/modules/core/services/account.service';
 import {faUser} from '@fortawesome/free-regular-svg-icons';
 import { Team } from '../../models/team';
 import { Sprint } from '../../models/sprint';
@@ -32,7 +31,6 @@ export class IssueTableRowComponent implements OnInit, AfterViewChecked {
   userService = inject(UserService)
   releaseService = inject(ReleaseService)
   epicService = inject(EpicService)
-  accountService = inject(AccountService)
 
   readonly BIND_STATUS_VALUES = BIND_STATUS_VALUES
   readonly BIND_STATUS_LABELS =  BIND_STATUS_LABELS
@@ -48,7 +46,6 @@ export class IssueTableRowComponent implements OnInit, AfterViewChecked {
   private _commentPending = false
   form: FormGroup
   @Output() unbind = new EventEmitter<number>()
-  isAdmin = false
   assigneeFilter: Record<string, any> = {}
   team$ = new BehaviorSubject<Team | null | undefined>(null)
   sprint$ = new BehaviorSubject<Sprint | null | undefined>(null)
@@ -84,8 +81,6 @@ export class IssueTableRowComponent implements OnInit, AfterViewChecked {
       epic: [null],
     })
 
-    this.accountService.isAdmin$.pipe(takeUntilDestroyed()).subscribe(data => this.isAdmin = data)
-
     this.team$.pipe(takeUntilDestroyed()).subscribe(data => {
       if (data) {
         this.assigneeFilter = {team_id: data.id}
@@ -116,8 +111,12 @@ export class IssueTableRowComponent implements OnInit, AfterViewChecked {
     })
   }
 
-  canEdit(): boolean {
-    return this.isAdmin && Boolean(this.sprint$.value)
+  canUpdate(): boolean {
+    return this.issue.can_update ?? false
+  }
+
+  canManage(): boolean {
+    return this.issue.can_manage ?? false
   }
 
   ngAfterViewChecked() {

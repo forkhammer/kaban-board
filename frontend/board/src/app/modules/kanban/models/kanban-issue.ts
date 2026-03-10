@@ -66,7 +66,8 @@ export type KanbanIssue = {
   bindStatus: BindStatus | null
   priority: IssuePriority | null,
   comment: string | null
-  canUpdate?: boolean
+  can_update?: boolean
+  can_manage?: boolean
 }
 
 export type IssueBinding = {

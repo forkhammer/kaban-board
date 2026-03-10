@@ -9,7 +9,7 @@
     {{issue.title}}
   </td>
   <td class="column">
-    <div class="assignee" *ngIf="!canEdit()">
+    <div class="assignee" *ngIf="!canManage()">
       <div class="avatar" *ngIf="issue.assignee?.avatar_url">
         <img [src]="issue.assignee?.avatar_url">
       </div>
@@ -23,58 +23,58 @@
       [formatter]="userService.formatter" [itemFormatter]="userService.formatter"
       [valueModel]="issue.assignee"
       [filter]="assigneeFilter"
-      *ngIf="canEdit()"></app-assignee-select>
+      *ngIf="canManage()"></app-assignee-select>
   </td>
   <td class="column">
-    <div class="epic" *ngIf="!canEdit()">
+    <div class="epic" *ngIf="!canUpdate()">
       {{issue.epic?.title}}
     </div>
 
     <app-select-model class="flat" formControlName="epic" [service]="epicService" [useSearch]="true" [useClear]="true"
       [filter]="{project: issue.projectId}"
       [valueModel]="issue.epic"
-      *ngIf="canEdit()"></app-select-model>
+      *ngIf="canUpdate()"></app-select-model>
   </td>
   <td class="column">
-    <div class="release" *ngIf="!canEdit()">
+    <div class="release" *ngIf="!canUpdate()">
       {{issue.release?.title}}
     </div>
 
     <app-select-model class="flat" formControlName="release" [service]="releaseService" [useSearch]="true" [useClear]="true"
       [filter]="{project: issue.projectId}"
       [valueModel]="issue.release"
-      *ngIf="canEdit()"></app-select-model>
+      *ngIf="canUpdate()"></app-select-model>
   </td>
   <td class="column">
-    <app-priority-badge [priority]="issue.priority" *ngIf="issue.priority && !canEdit()"></app-priority-badge>
+    <app-priority-badge [priority]="issue.priority" *ngIf="issue.priority && !canUpdate()"></app-priority-badge>
 
-    <app-priority-select class="flat" formControlName="priority" *ngIf="canEdit()" [useClear]="true"></app-priority-select>
+    <app-priority-select class="flat" formControlName="priority" *ngIf="canUpdate()" [useClear]="true"></app-priority-select>
   </td>
   <td class="column">
-    <span *ngIf="issue.estimateDev && !canEdit()">{{issue.estimateDev}} ч.</span>
+    <span *ngIf="issue.estimateDev && !canUpdate()">{{issue.estimateDev}} ч.</span>
 
-    <app-select-estimate class="flat" formControlName="estimateDev" *ngIf="canEdit()"></app-select-estimate>
+    <app-select-estimate class="flat" formControlName="estimateDev" *ngIf="canUpdate()"></app-select-estimate>
   </td>
   <td class="column">
-    <span *ngIf="issue.estimateQA && !canEdit()">{{issue.estimateQA}} ч.</span>
+    <span *ngIf="issue.estimateQA && !canUpdate()">{{issue.estimateQA}} ч.</span>
 
-    <app-select-estimate class="flat" formControlName="estimateQA" *ngIf="canEdit()"></app-select-estimate>
+    <app-select-estimate class="flat" formControlName="estimateQA" *ngIf="canUpdate()"></app-select-estimate>
   </td>
   <td class="column">
-    <div class="status" *ngIf="issue.bindStatus && !canEdit()">{{BIND_STATUS_LABELS[issue.bindStatus]}}</div>
+    <div class="status" *ngIf="issue.bindStatus && !canUpdate()">{{BIND_STATUS_LABELS[issue.bindStatus]}}</div>
 
-    <app-select class="flat" [values]="BIND_STATUS_VALUES" formControlName="bindStatus" *ngIf="canEdit()"></app-select>
+    <app-select class="flat" [values]="BIND_STATUS_VALUES" formControlName="bindStatus" *ngIf="canUpdate()"></app-select>
   </td>
   <td class="column">
-    <div class="comment" *ngIf="issue.comment && !canEdit()">{{issue.comment}}</div>
+    <div class="comment" *ngIf="issue.comment && !canUpdate()">{{issue.comment}}</div>
 
     <div #commentEl contenteditable="true" class="comment-edit"
-      *ngIf="canEdit()"
+      *ngIf="canUpdate()"
       (input)="onCommentInput($event)"
       (keydown.enter)="$event.preventDefault()"></div>
   </td>
   <td class="column">
-    <div ngbDropdown *ngIf="canEdit()">
+    <div ngbDropdown *ngIf="canManage()">
       <button class="btn btn-row-actions" ngbDropdownToggle>
         <fa-icon [icon]="faEllipsisVertical"></fa-icon>
       </button>

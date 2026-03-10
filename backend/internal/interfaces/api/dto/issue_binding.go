@@ -28,6 +28,7 @@ type IssueBindingDto struct {
 	Priority    *string     `json:"priority"`
 	Comment     *string     `json:"comment"`
 	CanUpdate   bool        `json:"can_update"`
+	CanManage   bool        `json:"can_manage"`
 }
 
 type IssueBindingPageDto struct {
@@ -72,6 +73,7 @@ func SerializeIssueBinding(binding *domain.IssueBinding, account *domain.Account
 		BindingId:   (uint)(binding.Id),
 		BindStatus:  (string)(binding.BindStatus),
 		CanUpdate:   binding.CanUpdate(account),
+		CanManage:   binding.CanManage(account),
 	}
 
 	if binding.Priority != nil {

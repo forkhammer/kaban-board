@@ -5,7 +5,7 @@
         <img [src]="account.avatarUrl">
       </span>
       <fa-icon [icon]="faUser" class="user-icon" *ngIf="!account.avatarUrl"></fa-icon>
-      <span class="username">{{account.username}}</span>
+      <span class="username">{{account.name ? account.name : account.username}}</span>
     </button>
     <div ngbDropdownMenu class="light">
       <a routerLink="/" ngbDropdownItem (click)="openSettings()" *ngIf="accountService.isAdmin$ | async">Настройки</a>

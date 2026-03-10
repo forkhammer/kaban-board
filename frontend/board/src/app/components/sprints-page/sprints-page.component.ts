@@ -14,6 +14,7 @@ import { BehaviorSubject, combineLatestWith, debounceTime, distinctUntilChanged,
 import { SprintModalServiceService } from 'src/app/modules/kanban/services/sprint-modal.service';
 import { SelectValue } from 'src/app/modules/ui/models/select-value';
 import { TitleService } from 'src/app/modules/core/services/title.service';
+import { AccountService } from 'src/app/modules/core/services/account.service';
 
 @Component({
   selector: 'app-sprints-page',
@@ -30,6 +31,7 @@ export class SprintsPageComponent {
   route = inject(ActivatedRoute)
   sprintModal = inject(SprintModalServiceService)
   title = inject(TitleService)
+  accountService = inject(AccountService)
 
   faArrowLeftLong = faArrowLeftLong
   faPlus = faPlus

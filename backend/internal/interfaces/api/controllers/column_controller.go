@@ -21,7 +21,7 @@ func (c *ColumnController) RegisterRoutes(router gin.IRouter) error {
 	router.GET("/columns/:id", c.getColumnById)
 
 	protectedRoutes := router.Group("/")
-	protectedRoutes.Use(middleware.AuthRequiredMiddleware())
+	protectedRoutes.Use(middleware.AdminRequiredMiddleware())
 	protectedRoutes.POST("/columns", c.addColumn)
 	protectedRoutes.PUT("/columns/:id", c.updateColumn)
 	protectedRoutes.DELETE("/columns/:id", c.deleteColumn)

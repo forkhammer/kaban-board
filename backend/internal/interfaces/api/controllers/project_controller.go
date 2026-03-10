@@ -20,7 +20,7 @@ func (c *ProjectController) RegisterRoutes(router gin.IRouter) error {
 	router.GET("/projects/:id", c.getProject)
 
 	projectRoutes := router.Group("/")
-	projectRoutes.Use(middleware.AuthRequiredMiddleware())
+	projectRoutes.Use(middleware.AdminRequiredMiddleware())
 	projectRoutes.POST("/projects/:id/set_team", c.setProjectTeam)
 	return nil
 }

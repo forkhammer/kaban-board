@@ -8,6 +8,7 @@ import { ToastService } from 'src/app/modules/core/services/toast.service';
 import { catchErrorMessages } from 'src/app/modules/core/tools/catch-error';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { UrlService } from '../../services/urls.service';
+import { AccountService } from 'src/app/modules/core/services/account.service';
 
 @Component({
   selector: 'app-sprint-card',
@@ -21,6 +22,7 @@ export class SprintCardComponent {
   destroyRef = inject(DestroyRef)
   toast = inject(ToastService)
   urls = inject(UrlService)
+  accountService = inject(AccountService)
 
   @Input() sprint!: Sprint
   @Output() onDelete = new EventEmitter<Sprint>()

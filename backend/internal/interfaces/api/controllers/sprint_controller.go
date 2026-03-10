@@ -21,7 +21,7 @@ func (c *SprintController) RegisterRoutes(router gin.IRouter) error {
 	router.GET("/sprint/:id", c.GetSprint)
 
 	privateRoutes := router.Group("/")
-	privateRoutes.Use(middleware.AuthRequiredMiddleware())
+	privateRoutes.Use(middleware.AdminRequiredMiddleware())
 	privateRoutes.POST("/sprint", c.CreateSprint)
 	privateRoutes.PUT("/sprint/:id", c.UpdateSprint)
 	privateRoutes.DELETE("/sprint/:id", c.DeleteSprint)

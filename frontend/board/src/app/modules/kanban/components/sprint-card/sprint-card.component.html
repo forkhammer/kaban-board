@@ -26,19 +26,21 @@
   </div>
 </div>
 
-<button class="btn btn-light ms-3 me-3" *ngIf="sprint.can_run" (click)="run()">
+<button class="btn btn-light ms-3 me-3" *ngIf="sprint.can_run && (accountService.isAdmin$ | async)"
+  (click)="run()">
   <fa-icon [icon]="faPlay" class="text-success"></fa-icon>
   Запустить
 </button>
 
-<button class="btn btn-light ms-3 me-3" *ngIf="sprint.can_complete" (click)="complete()">
+<button class="btn btn-light ms-3 me-3" *ngIf="sprint.can_complete && (accountService.isAdmin$ | async)"
+  (click)="complete()">
   <fa-icon [icon]="faStop" class="text-danger"></fa-icon>
   Завершить
 </button>
 
 <div class="count ms-3 me-3">{{sprint.count_bindings}} задач</div>
 
-<div ngbDropdown>
+<div ngbDropdown *ngIf="accountService.isAdmin$ | async">
   <button type="button" class="btn" id="sprint-dropdown" ngbDropdownToggle>...</button>
   <div ngbDropdownMenu>
     <button ngbDropdownItem (click)="change()">Изменить</button>

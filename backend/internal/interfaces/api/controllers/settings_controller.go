@@ -17,7 +17,7 @@ func (c *SettingsController) RegisterRoutes(router gin.IRouter) error {
 	router.GET("/settings", c.getSettings)
 
 	protectedRoutes := router.Group("/")
-	protectedRoutes.Use(middleware.AuthRequiredMiddleware())
+	protectedRoutes.Use(middleware.AdminRequiredMiddleware())
 	protectedRoutes.GET("/kanban-settings", c.getKanbanSettings)
 	protectedRoutes.POST("/kanban-settings/task-type-labels", c.saveTaskTypeLabels)
 	return nil

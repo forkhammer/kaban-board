@@ -19,7 +19,7 @@ func (c *TeamController) RegisterRoutes(router gin.IRouter) error {
 	router.GET("/teams/:id", c.getTeamById)
 
 	protectedtRoutes := router.Group("/")
-	protectedtRoutes.Use(middleware.AuthRequiredMiddleware())
+	protectedtRoutes.Use(middleware.AdminRequiredMiddleware())
 	protectedtRoutes.POST("/teams", c.addTeam)
 	protectedtRoutes.PUT("/teams/:id", c.updateTeam)
 	protectedtRoutes.DELETE("/teams/:id", c.deleteTeam)

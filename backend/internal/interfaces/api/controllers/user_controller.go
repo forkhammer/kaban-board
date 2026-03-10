@@ -20,7 +20,7 @@ func (c *UserController) RegisterRoutes(router gin.IRouter) error {
 	router.GET("/users/:id", c.getUser)
 
 	userRoutes := router.Group("/")
-	userRoutes.Use(middleware.AuthRequiredMiddleware())
+	userRoutes.Use(middleware.AdminRequiredMiddleware())
 	userRoutes.POST("/users/:id/visibility", c.setUserVisibility)
 	userRoutes.POST("/users/:id/groups", c.setUserGroups)
 	return nil

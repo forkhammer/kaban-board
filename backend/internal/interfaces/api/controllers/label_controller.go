@@ -17,7 +17,7 @@ func (c *LabelController) RegisterRoutes(router gin.IRouter) error {
 	router.GET("/labels", c.getLabels)
 
 	protectedRoutes := router.Group("/")
-	protectedRoutes.Use(middleware.AuthRequiredMiddleware())
+	protectedRoutes.Use(middleware.AdminRequiredMiddleware())
 	protectedRoutes.PUT("/labels/:id", c.updateLabel)
 	return nil
 }

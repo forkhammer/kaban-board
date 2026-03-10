@@ -3,6 +3,7 @@ package controllers
 import (
 	"main/internal/app/queries"
 	"main/internal/app/usecases"
+	domain "main/internal/domain/models"
 	"main/internal/interfaces/api/dto"
 	"main/internal/interfaces/api/middleware"
 	"net/http"
@@ -75,10 +76,13 @@ func (c *IssueController) bindIssue(ctx *gin.Context) {
 		return
 	}
 
+	account, _ := ctx.Get("account")
+	currentAccount := account.(*domain.Account)
+
 	binding, err := c.issueUC.BindIssue(uint(id), request.SprintId, request.AssigneeId)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
 		return
 	}
-	ctx.JSON(http.StatusOK, dto.SerializeIssueBinding(binding))
+	ctx.JSON(http.StatusOK, dto.SerializeIssueBinding(binding, currentAccount))
 }

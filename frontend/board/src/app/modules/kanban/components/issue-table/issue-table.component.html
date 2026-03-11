@@ -13,12 +13,16 @@
       <th class="column">&nbsp;</th>
     </tr>
   </thead>
-  <tbody>
+  <tbody cdkDropList (cdkDropListDropped)="dropIssue($event)">
     <tr app-issue-table-row *ngFor="let issue of issues; trackBy: trackByIssue"
       [issue]="issue"
       [team]="team$.value"
       [sprint]="sprint$.value"
-      (unbind)="unbindIssue($event)"></tr>
+      (unbind)="unbindIssue($event)"
+      cdkDrag
+      [cdkDragDisabled]="!(accountService.isAdmin$ | async) || !(sprint$ | async)">
+      <div *cdkDragPlaceholder colspan="11" class="drag-placeholder-cell"></div>
+    </tr>
 
     <tr *ngIf="(sprint$ | async) && (accountService.isAdmin$ | async)">
       <td colspan="11">

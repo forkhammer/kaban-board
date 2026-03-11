@@ -1,5 +1,10 @@
 <ng-container [formGroup]="form">
   <td class="column">
+    <span class="drag-handle" cdkDragHandle>
+      <fa-icon [icon]="faGripVertical"></fa-icon>
+    </span>
+  </td>
+  <td class="column">
     <div class="project">
       <a [href]="issue.webUrl" target="_blank">
         <fa-icon [icon]="faArrowUpRightFromSquare"></fa-icon>

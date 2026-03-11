@@ -15,6 +15,7 @@ import { Pagination } from 'src/app/modules/core/models/base';
 import { AccountService } from 'src/app/modules/core/services/account.service';
 import { IssueBindingService } from '../../services/issue-binding.service';
 import { BindIssueModalService } from '../../services/bind-issue-modal.service';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-issue-table',
@@ -129,6 +130,10 @@ export class IssueTableComponent {
 
   unbindIssue(bindingId: number) {
     this.issues = this.issues.filter(issue => issue.bindingId !== bindingId)
+  }
+
+  dropIssue(event: CdkDragDrop<KanbanIssue[]>) {
+    moveItemInArray(this.issues, event.previousIndex, event.currentIndex)
   }
 
   trackByIssue(index: number, issue: KanbanIssue) {

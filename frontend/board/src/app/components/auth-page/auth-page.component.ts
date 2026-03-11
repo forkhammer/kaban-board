@@ -6,6 +6,7 @@ import {Router} from "@angular/router";
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import { faSquareGitlab } from '@fortawesome/free-brands-svg-icons';
 import { catchError, EMPTY } from 'rxjs';
+import {ThemeServiceService} from "../../modules/ui/services/theme-service.service";
 
 @Component({
     selector: 'app-auth-page',
@@ -19,6 +20,7 @@ export class AuthPageComponent {
   fb = inject(FormBuilder)
   router = inject(Router)
   destroyRef = inject(DestroyRef)
+  themeService = inject(ThemeServiceService)
 
   faSquareGitlab = faSquareGitlab
 
@@ -26,12 +28,17 @@ export class AuthPageComponent {
   isLoading = false;
   isLoadingGitlab = false
   authErrorMessage: string = '';
+  theme: string = 'light';
 
   constructor() {
     this.title.setTitle('Auth');
     this.form = this.fb.group({
       username: ['', [Validators.required]],
       password: ['', Validators.required],
+    });
+
+    this.themeService.theme$.subscribe(theme => {
+      this.theme = theme;
     });
   }
 

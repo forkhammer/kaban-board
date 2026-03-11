@@ -5,9 +5,17 @@
   align-items: center;
   min-height: calc(100vh - 93px);
 
+  :host-context([data-bs-theme="dark"]) & {
+    background: $gray-900;
+  }
+
   @include media-breakpoint-down(sm) {
     box-shadow: none;
     background: $gray-100;
+
+    :host-context([data-bs-theme="dark"]) & {
+      background: $gray-900;
+    }
   }
 }
 
@@ -16,15 +24,29 @@
   max-width: 100%;
   background: $gray-100;
 
-  :host-context([data-bs-theme="dark"]) {
-    .form {
-      background: $gray-850;
-    }
+  :host-context([data-bs-theme="dark"]) & {
+    background: $gray-850;
   }
 
   @include media-breakpoint-down(sm) {
     box-shadow: none;
     background: transparent;
+
+    :host-context([data-bs-theme="dark"]) & {
+      background: transparent;
+    }
+  }
+}
+
+.form-label {
+  :host-context([data-bs-theme="dark"]) & {
+    color: $gray-300;
+  }
+}
+
+.fs-lead-s {
+  :host-context([data-bs-theme="dark"]) & {
+    color: $gray-100;
   }
 }
 

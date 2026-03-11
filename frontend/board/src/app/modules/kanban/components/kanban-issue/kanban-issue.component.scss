@@ -32,10 +32,9 @@
     @include fs-paragraph-xxxs();
   }
 
-  :host-context([data-bs-theme="dark"]) {
-    .milestone {
-      color: $gray-100;
-    }
+  :host-context([data-bs-theme="dark"]) & {
+    color: $gray-100;
+    border-color: $gray-800;
   }
 }
 

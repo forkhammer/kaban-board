@@ -11,7 +11,7 @@
   padding: $pt2;
 
   :host-context([data-bs-theme="dark"]) & {
-    background: $gray-900;
+    background: $gray-800;
   }
 }
 
@@ -44,8 +44,8 @@
       text-align: center;
 
       :host-context([data-bs-theme="dark"]) & {
-        background: $gray-800;
-        border-color: $gray-700;
+        background: $gray-850;
+        border-color: $gray-800;
         color: $gray-300;
       }
     }

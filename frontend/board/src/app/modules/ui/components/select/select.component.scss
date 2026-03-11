@@ -57,11 +57,11 @@
 .dropdown {
   &.show {
     .dropdown-toggle {
-      z-index: 11;
+      z-index: 10;
     }
 
     .dropdown-menu {
-      z-index: 10;
+      z-index: 11;
     }
   }
 }

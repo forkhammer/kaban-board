@@ -8,6 +8,10 @@
 
     .dropdown-toggle {
       background: $white;
+
+      :host-context([data-bs-theme="dark"]) & {
+        background: $gray-800;
+      }
     }
   }
 }
@@ -32,7 +36,8 @@
     background: lighten($gray-900, 8);
     border-color: transparent;
 
-    &:hover {
+    &:hover,
+    &.show {
       background: $gray-800;
     }
   }

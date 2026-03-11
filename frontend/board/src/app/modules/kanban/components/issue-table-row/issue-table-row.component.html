@@ -68,7 +68,7 @@
   <td class="column">
     <div class="status" *ngIf="issue.bindStatus && !canUpdate()">{{BIND_STATUS_LABELS[issue.bindStatus]}}</div>
 
-    <app-select class="flat" [values]="BIND_STATUS_VALUES" formControlName="bindStatus" *ngIf="canUpdate()"></app-select>
+    <app-binding-status-select class="flat" formControlName="bindStatus" *ngIf="canUpdate()"></app-binding-status-select>
   </td>
   <td class="column">
     <div class="comment" *ngIf="issue.comment && !canUpdate()">{{issue.comment}}</div>

@@ -1,6 +1,6 @@
 import {Injectable, Injector} from '@angular/core';
 import {BaseService} from "../../core/services/base.service";
-import {User} from "../models/user";
+import {AccountRole, User} from "../models/user";
 import {map} from "rxjs/operators";
 
 @Injectable({
@@ -23,6 +23,12 @@ export class UserService extends BaseService<User>{
 
   setGroups(userId: number, groups: number[]) {
     return this.http.post(`${this.apiUrl}/${userId}/groups`, {groups}).pipe(
+      map(data => data as User)
+    )
+  }
+
+  setRole(userId: number, role: AccountRole) {
+    return this.http.post(`${this.apiUrl}/${userId}/role`, {role}).pipe(
       map(data => data as User)
     )
   }

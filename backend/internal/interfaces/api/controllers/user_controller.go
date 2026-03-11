@@ -3,6 +3,7 @@ package controllers
 import (
 	"main/internal/app/queries"
 	"main/internal/app/usecases"
+	"main/internal/domain/models"
 	"main/internal/interfaces/api/dto"
 	"main/internal/interfaces/api/middleware"
 	"net/http"
@@ -23,6 +24,7 @@ func (c *UserController) RegisterRoutes(router gin.IRouter) error {
 	userRoutes.Use(middleware.AdminRequiredMiddleware())
 	userRoutes.POST("/users/:id/visibility", c.setUserVisibility)
 	userRoutes.POST("/users/:id/groups", c.setUserGroups)
+	userRoutes.POST("/users/:id/role", c.setUserRole)
 	return nil
 }
 
@@ -102,6 +104,31 @@ func (c *UserController) setUserGroups(ctx *gin.Context) {
 	}
 
 	user, err := c.userUC.SetGroups(uint(id), request.Groups)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, dto.SerializeUser(user))
+}
+
+func (c *UserController) setUserRole(ctx *gin.Context) {
+	var request dto.SetUserRoleRequest
+
+	id, err := strconv.ParseUint(ctx.Param("id"), 10, 32)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	if err = ctx.ShouldBindJSON(&request); err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	user, err := c.userUC.SetAccountRole(uint(id), models.AccountRole(request.Role))
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})

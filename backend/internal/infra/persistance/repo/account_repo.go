@@ -109,13 +109,19 @@ func (r *AccountRepository) Delete(id domain.AccountId) error {
 }
 
 func (r *AccountRepository) toDomainAccount(account *models.Account) *domain.Account {
+	var gitlabId *domain.UserId
+	if account.GitlabID != nil {
+		id := domain.UserId(*account.GitlabID)
+		gitlabId = &id
+	}
+
 	return &domain.Account{
 		Id:           domain.AccountId(account.Id),
 		Username:     account.Username,
 		Password:     account.Password,
 		Name:         account.Name,
 		IsActive:     account.IsActive,
-		GitlabID:     account.GitlabID,
+		GitlabID:     gitlabId,
 		AuthProvider: domain.AuthProvider(account.AuthProvider),
 		AvatarURL:    account.AvatarURL,
 		Role:         domain.AccountRole(account.Role),
@@ -123,13 +129,19 @@ func (r *AccountRepository) toDomainAccount(account *models.Account) *domain.Acc
 }
 
 func (r *AccountRepository) toAccount(account *domain.Account) *models.Account {
+	var gitlabId *uint
+	if account.GitlabID != nil {
+		id := uint(*account.GitlabID)
+		gitlabId = &id
+	}
+
 	return &models.Account{
 		Id:           uint(account.Id),
 		Username:     account.Username,
 		Password:     account.Password,
 		Name:         account.Name,
 		IsActive:     account.IsActive,
-		GitlabID:     account.GitlabID,
+		GitlabID:     gitlabId,
 		AuthProvider: string(account.AuthProvider),
 		AvatarURL:    account.AvatarURL,
 		Role:         string(account.Role),

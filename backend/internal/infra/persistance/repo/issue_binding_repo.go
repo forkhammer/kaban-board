@@ -119,7 +119,7 @@ func (r *IssueBindingRepository) toDomainIssueBinding(binding *models.IssueBindi
 
 	var assignee *domain.User
 	if binding.Assignee != nil {
-		assignee = r.userRepo.toDomainUser(binding.Assignee)
+		assignee = r.userRepo.toDomainUser(binding.Assignee, make(map[uint]*domain.Account))
 	}
 
 	var release *domain.Release

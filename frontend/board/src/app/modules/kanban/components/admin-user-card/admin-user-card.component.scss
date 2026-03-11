@@ -13,8 +13,26 @@
   }
 }
 
-:host-context([data-bs-theme="dark"]) {
-  .user-title {
+.user-title {
+  line-height: 40px;
+
+  :host-context([data-bs-theme="dark"]) & {
     color: $white;
   }
+}
+
+
+.no-auth {
+  @include fs-paragraph-xxs();
+  color: $gray-500;
+  line-height: 40px;
+  margin-right: $pt3;
+
+  :host-context([data-bs-theme="dark"]) & {
+    color: $white;
+  }
+}
+
+.role {
+  margin-right: $pt3;
 }

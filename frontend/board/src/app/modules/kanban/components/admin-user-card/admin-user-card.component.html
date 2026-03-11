@@ -12,6 +12,14 @@
     </div>
   </div>
 
+  <div class="role" *ngIf="user.account" [formGroup]="form">
+    <app-select [values]="ACCOUNT_ROLE_VALUES" formControlName="role"></app-select>
+  </div>
+
+  <div class="no-auth" *ngIf="!user.account">
+    Не авторизован
+  </div>
+
   <button class="btn btn-link" (click)="toggleVisible()" title="Вкл/выкл видимость пользователя">
     <fa-icon [icon]="faEye" *ngIf="user.is_visible" class="text-success"></fa-icon>
     <fa-icon [icon]="faEyeSlash" *ngIf="!user.is_visible" class="text-secondary"></fa-icon>

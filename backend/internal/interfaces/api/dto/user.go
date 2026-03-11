@@ -13,18 +13,29 @@ type SetUserGroupsRequest struct {
 	Groups []uint `json:"groups"`
 }
 
+type SetUserRoleRequest struct {
+	Role string `json:"role" binding:"required"`
+}
+
 type GetUsersRequest struct {
 	Search *string `form:"search"`
 	TeamId *uint   `form:"team_id"`
 }
 
 type UserDto struct {
-	Id        uint       `json:"id"`
-	Name      string     `json:"name"`
-	Username  string     `json:"username"`
-	AvatarUrl string     `json:"avatar_url"`
-	IsVisible bool       `json:"is_visible"`
-	Groups    []GroupDto `json:"groups"`
+	Id        uint            `json:"id"`
+	Name      string          `json:"name"`
+	Username  string          `json:"username"`
+	AvatarUrl string          `json:"avatar_url"`
+	IsVisible bool            `json:"is_visible"`
+	Groups    []GroupDto      `json:"groups"`
+	Account   *UserAccountDto `json:"account"`
+}
+
+type UserAccountDto struct {
+	Id   uint   `json:"id"`
+	Name string `json:"name"`
+	Role string `json:"role"`
 }
 
 func SerializeUsers(users []domain.User) []UserDto {
@@ -35,6 +46,15 @@ func SerializeUsers(users []domain.User) []UserDto {
 }
 
 func SerializeUser(user *domain.User) *UserDto {
+	var accountDto *UserAccountDto
+	if user.Account != nil {
+		accountDto = &UserAccountDto{
+			Id:   uint(user.Account.Id),
+			Name: user.Account.Name,
+			Role: string(user.Account.Role),
+		}
+	}
+
 	return &UserDto{
 		Id:        uint(user.Id),
 		Name:      user.Name,
@@ -42,5 +62,6 @@ func SerializeUser(user *domain.User) *UserDto {
 		AvatarUrl: user.AvatarUrl,
 		IsVisible: user.IsVisible,
 		Groups:    SerializeGroups(user.Groups),
+		Account:   accountDto,
 	}
 }

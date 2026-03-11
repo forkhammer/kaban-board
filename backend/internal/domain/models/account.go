@@ -23,7 +23,7 @@ type Account struct {
 	Username     string
 	Password     string
 	Name         string
-	GitlabID     *uint
+	GitlabID     *UserId
 	AuthProvider AuthProvider
 	AvatarURL    string
 	Role         AccountRole

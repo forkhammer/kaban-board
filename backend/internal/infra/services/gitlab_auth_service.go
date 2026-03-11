@@ -55,10 +55,11 @@ func (s *GitLabAuthService) findOrCreateAccount(userInfo *interfaces.GitLabUserI
 		return s.accountRepo.Update(account)
 	}
 
+	gitlabId := domain.UserId(userInfo.ID)
 	account = &domain.Account{
 		Username:     userInfo.Username,
 		Name:         userInfo.Name,
-		GitlabID:     &userInfo.ID,
+		GitlabID:     &gitlabId,
 		AuthProvider: domain.AuthProviderGitLab,
 		AvatarURL:    userInfo.AvatarURL,
 		IsActive:     true,

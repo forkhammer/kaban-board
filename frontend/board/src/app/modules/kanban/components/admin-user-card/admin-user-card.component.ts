@@ -1,6 +1,6 @@
 import {Component, DestroyRef, inject, Input, OnInit} from '@angular/core';
 import { faEye, faEyeSlash, faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons'
-import {User} from "../../models/user";
+import {ACCOUNT_ROLE_VALUES, User} from "../../models/user";
 import {UserService} from "../../services/user.service";
 import {distinctUntilChanged, switchMap} from "rxjs/operators";
 import { FormBuilder, FormGroup } from '@angular/forms';
@@ -27,24 +27,35 @@ export class AdminUserCardComponent implements OnInit {
   faEyeSlash = faEyeSlash
   faChevronDown = faChevronDown
   faChevronUp = faChevronUp
+  readonly ACCOUNT_ROLE_VALUES = ACCOUNT_ROLE_VALUES
 
   constructor() {
     this.form = this.fb.group({
       groups: [[]],
+      role: [null],
     })
   }
 
   ngOnInit(): void {
-      this.form.patchValue(this.getFormData(this.user))
+    this.form.patchValue(this.getFormData(this.user), {emitEvent: false})
 
-      this.form.get('groups')?.valueChanges.pipe(
-        distinctUntilChanged((x, y) => this.arrayEquals(x, y)),
-        switchMap(data => this.userService.setGroups(this.user.id, data)),
-        takeUntilDestroyed(this.destoryRef)
-      ).subscribe(user => {
-        Object.assign(this.user, user)
-        this.form.patchValue(this.getFormData(this.user))
-      })
+    this.form.get('groups')?.valueChanges.pipe(
+      distinctUntilChanged((x, y) => this.arrayEquals(x, y)),
+      switchMap(data => this.userService.setGroups(this.user.id, data)),
+      takeUntilDestroyed(this.destoryRef)
+    ).subscribe(user => {
+      Object.assign(this.user, user)
+      this.form.patchValue(this.getFormData(this.user), {emitEvent: false})
+    })
+
+    this.form.get('role')?.valueChanges.pipe(
+      distinctUntilChanged(),
+      switchMap(data => this.userService.setRole(this.user.id, data)),
+      takeUntilDestroyed(this.destoryRef)
+    ).subscribe(user => {
+      Object.assign(this.user, user)
+      this.form.patchValue(this.getFormData(this.user), {emitEvent: false})
+    })
   }
 
 
@@ -62,7 +73,8 @@ export class AdminUserCardComponent implements OnInit {
 
   getFormData(user: User) {
     return {
-      groups: user.groups.map(group => group.id)
+      groups: user.groups.map(group => group.id),
+      role: user.account?.role ?? null,
     }
   }
 

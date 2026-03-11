@@ -11,6 +11,7 @@ import (
 	"main/internal/infra/gitlab"
 	"main/internal/infra/persistance/repo"
 	"main/internal/infra/persistance/spec"
+	account_spec "main/internal/infra/persistance/spec/account"
 	column_spec "main/internal/infra/persistance/spec/column"
 	epic_spec "main/internal/infra/persistance/spec/epic"
 	group_spec "main/internal/infra/persistance/spec/group"
@@ -94,6 +95,7 @@ func registerQueries(dbType interfaces.DbType) {
 	mustRegisterBean("ColumnQuery", reflect.TypeFor[*column_spec.ColumnQueryImpl]())
 	mustRegisterBean("GroupQuery", reflect.TypeFor[*group_spec.GroupQueryImpl]())
 	mustRegisterBean("UserQuery", reflect.TypeFor[*user_spec.UserQueryImpl]())
+	mustRegisterBean("AccountQuery", reflect.TypeFor[*account_spec.AccountQueryImpl]())
 	mustRegisterBean("SprintQuery", reflect.TypeFor[*sprint_spec.SprintQueryImpl]())
 	mustRegisterBean("ProjectQuery", reflect.TypeFor[*project_spec.ProjectQueryImpl]())
 	mustRegisterBean("IssueBindingQuery", reflect.TypeFor[*issuebinding_spec.IssueBindingQueryImpl]())

@@ -155,7 +155,7 @@ func (r *IssueRepository) toDomainIssue(issue *models.Issue) (*domain.Issue, err
 		Title:     issue.Title,
 		IssueType: domain.IssueType(issue.IssueType),
 		Assignees: utils.Map(issue.Assignees, func(a models.User) domain.User {
-			return *r.userRepo.toDomainUser(&a)
+			return *r.userRepo.toDomainUser(&a, make(map[uint]*domain.Account))
 		}),
 		WebUrl: issue.WebUrl,
 		Labels: utils.Map(issue.Labels, func(l models.Label) domain.Label {

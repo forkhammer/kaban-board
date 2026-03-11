@@ -55,7 +55,7 @@ func (ib *IssueBinding) CanUpdate(account *Account) bool {
 	}
 
 	if account.Role == AccountRoleEmployee && account.GitlabID != nil && ib.Assignee != nil {
-		if ib.Assignee.Id == UserId(*account.GitlabID) {
+		if ib.Assignee.Id == *account.GitlabID {
 			return true
 		}
 	}

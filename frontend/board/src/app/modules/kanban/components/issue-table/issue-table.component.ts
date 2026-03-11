@@ -110,7 +110,14 @@ export class IssueTableComponent {
         this.isPageMore$.next(false)
       } else {
         this.issuePage = (data as Pagination<KanbanIssue>)
-        this.issues = this.issuePage.results
+        this.issues = [...this.issuePage.results].sort((a, b) => {
+          const oa = a.order ?? ''
+          const ob = b.order ?? ''
+          if (oa === '' && ob === '') return 0
+          if (oa === '') return 1
+          if (ob === '') return -1
+          return oa.localeCompare(ob)
+        })
       }
     })
   }
@@ -134,6 +141,27 @@ export class IssueTableComponent {
 
   dropIssue(event: CdkDragDrop<KanbanIssue[]>) {
     moveItemInArray(this.issues, event.previousIndex, event.currentIndex)
+    this.recalculateOrder()
+    this.issueBindingService.saveOrdering(this.issues).pipe(
+      catchErrorMessages(this.toast),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe()
+  }
+
+  private recalculateOrder() {
+    const grouped = new Map<number, KanbanIssue[]>()
+    for (const issue of this.issues) {
+      const groupId = issue.assignee?.id ?? 0
+      if (!grouped.has(groupId)) {
+        grouped.set(groupId, [])
+      }
+      grouped.get(groupId)!.push(issue)
+    }
+    for (const [groupId, items] of grouped) {
+      items.forEach((issue, index) => {
+        issue.order = `${groupId}${String(index).padStart(8, '0')}`
+      })
+    }
   }
 
   trackByIssue(index: number, issue: KanbanIssue) {

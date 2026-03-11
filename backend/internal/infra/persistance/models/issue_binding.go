@@ -17,4 +17,5 @@ type IssueBinding struct {
 	Release     *Release `gorm:"foreignKey:ReleaseId"`
 	EpicId      *uint    `gorm:"epic_id"`
 	Epic        *Epic    `gorm:"foreignKey:EpicId"`
+	Order       string   `gorm:"order;default:''"`
 }

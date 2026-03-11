@@ -26,6 +26,13 @@ type SaveIssueBindingRequest struct {
 	EpicId      *uint
 }
 
+type IssueBindingOrdering struct {
+	Id    uint
+	Order string
+}
+
+type IssueBindingOrderingSet = []IssueBindingOrdering
+
 type IssueBindingUseCases struct {
 	commonQuery       queries.CommonQuery       `di.inject:"CommonQuery"`
 	issueBindingQuery queries.IssueBindingQuery `di.inject:"IssueBindingQuery"`
@@ -47,7 +54,7 @@ func (u *IssueBindingUseCases) GetBindings(filter *queries.IssueBindingFilter, p
 	}
 	query := repo.And(
 		u.commonQuery.PaginationSpec(queryPage, queryLimit),
-		u.commonQuery.OrderSpec("issue_bindings.assignee_id, \"Issue\".created_at DESC"),
+		u.commonQuery.OrderSpec("issue_bindings.\"order\", issue_bindings.assignee_id, \"Issue\".created_at DESC"),
 	)
 
 	var filterQuery repo.QuerySpec
@@ -153,4 +160,18 @@ func (uc *IssueBindingUseCases) SaveBinding(request SaveIssueBindingRequest, acc
 	}
 
 	return binding, nil
+}
+
+func (uc *IssueBindingUseCases) SaveOrdering(ordering IssueBindingOrderingSet) error {
+	for _, o := range ordering {
+		binding, err := uc.issueBindingRepo.Get(domain.IssueBindingId(o.Id))
+		if err != nil {
+			return err
+		}
+		binding.Order = o.Order
+		if _, err := uc.issueBindingRepo.Update(binding); err != nil {
+			return err
+		}
+	}
+	return nil
 }

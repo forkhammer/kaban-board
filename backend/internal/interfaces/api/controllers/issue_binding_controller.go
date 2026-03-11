@@ -6,7 +6,8 @@ import (
 	domain "main/internal/domain/models"
 	"main/internal/interfaces/api/dto"
 	"main/internal/interfaces/api/middleware"
-	"main/internal/interfaces/api/utils"
+	apiutils "main/internal/interfaces/api/utils"
+	"main/pkg/utils"
 	"net/http"
 	"strconv"
 
@@ -24,6 +25,9 @@ func (c *IssueBindingController) RegisterRoutes(router gin.IRouter) error {
 	privateRoutes.Use(middleware.AuthRequiredMiddleware())
 	privateRoutes.DELETE("/binding/:id", c.deleteBinding)
 	privateRoutes.PUT("/binding/:id", c.saveBinding)
+	adminRoutes := router.Group("/")
+	adminRoutes.Use(middleware.AdminRequiredMiddleware())
+	adminRoutes.POST("/binding/save_ordering", c.saveOrdering)
 	return nil
 }
 
@@ -72,7 +76,7 @@ func (c *IssueBindingController) getBinding(ctx *gin.Context) {
 }
 
 func (c *IssueBindingController) deleteBinding(ctx *gin.Context) {
-	if !utils.IsAdminAccount(ctx) {
+	if !apiutils.IsAdminAccount(ctx) {
 		ctx.Status(http.StatusForbidden)
 	}
 
@@ -122,4 +126,23 @@ func (c *IssueBindingController) saveBinding(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, dto.SerializeIssueBinding(binding, currentAccount))
+}
+
+func (c *IssueBindingController) saveOrdering(ctx *gin.Context) {
+	request := make(dto.SetIssueBindingOrderRequest, 0)
+	if err := ctx.ShouldBindJSON(&request); err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	ordering := utils.Map(request, func(o dto.SetIssueBindingOrder) usecases.IssueBindingOrdering {
+		return usecases.IssueBindingOrdering{Id: o.Id, Order: o.Order}
+	})
+
+	if err := c.bindingUC.SaveOrdering(ordering); err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	ctx.Status(http.StatusNoContent)
 }

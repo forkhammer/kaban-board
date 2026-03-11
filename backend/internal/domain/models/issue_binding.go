@@ -34,6 +34,7 @@ type IssueBinding struct {
 	Comment     *string
 	Release     *Release
 	Epic        *Epic
+	Order       string
 }
 
 func (ib *IssueBinding) Validate() error {

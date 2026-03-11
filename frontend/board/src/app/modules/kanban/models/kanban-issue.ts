@@ -68,26 +68,5 @@ export type KanbanIssue = {
   comment: string | null
   can_update?: boolean
   can_manage?: boolean
-}
-
-export type IssueBinding = {
-  id: string
-  iid: string
-  title: string
-  type: string
-  webUrl: string
-  assignees: User[],
-  assignee: User | null,
-  labels: KanbanLabel[]
-  projectId: number
-  projectName: string
-  release: Release | null
-  epic: Epic | null
-  taskType: KanbanLabel | null
-  estimateDev: number | null
-  estimateQA: number | null
-  bindingId: number
-  bindStatus: BindStatus
-  priority: IssuePriority | null,
-  comment: string | null
+  order?: string
 }

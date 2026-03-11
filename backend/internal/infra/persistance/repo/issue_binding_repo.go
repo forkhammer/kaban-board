@@ -150,6 +150,7 @@ func (r *IssueBindingRepository) toDomainIssueBinding(binding *models.IssueBindi
 		Comment:     binding.Comment,
 		Release:     release,
 		Epic:        epic,
+		Order:       binding.Order,
 	}
 
 	return domainBinding, domainBinding.Validate()
@@ -172,6 +173,7 @@ func (r *IssueBindingRepository) toIssueBinding(binding *domain.IssueBinding) (*
 		Priority:    (*string)(binding.Priority),
 		AssigneeId:  assigneeId,
 		Comment:     binding.Comment,
+		Order:       binding.Order,
 		ReleaseId: func() *uint {
 			if binding.Release != (*domain.Release)(nil) {
 				val := uint(binding.Release.Id)

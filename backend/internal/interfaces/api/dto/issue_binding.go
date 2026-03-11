@@ -29,7 +29,15 @@ type IssueBindingDto struct {
 	Comment     *string     `json:"comment"`
 	CanUpdate   bool        `json:"can_update"`
 	CanManage   bool        `json:"can_manage"`
+	Order       string      `json:"order"`
 }
+
+type SetIssueBindingOrder struct {
+	Id    uint   `json:"id"`
+	Order string `json:"order"`
+}
+
+type SetIssueBindingOrderRequest = []SetIssueBindingOrder
 
 type IssueBindingPageDto struct {
 	Count      int               `json:"count"`
@@ -74,6 +82,7 @@ func SerializeIssueBinding(binding *domain.IssueBinding, account *domain.Account
 		BindStatus:  (string)(binding.BindStatus),
 		CanUpdate:   binding.CanUpdate(account),
 		CanManage:   binding.CanManage(account),
+		Order:       binding.Order,
 	}
 
 	if binding.Priority != nil {

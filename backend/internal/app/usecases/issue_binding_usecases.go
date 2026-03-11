@@ -47,7 +47,7 @@ func (u *IssueBindingUseCases) GetBindings(filter *queries.IssueBindingFilter, p
 	}
 	query := repo.And(
 		u.commonQuery.PaginationSpec(queryPage, queryLimit),
-		u.commonQuery.OrderSpec("issue_bindings.assignee_id, Issue.created_at DESC"),
+		u.commonQuery.OrderSpec("issue_bindings.assignee_id, \"Issue\".created_at DESC"),
 	)
 
 	var filterQuery repo.QuerySpec

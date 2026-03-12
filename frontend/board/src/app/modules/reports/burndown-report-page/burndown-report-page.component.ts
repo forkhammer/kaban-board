@@ -42,13 +42,29 @@ export class BurndownReportPageComponent {
   report: BurndownReport | null = null;
   loading = false;
 
-  totalScope = 0;
-  remaining = 0;
-  completedPercent = 0;
+  // Dev stats
+  totalScopeDev = 0;
+  remainingDev = 0;
+  completedPercentDev = 0;
 
-  public graph: { data: any[]; layout: any; config: any } = {
+  // QA stats
+  totalScopeQA = 0;
+  remainingQA = 0;
+  completedPercentQA = 0;
+
+  public devGraph: { data: any[]; layout: any; config: any } = {
     data: [],
-    layout: this.buildLayout('light'),
+    layout: this.buildLayout('light', 'Разработка'),
+    config: {
+      responsive: true,
+      displayModeBar: true,
+      displaylogo: false
+    }
+  };
+
+  public qaGraph: { data: any[]; layout: any; config: any } = {
+    data: [],
+    layout: this.buildLayout('light', 'QA'),
     config: {
       responsive: true,
       displayModeBar: true,
@@ -90,7 +106,7 @@ export class BurndownReportPageComponent {
       this.loading = false;
       if (report) {
         this.report = report;
-        this.buildChart(report);
+        this.buildCharts(report);
       }
     });
 
@@ -101,43 +117,60 @@ export class BurndownReportPageComponent {
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(() => {
       this.report = null;
-      this.graph.data = [];
-      this.totalScope = 0;
-      this.remaining = 0;
-      this.completedPercent = 0;
+      this.devGraph.data = [];
+      this.qaGraph.data = [];
+      this.resetStats();
     });
 
     // React to theme changes to update chart colors
     this.themeService.theme$.pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(theme => {
-      this.graph.layout = this.buildLayout(theme);
+      this.devGraph.layout = this.buildLayout(theme, 'Разработка');
+      this.qaGraph.layout = this.buildLayout(theme, 'QA');
     });
   }
 
-  private buildChart(report: BurndownReport): void {
+  private resetStats(): void {
+    this.totalScopeDev = 0;
+    this.remainingDev = 0;
+    this.completedPercentDev = 0;
+    this.totalScopeQA = 0;
+    this.remainingQA = 0;
+    this.completedPercentQA = 0;
+  }
+
+  private buildCharts(report: BurndownReport): void {
+    const theme = this.themeService.theme$.value;
+    const allDates = this.generateDateRange(report.start_date, report.end_date);
+
+    // Build Dev chart
+    this.buildDevChart(report, allDates, theme);
+
+    // Build QA chart
+    this.buildQAChart(report, allDates, theme);
+  }
+
+  private buildDevChart(report: BurndownReport, allDates: string[], theme: string): void {
     const dates = report.data_points.map(dp => dp.date);
     const remaining = report.data_points.map(dp => dp.remaining_dev);
     const totalScopes = report.data_points.map(dp => dp.total_scope);
 
-    // Calculate stats from the first and last data points
+    // Calculate stats
     const initialScope = totalScopes.length > 0 ? Math.max(...totalScopes) : 0;
     const lastRemaining = remaining.length > 0 ? remaining[remaining.length - 1] : 0;
 
-    this.totalScope = initialScope;
-    this.remaining = lastRemaining;
-    this.completedPercent = initialScope > 0
+    this.totalScopeDev = initialScope;
+    this.remainingDev = lastRemaining;
+    this.completedPercentDev = initialScope > 0
       ? Math.round(((initialScope - lastRemaining) / initialScope) * 100)
       : 0;
 
-    // Build ideal burndown line (from initial scope to 0, linearly across all sprint days)
-    const allDates = this.generateDateRange(report.start_date, report.end_date);
+    // Build ideal burndown line
     const idealStep = allDates.length > 1 ? initialScope / (allDates.length - 1) : 0;
     const idealValues = allDates.map((_, i) => Math.max(0, Math.round((initialScope - idealStep * i) * 10) / 10));
 
-    const theme = this.themeService.theme$.value;
-
-    this.graph.data = [
+    this.devGraph.data = [
       {
         x: allDates,
         y: idealValues,
@@ -166,10 +199,61 @@ export class BurndownReportPageComponent {
       }
     ];
 
-    this.graph.layout = this.buildLayout(theme);
+    this.devGraph.layout = this.buildLayout(theme, 'Разработка');
   }
 
-  private buildLayout(theme: string): any {
+  private buildQAChart(report: BurndownReport, allDates: string[], theme: string): void {
+    const dates = report.data_points.map(dp => dp.date);
+    const remainingQA = report.data_points.map(dp => dp.remaining_qa);
+    const totalScopesQA = report.data_points.map(dp => dp.total_scope_qa);
+
+    // Calculate stats
+    const initialScopeQA = totalScopesQA.length > 0 ? Math.max(...totalScopesQA) : 0;
+    const lastRemainingQA = remainingQA.length > 0 ? remainingQA[remainingQA.length - 1] : 0;
+
+    this.totalScopeQA = initialScopeQA;
+    this.remainingQA = lastRemainingQA;
+    this.completedPercentQA = initialScopeQA > 0
+      ? Math.round(((initialScopeQA - lastRemainingQA) / initialScopeQA) * 100)
+      : 0;
+
+    // Build ideal burndown line
+    const idealStep = allDates.length > 1 ? initialScopeQA / (allDates.length - 1) : 0;
+    const idealValues = allDates.map((_, i) => Math.max(0, Math.round((initialScopeQA - idealStep * i) * 10) / 10));
+
+    this.qaGraph.data = [
+      {
+        x: allDates,
+        y: idealValues,
+        type: 'scatter',
+        mode: 'lines',
+        name: 'Идеальная',
+        line: {
+          color: '#28a745',
+          width: 2,
+          dash: 'dash'
+        }
+      },
+      {
+        x: dates,
+        y: remainingQA,
+        type: 'scatter',
+        mode: 'lines+markers',
+        name: 'Фактическая',
+        line: {
+          color: '#F31155',
+          width: 2
+        },
+        marker: {
+          size: 6
+        }
+      }
+    ];
+
+    this.qaGraph.layout = this.buildLayout(theme, 'QA');
+  }
+
+  private buildLayout(theme: string, type: string): any {
     const isDark = theme === 'dark';
     const textColor = isDark ? '#dee2e6' : '#333333';
     const gridColor = isDark ? '#495057' : '#e0e0e0';
@@ -177,9 +261,12 @@ export class BurndownReportPageComponent {
     const paperBg = isDark ? '#212529' : '#ffffff';
     const legendBg = isDark ? 'rgba(33, 37, 41, 0.8)' : 'rgba(255, 255, 255, 0.8)';
 
+    const titleText = type === 'Разработка' ? 'Dev Burndown' : 'QA Burndown';
+    const yAxisText = type === 'Разработка' ? 'Story Points (Разработка)' : 'Story Points (QA)';
+
     return {
       title: {
-        text: this.report ? this.report.sprint_title : 'Burndown Chart',
+        text: this.report ? `${this.report.sprint_title} - ${titleText}` : titleText,
         font: {
           size: 20,
           color: textColor
@@ -192,7 +279,7 @@ export class BurndownReportPageComponent {
         tickfont: { color: textColor }
       },
       yaxis: {
-        title: { text: 'Story Points (Разработка)', font: { color: textColor } },
+        title: { text: yAxisText, font: { color: textColor } },
         showgrid: true,
         gridcolor: gridColor,
         tickfont: { color: textColor },

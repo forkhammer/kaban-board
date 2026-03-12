@@ -2,6 +2,8 @@ export interface BurndownDataPoint {
   date: string;
   total_scope: number;
   remaining_dev: number;
+  total_scope_qa: number;
+  remaining_qa: number;
 }
 
 export interface BurndownReport {

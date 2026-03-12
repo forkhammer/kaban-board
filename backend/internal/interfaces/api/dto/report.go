@@ -10,6 +10,8 @@ type BurndownDataPointDto struct {
 	Date         string `json:"date"`
 	TotalScope   uint   `json:"total_scope"`
 	RemainingDev uint   `json:"remaining_dev"`
+	TotalScopeQA uint   `json:"total_scope_qa"`
+	RemainingQA  uint   `json:"remaining_qa"`
 }
 
 type BurndownReportDto struct {
@@ -26,6 +28,8 @@ func SerializeBurndownReport(report *domain.BurndownReport) BurndownReportDto {
 			Date:         dp.Date.Format("02.01.2006"),
 			TotalScope:   dp.TotalScope,
 			RemainingDev: dp.RemainingDev,
+			TotalScopeQA: dp.TotalScopeQA,
+			RemainingQA:  dp.RemainingQA,
 		}
 	}
 

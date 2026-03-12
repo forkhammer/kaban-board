@@ -29,6 +29,7 @@ type SprintUseCases struct {
 	sprintRepo  repo.SprintRepo     `di.inject:"SprintRepository"`
 	teamRepo    repo.TeamRepo       `di.inject:"TeamRepository"`
 	sprintQuery queries.SprintQuery `di.inject:"SprintQuery"`
+	commonQuery queries.CommonQuery `di.inject:"CommonQuery"`
 }
 
 func (uc *SprintUseCases) GetSprints(filter *queries.SprintFilter) ([]domain.Sprint, error) {
@@ -36,6 +37,7 @@ func (uc *SprintUseCases) GetSprints(filter *queries.SprintFilter) ([]domain.Spr
 	if filter != nil {
 		spec = uc.sprintQuery.GetSpec(*filter)
 	}
+	spec = repo.And(spec, uc.commonQuery.OrderSpec("sprints.created_at"))
 	return uc.sprintRepo.List(spec)
 }
 

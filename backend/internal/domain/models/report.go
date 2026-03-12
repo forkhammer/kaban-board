@@ -6,6 +6,8 @@ type BurndownDataPoint struct {
 	Date         time.Time
 	TotalScope   uint
 	RemainingDev uint
+	TotalScopeQA uint
+	RemainingQA  uint
 }
 
 type BurndownReport struct {

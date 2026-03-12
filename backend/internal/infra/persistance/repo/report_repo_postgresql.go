@@ -2,6 +2,7 @@ package repo
 
 import (
 	"fmt"
+
 	domain "main/internal/domain/models"
 	"main/internal/infra/db/interfaces"
 	"time"
@@ -26,6 +27,7 @@ func (r *ReportRepositoryPostgresql) GetBurndownData(sprintId uint) ([]domain.Bu
 				h.issue_binding_id,
 				sd.date,
 				h.estimate_dev,
+				h.estimate_qa,
 				h.bind_status,
 				h.removed_at,
 				ROW_NUMBER() OVER (
@@ -42,7 +44,9 @@ func (r *ReportRepositoryPostgresql) GetBurndownData(sprintId uint) ([]domain.Bu
 		SELECT
 			lh.date,
 			COALESCE(SUM(CASE WHEN lh.removed_at IS NULL OR lh.removed_at::date > lh.date THEN COALESCE(lh.estimate_dev, 0) ELSE 0 END), 0) AS total_scope,
-			COALESCE(SUM(CASE WHEN (lh.removed_at IS NULL OR lh.removed_at::date > lh.date) AND lh.bind_status != 'done' THEN COALESCE(lh.estimate_dev, 0) ELSE 0 END), 0) AS remaining_dev
+			COALESCE(SUM(CASE WHEN (lh.removed_at IS NULL OR lh.removed_at::date > lh.date) AND lh.bind_status != 'done' THEN COALESCE(lh.estimate_dev, 0) ELSE 0 END), 0) AS remaining_dev,
+			COALESCE(SUM(CASE WHEN lh.removed_at IS NULL OR lh.removed_at::date > lh.date THEN COALESCE(lh.estimate_qa, 0) ELSE 0 END), 0) AS total_scope_qa,
+			COALESCE(SUM(CASE WHEN (lh.removed_at IS NULL OR lh.removed_at::date > lh.date) AND lh.bind_status != 'done' THEN COALESCE(lh.estimate_qa, 0) ELSE 0 END), 0) AS remaining_qa
 		FROM latest_history lh
 		WHERE lh.rn = 1
 		GROUP BY lh.date
@@ -64,6 +68,8 @@ func (r *ReportRepositoryPostgresql) GetBurndownData(sprintId uint) ([]domain.Bu
 			Date:         date,
 			TotalScope:   row.TotalScope,
 			RemainingDev: row.RemainingDev,
+			TotalScopeQA: row.TotalScopeQA,
+			RemainingQA:  row.RemainingQA,
 		}
 	}
 

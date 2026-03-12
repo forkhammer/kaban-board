@@ -22,28 +22,30 @@
 </div>
 
 <div class="container-fluid">
+  <!-- Dev Stats Cards -->
   <div class="row mb-3 mt-3" *ngIf="report">
     <div class="col-md-4">
       <div class="stats-card">
-        <h5>Общий объём</h5>
-        <p class="stat-value">{{ totalScope }} SP</p>
+        <h5>Общий объём Dev</h5>
+        <p class="stat-value">{{ totalScopeDev }} SP</p>
       </div>
     </div>
     <div class="col-md-4">
       <div class="stats-card">
-        <h5>Осталось</h5>
-        <p class="stat-value">{{ remaining }} SP</p>
+        <h5>Осталось Dev</h5>
+        <p class="stat-value">{{ remainingDev }} SP</p>
       </div>
     </div>
     <div class="col-md-4">
       <div class="stats-card">
-        <h5>Выполнено</h5>
-        <p class="stat-value">{{ completedPercent }}%</p>
+        <h5>Выполнено Dev</h5>
+        <p class="stat-value">{{ completedPercentDev }}%</p>
       </div>
     </div>
   </div>
 
-  <div class="row" *ngIf="report">
+  <!-- Dev Chart -->
+  <div class="row mb-3" *ngIf="report">
     <div class="col-12">
       <div class="chart-card">
         <div class="spinner-overlay" *ngIf="loading">
@@ -52,16 +54,55 @@
           </div>
         </div>
         <plotly-plot
-          [data]="graph.data"
-          [layout]="graph.layout"
-          [config]="graph.config"
+          [data]="devGraph.data"
+          [layout]="devGraph.layout"
+          [config]="devGraph.config"
           [ngStyle]="{'width': '100%', 'height': '100%', 'display': 'block'}">
         </plotly-plot>
       </div>
     </div>
   </div>
 
+  <!-- QA Stats Cards -->
+  <div class="row mb-3" *ngIf="report">
+    <div class="col-md-4">
+      <div class="stats-card">
+        <h5>Общий объём QA</h5>
+        <p class="stat-value">{{ totalScopeQA }} SP</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="stats-card">
+        <h5>Осталось QA</h5>
+        <p class="stat-value">{{ remainingQA }} SP</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="stats-card">
+        <h5>Выполнено QA</h5>
+        <p class="stat-value">{{ completedPercentQA }}%</p>
+      </div>
+    </div>
+  </div>
 
+  <!-- QA Chart -->
+  <div class="row mb-3" *ngIf="report">
+    <div class="col-12">
+      <div class="chart-card">
+        <div class="spinner-overlay" *ngIf="loading">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Загрузка...</span>
+          </div>
+        </div>
+        <plotly-plot
+          [data]="qaGraph.data"
+          [layout]="qaGraph.layout"
+          [config]="qaGraph.config"
+          [ngStyle]="{'width': '100%', 'height': '100%', 'display': 'block'}">
+        </plotly-plot>
+      </div>
+    </div>
+  </div>
 
   <div class="row mt-5" *ngIf="!report && !loading">
     <div class="col-12 text-center text-muted">

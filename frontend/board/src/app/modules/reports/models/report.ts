@@ -12,3 +12,18 @@ export interface BurndownReport {
   end_date: string;
   data_points: BurndownDataPoint[];
 }
+
+export interface BurnupDataPoint {
+  date: string;
+  scope_dev: number;
+  completed_dev: number;
+  scope_qa: number;
+  completed_qa: number;
+}
+
+export interface BurnupReport {
+  sprint_title: string;
+  start_date: string;
+  end_date: string;
+  data_points: BurnupDataPoint[];
+}

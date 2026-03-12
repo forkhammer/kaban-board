@@ -16,3 +16,18 @@ type BurndownReport struct {
 	EndDate     time.Time
 	DataPoints  []BurndownDataPoint
 }
+
+type BurnupDataPoint struct {
+	Date         time.Time
+	ScopeDev     uint
+	CompletedDev uint
+	ScopeQA      uint
+	CompletedQA  uint
+}
+
+type BurnupReport struct {
+	SprintTitle string
+	StartDate   time.Time
+	EndDate     time.Time
+	DataPoints  []BurnupDataPoint
+}

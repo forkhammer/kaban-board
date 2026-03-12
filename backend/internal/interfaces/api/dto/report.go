@@ -40,3 +40,44 @@ func SerializeBurndownReport(report *domain.BurndownReport) BurndownReportDto {
 		DataPoints:  dataPoints,
 	}
 }
+
+// Burnup Report DTOs
+
+type BurnupReportRequest struct {
+	SprintId uint `form:"sprint_id" binding:"required"`
+}
+
+type BurnupDataPointDto struct {
+	Date         string `json:"date"`
+	ScopeDev     uint   `json:"scope_dev"`
+	CompletedDev uint   `json:"completed_dev"`
+	ScopeQA      uint   `json:"scope_qa"`
+	CompletedQA  uint   `json:"completed_qa"`
+}
+
+type BurnupReportDto struct {
+	SprintTitle string               `json:"sprint_title"`
+	StartDate   string               `json:"start_date"`
+	EndDate     string               `json:"end_date"`
+	DataPoints  []BurnupDataPointDto `json:"data_points"`
+}
+
+func SerializeBurnupReport(report *domain.BurnupReport) BurnupReportDto {
+	dataPoints := make([]BurnupDataPointDto, len(report.DataPoints))
+	for i, dp := range report.DataPoints {
+		dataPoints[i] = BurnupDataPointDto{
+			Date:         dp.Date.Format("02.01.2006"),
+			ScopeDev:     dp.ScopeDev,
+			CompletedDev: dp.CompletedDev,
+			ScopeQA:      dp.ScopeQA,
+			CompletedQA:  dp.CompletedQA,
+		}
+	}
+
+	return BurnupReportDto{
+		SprintTitle: report.SprintTitle,
+		StartDate:   report.StartDate.Format("2006-01-02"),
+		EndDate:     report.EndDate.Format("2006-01-02"),
+		DataPoints:  dataPoints,
+	}
+}

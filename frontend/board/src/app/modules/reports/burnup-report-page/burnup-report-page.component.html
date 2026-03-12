@@ -1,1 +1,112 @@
-<p>burnup-report-page works!</p>
+<div class="header" [formGroup]="form">
+  <div class="container-fluid p-4">
+    <div class="row">
+      <div class="col">
+        <h2>Burnup Report</h2>
+        <p class="text-muted">График накопления выполненной работы и изменений объёма спринта</p>
+
+        <div class="d-flex align-items-center mt-4">
+          <app-select-model [service]="teamService" formControlName="team" [useClear]="true"
+            title="Команда" class="me-2">
+          </app-select-model>
+
+          <app-sprint-select formControlName="sprint" [useClear]="true"
+            title="Спринт" [filter]="sprintFilter" class="me-2">
+          </app-sprint-select>
+
+          <button class="btn btn-outline-secondary" (click)="reload()">Обновить</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid">
+  <!-- Dev Stats Cards -->
+  <div class="row mb-3 mt-3" *ngIf="report">
+    <div class="col-md-4">
+      <div class="stats-card">
+        <h5>Текущий Scope Dev</h5>
+        <p class="stat-value">{{ currentScopeDev }} SP</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="stats-card">
+        <h5>Выполнено Dev</h5>
+        <p class="stat-value">{{ completedDev }} SP</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="stats-card">
+        <h5>Прогресс Dev</h5>
+        <p class="stat-value">{{ completedPercentDev }}%</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dev Chart -->
+  <div class="row mb-3" *ngIf="report">
+    <div class="col-12">
+      <div class="chart-card">
+        <div class="spinner-overlay" *ngIf="loading">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Загрузка...</span>
+          </div>
+        </div>
+        <plotly-plot
+          [data]="devGraph.data"
+          [layout]="devGraph.layout"
+          [config]="devGraph.config"
+          [ngStyle]="{'width': '100%', 'height': '100%', 'display': 'block'}">
+        </plotly-plot>
+      </div>
+    </div>
+  </div>
+
+  <!-- QA Stats Cards -->
+  <div class="row mb-3" *ngIf="report">
+    <div class="col-md-4">
+      <div class="stats-card">
+        <h5>Текущий Scope QA</h5>
+        <p class="stat-value">{{ currentScopeQA }} SP</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="stats-card">
+        <h5>Выполнено QA</h5>
+        <p class="stat-value">{{ completedQA }} SP</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="stats-card">
+        <h5>Прогресс QA</h5>
+        <p class="stat-value">{{ completedPercentQA }}%</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- QA Chart -->
+  <div class="row mb-3" *ngIf="report">
+    <div class="col-12">
+      <div class="chart-card">
+        <div class="spinner-overlay" *ngIf="loading">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Загрузка...</span>
+          </div>
+        </div>
+        <plotly-plot
+          [data]="qaGraph.data"
+          [layout]="qaGraph.layout"
+          [config]="qaGraph.config"
+          [ngStyle]="{'width': '100%', 'height': '100%', 'display': 'block'}">
+        </plotly-plot>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-5" *ngIf="!report && !loading">
+    <div class="col-12 text-center text-muted">
+      <p>Выберите команду и спринт для отображения диаграммы</p>
+    </div>
+  </div>
+</div>

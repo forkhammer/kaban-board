@@ -1,3 +1,23 @@
-<div class="p-3 d-flex align-items-center justify-content-center">
-  Страница отчетов
+<div class="container">
+  <div class="row">
+    <div class="col">
+      <h2 class="mb-4">Отчеты</h2>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-md-6 col-lg-4" *ngFor="let report of reports">
+      <div class="card report-card h-100" [routerLink]="report.route">
+        <div class="card-img-top report-image-placeholder">
+          <div class="placeholder-content">
+            <span class="placeholder-icon">📊</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <h5 class="card-title">{{ report.title }}</h5>
+          <p class="card-text">{{ report.description }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

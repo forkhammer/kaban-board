@@ -78,6 +78,7 @@ func (c *IssueBindingController) getBinding(ctx *gin.Context) {
 func (c *IssueBindingController) deleteBinding(ctx *gin.Context) {
 	if !apiutils.IsAdminAccount(ctx) {
 		ctx.Status(http.StatusForbidden)
+		return
 	}
 
 	id, err := strconv.ParseUint(ctx.Param("id"), 10, 32)

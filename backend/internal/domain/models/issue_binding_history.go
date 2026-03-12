@@ -17,7 +17,7 @@ type IssueBindingHistory struct {
 	BindStatus     IssueBindingStatus
 	Priority       *IssueBindingPriority `validate:"omitnil,oneof=lowest low medium high critical"`
 	Assignee       *User
-	DeletedAt      *time.Time
+	RemovedAt      *time.Time
 	CreatedAt      time.Time
 }
 

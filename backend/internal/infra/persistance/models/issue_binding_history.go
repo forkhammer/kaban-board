@@ -18,6 +18,6 @@ type IssueBindingHistory struct {
 	Priority       *string      `gorm:"priority"`
 	AssigneeId     *uint        `gorm:"assignee_id"`
 	Assignee       *User        `gorm:"foreignKey:AssigneeId"`
-	DeletedAt      *time.Time   `gorm:"deleted_at;index"`
+	RemovedAt      *time.Time   `gorm:"removed_at;index"`
 	CreatedAt      time.Time    `gorm:"created_at;autoCreateTime"`
 }

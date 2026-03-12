@@ -105,7 +105,7 @@ func (r *IssueBindingHistoryRepository) toDomainIssueBindingHistory(history *mod
 		BindStatus:     domain.IssueBindingStatus(history.BindStatus),
 		Priority:       (*domain.IssueBindingPriority)(history.Priority),
 		Assignee:       assignee,
-		DeletedAt:      history.DeletedAt,
+		RemovedAt:      history.RemovedAt,
 		CreatedAt:      history.CreatedAt,
 	}
 
@@ -127,7 +127,7 @@ func (r *IssueBindingHistoryRepository) toIssueBindingHistory(history *domain.Is
 		BindStatus:     string(history.BindStatus),
 		Priority:       (*string)(history.Priority),
 		AssigneeId:     assigneeId,
-		DeletedAt:      history.DeletedAt,
+		RemovedAt:      history.RemovedAt,
 	}, nil
 }
 

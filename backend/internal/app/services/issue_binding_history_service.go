@@ -35,7 +35,7 @@ func (s *IssueBindingHistoryService) AddDeleteHistory(binding *domain.IssueBindi
 		BindStatus:     binding.BindStatus,
 		Priority:       binding.Priority,
 		Assignee:       binding.Assignee,
-		DeletedAt:      &deletedAt,
+		RemovedAt:      &deletedAt,
 		CreatedAt:      time.Now(),
 	}
 

@@ -5,6 +5,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { BehaviorSubject, combineLatestWith, distinctUntilChanged, filter, map, switchMap } from 'rxjs';
 import * as PlotlyJS from 'plotly.js-dist-min';
 import { PlotlyModule } from 'angular-plotly.js';
+import { FaIconComponent } from "@fortawesome/angular-fontawesome";
+import { faArrowsRotate } from '@fortawesome/free-solid-svg-icons'
 
 import { UiModule } from '../../ui/ui.module';
 import { KanbanModule } from '../../kanban/kanban.module';
@@ -21,7 +23,7 @@ PlotlyModule.plotlyjs = PlotlyJS;
 @Component({
   selector: 'app-burnup-report-page',
   standalone: true,
-  imports: [CommonModule, PlotlyModule, ReactiveFormsModule, UiModule, KanbanModule],
+  imports: [CommonModule, PlotlyModule, ReactiveFormsModule, UiModule, KanbanModule, FaIconComponent],
   templateUrl: './burnup-report-page.component.html',
   styleUrl: './burnup-report-page.component.scss'
 })
@@ -41,6 +43,7 @@ export class BurnupReportPageComponent {
 
   report: BurnupReport | null = null;
   loading = false;
+  faArrowsRotate = faArrowsRotate
 
   // Dev stats
   currentScopeDev = 0;

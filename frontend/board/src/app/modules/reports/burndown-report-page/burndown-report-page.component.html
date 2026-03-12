@@ -14,7 +14,9 @@
             title="Спринт" [filter]="sprintFilter" class="me-2">
           </app-sprint-select>
 
-          <button class="btn btn-outline-secondary" (click)="reload()">Обновить</button>
+          <button class="btn btn-outline-secondary" (click)="reload()">
+            <fa-icon [icon]="faArrowsRotate"></fa-icon>
+          </button>
         </div>
       </div>
     </div>

@@ -87,6 +87,7 @@ func registerRepositories() {
 	mustRegisterBean("SettingsRepository", reflect.TypeFor[*repo.SettingsRepository]())
 	mustRegisterBean("SprintRepository", reflect.TypeFor[*repo.SprintRepository]())
 	mustRegisterBean("IssueBindingRepository", reflect.TypeFor[*repo.IssueBindingRepository]())
+	mustRegisterBean("IssueBindingHistoryRepository", reflect.TypeFor[*repo.IssueBindingHistoryRepository]())
 	mustRegisterBean("EpicRepository", reflect.TypeFor[*repo.EpicRepository]())
 }
 
@@ -121,6 +122,7 @@ func registerServices() {
 	mustRegisterBean("JWTService", reflect.TypeFor[*services.JWTService]())
 	mustRegisterBean("PasswordService", reflect.TypeFor[*services.PasswordService]())
 	mustRegisterBean("LabelService", reflect.TypeFor[*app_services.LabelService]())
+	mustRegisterBean("IssueBindingHistoryService", reflect.TypeFor[*app_services.IssueBindingHistoryService]())
 	mustRegisterBean("GitLabAuthService", reflect.TypeFor[*services.GitLabAuthService]())
 }
 

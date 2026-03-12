@@ -2,6 +2,7 @@ package usecases
 
 import (
 	"main/internal/app/queries"
+	app_services "main/internal/app/services"
 	domain "main/internal/domain/models"
 	"main/internal/domain/repo"
 )
@@ -16,12 +17,13 @@ type IssuePage struct {
 }
 
 type IssueUseCases struct {
-	issueQuery       queries.IssueQuery    `di.inject:"IssueQuery"`
-	issueRepo        repo.IssueRepo        `di.inject:"IssueRepository"`
-	issueBindingRepo repo.IssueBindingRepo `di.inject:"IssueBindingRepository"`
-	sprintRepo       repo.SprintRepo       `di.inject:"SprintRepository"`
-	commonQuery      queries.CommonQuery   `di.inject:"CommonQuery"`
-	userRepo         repo.UserRepo         `di.inject:"UserRepository"`
+	issueQuery       queries.IssueQuery                       `di.inject:"IssueQuery"`
+	issueRepo        repo.IssueRepo                           `di.inject:"IssueRepository"`
+	issueBindingRepo repo.IssueBindingRepo                    `di.inject:"IssueBindingRepository"`
+	sprintRepo       repo.SprintRepo                          `di.inject:"SprintRepository"`
+	commonQuery      queries.CommonQuery                      `di.inject:"CommonQuery"`
+	userRepo         repo.UserRepo                            `di.inject:"UserRepository"`
+	historyService   *app_services.IssueBindingHistoryService `di.inject:"IssueBindingHistoryService"`
 }
 
 func (u *IssueUseCases) GetIssues(filter *queries.IssueFilter, page int, limit int) (*IssuePage, error) {
@@ -90,6 +92,14 @@ func (u *IssueUseCases) BindIssue(id uint, sprintId uint, assigneeId uint) (*dom
 		return nil, err
 	}
 	binding, err = u.issueBindingRepo.Update(binding)
+	if err != nil {
+		return nil, err
+	}
 
-	return binding, err
+	_, err = u.historyService.AddHistory(binding)
+	if err != nil {
+		return nil, err
+	}
+
+	return binding, nil
 }

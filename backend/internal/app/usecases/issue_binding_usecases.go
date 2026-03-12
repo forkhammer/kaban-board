@@ -3,8 +3,10 @@ package usecases
 import (
 	"fmt"
 	"main/internal/app/queries"
+	app_services "main/internal/app/services"
 	domain "main/internal/domain/models"
 	"main/internal/domain/repo"
+	"time"
 )
 
 type IssueBindingPage struct {
@@ -34,12 +36,13 @@ type IssueBindingOrdering struct {
 type IssueBindingOrderingSet = []IssueBindingOrdering
 
 type IssueBindingUseCases struct {
-	commonQuery       queries.CommonQuery       `di.inject:"CommonQuery"`
-	issueBindingQuery queries.IssueBindingQuery `di.inject:"IssueBindingQuery"`
-	issueBindingRepo  repo.IssueBindingRepo     `di.inject:"IssueBindingRepository"`
-	releaseRepo       repo.ReleaseRepo          `di.inject:"ReleaseRepository"`
-	epicRepo          repo.EpicRepo             `di.inject:"EpicRepository"`
-	userRepo          repo.UserRepo             `di.inject:"UserRepository"`
+	commonQuery       queries.CommonQuery                      `di.inject:"CommonQuery"`
+	issueBindingQuery queries.IssueBindingQuery                `di.inject:"IssueBindingQuery"`
+	issueBindingRepo  repo.IssueBindingRepo                    `di.inject:"IssueBindingRepository"`
+	releaseRepo       repo.ReleaseRepo                         `di.inject:"ReleaseRepository"`
+	epicRepo          repo.EpicRepo                            `di.inject:"EpicRepository"`
+	userRepo          repo.UserRepo                            `di.inject:"UserRepository"`
+	historyService    *app_services.IssueBindingHistoryService `di.inject:"IssueBindingHistoryService"`
 }
 
 func (u *IssueBindingUseCases) GetBindings(filter *queries.IssueBindingFilter, page int, limit int, account *domain.Account) (*IssueBindingPage, error) {
@@ -85,6 +88,16 @@ func (u *IssueBindingUseCases) GetBinding(id uint, account *domain.Account) (*do
 }
 
 func (u *IssueBindingUseCases) DeleteBinding(id uint) error {
+	binding, err := u.issueBindingRepo.Get(domain.IssueBindingId(id))
+	if err != nil {
+		return err
+	}
+
+	_, err = u.historyService.AddDeleteHistory(binding, time.Now())
+	if err != nil {
+		return err
+	}
+
 	return u.issueBindingRepo.Delete(domain.IssueBindingId(id))
 }
 
@@ -155,6 +168,11 @@ func (uc *IssueBindingUseCases) SaveBinding(request SaveIssueBindingRequest, acc
 	}
 
 	binding, err = uc.issueBindingRepo.Update(binding)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = uc.historyService.AddHistory(binding)
 	if err != nil {
 		return nil, err
 	}

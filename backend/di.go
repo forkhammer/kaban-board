@@ -63,6 +63,7 @@ func initDI() {
 	})
 
 	registerRepositories()
+	registerReportRepository(dbType)
 	registerQueries(dbType)
 	registerServices()
 	registerUseCases()
@@ -89,6 +90,15 @@ func registerRepositories() {
 	mustRegisterBean("IssueBindingRepository", reflect.TypeFor[*repo.IssueBindingRepository]())
 	mustRegisterBean("IssueBindingHistoryRepository", reflect.TypeFor[*repo.IssueBindingHistoryRepository]())
 	mustRegisterBean("EpicRepository", reflect.TypeFor[*repo.EpicRepository]())
+}
+
+func registerReportRepository(dbType interfaces.DbType) {
+	switch dbType {
+	case interfaces.Postgresql:
+		mustRegisterBean("ReportRepository", reflect.TypeFor[*repo.ReportRepositoryPostgresql]())
+	default:
+		mustRegisterBean("ReportRepository", reflect.TypeFor[*repo.ReportRepository]())
+	}
 }
 
 func registerQueries(dbType interfaces.DbType) {
@@ -143,6 +153,7 @@ func registerUseCases() {
 	mustRegisterBean("IssueBindingUseCases", reflect.TypeFor[*usecases.IssueBindingUseCases]())
 	mustRegisterBean("ReleaseUseCases", reflect.TypeFor[*usecases.ReleaseUseCases]())
 	mustRegisterBean("EpicUseCases", reflect.TypeFor[*usecases.EpicUseCases]())
+	mustRegisterBean("ReportUseCases", reflect.TypeFor[*usecases.ReportUseCases]())
 }
 
 func registerControllers() {

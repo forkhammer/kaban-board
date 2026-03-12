@@ -1,13 +1,23 @@
+@import '../../../../styles/imports';
+
+.header {
+  background-color: $white;
+
+  :host-context([data-bs-theme="dark"]) & {
+    background-color: $gray-850;
+  }
+}
+
 h2 {
   margin-bottom: 0.5rem;
 }
 
 .chart-card {
+  position: relative;
   background: var(--bs-card-bg, #ffffff);
-  border: 1px solid var(--bs-border-color, #dee2e6);
-  border-radius: 8px;
+  border: 1px solid $gray-200;
+  border-radius: 4px;
   padding: 1.5rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   min-height: 500px;
 
   plotly-plot {
@@ -15,13 +25,26 @@ h2 {
   }
 }
 
+.spinner-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 8px;
+  z-index: 10;
+}
+
 .stats-card {
   background: var(--bs-card-bg, #ffffff);
-  border: 1px solid var(--bs-border-color, #dee2e6);
+  border: 1px solid $gray-200;
   border-radius: 8px;
   padding: 1.25rem;
   text-align: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 
   h5 {
     color: var(--bs-secondary-color, #6c757d);
@@ -34,7 +57,7 @@ h2 {
   .stat-value {
     font-size: 2rem;
     font-weight: 600;
-    color: var(--bs-primary, #0d6efd);
+    color: $success;
     margin: 0;
   }
 }
@@ -44,6 +67,10 @@ h2 {
     background: var(--bs-card-bg, #212529);
     border-color: var(--bs-border-color-dark, #495057);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  .spinner-overlay {
+    background: rgba(33, 37, 41, 0.7);
   }
 
   .stats-card {

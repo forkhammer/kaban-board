@@ -1,14 +1,56 @@
-<div class="container p-4">
-  <div class="row mb-4">
-    <div class="col">
-      <h2>Burndown Report</h2>
-      <p class="text-muted">График сгорания работ показывает оставшийся объем работ по времени</p>
+<div class="header" [formGroup]="form">
+  <div class="container-fluid p-4">
+    <div class="row">
+      <div class="col">
+        <h2>Burndown Report</h2>
+        <p class="text-muted">График сгорания работ показывает оставшийся объём работ по времени</p>
+
+        <div class="d-flex align-items-center mt-4">
+          <app-select-model [service]="teamService" formControlName="team" [useClear]="true"
+            title="Команда" class="me-2">
+          </app-select-model>
+
+          <app-sprint-select formControlName="sprint" [useClear]="true"
+            title="Спринт" [filter]="sprintFilter" class="me-2">
+          </app-sprint-select>
+
+          <button class="btn btn-outline-secondary" (click)="reload()">Обновить</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid">
+  <div class="row mb-3 mt-3" *ngIf="report">
+    <div class="col-md-4">
+      <div class="stats-card">
+        <h5>Общий объём</h5>
+        <p class="stat-value">{{ totalScope }} SP</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="stats-card">
+        <h5>Осталось</h5>
+        <p class="stat-value">{{ remaining }} SP</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="stats-card">
+        <h5>Выполнено</h5>
+        <p class="stat-value">{{ completedPercent }}%</p>
+      </div>
     </div>
   </div>
 
-  <div class="row">
+  <div class="row" *ngIf="report">
     <div class="col-12">
       <div class="chart-card">
+        <div class="spinner-overlay" *ngIf="loading">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Загрузка...</span>
+          </div>
+        </div>
         <plotly-plot
           [data]="graph.data"
           [layout]="graph.layout"
@@ -19,24 +61,11 @@
     </div>
   </div>
 
-  <div class="row mt-4">
-    <div class="col-md-4">
-      <div class="stats-card">
-        <h5>Total Scope</h5>
-        <p class="stat-value">100 SP</p>
-      </div>
-    </div>
-    <div class="col-md-4">
-      <div class="stats-card">
-        <h5>Remaining</h5>
-        <p class="stat-value">20 SP</p>
-      </div>
-    </div>
-    <div class="col-md-4">
-      <div class="stats-card">
-        <h5>Completed</h5>
-        <p class="stat-value">80%</p>
-      </div>
+
+
+  <div class="row mt-5" *ngIf="!report && !loading">
+    <div class="col-12 text-center text-muted">
+      <p>Выберите команду и спринт для отображения диаграммы</p>
     </div>
   </div>
 </div>

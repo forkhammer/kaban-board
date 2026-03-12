@@ -1,10 +1,34 @@
 package controllers
 
-import "github.com/gin-gonic/gin"
+import (
+	"main/internal/app/usecases"
+	"main/internal/interfaces/api/dto"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
 
 type ReportsController struct {
+	reportUC *usecases.ReportUseCases `di.inject:"ReportUseCases"`
 }
 
 func (c *ReportsController) RegisterRoutes(router gin.IRouter) error {
+	router.GET("/reports/burndown", c.getBurndownReport)
 	return nil
+}
+
+func (c *ReportsController) getBurndownReport(ctx *gin.Context) {
+	var request dto.BurndownReportRequest
+	if err := ctx.ShouldBindQuery(&request); err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	report, err := c.reportUC.GetBurndownReport(request.SprintId)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, dto.SerializeBurndownReport(report))
 }

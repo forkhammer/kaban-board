@@ -1,1 +1,42 @@
-<p>burndown-report-page works!</p>
+<div class="container p-4">
+  <div class="row mb-4">
+    <div class="col">
+      <h2>Burndown Report</h2>
+      <p class="text-muted">График сгорания работ показывает оставшийся объем работ по времени</p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-12">
+      <div class="chart-card">
+        <plotly-plot
+          [data]="graph.data"
+          [layout]="graph.layout"
+          [config]="graph.config"
+          [ngStyle]="{'width': '100%', 'height': '100%', 'display': 'block'}">
+        </plotly-plot>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-4">
+    <div class="col-md-4">
+      <div class="stats-card">
+        <h5>Total Scope</h5>
+        <p class="stat-value">100 SP</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="stats-card">
+        <h5>Remaining</h5>
+        <p class="stat-value">20 SP</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="stats-card">
+        <h5>Completed</h5>
+        <p class="stat-value">80%</p>
+      </div>
+    </div>
+  </div>
+</div>

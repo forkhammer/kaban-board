@@ -1,6 +1,6 @@
 package models
 
-import "errors"
+import "main/internal/domain"
 
 type ColumnId uint
 
@@ -26,7 +26,7 @@ func NewColumn(id ColumnId, name string, labels []LabelId, team *Team, order *in
 
 func (c *Column) Validate() error {
 	if c.Name == "" {
-		return errors.New("Название колонки не может быть пустым")
+		return domain.NewValidationError("Название колонки не может быть пустым", nil)
 	}
 
 	return nil

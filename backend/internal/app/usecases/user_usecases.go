@@ -1,8 +1,8 @@
 package usecases
 
 import (
-	"errors"
 	"main/internal/app/queries"
+	domain_pkg "main/internal/domain"
 	domain "main/internal/domain/models"
 	"main/internal/domain/repo"
 	"main/pkg/utils"
@@ -67,7 +67,7 @@ func (uc *UserUseCases) SetGroups(id uint, groupIds []uint) (*domain.User, error
 func (uc *UserUseCases) SetAccountRole(userId uint, role domain.AccountRole) (*domain.User, error) {
 	account, err := uc.accountRepo.GetByGitlabID(userId)
 	if err != nil {
-		return nil, errors.New("С пользователем не связан аккаунт")
+		return nil, domain_pkg.NewValidationError("С пользователем не связан аккаунт", nil)
 	}
 
 	account.Role = role

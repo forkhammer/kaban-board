@@ -1,6 +1,10 @@
 package repo
 
 import (
+	"errors"
+	"strconv"
+
+	domain_pkg "main/internal/domain"
 	domain "main/internal/domain/models"
 	"main/internal/domain/repo"
 	"main/internal/infra/db/interfaces"
@@ -22,6 +26,9 @@ func NewAccountRepository(conn interfaces.ConnectionInterface) *AccountRepositor
 func (r *AccountRepository) Get(id domain.AccountId) (*domain.Account, error) {
 	account := &models.Account{}
 	if err := r.conn.GetEngine().Where("accounts.id = ?", id).First(account).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, domain_pkg.NewNotFoundError("Account", strconv.Itoa(int(id)), err)
+		}
 		return nil, err
 	}
 	return r.toDomainAccount(account), nil
@@ -30,6 +37,9 @@ func (r *AccountRepository) Get(id domain.AccountId) (*domain.Account, error) {
 func (r *AccountRepository) GetByUsername(username string) (*domain.Account, error) {
 	account := &models.Account{}
 	if err := r.conn.GetEngine().Where("accounts.username = ?", username).First(account).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, domain_pkg.NewNotFoundError("Account", username, err)
+		}
 		return nil, err
 	}
 	return r.toDomainAccount(account), nil
@@ -38,6 +48,9 @@ func (r *AccountRepository) GetByUsername(username string) (*domain.Account, err
 func (r *AccountRepository) GetByGitlabID(gitlabID uint) (*domain.Account, error) {
 	account := &models.Account{}
 	if err := r.conn.GetEngine().Where("accounts.gitlab_id = ?", gitlabID).First(account).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, domain_pkg.NewNotFoundError("Account", strconv.Itoa(int(gitlabID)), err)
+		}
 		return nil, err
 	}
 	return r.toDomainAccount(account), nil

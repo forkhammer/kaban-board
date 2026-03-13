@@ -5,6 +5,7 @@ import (
 	domain "main/internal/domain/models"
 	"main/internal/infra/persistance/models"
 	"main/internal/interfaces/api/dto"
+	"main/internal/interfaces/api/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -31,8 +32,7 @@ func (c *AccountController) Login(ctx *gin.Context) {
 
 	token, err := c.accountUC.Login(request.Username, request.Password)
 
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if utils.HandleException(ctx, err) {
 		return
 	}
 
@@ -59,8 +59,7 @@ func (c *AccountController) Register(ctx *gin.Context) {
 
 	account, err := c.accountUC.Register(request.Username, request.Password)
 
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+	if utils.HandleException(ctx, err) {
 		return
 	}
 

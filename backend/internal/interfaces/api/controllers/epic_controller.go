@@ -4,6 +4,7 @@ import (
 	"main/internal/app/queries"
 	"main/internal/app/usecases"
 	"main/internal/interfaces/api/dto"
+	"main/internal/interfaces/api/utils"
 	"net/http"
 	"strconv"
 
@@ -34,8 +35,7 @@ func (c *EpicController) getEpics(ctx *gin.Context) {
 		ProjectId: request.Project,
 	})
 
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if utils.HandleException(ctx, err) {
 		return
 	}
 
@@ -52,8 +52,7 @@ func (c *EpicController) getEpic(ctx *gin.Context) {
 
 	epic, err := c.epicUC.GetEpic(uint(id))
 
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+	if utils.HandleException(ctx, err) {
 		return
 	}
 

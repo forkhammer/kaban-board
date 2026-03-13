@@ -1,12 +1,16 @@
 package repo
 
 import (
+	"errors"
+	"strconv"
+	"time"
+
+	domain_pkg "main/internal/domain"
 	domain "main/internal/domain/models"
 	"main/internal/domain/repo"
 	"main/internal/infra/db/interfaces"
 	"main/internal/infra/persistance/models"
 	"main/pkg/utils"
-	"time"
 
 	"gorm.io/gorm"
 )
@@ -23,6 +27,9 @@ type SprintRepository struct {
 func (r *SprintRepository) Get(id domain.SprintId) (*domain.Sprint, error) {
 	sprint := &models.Sprint{}
 	if err := r.getQuery().Where("sprints.id = ?", id).First(sprint).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, domain_pkg.NewNotFoundError("Sprint", strconv.Itoa(int(id)), err)
+		}
 		return nil, err
 	}
 	return r.toDomainSprint(sprint)

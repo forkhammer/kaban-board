@@ -1,6 +1,9 @@
 package repo
 
 import (
+	"errors"
+
+	domain_pkg "main/internal/domain"
 	domain "main/internal/domain/models"
 	"main/internal/domain/repo"
 	"main/internal/infra/db/interfaces"
@@ -16,6 +19,9 @@ type LabelRepository struct {
 func (r *LabelRepository) Get(id domain.LabelId) (*domain.Label, error) {
 	label := &models.Label{}
 	if err := r.conn.GetEngine().Where("labels.id = ?", id).First(label).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, domain_pkg.NewNotFoundError("Label", string(id), err)
+		}
 		return nil, err
 	}
 	return r.toDomainLabel(label), nil

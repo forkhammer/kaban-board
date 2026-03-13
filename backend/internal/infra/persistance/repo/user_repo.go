@@ -1,7 +1,11 @@
 package repo
 
 import (
+	"errors"
+	"strconv"
+
 	"main/internal/app/queries"
+	domain_pkg "main/internal/domain"
 	domain "main/internal/domain/models"
 	"main/internal/domain/repo"
 	"main/internal/infra/db/interfaces"
@@ -21,6 +25,9 @@ type UserRepository struct {
 func (r *UserRepository) Get(id domain.UserId) (*domain.User, error) {
 	user := &models.User{}
 	if err := r.getQuery().Where("users.id = ?", id).First(user).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, domain_pkg.NewNotFoundError("User", strconv.Itoa(int(id)), err)
+		}
 		return nil, err
 	}
 

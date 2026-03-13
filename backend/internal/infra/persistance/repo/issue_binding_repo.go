@@ -1,6 +1,10 @@
 package repo
 
 import (
+	"errors"
+	"strconv"
+
+	domain_pkg "main/internal/domain"
 	domain "main/internal/domain/models"
 	"main/internal/domain/repo"
 	"main/internal/infra/db/interfaces"
@@ -21,6 +25,9 @@ type IssueBindingRepository struct {
 func (r *IssueBindingRepository) Get(id domain.IssueBindingId) (*domain.IssueBinding, error) {
 	binding := &models.IssueBinding{}
 	if err := r.getQuery().Where("issue_bindings.id = ?", id).First(binding).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, domain_pkg.NewNotFoundError("IssueBinding", strconv.Itoa(int(id)), err)
+		}
 		return nil, err
 	}
 	model, err := r.toDomainIssueBinding(binding)

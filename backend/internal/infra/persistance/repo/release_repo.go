@@ -1,6 +1,10 @@
 package repo
 
 import (
+	"errors"
+	"strconv"
+
+	domain_pkg "main/internal/domain"
 	domain "main/internal/domain/models"
 	"main/internal/domain/repo"
 	"main/internal/infra/db/interfaces"
@@ -17,6 +21,9 @@ type ReleaseRepository struct {
 func (r *ReleaseRepository) Get(id domain.ReleaseId) (*domain.Release, error) {
 	release := &models.Release{}
 	if err := r.getQuery().Where("releases.id = ?", id).First(release).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, domain_pkg.NewNotFoundError("Release", strconv.Itoa(int(id)), err)
+		}
 		return nil, err
 	}
 	return r.toDomainRelease(release)

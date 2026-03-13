@@ -1,6 +1,10 @@
 package repo
 
 import (
+	"errors"
+	"strconv"
+
+	domain_pkg "main/internal/domain"
 	domain "main/internal/domain/models"
 	"main/internal/domain/repo"
 	"main/internal/infra/db/interfaces"
@@ -19,6 +23,9 @@ type ColumnRepository struct {
 func (r *ColumnRepository) Get(id domain.ColumnId) (*domain.Column, error) {
 	сolumn := &models.Column{}
 	if err := r.getQuery().Where("columns.id = ?", id).First(сolumn).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, domain_pkg.NewNotFoundError("Column", strconv.Itoa(int(id)), err)
+		}
 		return nil, err
 	}
 	model, err := r.toDomainColumn(сolumn)

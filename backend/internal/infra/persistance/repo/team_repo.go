@@ -1,6 +1,10 @@
 package repo
 
 import (
+	"errors"
+	"strconv"
+
+	domain_pkg "main/internal/domain"
 	domain "main/internal/domain/models"
 	"main/internal/domain/repo"
 	"main/internal/infra/db/interfaces"
@@ -18,6 +22,9 @@ type TeamRepository struct {
 func (r *TeamRepository) Get(id domain.TeamId) (*domain.Team, error) {
 	team := &models.Team{}
 	if err := r.getQuery().Where("teams.id = ?", id).First(team).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, domain_pkg.NewNotFoundError("Team", strconv.Itoa(int(id)), err)
+		}
 		return nil, err
 	}
 	return r.ToDomainTeam(team)

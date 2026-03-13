@@ -2,6 +2,9 @@ package repo
 
 import (
 	"errors"
+	"strconv"
+
+	domain_pkg "main/internal/domain"
 	domain "main/internal/domain/models"
 	"main/internal/domain/repo"
 	"main/internal/infra/db/interfaces"
@@ -26,6 +29,9 @@ type IssueRepository struct {
 func (r *IssueRepository) Get(id domain.IssueId) (*domain.Issue, error) {
 	issue := &models.Issue{}
 	if err := r.getQuery().Where("issues.id = ?", id).First(issue).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, domain_pkg.NewNotFoundError("Issue", strconv.Itoa(int(id)), err)
+		}
 		return nil, err
 	}
 	return r.toDomainIssue(issue)

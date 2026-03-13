@@ -1,6 +1,10 @@
 package repo
 
 import (
+	"errors"
+	"strconv"
+
+	domain_pkg "main/internal/domain"
 	domain "main/internal/domain/models"
 	"main/internal/domain/repo"
 	"main/internal/infra/db/interfaces"
@@ -16,6 +20,9 @@ type GroupRepository struct {
 func (r *GroupRepository) Get(id domain.GroupId) (*domain.Group, error) {
 	group := &models.Group{}
 	if err := r.conn.GetEngine().Where("groups.id = ?", id).First(group).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, domain_pkg.NewNotFoundError("Group", strconv.Itoa(int(id)), err)
+		}
 		return nil, err
 	}
 	return r.toDomainGroup(group), nil

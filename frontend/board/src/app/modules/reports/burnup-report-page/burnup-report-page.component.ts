@@ -17,6 +17,8 @@ import { ThemeServiceService } from '../../ui/services/theme-service.service';
 import { ReportService } from '../services/report.service';
 import { BurnupReport } from '../models/report';
 import { TitleService } from '../../core/services/title.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { isEqual } from 'lodash';
 
 PlotlyModule.plotlyjs = PlotlyJS;
 
@@ -34,6 +36,8 @@ export class BurnupReportPageComponent {
   private reportService = inject(ReportService);
   private themeService = inject(ThemeServiceService);
   private title = inject(TitleService)
+  private route = inject(ActivatedRoute)
+  private router = inject(Router)
 
   teamService = inject(TeamService);
 
@@ -78,10 +82,29 @@ export class BurnupReportPageComponent {
   constructor() {
     this.title.setTitleAndDescription('Burnup Chart')
 
+    const team$ = this.route.queryParams.pipe(map(params => params['team']), distinctUntilChanged())
+    const sprint$ = this.route.queryParams.pipe(map(params => params['sprint']), distinctUntilChanged())
+
     this.form = this.fb.group({
       team: [null],
       sprint: [null]
     });
+
+    sprint$.pipe(
+      combineLatestWith(team$),
+      takeUntilDestroyed()
+    ).subscribe(([sprint, team]) => {
+      console.log('load form data', {team, sprint})
+      this.form.patchValue({team, sprint}, {emitEvent: false})
+    })
+
+    this.form.valueChanges.pipe(
+      distinctUntilChanged(isEqual),
+      takeUntilDestroyed()
+    ).subscribe(data => {
+      console.log('set form data', data)
+      this.router.navigate([], {queryParams: data, queryParamsHandling: 'merge'})
+    })
 
     // When team changes, update sprint filter and reset sprint selection
     this.form.get('team')!.valueChanges.pipe(
@@ -93,7 +116,7 @@ export class BurnupReportPageComponent {
     });
 
     // When sprint changes, load burnup data
-    this.form.get('sprint')!.valueChanges.pipe(
+    sprint$.pipe(
       distinctUntilChanged(),
       combineLatestWith(this.reload$),
       map(([sprintId, _]) => sprintId),
@@ -114,7 +137,7 @@ export class BurnupReportPageComponent {
     });
 
     // When sprint is cleared
-    this.form.get('sprint')!.valueChanges.pipe(
+    sprint$.pipe(
       distinctUntilChanged(),
       filter(sprintId => sprintId == null),
       takeUntilDestroyed(this.destroyRef)

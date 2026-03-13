@@ -49,7 +49,16 @@
 }
 
 .count {
+  width: 70px;
+  text-align: right;
+
   :host-context([data-bs-theme="dark"]) & {
     color: $gray-200;
+  }
+}
+
+.btn-actions {
+  &:after {
+    display: none;
   }
 }

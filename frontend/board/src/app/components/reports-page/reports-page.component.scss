@@ -1,3 +1,5 @@
+@import '../../../styles/imports';
+
 .reports-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -7,6 +9,8 @@
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   border: 1px solid var(--bs-border-color);
+  border-radius: 8px;
+  overflow: hidden;
 
   &:hover {
     transform: translateY(-4px);
@@ -47,6 +51,7 @@
   .placeholder-icon {
     font-size: 3rem;
     opacity: 0.6;
+    color: $white;
   }
 }
 

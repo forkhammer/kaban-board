@@ -1,7 +1,7 @@
 import { Component, DestroyRef, EventEmitter, inject, Input, Output } from '@angular/core';
 import { Sprint, SprintStatus } from '../../models/sprint';
 import {faClock} from '@fortawesome/free-regular-svg-icons';
-import {faPlay, faStop} from '@fortawesome/free-solid-svg-icons';
+import {faPlay, faStop, faEllipsisV, faArrowTrendDown, faArrowTrendUp} from '@fortawesome/free-solid-svg-icons';
 import { SprintModalServiceService as SprintModalService } from '../../services/sprint-modal.service';
 import { SprintService } from '../../services/sprint.service';
 import { ToastService } from 'src/app/modules/core/services/toast.service';
@@ -31,6 +31,9 @@ export class SprintCardComponent {
   faClock = faClock
   faPlay = faPlay
   faStop = faStop
+  faEllipsisV = faEllipsisV
+  faArrowTrendDown = faArrowTrendDown
+  faArrowTrendUp = faArrowTrendUp
 
   change() {
     this.sprintModal.show(this.sprint.id)

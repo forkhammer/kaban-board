@@ -1,18 +1,21 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { IconDefinition, FaIconComponent } from '@fortawesome/angular-fontawesome';
+import {faArrowTrendDown, faArrowTrendUp} from '@fortawesome/free-solid-svg-icons';
 
 interface ReportCard {
   id: string;
   title: string;
   description: string;
   route: string;
+  icon: IconDefinition
 }
 
 @Component({
   selector: 'app-reports-page',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, FaIconComponent],
   templateUrl: './reports-page.component.html',
   styleUrl: './reports-page.component.scss'
 })
@@ -22,13 +25,15 @@ export class ReportsPageComponent {
       id: 'burndown',
       title: 'Burndown Chart',
       description: 'График сгорания работ - показывает оставшийся объем работ по времени, помогает отслеживать прогресс спринта',
-      route: '/reports/burndown'
+      route: '/reports/burndown',
+      icon: faArrowTrendDown,
     },
     {
       id: 'burnup',
       title: 'Burnup Chart',
       description: 'График нарастания работ - отображает выполненную работу и общий объем по времени, показывает изменения в объеме',
-      route: '/reports/burnup'
+      route: '/reports/burnup',
+      icon: faArrowTrendUp
     }
   ];
 }

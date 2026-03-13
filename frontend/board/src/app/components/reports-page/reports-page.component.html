@@ -10,7 +10,9 @@
       <div class="card report-card h-100" [routerLink]="report.route">
         <div class="card-img-top report-image-placeholder">
           <div class="placeholder-content">
-            <span class="placeholder-icon">📊</span>
+            <span class="placeholder-icon">
+              <fa-icon [icon]="report.icon"></fa-icon>
+            </span>
           </div>
         </div>
         <div class="card-body">

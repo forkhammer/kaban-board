@@ -15,4 +15,22 @@ export class UrlService {
       }
     }
   }
+
+  getSprintBurndownUrl(sprintId: number): CatalogPath {
+    return {
+      url: '/reports/burndown',
+      query: {
+        sprint: sprintId
+      }
+    }
+  }
+
+  getSprintBurnupUrl(sprintId: number): CatalogPath {
+    return {
+      url: '/reports/burnup',
+      query: {
+        sprint: sprintId
+      }
+    }
+  }
 }

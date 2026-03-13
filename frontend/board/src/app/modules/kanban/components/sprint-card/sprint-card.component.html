@@ -38,10 +38,25 @@
   Завершить
 </button>
 
+
+<ng-container *ngIf="sprint.count_bindings > 0 && urls.getSprintBurndownUrl(sprint.id) as nav">
+  <a [routerLink]="nav.url" [queryParams]="nav.query" class="btn btn-outline-secondary me-2" ngbTooltip="Burndown Chart">
+    <fa-icon [icon]="faArrowTrendDown"></fa-icon>
+  </a>
+</ng-container>
+
+<ng-container *ngIf="sprint.count_bindings > 0 && urls.getSprintBurnupUrl(sprint.id) as nav">
+  <a [routerLink]="nav.url" [queryParams]="nav.query" class="btn btn-outline-secondary me-2" ngbTooltip="Burnup Chart">
+    <fa-icon [icon]="faArrowTrendUp"></fa-icon>
+  </a>
+</ng-container>
+
 <div class="count ms-3 me-3">{{sprint.count_bindings}} задач</div>
 
 <div ngbDropdown *ngIf="accountService.isAdmin$ | async">
-  <button type="button" class="btn" id="sprint-dropdown" ngbDropdownToggle>...</button>
+  <button type="button" class="btn btn-actions" id="sprint-dropdown" ngbDropdownToggle>
+    <fa-icon [icon]="faEllipsisV"></fa-icon>
+  </button>
   <div ngbDropdownMenu>
     <button ngbDropdownItem (click)="change()">Изменить</button>
     <button ngbDropdownItem *ngIf="sprint.can_delete" (click)="delete()">Удалить</button>

@@ -13,7 +13,7 @@ import {KanbanUser} from "../../models/kanban-user";
 import {map} from "rxjs/operators";
 import {ActivatedRoute, Router} from "@angular/router";
 import {FormBuilder, FormGroup} from "@angular/forms";
-import { faXmark, faArrowLeft, faArrowRight, faTableList, faTableColumns, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faXmark, faArrowLeft, faArrowRight, faTableList, faTableColumns, faPlus, faArrowTrendDown, faArrowTrendUp } from '@fortawesome/free-solid-svg-icons';
 import {TitleService} from "../../../core/services/title.service";
 import {TeamService} from "../../services/team.service";
 import {GitlabSyncService} from "../../services/gitlab-sync.service";
@@ -29,6 +29,7 @@ import { Sprint } from '../../models/sprint';
 import { SelectModelComponent } from 'src/app/modules/ui/components/select-model/select-model.component';
 import { AccountService } from 'src/app/modules/core/services/account.service';
 import { SprintModalServiceService } from '../../services/sprint-modal.service';
+import { UrlService } from '../../services/urls.service';
 
 enum KanbanView {
   LIST = 'list',
@@ -55,12 +56,15 @@ export class KanbanBoardComponent implements OnInit, AfterViewInit {
   sprintService = inject(SprintService)
   accountService = inject(AccountService)
   sprintModal = inject(SprintModalServiceService)
+  urls = inject(UrlService)
 
   faXmark = faXmark
   faArrowLeft = faArrowLeft
   faArrowRight = faArrowRight
   faTableList = faTableList
   faTableColumns = faTableColumns
+  faArrowTrendDown = faArrowTrendDown
+  faArrowTrendUp = faArrowTrendUp
   faPlus = faPlus
   COLUMN_WIDTH = 340
   KanbanView = KanbanView

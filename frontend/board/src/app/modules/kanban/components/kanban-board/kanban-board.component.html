@@ -70,7 +70,19 @@
           <fa-icon [icon]="faPlus"></fa-icon>
         </button>
 
-        <a routerLink="/reports" class="btn btn-light ms-auto">Отчеты по спринту</a>
+        <ng-container *ngIf="(sprintId$ | async)">
+          <ng-container *ngIf="urls.getSprintBurndownUrl((sprintId$ | async)!) as nav">
+            <a [routerLink]="nav.url" [queryParams]="nav.query" class="btn btn-outline-secondary ms-auto me-2" ngbTooltip="Burndown Chart">
+              <fa-icon [icon]="faArrowTrendDown"></fa-icon>
+            </a>
+          </ng-container>
+
+          <ng-container *ngIf="urls.getSprintBurnupUrl((sprintId$ | async)!) as nav">
+            <a [routerLink]="nav.url" [queryParams]="nav.query" class="btn btn-outline-secondary me-2" ngbTooltip="Burnup Chart">
+              <fa-icon [icon]="faArrowTrendUp"></fa-icon>
+            </a>
+          </ng-container>
+        </ng-container>
       </div>
 
       <div class="position-relative flex-grow-1">

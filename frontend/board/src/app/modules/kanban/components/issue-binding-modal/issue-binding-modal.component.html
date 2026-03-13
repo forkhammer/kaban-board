@@ -1,0 +1,72 @@
+<div class="modal-header">
+  <h4 class="modal-title">Новая задача</h4>
+  <button type="button" class="btn-close" aria-label="Close" (click)="close()"></button>
+</div>
+
+<div class="modal-body">
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <!-- Ошибки сервера -->
+    <div class="alert alert-danger" *ngIf="errors.length > 0">
+      <ul class="mb-0">
+        <li *ngFor="let error of errors">{{ error }}</li>
+      </ul>
+    </div>
+
+    <!-- Project -->
+    <div class="mb-3">
+      <label for="project" class="form-label">Проект <span class="text-danger">*</span></label>
+      <app-select-model
+        id="project"
+        [service]="projectService"
+        [formatter]="projectService.formatter"
+        [itemFormatter]="projectService.formatter"
+        formControlName="project"
+        title="Выберите проект"
+        [useClear]="true"
+        [useSearch]="true">
+      </app-select-model>
+      <div class="text-danger small mt-1" *ngIf="getErrorMessage('projectId')">
+        {{ getErrorMessage('projectId') }}
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label for="assignee" class="form-label">Исполнитель <span class="text-danger">*</span></label>
+      <app-assignee-select
+        id="assignee"
+        formControlName="assignee"
+        title="Выберите исполнителя"
+        [useClear]="true">
+      </app-assignee-select>
+      <div class="text-danger small mt-1" *ngIf="getErrorMessage('assignee')">
+        {{ getErrorMessage('assignee') }}
+      </div>
+    </div>
+
+    <!-- Title -->
+    <div class="mb-3">
+      <label for="title" class="form-label">Название <span class="text-danger">*</span></label>
+      <textarea
+        id="title"
+        class="form-control"
+        formControlName="title"
+        rows="3"
+        [class.is-invalid]="getErrorMessage('title')">
+      </textarea>
+      <div class="invalid-feedback" *ngIf="getErrorMessage('title')">
+        {{ getErrorMessage('title') }}
+      </div>
+    </div>
+
+  </form>
+</div>
+
+<div class="modal-footer d-flex">
+  <button type="button" class="btn btn-outline-primary flex-grow-1" (click)="submit()" [disabled]="isLoading">
+    <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+    Создать
+  </button>
+  <button type="button" class="btn btn-outline-secondary flex-grow-1" (click)="close()" [disabled]="isLoading">
+    Отмена
+  </button>
+</div>

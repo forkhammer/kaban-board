@@ -1,0 +1,26 @@
+// Стили для модального окна создания Issue Binding
+
+.form-label {
+  font-weight: 500;
+}
+
+textarea.form-control {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.modal-header {
+  border-bottom: 1px solid var(--bs-border-color);
+}
+
+.modal-footer {
+  border-top: 1px solid var(--bs-border-color);
+}
+
+// Dark theme support
+:host-context([data-bs-theme="dark"]) {
+  .modal-header,
+  .modal-footer {
+    border-color: var(--bs-border-color-dark);
+  }
+}

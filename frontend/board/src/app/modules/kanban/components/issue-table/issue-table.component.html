@@ -27,11 +27,17 @@
 
     <tr *ngIf="(sprint$ | async) && (accountService.isAdmin$ | async)">
       <td colspan="11">
+        <div class="d-flex">
+          <button class="btn-append" (click)="appendIssue()">
+            <fa-icon [icon]="faPlus" class="me-1"></fa-icon>
+            <span>Добавить задачу</span>
+          </button>
 
-        <button class="btn-append" (click)="appendIssue()">
-          <fa-icon [icon]="faPlus" class="me-1"></fa-icon>
-          <span>Добавить задачу</span>
-        </button>
+          <button class="btn-append" (click)="createIssue()">
+            <fa-icon [icon]="faPlus" class="me-1"></fa-icon>
+            <span>Создать задачу</span>
+          </button>
+        </div>
       </td>
     </tr>
 

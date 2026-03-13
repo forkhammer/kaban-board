@@ -7,6 +7,8 @@ import (
 	domain "main/internal/domain/models"
 	"main/internal/domain/repo"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type IssueBindingPage struct {
@@ -35,10 +37,20 @@ type IssueBindingOrdering struct {
 
 type IssueBindingOrderingSet = []IssueBindingOrdering
 
+type CreateIssueBindingRequest struct {
+	Title      string
+	ProjectId  uint
+	SprintId   uint
+	AssigneeId *uint
+}
+
 type IssueBindingUseCases struct {
 	commonQuery       queries.CommonQuery                      `di.inject:"CommonQuery"`
 	issueBindingQuery queries.IssueBindingQuery                `di.inject:"IssueBindingQuery"`
 	issueBindingRepo  repo.IssueBindingRepo                    `di.inject:"IssueBindingRepository"`
+	issueRepo         repo.IssueRepo                           `di.inject:"IssueRepository"`
+	projectRepo       repo.ProjectRepo                         `di.inject:"ProjectRepository"`
+	sprintRepo        repo.SprintRepo                          `di.inject:"SprintRepository"`
 	releaseRepo       repo.ReleaseRepo                         `di.inject:"ReleaseRepository"`
 	epicRepo          repo.EpicRepo                            `di.inject:"EpicRepository"`
 	userRepo          repo.UserRepo                            `di.inject:"UserRepository"`
@@ -192,4 +204,60 @@ func (uc *IssueBindingUseCases) SaveOrdering(ordering IssueBindingOrderingSet) e
 		}
 	}
 	return nil
+}
+
+func (uc *IssueBindingUseCases) CreateIssueAndBinding(request CreateIssueBindingRequest) (*domain.IssueBinding, error) {
+	project, err := uc.projectRepo.Get(domain.ProjectId(request.ProjectId))
+	if err != nil {
+		return nil, err
+	}
+
+	sprint, err := uc.sprintRepo.Get(domain.SprintId(request.SprintId))
+	if err != nil {
+		return nil, err
+	}
+
+	var assignee *domain.User
+	if request.AssigneeId != nil {
+		assignee, err = uc.userRepo.Get(domain.UserId(*request.AssigneeId))
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	externalId := domain.IssueExternalId(uuid.Must(uuid.NewV7()).String())
+
+	issue := &domain.Issue{
+		Id:         0,
+		ExternalId: externalId,
+		Iid:        "",
+		Title:      request.Title,
+		IssueType:  domain.IssueTypeIssue,
+		Project:    *project,
+		WebUrl:     "",
+		Assignees:  []domain.User{},
+		Labels:     []domain.Label{},
+	}
+
+	issue, err = uc.issueRepo.Create(issue)
+	if err != nil {
+		return nil, err
+	}
+
+	binding, err := issue.BindToSprint(sprint, assignee)
+	if err != nil {
+		return nil, err
+	}
+
+	binding, err = uc.issueBindingRepo.Update(binding)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = uc.historyService.AddHistory(binding)
+	if err != nil {
+		return nil, err
+	}
+
+	return binding, nil
 }

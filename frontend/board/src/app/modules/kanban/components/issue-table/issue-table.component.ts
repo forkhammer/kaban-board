@@ -16,6 +16,7 @@ import { AccountService } from 'src/app/modules/core/services/account.service';
 import { IssueBindingService } from '../../services/issue-binding.service';
 import { BindIssueModalService } from '../../services/bind-issue-modal.service';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { IssueBindingModalService } from '../../services/issue-binding-modal.service';
 
 @Component({
   selector: 'app-issue-table',
@@ -30,6 +31,7 @@ export class IssueTableComponent {
   public accountService = inject(AccountService)
   private bindIssueModal = inject(BindIssueModalService)
   private destroyRef = inject(DestroyRef)
+  private issueBindingModal = inject(IssueBindingModalService)
 
   faPlus = faPlus
 
@@ -133,6 +135,13 @@ export class IssueTableComponent {
         })
       }
     }, () => {})
+  }
+
+  createIssue() {
+    this.issueBindingModal.show({
+      assigneeId: this.user$.value?.id ?? null,
+      sprintId: this.sprint$.value?.id ?? null
+    })
   }
 
   unbindIssue(bindingId: number) {

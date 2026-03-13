@@ -29,6 +29,13 @@ export class IssueBindingService extends BaseService<KanbanIssue>{
     );
   }
 
+  create(data: { title: string; project: number; assignee: number; sprint: number }): Observable<KanbanIssue> {
+    return this.http.post(this.apiUrl, data).pipe(
+      map(res => res as KanbanIssue),
+      tap(this.updateItemCache.bind(this)),
+    );
+  }
+
   saveOrdering(issues: KanbanIssue[]): Observable<void> {
     const data = issues
       .filter(issue => issue.bindingId != null)

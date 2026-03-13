@@ -37,6 +37,13 @@ type SetIssueBindingOrder struct {
 	Order string `json:"order"`
 }
 
+type CreateIssueBindingRequest struct {
+	Title      string `json:"title" binding:"required"`
+	ProjectId  uint   `json:"project" binding:"required"`
+	SprintId   uint   `json:"sprint" binding:"required"`
+	AssigneeId *uint  `json:"assignee"`
+}
+
 type SetIssueBindingOrderRequest = []SetIssueBindingOrder
 
 type IssueBindingPageDto struct {

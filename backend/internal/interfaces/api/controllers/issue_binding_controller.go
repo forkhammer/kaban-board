@@ -23,6 +23,7 @@ func (c *IssueBindingController) RegisterRoutes(router gin.IRouter) error {
 	router.GET("/binding/:id", c.getBinding)
 	privateRoutes := router.Group("/")
 	privateRoutes.Use(middleware.AuthRequiredMiddleware())
+	privateRoutes.POST("/binding", c.createBinding)
 	privateRoutes.DELETE("/binding/:id", c.deleteBinding)
 	privateRoutes.PUT("/binding/:id", c.saveBinding)
 	adminRoutes := router.Group("/")
@@ -141,4 +142,27 @@ func (c *IssueBindingController) saveOrdering(ctx *gin.Context) {
 	}
 
 	ctx.Status(http.StatusNoContent)
+}
+
+func (c *IssueBindingController) createBinding(ctx *gin.Context) {
+	var request dto.CreateIssueBindingRequest
+	if err := ctx.ShouldBindJSON(&request); err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	account, _ := ctx.Get("account")
+	currentAccount := account.(*domain.Account)
+
+	binding, err := c.bindingUC.CreateIssueAndBinding(usecases.CreateIssueBindingRequest{
+		Title:      request.Title,
+		ProjectId:  request.ProjectId,
+		SprintId:   request.SprintId,
+		AssigneeId: request.AssigneeId,
+	})
+	if apiutils.HandleException(ctx, err) {
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, dto.SerializeIssueBinding(binding, currentAccount))
 }

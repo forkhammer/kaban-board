@@ -48,6 +48,7 @@ import { PriorityBadgeComponent } from './components/priority-badge/priority-bad
 import { PrioritySelectComponent } from './components/priority-select/priority-select.component';
 import { BindIssueModalComponent } from './components/bind-issue-modal/bind-issue-modal.component';
 import { BindingStatusSelectComponent } from './components/binding-status-select/binding-status-select.component';
+import { IssueBindingModalComponent } from './components/issue-binding-modal/issue-binding-modal.component';
 
 
 @NgModule({
@@ -94,6 +95,7 @@ import { BindingStatusSelectComponent } from './components/binding-status-select
     PrioritySelectComponent,
     BindIssueModalComponent,
     BindingStatusSelectComponent,
+    IssueBindingModalComponent,
   ],
   exports: [
     UserBoardComponent,

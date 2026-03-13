@@ -4,6 +4,7 @@ import (
 	"main/internal/app/usecases"
 	"main/internal/interfaces/api/dto"
 	"main/internal/interfaces/api/middleware"
+	"main/internal/interfaces/api/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -25,8 +26,7 @@ func (c *LabelController) RegisterRoutes(router gin.IRouter) error {
 func (c *LabelController) getLabels(ctx *gin.Context) {
 	labels, err := c.labelUC.GetLabels()
 
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+	if utils.HandleException(ctx, err) {
 		return
 	}
 
@@ -48,8 +48,7 @@ func (c *LabelController) updateLabel(ctx *gin.Context) {
 		AltName: request.AltName,
 	})
 
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+	if utils.HandleException(ctx, err) {
 		return
 	}
 

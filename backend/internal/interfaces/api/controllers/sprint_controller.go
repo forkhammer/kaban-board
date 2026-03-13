@@ -5,6 +5,7 @@ import (
 	"main/internal/app/usecases"
 	"main/internal/interfaces/api/dto"
 	"main/internal/interfaces/api/middleware"
+	"main/internal/interfaces/api/utils"
 	"net/http"
 	"strconv"
 
@@ -41,8 +42,7 @@ func (c *SprintController) GetSprints(ctx *gin.Context) {
 		TeamID:    request.Team,
 		QuarterId: request.Quarter,
 	})
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+	if utils.HandleException(ctx, err) {
 		return
 	}
 	ctx.JSON(http.StatusOK, dto.SerializeSprints(sprints))
@@ -56,8 +56,7 @@ func (c *SprintController) GetSprint(ctx *gin.Context) {
 	}
 
 	sprint, err := c.sprintUC.GetSprint(uint(id))
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+	if utils.HandleException(ctx, err) {
 		return
 	}
 	ctx.JSON(http.StatusOK, dto.SerializeSprint(sprint))
@@ -84,8 +83,7 @@ func (c *SprintController) CreateSprint(ctx *gin.Context) {
 		TeamId:       request.TeamId,
 		HoursPerUser: request.HoursPerUser,
 	})
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+	if utils.HandleException(ctx, err) {
 		return
 	}
 	ctx.JSON(http.StatusOK, dto.SerializeSprint(sprint))
@@ -119,8 +117,7 @@ func (c *SprintController) UpdateSprint(ctx *gin.Context) {
 		TeamId:       request.TeamId,
 		HoursPerUser: request.HoursPerUser,
 	})
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+	if utils.HandleException(ctx, err) {
 		return
 	}
 	ctx.JSON(http.StatusOK, dto.SerializeSprint(sprint))
@@ -133,8 +130,7 @@ func (c *SprintController) DeleteSprint(ctx *gin.Context) {
 		return
 	}
 	err = c.sprintUC.DeleteSprint(uint(id))
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+	if utils.HandleException(ctx, err) {
 		return
 	}
 	ctx.JSON(http.StatusNoContent, gin.H{})
@@ -147,8 +143,7 @@ func (c *SprintController) CompleteSprint(ctx *gin.Context) {
 		return
 	}
 	sprint, err := c.sprintUC.CompleteSprint(uint(id))
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+	if utils.HandleException(ctx, err) {
 		return
 	}
 	ctx.JSON(http.StatusOK, dto.SerializeSprint(sprint))
@@ -161,8 +156,7 @@ func (c *SprintController) RunSprint(ctx *gin.Context) {
 		return
 	}
 	sprint, err := c.sprintUC.RunSprint(uint(id))
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+	if utils.HandleException(ctx, err) {
 		return
 	}
 	ctx.JSON(http.StatusOK, dto.SerializeSprint(sprint))
@@ -170,8 +164,7 @@ func (c *SprintController) RunSprint(ctx *gin.Context) {
 
 func (c *SprintController) GetQuarters(ctx *gin.Context) {
 	quarters, err := c.sprintUC.GetQuarters()
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+	if utils.HandleException(ctx, err) {
 		return
 	}
 	ctx.JSON(http.StatusOK, dto.SerializeQuarters(quarters))

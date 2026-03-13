@@ -6,6 +6,7 @@ import (
 	domain "main/internal/domain/models"
 	"main/internal/interfaces/api/dto"
 	"main/internal/interfaces/api/middleware"
+	"main/internal/interfaces/api/utils"
 	"net/http"
 	"strconv"
 
@@ -41,8 +42,7 @@ func (c *IssueController) getIssues(ctx *gin.Context) {
 		Search:     request.Search,
 	}
 	issuePage, err := c.issueUC.GetIssues(&issueFilter, request.Page, request.Limit)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+	if utils.HandleException(ctx, err) {
 		return
 	}
 	ctx.JSON(http.StatusOK, dto.SerializeIssuePage(issuePage))
@@ -56,8 +56,7 @@ func (c *IssueController) getIssue(ctx *gin.Context) {
 	}
 
 	issue, err := c.issueUC.GetIssue(uint(id))
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+	if utils.HandleException(ctx, err) {
 		return
 	}
 	ctx.JSON(http.StatusOK, dto.SerializeIssue(issue))
@@ -80,8 +79,7 @@ func (c *IssueController) bindIssue(ctx *gin.Context) {
 	currentAccount := account.(*domain.Account)
 
 	binding, err := c.issueUC.BindIssue(uint(id), request.SprintId, request.AssigneeId)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+	if utils.HandleException(ctx, err) {
 		return
 	}
 	ctx.JSON(http.StatusOK, dto.SerializeIssueBinding(binding, currentAccount))

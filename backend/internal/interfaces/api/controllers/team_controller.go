@@ -4,6 +4,7 @@ import (
 	"main/internal/app/usecases"
 	"main/internal/interfaces/api/dto"
 	"main/internal/interfaces/api/middleware"
+	"main/internal/interfaces/api/utils"
 	"net/http"
 	"strconv"
 
@@ -29,8 +30,7 @@ func (c *TeamController) RegisterRoutes(router gin.IRouter) error {
 func (c *TeamController) getTeams(ctx *gin.Context) {
 	teams, err := c.teamUC.GetTeams()
 
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+	if utils.HandleException(ctx, err) {
 		return
 	}
 
@@ -47,8 +47,7 @@ func (c *TeamController) getTeamById(ctx *gin.Context) {
 
 	team, err := c.teamUC.GetTeam(uint(id))
 
-	if err != nil {
-		ctx.JSON(http.StatusNotFound, dto.ErrorResponse{Error: err.Error()})
+	if utils.HandleException(ctx, err) {
 		return
 	}
 
@@ -76,8 +75,7 @@ func (c *TeamController) updateTeam(ctx *gin.Context) {
 		Groups: request.Groups,
 	})
 
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+	if utils.HandleException(ctx, err) {
 		return
 	}
 
@@ -97,8 +95,7 @@ func (c *TeamController) addTeam(ctx *gin.Context) {
 		Groups: request.Groups,
 	})
 
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+	if utils.HandleException(ctx, err) {
 		return
 	}
 
@@ -115,8 +112,7 @@ func (c *TeamController) deleteTeam(ctx *gin.Context) {
 
 	err = c.teamUC.Delete(uint(id))
 
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+	if utils.HandleException(ctx, err) {
 		return
 	}
 

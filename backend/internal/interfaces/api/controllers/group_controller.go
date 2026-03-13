@@ -3,6 +3,7 @@ package controllers
 import (
 	"main/internal/app/usecases"
 	"main/internal/interfaces/api/dto"
+	"main/internal/interfaces/api/utils"
 	"net/http"
 	"strconv"
 
@@ -22,8 +23,7 @@ func (c *GroupController) RegisterRoutes(router gin.IRouter) error {
 func (c *GroupController) getGroups(ctx *gin.Context) {
 	groups, err := c.groupUC.GetGroups()
 
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+	if utils.HandleException(ctx, err) {
 		return
 	}
 
@@ -40,8 +40,7 @@ func (c *GroupController) getGroupById(ctx *gin.Context) {
 
 	group, err := c.groupUC.GetGroup(uint(id))
 
-	if err != nil {
-		ctx.JSON(http.StatusNotFound, dto.ErrorResponse{Error: err.Error()})
+	if utils.HandleException(ctx, err) {
 		return
 	}
 

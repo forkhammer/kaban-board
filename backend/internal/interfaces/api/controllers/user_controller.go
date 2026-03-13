@@ -6,6 +6,7 @@ import (
 	"main/internal/domain/models"
 	"main/internal/interfaces/api/dto"
 	"main/internal/interfaces/api/middleware"
+	"main/internal/interfaces/api/utils"
 	"net/http"
 	"strconv"
 
@@ -40,8 +41,7 @@ func (c *UserController) getUsers(ctx *gin.Context) {
 		Search: request.Search,
 	})
 
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+	if utils.HandleException(ctx, err) {
 		return
 	}
 
@@ -56,8 +56,7 @@ func (c *UserController) getUser(ctx *gin.Context) {
 	}
 
 	user, err := c.userUC.GetUser(uint(id))
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+	if utils.HandleException(ctx, err) {
 		return
 	}
 	ctx.JSON(http.StatusOK, dto.SerializeUser(user))
@@ -80,8 +79,7 @@ func (c *UserController) setUserVisibility(ctx *gin.Context) {
 
 	user, err := c.userUC.SetVisibility(uint(id), request.Visible)
 
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+	if utils.HandleException(ctx, err) {
 		return
 	}
 
@@ -105,8 +103,7 @@ func (c *UserController) setUserGroups(ctx *gin.Context) {
 
 	user, err := c.userUC.SetGroups(uint(id), request.Groups)
 
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+	if utils.HandleException(ctx, err) {
 		return
 	}
 
@@ -130,8 +127,7 @@ func (c *UserController) setUserRole(ctx *gin.Context) {
 
 	user, err := c.userUC.SetAccountRole(uint(id), models.AccountRole(request.Role))
 
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+	if utils.HandleException(ctx, err) {
 		return
 	}
 

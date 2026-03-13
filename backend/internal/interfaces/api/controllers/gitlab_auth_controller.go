@@ -3,6 +3,7 @@ package controllers
 import (
 	"main/internal/app/usecases"
 	"main/internal/interfaces/api/dto"
+	"main/internal/interfaces/api/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -21,8 +22,7 @@ func (c *GitLabAuthController) RegisterRoutes(router gin.IRouter) error {
 
 func (c *GitLabAuthController) GetAuthorizationURL(ctx *gin.Context) {
 	url, err := c.gitLabAuthUC.GetAuthorizationURL()
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if utils.HandleException(ctx, err) {
 		return
 	}
 
@@ -47,8 +47,7 @@ func (c *GitLabAuthController) Callback(ctx *gin.Context) {
 	}
 
 	token, account, err := c.gitLabAuthUC.Login(code)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if utils.HandleException(ctx, err) {
 		return
 	}
 

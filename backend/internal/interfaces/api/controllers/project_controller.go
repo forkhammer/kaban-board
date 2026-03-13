@@ -5,6 +5,7 @@ import (
 	"main/internal/app/usecases"
 	"main/internal/interfaces/api/dto"
 	"main/internal/interfaces/api/middleware"
+	"main/internal/interfaces/api/utils"
 	"net/http"
 	"strconv"
 
@@ -38,8 +39,7 @@ func (c *ProjectController) getProjects(ctx *gin.Context) {
 		Search: request.Search,
 	})
 
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if utils.HandleException(ctx, err) {
 		return
 	}
 
@@ -56,8 +56,7 @@ func (c *ProjectController) getProject(ctx *gin.Context) {
 
 	project, err := c.projectUC.GetProject(uint(id))
 
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+	if utils.HandleException(ctx, err) {
 		return
 	}
 
@@ -81,8 +80,7 @@ func (c *ProjectController) setProjectTeam(ctx *gin.Context) {
 
 	project, err := c.projectUC.SetTeam(uint(id), request.TeamId)
 
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+	if utils.HandleException(ctx, err) {
 		return
 	}
 

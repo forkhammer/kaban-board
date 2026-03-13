@@ -3,6 +3,7 @@ package controllers
 import (
 	"main/internal/app/usecases"
 	"main/internal/interfaces/api/dto"
+	"main/internal/interfaces/api/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -20,8 +21,7 @@ func (c *KanbanController) RegisterRoutes(router gin.IRouter) error {
 func (c *KanbanController) getKanbanUsers(ctx *gin.Context) {
 	board, err := c.kanbanUC.GetBoard()
 
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+	if utils.HandleException(ctx, err) {
 		return
 	}
 

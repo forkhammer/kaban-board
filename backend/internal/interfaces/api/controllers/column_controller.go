@@ -5,6 +5,7 @@ import (
 	domain "main/internal/domain/models"
 	"main/internal/interfaces/api/dto"
 	"main/internal/interfaces/api/middleware"
+	apiutils "main/internal/interfaces/api/utils"
 	"main/pkg/utils"
 	"net/http"
 	"strconv"
@@ -32,8 +33,7 @@ func (c *ColumnController) RegisterRoutes(router gin.IRouter) error {
 func (c *ColumnController) getColumns(ctx *gin.Context) {
 	columns, err := c.columnUC.List()
 
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if apiutils.HandleException(ctx, err) {
 		return
 	}
 
@@ -50,8 +50,7 @@ func (c *ColumnController) getColumnById(ctx *gin.Context) {
 
 	column, err := c.columnUC.Retrieve(uint(id))
 
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+	if apiutils.HandleException(ctx, err) {
 		return
 	}
 
@@ -72,8 +71,7 @@ func (c *ColumnController) addColumn(ctx *gin.Context) {
 		TeamId: request.TeamId,
 	})
 
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+	if apiutils.HandleException(ctx, err) {
 		return
 	}
 
@@ -97,8 +95,7 @@ func (c *ColumnController) updateColumn(ctx *gin.Context) {
 		TeamId: request.TeamId,
 	})
 
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+	if apiutils.HandleException(ctx, err) {
 		return
 	}
 
@@ -115,8 +112,7 @@ func (c *ColumnController) deleteColumn(ctx *gin.Context) {
 
 	err = c.columnUC.Delete(uint(id))
 
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+	if apiutils.HandleException(ctx, err) {
 		return
 	}
 
@@ -127,7 +123,7 @@ func (c *ColumnController) saveColumnOrdering(ctx *gin.Context) {
 	request := make(dto.SetColumnOrderRequest, 0)
 
 	if err := ctx.ShouldBindJSON(&request); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
 		return
 	}
 
@@ -139,8 +135,7 @@ func (c *ColumnController) saveColumnOrdering(ctx *gin.Context) {
 	})
 	columns, err := c.columnUC.Ordering(ordering)
 
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+	if apiutils.HandleException(ctx, err) {
 		return
 	}
 

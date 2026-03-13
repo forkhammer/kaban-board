@@ -3,6 +3,7 @@ package controllers
 import (
 	"main/internal/app/usecases"
 	"main/internal/interfaces/api/dto"
+	"main/internal/interfaces/api/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -26,8 +27,7 @@ func (c *ReportsController) getBurndownReport(ctx *gin.Context) {
 	}
 
 	report, err := c.reportUC.GetBurndownReport(request.SprintId)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+	if utils.HandleException(ctx, err) {
 		return
 	}
 
@@ -42,8 +42,7 @@ func (c *ReportsController) getBurnupReport(ctx *gin.Context) {
 	}
 
 	report, err := c.reportUC.GetBurnupReport(request.SprintId)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+	if utils.HandleException(ctx, err) {
 		return
 	}
 

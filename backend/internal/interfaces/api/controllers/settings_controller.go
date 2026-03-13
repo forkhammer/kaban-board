@@ -4,6 +4,7 @@ import (
 	"main/internal/app/usecases"
 	"main/internal/interfaces/api/dto"
 	"main/internal/interfaces/api/middleware"
+	"main/internal/interfaces/api/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -30,8 +31,7 @@ func (c *SettingsController) getSettings(ctx *gin.Context) {
 
 func (c *SettingsController) getKanbanSettings(ctx *gin.Context) {
 	settings, err := c.settingsUC.GetKanbantSettings()
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+	if utils.HandleException(ctx, err) {
 		return
 	}
 
@@ -45,8 +45,7 @@ func (c *SettingsController) saveTaskTypeLabels(ctx *gin.Context) {
 		return
 	}
 
-	if _, err := c.settingsUC.SetTaskTypeLabels(request.Labels); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if _, err := c.settingsUC.SetTaskTypeLabels(request.Labels); utils.HandleException(ctx, err) {
 		return
 	}
 

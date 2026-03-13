@@ -50,8 +50,7 @@ func (c *IssueBindingController) getBindings(ctx *gin.Context) {
 		Search:     request.Search,
 	}
 	bindingPage, err := c.bindingUC.GetBindings(&issueFilter, request.Page, request.Limit, currentAccount)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+	if apiutils.HandleException(ctx, err) {
 		return
 	}
 	ctx.JSON(http.StatusOK, dto.SerializeIssueBindingPage(bindingPage, currentAccount))
@@ -68,8 +67,7 @@ func (c *IssueBindingController) getBinding(ctx *gin.Context) {
 	currentAccount := account.(*domain.Account)
 
 	issue, err := c.bindingUC.GetBinding(uint(id), currentAccount)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+	if apiutils.HandleException(ctx, err) {
 		return
 	}
 	ctx.JSON(http.StatusOK, dto.SerializeIssueBinding(issue, currentAccount))
@@ -88,8 +86,7 @@ func (c *IssueBindingController) deleteBinding(ctx *gin.Context) {
 	}
 
 	err = c.bindingUC.DeleteBinding(uint(id))
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+	if apiutils.HandleException(ctx, err) {
 		return
 	}
 	ctx.Status(http.StatusNoContent)
@@ -122,8 +119,7 @@ func (c *IssueBindingController) saveBinding(ctx *gin.Context) {
 		ReleaseId:   request.Release,
 		EpicId:      request.Epic,
 	}, currentAccount)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+	if apiutils.HandleException(ctx, err) {
 		return
 	}
 	ctx.JSON(http.StatusOK, dto.SerializeIssueBinding(binding, currentAccount))
@@ -140,8 +136,7 @@ func (c *IssueBindingController) saveOrdering(ctx *gin.Context) {
 		return usecases.IssueBindingOrdering{Id: o.Id, Order: o.Order}
 	})
 
-	if err := c.bindingUC.SaveOrdering(ordering); err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+	if err := c.bindingUC.SaveOrdering(ordering); apiutils.HandleException(ctx, err) {
 		return
 	}
 

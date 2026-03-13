@@ -94,7 +94,6 @@ export class BurndownReportPageComponent {
       combineLatestWith(team$),
       takeUntilDestroyed()
     ).subscribe(([sprint, team]) => {
-      console.log('load form data', {team, sprint})
       this.form.patchValue({team, sprint}, {emitEvent: false})
     })
 
@@ -102,7 +101,6 @@ export class BurndownReportPageComponent {
       distinctUntilChanged(isEqual),
       takeUntilDestroyed()
     ).subscribe(data => {
-      console.log('set form data', data)
       this.router.navigate([], {queryParams: data, queryParamsHandling: 'merge'})
     })
 

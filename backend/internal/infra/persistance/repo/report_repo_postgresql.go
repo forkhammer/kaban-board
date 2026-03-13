@@ -59,7 +59,7 @@ func (r *ReportRepositoryPostgresql) GetBurndownData(sprintId uint) ([]domain.Bu
 
 	result := make([]domain.BurndownDataPoint, len(rows))
 	for i, row := range rows {
-		date, err := time.Parse("2006-01-02", row.Date)
+		date, err := time.Parse(time.RFC3339, row.Date)
 		if err != nil {
 			return nil, fmt.Errorf("cannot parse date: %w", err)
 		}
@@ -144,7 +144,7 @@ func (r *ReportRepositoryPostgresql) GetBurnupData(sprintId uint) ([]domain.Burn
 
 	result := make([]domain.BurnupDataPoint, len(rows))
 	for i, row := range rows {
-		date, err := time.Parse("2006-01-02", row.Date)
+		date, err := time.Parse(time.RFC3339, row.Date)
 		if err != nil {
 			return nil, fmt.Errorf("cannot parse date: %w", err)
 		}

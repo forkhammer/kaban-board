@@ -565,11 +565,6 @@ func (client *GitlabClient) toDomainIssue(
 	releases []domain.Release,
 	settings *domain.Settings,
 ) (*domain.Issue, error) {
-	// issueId, err := client.cleanIssueId(issue.Id)
-	// if err != nil {
-	// 	return nil, err
-	// }
-
 	assignees := make([]domain.User, 0)
 	for _, a := range issue.Assignees.Nodes {
 		for _, user := range users {
@@ -628,16 +623,6 @@ func (client *GitlabClient) toDomainIssue(
 
 	return domainIssue, nil
 }
-
-// func (client *GitlabClient) cleanIssueId(gid string) (uint, error) {
-// 	id, err := strconv.ParseUint(strings.ReplaceAll(gid, "gid://gitlab/Issue/", ""), 10, 32)
-
-// 	if err != nil {
-// 		return 0, err
-// 	}
-
-// 	return uint(id), nil
-// }
 
 func (client *GitlabClient) getIssueTaskType(labels []domain.Label, settings *domain.Settings) *domain.Label {
 	return utils.Find(labels, func(label domain.Label) bool {

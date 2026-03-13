@@ -6,4 +6,5 @@ import (
 
 type IssueRepo interface {
 	RWRepo[models.Issue, models.IssueId]
+	GetByExternalId(externalId models.IssueExternalId) (*models.Issue, error)
 }

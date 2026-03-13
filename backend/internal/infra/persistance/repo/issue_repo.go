@@ -37,6 +37,17 @@ func (r *IssueRepository) Get(id domain.IssueId) (*domain.Issue, error) {
 	return r.toDomainIssue(issue)
 }
 
+func (r *IssueRepository) GetByExternalId(externalId domain.IssueExternalId) (*domain.Issue, error) {
+	issue := &models.Issue{}
+	if err := r.getQuery().Where("issues.external_id = ?", externalId).First(issue).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, domain_pkg.NewNotFoundError("Issue", string(externalId), err)
+		}
+		return nil, err
+	}
+	return r.toDomainIssue(issue)
+}
+
 func (r *IssueRepository) List(spec repo.QuerySpec) ([]domain.Issue, error) {
 	issues := make([]models.Issue, 0)
 	query := r.getQuery()
@@ -156,10 +167,11 @@ func (r *IssueRepository) toDomainIssue(issue *models.Issue) (*domain.Issue, err
 	}
 
 	domainIssue := &domain.Issue{
-		Id:        domain.IssueId(issue.Id),
-		Iid:       domain.IssueIid(issue.Iid),
-		Title:     issue.Title,
-		IssueType: domain.IssueType(issue.IssueType),
+		Id:         domain.IssueId(issue.Id),
+		ExternalId: domain.IssueExternalId(issue.ExternalId),
+		Iid:        domain.IssueIid(issue.Iid),
+		Title:      issue.Title,
+		IssueType:  domain.IssueType(issue.IssueType),
 		Assignees: utils.Map(issue.Assignees, func(a models.User) domain.User {
 			return *r.userRepo.toDomainUser(&a, make(map[uint]*domain.Account))
 		}),
@@ -184,10 +196,11 @@ func (r *IssueRepository) toDomainIssue(issue *models.Issue) (*domain.Issue, err
 
 func (r *IssueRepository) toIssue(issue *domain.Issue) *models.Issue {
 	return &models.Issue{
-		Id:        uint(issue.Id),
-		Iid:       string(issue.Iid),
-		Title:     issue.Title,
-		IssueType: string(issue.IssueType),
+		Id:         uint(issue.Id),
+		ExternalId: string(issue.ExternalId),
+		Iid:        string(issue.Iid),
+		Title:      issue.Title,
+		IssueType:  string(issue.IssueType),
 		Assignees: utils.Map(issue.Assignees, func(a domain.User) models.User {
 			return *r.userRepo.toUser(&a)
 		}),

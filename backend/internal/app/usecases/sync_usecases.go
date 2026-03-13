@@ -1,8 +1,10 @@
 package usecases
 
 import (
+	"errors"
 	"fmt"
 	"main/internal/app/interfaces"
+	domain_pkg "main/internal/domain"
 	domain "main/internal/domain/models"
 	"main/internal/domain/repo"
 )
@@ -147,9 +149,17 @@ func (uc *SyncUseCases) SyncIssues() error {
 	}
 
 	for _, issue := range issues {
-		existIssue, err := uc.issueRepo.Get(issue.Id)
-		if err == nil {
+		existIssue, err := uc.issueRepo.GetByExternalId(issue.ExternalId)
+
+		if err != nil {
+			if _, ok := errors.AsType[*domain_pkg.NotFoundError](err); !ok {
+				return err
+			}
+		}
+
+		if existIssue != nil {
 			existIssue.Iid = issue.Iid
+			existIssue.ExternalId = issue.ExternalId
 			existIssue.Title = issue.Title
 			existIssue.IssueType = issue.IssueType
 			existIssue.Assignees = issue.Assignees

@@ -9,6 +9,7 @@ import (
 type IssueType string
 type IssueId uint
 type IssueIid string
+type IssueExternalId string
 
 const (
 	IssueTypeEpic        IssueType = "EPIC"
@@ -24,6 +25,7 @@ const (
 
 type Issue struct {
 	Id           IssueId
+	ExternalId   IssueExternalId
 	Iid          IssueIid
 	Title        string
 	IssueType    IssueType

@@ -4,7 +4,8 @@ import "gorm.io/gorm"
 
 type Issue struct {
 	gorm.Model
-	Id          uint     `gorm:"primarykey"`
+	Id          uint     `gorm:"id;primarykey"`
+	ExternalId  string   `gorm:"external_id;unique"`
 	Iid         string   `gorm:"iid"`
 	Title       string   `gorm:"title;not null"`
 	IssueType   string   `gorm:"issue_type;not null"`

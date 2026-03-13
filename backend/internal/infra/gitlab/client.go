@@ -565,10 +565,10 @@ func (client *GitlabClient) toDomainIssue(
 	releases []domain.Release,
 	settings *domain.Settings,
 ) (*domain.Issue, error) {
-	issueId, err := client.cleanIssueId(issue.Id)
-	if err != nil {
-		return nil, err
-	}
+	// issueId, err := client.cleanIssueId(issue.Id)
+	// if err != nil {
+	// 	return nil, err
+	// }
 
 	assignees := make([]domain.User, 0)
 	for _, a := range issue.Assignees.Nodes {
@@ -607,7 +607,8 @@ func (client *GitlabClient) toDomainIssue(
 	})
 
 	domainIssue := &domain.Issue{
-		Id:          domain.IssueId(issueId),
+		Id:          domain.IssueId(0),
+		ExternalId:  domain.IssueExternalId(issue.Id),
 		Iid:         domain.IssueIid(issue.Iid),
 		Title:       issue.Title,
 		IssueType:   domain.IssueType(issue.IssueType),
@@ -628,15 +629,15 @@ func (client *GitlabClient) toDomainIssue(
 	return domainIssue, nil
 }
 
-func (client *GitlabClient) cleanIssueId(gid string) (uint, error) {
-	id, err := strconv.ParseUint(strings.ReplaceAll(gid, "gid://gitlab/Issue/", ""), 10, 32)
+// func (client *GitlabClient) cleanIssueId(gid string) (uint, error) {
+// 	id, err := strconv.ParseUint(strings.ReplaceAll(gid, "gid://gitlab/Issue/", ""), 10, 32)
 
-	if err != nil {
-		return 0, err
-	}
+// 	if err != nil {
+// 		return 0, err
+// 	}
 
-	return uint(id), nil
-}
+// 	return uint(id), nil
+// }
 
 func (client *GitlabClient) getIssueTaskType(labels []domain.Label, settings *domain.Settings) *domain.Label {
 	return utils.Find(labels, func(label domain.Label) bool {

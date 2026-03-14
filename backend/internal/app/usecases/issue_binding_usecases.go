@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"main/internal/app/queries"
 	app_services "main/internal/app/services"
+	domain_pkg "main/internal/domain"
 	domain "main/internal/domain/models"
 	"main/internal/domain/repo"
 	"time"
@@ -219,6 +220,61 @@ func (uc *IssueBindingUseCases) SaveOrdering(ordering IssueBindingOrderingSet) e
 		}
 	}
 	return nil
+}
+
+type CopyIssueBindingRequest struct {
+	Id       uint
+	SprintId uint
+}
+
+func (uc *IssueBindingUseCases) CopyBinding(request CopyIssueBindingRequest, account *domain.Account) (*domain.IssueBinding, error) {
+	if account == nil {
+		return nil, domain_pkg.NewValidationError("нельзя скопировать анонимынм пользователем")
+	}
+
+	original, err := uc.issueBindingRepo.Get(domain.IssueBindingId(request.Id))
+	if err != nil {
+		return nil, err
+	}
+
+	if !original.CanManage(account) {
+		return nil, domain_pkg.NewValidationError("нельяз скопировать этим пользователем")
+	}
+
+	sprint, err := uc.sprintRepo.Get(domain.SprintId(request.SprintId))
+	if err != nil {
+		return nil, err
+	}
+
+	newBinding := &domain.IssueBinding{
+		Id:          0,
+		Issue:       original.Issue,
+		Sprint:      sprint,
+		EstimateDev: original.EstimateDev,
+		EstimateQA:  original.EstimateQA,
+		BindStatus:  original.BindStatus,
+		Priority:    original.Priority,
+		Assignee:    original.Assignee,
+		Comment:     original.Comment,
+		Release:     original.Release,
+		Epic:        original.Epic,
+	}
+
+	if err = newBinding.Validate(); err != nil {
+		return nil, err
+	}
+
+	newBinding, err = uc.issueBindingRepo.Create(newBinding)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = uc.historyService.AddHistory(newBinding)
+	if err != nil {
+		return nil, err
+	}
+
+	return newBinding, nil
 }
 
 func (uc *IssueBindingUseCases) CreateIssueAndBinding(request CreateIssueBindingRequest) (*domain.IssueBinding, error) {

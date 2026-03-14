@@ -24,6 +24,7 @@ func (c *IssueBindingController) RegisterRoutes(router gin.IRouter) error {
 	privateRoutes := router.Group("/")
 	privateRoutes.Use(middleware.AuthRequiredMiddleware())
 	privateRoutes.POST("/binding", c.createBinding)
+	privateRoutes.POST("/binding/:id/copy", c.copyBinding)
 	privateRoutes.DELETE("/binding/:id", c.deleteBinding)
 	privateRoutes.PUT("/binding/:id", c.saveBinding)
 	adminRoutes := router.Group("/")
@@ -143,6 +144,33 @@ func (c *IssueBindingController) saveOrdering(ctx *gin.Context) {
 	}
 
 	ctx.Status(http.StatusNoContent)
+}
+
+func (c *IssueBindingController) copyBinding(ctx *gin.Context) {
+	id, err := strconv.ParseUint(ctx.Param("id"), 10, 32)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	var request dto.CopyIssueBindingRequest
+	if err := ctx.ShouldBindJSON(&request); err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	account, _ := ctx.Get("account")
+	currentAccount := account.(*domain.Account)
+
+	binding, err := c.bindingUC.CopyBinding(usecases.CopyIssueBindingRequest{
+		Id:       uint(id),
+		SprintId: request.SprintId,
+	}, currentAccount)
+	if apiutils.HandleException(ctx, err) {
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, dto.SerializeIssueBinding(binding, currentAccount))
 }
 
 func (c *IssueBindingController) createBinding(ctx *gin.Context) {

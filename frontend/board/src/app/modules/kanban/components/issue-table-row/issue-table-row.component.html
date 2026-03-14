@@ -88,6 +88,7 @@
         <fa-icon [icon]="faEllipsisVertical"></fa-icon>
       </button>
       <div ngbDropdownMenu>
+        <button ngbDropdownItem (click)="copyIssue()">Копировать</button>
         <button ngbDropdownItem (click)="unbindIssue()">Удалить</button>
       </div>
     </div>

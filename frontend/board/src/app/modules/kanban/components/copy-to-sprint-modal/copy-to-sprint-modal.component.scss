@@ -1,0 +1,64 @@
+@import '../../../../../styles/imports';
+
+.btn-close {
+  position: absolute;
+  top: $pt2;
+  right: -$pt8;
+  background-color: $white;
+  border-radius: 100%;
+  border: none;
+  width: 40px;
+  height: 40px;
+  opacity: 1;
+
+  :host-context([data-bs-theme="dark"]) & {
+    background-color: $gray-800;
+    filter: invert(1);
+  }
+}
+
+.sprint-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.sprint-item {
+  display: flex;
+  align-items: center;
+  gap: $pt2;
+  padding: 12px $pt2;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.15s;
+
+  & + .sprint-item {
+    border-top: 1px solid $gray-100;
+
+    :host-context([data-bs-theme="dark"]) & {
+      border-color: $gray-800;
+    }
+  }
+
+  &:hover {
+    background-color: var(--bs-secondary-bg);
+  }
+}
+
+.sprint-status {
+  flex-shrink: 0;
+  width: 16px;
+  text-align: center;
+}
+
+.sprint-title {
+  flex-grow: 1;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--bs-body-color);
+}
+
+.sprint-meta {
+  font-size: 0.75rem;
+  color: var(--bs-secondary-color);
+  white-space: nowrap;
+}

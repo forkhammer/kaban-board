@@ -44,6 +44,10 @@ type CreateIssueBindingRequest struct {
 	AssigneeId *uint  `json:"assignee"`
 }
 
+type CopyIssueBindingRequest struct {
+	SprintId uint `json:"sprint_id" binding:"required"`
+}
+
 type SetIssueBindingOrderRequest = []SetIssueBindingOrder
 
 type IssueBindingPageDto struct {

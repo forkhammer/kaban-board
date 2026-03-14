@@ -14,6 +14,7 @@ import {faUser} from '@fortawesome/free-regular-svg-icons';
 import { Team } from '../../models/team';
 import { Sprint } from '../../models/sprint';
 import { IssueBindingService } from '../../services/issue-binding.service';
+import { CopyToSprintModalService } from '../../services/copy-to-sprint-modal.service';
 import { faEllipsisVertical, faArrowUpRightFromSquare, faGripVertical } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
@@ -27,6 +28,7 @@ export class IssueTableRowComponent implements OnInit, AfterViewChecked {
   destroyRef = inject(DestroyRef)
   issueService = inject(IssueService)
   issueBindingService = inject(IssueBindingService)
+  copyToSprintModalService = inject(CopyToSprintModalService)
   toast = inject(ToastService)
   userService = inject(UserService)
   releaseService = inject(ReleaseService)
@@ -143,6 +145,12 @@ export class IssueTableRowComponent implements OnInit, AfterViewChecked {
   onTitleInput(event: Event) {
     const text = (event.target as HTMLElement).innerText
     this.form.get('title')?.setValue(text, {emitEvent: true})
+  }
+
+  copyIssue() {
+    const sprint = this.sprint$.value
+    if (!this._issue.bindingId || !sprint) return
+    this.copyToSprintModalService.show(this._issue.bindingId, sprint.team_id, sprint.id)
   }
 
   unbindIssue() {

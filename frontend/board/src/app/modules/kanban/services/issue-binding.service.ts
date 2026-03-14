@@ -36,6 +36,12 @@ export class IssueBindingService extends BaseService<KanbanIssue>{
     );
   }
 
+  copy(bindingId: number, sprintId: number): Observable<KanbanIssue> {
+    return this.http.post(`${this.apiUrl}/${bindingId}/copy`, { sprint_id: sprintId }).pipe(
+      map(res => res as KanbanIssue)
+    );
+  }
+
   saveOrdering(issues: KanbanIssue[]): Observable<void> {
     const data = issues
       .filter(issue => issue.bindingId != null)

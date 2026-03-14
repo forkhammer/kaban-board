@@ -6,11 +6,7 @@
 <div class="modal-body">
   <form [formGroup]="form" (ngSubmit)="submit()">
     <!-- Ошибки сервера -->
-    <div class="alert alert-danger" *ngIf="errors.length > 0">
-      <ul class="mb-0">
-        <li *ngFor="let error of errors">{{ error }}</li>
-      </ul>
-    </div>
+    <app-input-error [errorData]="errors" code="error"></app-input-error>
 
     <!-- Project -->
     <div class="mb-3">
@@ -25,9 +21,7 @@
         [useClear]="true"
         [useSearch]="true">
       </app-select-model>
-      <div class="text-danger small mt-1" *ngIf="getErrorMessage('projectId')">
-        {{ getErrorMessage('projectId') }}
-      </div>
+      <app-input-error [errorData]="errors" code="projectId"></app-input-error>
     </div>
 
     <div class="mb-3">
@@ -36,11 +30,10 @@
         id="assignee"
         formControlName="assignee"
         title="Выберите исполнителя"
-        [useClear]="true">
+        [useClear]="true"
+        [useSearch]="true">
       </app-assignee-select>
-      <div class="text-danger small mt-1" *ngIf="getErrorMessage('assignee')">
-        {{ getErrorMessage('assignee') }}
-      </div>
+      <app-input-error [errorData]="errors" code="assignee"></app-input-error>
     </div>
 
     <!-- Title -->
@@ -50,23 +43,23 @@
         id="title"
         class="form-control"
         formControlName="title"
-        rows="3"
+        rows="5"
         [class.is-invalid]="getErrorMessage('title')">
       </textarea>
-      <div class="invalid-feedback" *ngIf="getErrorMessage('title')">
-        {{ getErrorMessage('title') }}
-      </div>
+      <app-input-error [errorData]="errors" code="title"></app-input-error>
     </div>
 
   </form>
 </div>
 
 <div class="modal-footer d-flex">
-  <button type="button" class="btn btn-outline-primary flex-grow-1" (click)="submit()" [disabled]="isLoading">
-    <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-    Создать
-  </button>
-  <button type="button" class="btn btn-outline-secondary flex-grow-1" (click)="close()" [disabled]="isLoading">
-    Отмена
-  </button>
+  <div class="btn-group flex-grow-1 d-flex">
+    <button type="button" class="btn btn-outline-secondary flex-grow-1 btn-create" (click)="submit()" [disabled]="isLoading">
+      <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+      Создать
+    </button>
+    <button type="button" class="btn btn-outline-secondary flex-grow-1 btn-cancel" (click)="close()" [disabled]="isLoading">
+      Отмена
+    </button>
+  </div>
 </div>

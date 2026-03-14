@@ -7,6 +7,8 @@
 textarea.form-control {
   resize: vertical;
   min-height: 80px;
+  line-height: 1.3rem;
+  padding: 8px;
 }
 
 .modal-header {
@@ -15,6 +17,20 @@ textarea.form-control {
 
 .modal-footer {
   border-top: 1px solid var(--bs-border-color);
+  padding: 0;
+
+  & > * {
+    margin: 0;
+  }
+}
+
+.btn-cancel {
+  border-radius: 0;
+  margin-left: -1px;
+}
+
+.btn-create {
+  border-radius: 0;
 }
 
 // Dark theme support

@@ -6,7 +6,7 @@
   </td>
   <td class="column">
     <div class="project">
-      <a [href]="issue.webUrl" target="_blank">
+      <a [href]="issue.webUrl" target="_blank" *ngIf="issue.webUrl">
         <fa-icon [icon]="faArrowUpRightFromSquare"></fa-icon>
         {{issue.projectName}}#{{issue.iid}}
       </a>
@@ -24,7 +24,7 @@
       <div class="name">{{issue.assignee?.name}}</div>
     </div>
 
-    <app-assignee-select formControlName="assignee" [useSearch]="true" [useClear]="true"
+    <app-assignee-select class="flat" formControlName="assignee" [useSearch]="true" [useClear]="true"
       [formatter]="userService.formatter" [itemFormatter]="userService.formatter"
       [valueModel]="issue.assignee"
       [filter]="assigneeFilter"

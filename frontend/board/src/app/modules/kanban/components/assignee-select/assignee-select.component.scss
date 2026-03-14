@@ -1,5 +1,20 @@
 @import '../../../../../styles/imports';
 
+:host {
+  &.flat {
+    .dropdown-toggle {
+      border: none;
+      border-radius: $pt2;
+      padding: 4px;
+      line-height: 1rem;
+    }
+
+    .dropdown-menu {
+      transform: translate(0, 35px) !important;
+    }
+  }
+}
+
 .dropdown-toggle-group {
   &:hover {
     .clear {
@@ -21,11 +36,9 @@
   align-items: center;
   flex-grow: 1;
   background: transparent;
-  border: 1px solid transparent;
-  padding: 4px;
-  border-radius: $pt2;
+  padding: 9px 4px;
   transition-duration: .2s;
-  border: none;
+  border: 1px solid $border-color;
 
   &:hover,
   &.show {
@@ -54,6 +67,7 @@
   img {
     width: 100%;
     height: 100%;
+    display: block;
   }
 }
 
@@ -71,7 +85,7 @@
 }
 
 .dropdown-menu {
-  transform: translate(0, 35px) !important;
+  transform: translate(0, 42px) !important;
 }
 
 .dropdown-item {

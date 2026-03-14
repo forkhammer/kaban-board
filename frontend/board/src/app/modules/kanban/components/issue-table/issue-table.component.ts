@@ -141,7 +141,14 @@ export class IssueTableComponent {
     this.issueBindingModal.show({
       assigneeId: this.user$.value?.id ?? null,
       sprintId: this.sprint$.value?.id ?? null
-    })
+    }).then(
+      (result) => {
+        if (result) {
+          this.issues.push(result)
+        }
+      },
+      (err) => {}
+    )
   }
 
   unbindIssue(bindingId: number) {

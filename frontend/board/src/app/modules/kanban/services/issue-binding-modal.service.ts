@@ -24,7 +24,6 @@ export class IssueBindingModalService {
     const modalRef = this.modal.open(IssueBindingModalComponent, {
       container: 'app-root',
       centered: true,
-      size: 'lg'
     });
 
     modalRef.componentInstance.init(data);

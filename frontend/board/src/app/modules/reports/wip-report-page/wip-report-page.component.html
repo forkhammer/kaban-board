@@ -1,0 +1,67 @@
+<div class="header" [formGroup]="form">
+  <div class="container-fluid p-4">
+    <div class="row">
+      <div class="col">
+        <h2>WIP Report</h2>
+        <p class="text-muted">Work In Progress — количество задач одновременно находящихся в работе</p>
+
+        <div class="d-flex align-items-center flex-wrap gap-2 mt-4">
+          <div class="d-flex align-items-center gap-1">
+            <label class="form-label mb-0 text-nowrap">Интервал:</label>
+            <select class="form-select form-select-sm" formControlName="interval" style="width: auto">
+              <option *ngFor="let opt of intervalOptions" [value]="opt.value">{{ opt.label }}</option>
+            </select>
+          </div>
+
+          <div class="d-flex align-items-center gap-1">
+            <label class="form-label mb-0 text-nowrap">С:</label>
+            <input type="date" class="form-control form-control-sm" formControlName="start_date" style="width: auto">
+          </div>
+
+          <div class="d-flex align-items-center gap-1">
+            <label class="form-label mb-0 text-nowrap">По:</label>
+            <input type="date" class="form-control form-control-sm" formControlName="end_date" style="width: auto">
+          </div>
+
+          <app-select-model [service]="teamService" formControlName="team" [useClear]="true"
+            title="Команда">
+          </app-select-model>
+
+          <app-assignee-select formControlName="user" [useClear]="true" [useSearch]="true"
+            title="Сотрудник">
+          </app-assignee-select>
+
+          <button class="btn btn-outline-secondary btn-sm" (click)="reload()">
+            <fa-icon [icon]="faArrowsRotate"></fa-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid">
+  <div class="row mb-3 mt-3" *ngIf="report || loading">
+    <div class="col-12">
+      <div class="chart-card">
+        <div class="spinner-overlay" *ngIf="loading">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Загрузка...</span>
+          </div>
+        </div>
+        <plotly-plot
+          [data]="graph.data"
+          [layout]="graph.layout"
+          [config]="graph.config"
+          [ngStyle]="{'width': '100%', 'height': '100%', 'display': 'block'}">
+        </plotly-plot>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-5" *ngIf="!report && !loading">
+    <div class="col-12 text-center text-muted">
+      <p>Выберите период для отображения диаграммы</p>
+    </div>
+  </div>
+</div>

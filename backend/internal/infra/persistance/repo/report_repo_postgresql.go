@@ -2,6 +2,7 @@ package repo
 
 import (
 	"fmt"
+	"strings"
 
 	domain "main/internal/domain/models"
 	"main/internal/infra/db/interfaces"
@@ -149,6 +150,64 @@ func (r *ReportRepositoryPostgresql) GetBurnupData(sprintId uint) ([]domain.Burn
 			CompletedDev: row.CompletedDev,
 			ScopeQA:      row.ScopeQA,
 			CompletedQA:  row.CompletedQA,
+		}
+	}
+
+	return result, nil
+}
+
+func (r *ReportRepositoryPostgresql) GetWipData(startDate, endDate time.Time, teamId *uint, userId *uint) ([]domain.WipDataPoint, error) {
+	var rows []WipRow
+
+	var joinClause string
+	var args []interface{}
+	args = append(args, startDate.Format("2006-01-02"), endDate.Format("2006-01-02"))
+
+	joinClause = "JOIN issue_binding_histories h ON h.created_at::date <= dr.date"
+	if teamId != nil {
+		joinClause += " JOIN sprints s ON h.sprint_id = s.id AND s.team_id = ?"
+		args = append(args, *teamId)
+	}
+	if userId != nil {
+		joinClause += " AND h.assignee_id = ?"
+		args = append(args, *userId)
+	}
+
+	query := strings.Join([]string{
+		`WITH date_range AS (`,
+		`    SELECT d::date AS date`,
+		`    FROM generate_series(?::date, ?::date, '1 day'::interval) d`,
+		`),`,
+		`latest_history AS (`,
+		`    SELECT h.issue_binding_id, dr.date, h.bind_status, h.removed_at,`,
+		`        ROW_NUMBER() OVER (`,
+		`            PARTITION BY h.issue_binding_id, dr.date`,
+		`            ORDER BY h.created_at DESC, h.id DESC`,
+		`        ) AS rn`,
+		`    FROM date_range dr`,
+		joinClause,
+		`)`,
+		`SELECT lh.date::text AS date,`,
+		`    COALESCE(COUNT(CASE WHEN lh.bind_status = 'in_progress'`,
+		`                AND (lh.removed_at IS NULL OR lh.removed_at::date > lh.date)`,
+		`          THEN 1 END), 0) AS wip_count`,
+		`FROM latest_history lh WHERE lh.rn = 1`,
+		`GROUP BY lh.date ORDER BY lh.date`,
+	}, "\n")
+
+	if err := r.conn.GetEngine().Raw(query, args...).Scan(&rows).Error; err != nil {
+		return nil, err
+	}
+
+	result := make([]domain.WipDataPoint, len(rows))
+	for i, row := range rows {
+		date, err := time.Parse("2006-01-02", row.Date)
+		if err != nil {
+			return nil, fmt.Errorf("cannot parse date: %w", err)
+		}
+		result[i] = domain.WipDataPoint{
+			Date:     date,
+			WipCount: row.WipCount,
 		}
 	}
 

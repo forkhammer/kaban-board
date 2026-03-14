@@ -15,6 +15,7 @@ const routes: Routes = [
   {path:'reports', component: ReportsPageComponent, pathMatch: 'full'},
   {path:'reports/burndown', loadComponent: () => import('./modules/reports/burndown-report-page/burndown-report-page.component').then(m => m.BurndownReportPageComponent), pathMatch: 'full'},
   {path:'reports/burnup', loadComponent: () => import('./modules/reports/burnup-report-page/burnup-report-page.component').then(m => m.BurnupReportPageComponent), pathMatch: 'full'},
+  {path:'reports/wip', loadComponent: () => import('./modules/reports/wip-report-page/wip-report-page.component').then(m => m.WipReportPageComponent), pathMatch: 'full'},
 ];
 
 @NgModule({

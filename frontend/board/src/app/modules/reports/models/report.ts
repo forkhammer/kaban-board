@@ -27,3 +27,12 @@ export interface BurnupReport {
   end_date: string;
   data_points: BurnupDataPoint[];
 }
+
+export interface WipDataPoint {
+  date: string;
+  wip_count: number;
+}
+
+export interface WipReport {
+  data_points: WipDataPoint[];
+}

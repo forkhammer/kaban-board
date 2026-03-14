@@ -1,6 +1,8 @@
 package dto
 
-import domain "main/internal/domain/models"
+import (
+	domain "main/internal/domain/models"
+)
 
 type BurndownReportRequest struct {
 	SprintId uint `form:"sprint_id" binding:"required"`
@@ -60,6 +62,35 @@ type BurnupReportDto struct {
 	StartDate   string               `json:"start_date"`
 	EndDate     string               `json:"end_date"`
 	DataPoints  []BurnupDataPointDto `json:"data_points"`
+}
+
+// WIP Report DTOs
+
+type WipReportRequest struct {
+	StartDate string `form:"start_date" binding:"required"`
+	EndDate   string `form:"end_date" binding:"required"`
+	TeamId    *uint  `form:"team_id"`
+	UserId    *uint  `form:"user_id"`
+}
+
+type WipDataPointDto struct {
+	Date     string `json:"date"`
+	WipCount int    `json:"wip_count"`
+}
+
+type WipReportDto struct {
+	DataPoints []WipDataPointDto `json:"data_points"`
+}
+
+func SerializeWipReport(report *domain.WipReport) WipReportDto {
+	dataPoints := make([]WipDataPointDto, len(report.DataPoints))
+	for i, dp := range report.DataPoints {
+		dataPoints[i] = WipDataPointDto{
+			Date:     dp.Date.Format("2006-01-02"),
+			WipCount: dp.WipCount,
+		}
+	}
+	return WipReportDto{DataPoints: dataPoints}
 }
 
 func SerializeBurnupReport(report *domain.BurnupReport) BurnupReportDto {

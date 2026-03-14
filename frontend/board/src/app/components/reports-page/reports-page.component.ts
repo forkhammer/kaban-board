@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { IconDefinition, FaIconComponent } from '@fortawesome/angular-fontawesome';
-import {faArrowTrendDown, faArrowTrendUp} from '@fortawesome/free-solid-svg-icons';
+import {faArrowTrendDown, faArrowTrendUp, faChartLine} from '@fortawesome/free-solid-svg-icons';
 
 interface ReportCard {
   id: string;
@@ -34,6 +34,13 @@ export class ReportsPageComponent {
       description: 'График нарастания работ - отображает выполненную работу и общий объем по времени, показывает изменения в объеме',
       route: '/reports/burnup',
       icon: faArrowTrendUp
+    },
+    {
+      id: 'wip',
+      title: 'WIP Chart',
+      description: 'Work In Progress - показывает количество задач одновременно находящихся в работе по времени',
+      route: '/reports/wip',
+      icon: faChartLine
     }
   ];
 }

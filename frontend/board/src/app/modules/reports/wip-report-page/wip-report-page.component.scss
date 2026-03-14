@@ -1,0 +1,52 @@
+@import '../../../../styles/imports';
+
+.header {
+  background-color: $white;
+
+  :host-context([data-bs-theme="dark"]) & {
+    background-color: $gray-850;
+  }
+}
+
+h2 {
+  margin-bottom: 0.5rem;
+}
+
+.chart-card {
+  position: relative;
+  background: var(--bs-card-bg, #ffffff);
+  border: 1px solid $gray-200;
+  border-radius: 4px;
+  padding: 1.5rem;
+  min-height: 500px;
+
+  plotly-plot {
+    min-height: 450px;
+  }
+}
+
+.spinner-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 8px;
+  z-index: 10;
+}
+
+:host-context([data-bs-theme="dark"]) {
+  .chart-card {
+    background: var(--bs-card-bg, #212529);
+    border-color: var(--bs-border-color-dark, #495057);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  .spinner-overlay {
+    background: rgba(33, 37, 41, 0.7);
+  }
+}

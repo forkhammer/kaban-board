@@ -31,3 +31,12 @@ type BurnupReport struct {
 	EndDate     time.Time
 	DataPoints  []BurnupDataPoint
 }
+
+type WipDataPoint struct {
+	Date     time.Time
+	WipCount int
+}
+
+type WipReport struct {
+	DataPoints []WipDataPoint
+}

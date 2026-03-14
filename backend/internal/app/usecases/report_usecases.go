@@ -2,6 +2,7 @@ package usecases
 
 import (
 	"fmt"
+	"time"
 
 	domain "main/internal/domain/models"
 	"main/internal/domain/repo"
@@ -31,6 +32,22 @@ func (uc *ReportUseCases) GetBurndownReport(sprintId uint) (*domain.BurndownRepo
 	}
 
 	return report, nil
+}
+
+type WipReportParams struct {
+	StartDate time.Time
+	EndDate   time.Time
+	TeamId    *uint
+	UserId    *uint
+}
+
+func (uc *ReportUseCases) GetWipReport(params WipReportParams) (*domain.WipReport, error) {
+	dataPoints, err := uc.reportRepo.GetWipData(params.StartDate, params.EndDate, params.TeamId, params.UserId)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get wip data: %w", err)
+	}
+
+	return &domain.WipReport{DataPoints: dataPoints}, nil
 }
 
 func (uc *ReportUseCases) GetBurnupReport(sprintId uint) (*domain.BurnupReport, error) {

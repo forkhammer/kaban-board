@@ -36,9 +36,7 @@ func (r *ReportRepositoryPostgresql) GetBurndownData(sprintId uint) ([]domain.Bu
 				) AS rn
 			FROM sprint_dates sd
 			JOIN issue_binding_histories h
-				ON h.issue_binding_id IN (
-					SELECT ib.id FROM issue_bindings ib WHERE ib.sprint_id = ?
-				)
+				ON h.sprint_id = ?
 				AND h.created_at::date <= sd.date
 		)
 		SELECT
@@ -100,9 +98,7 @@ func (r *ReportRepositoryPostgresql) GetBurnupData(sprintId uint) ([]domain.Burn
 				) AS rn
 			FROM sprint_dates sd
 			JOIN issue_binding_histories h
-				ON h.issue_binding_id IN (
-					SELECT ib.id FROM issue_bindings ib WHERE ib.sprint_id = ?
-				)
+				ON h.sprint_id = ?
 				AND h.created_at::date <= sd.date
 		),
 		daily_scope AS (
@@ -121,9 +117,7 @@ func (r *ReportRepositoryPostgresql) GetBurnupData(sprintId uint) ([]domain.Burn
 				COALESCE(SUM(CASE WHEN h.bind_status = 'done' AND h.created_at::date <= sd.date THEN COALESCE(h.estimate_qa, 0) ELSE 0 END), 0) AS completed_qa
 			FROM sprint_dates sd
 			LEFT JOIN issue_binding_histories h
-				ON h.issue_binding_id IN (
-					SELECT ib.id FROM issue_bindings ib WHERE ib.sprint_id = ?
-				)
+				ON h.sprint_id = ?
 				AND h.bind_status = 'done'
 			GROUP BY sd.date
 		)

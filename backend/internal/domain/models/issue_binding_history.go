@@ -12,6 +12,7 @@ type IssueBindingHistory struct {
 	Id             IssueBindingHistoryId
 	IssueBindingId IssueBindingId
 	IssueId        IssueId
+	SprintId       SprintId
 	EstimateDev    *uint
 	EstimateQA     *uint
 	BindStatus     IssueBindingStatus

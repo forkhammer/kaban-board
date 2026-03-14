@@ -107,6 +107,7 @@ func (r *IssueBindingHistoryRepository) toDomainIssueBindingHistory(history *mod
 		Id:             domain.IssueBindingHistoryId(history.ID),
 		IssueBindingId: domain.IssueBindingId(history.IssueBindingId),
 		IssueId:        domain.IssueId(history.IssueId),
+		SprintId:       domain.SprintId(history.SprintId),
 		EstimateDev:    history.EstimateDev,
 		EstimateQA:     history.EstimateQA,
 		BindStatus:     domain.IssueBindingStatus(history.BindStatus),
@@ -129,6 +130,7 @@ func (r *IssueBindingHistoryRepository) toIssueBindingHistory(history *domain.Is
 	return &models.IssueBindingHistory{
 		IssueBindingId: uint(history.IssueBindingId),
 		IssueId:        uint(history.IssueId),
+		SprintId:       uint(history.SprintId),
 		EstimateDev:    history.EstimateDev,
 		EstimateQA:     history.EstimateQA,
 		BindStatus:     string(history.BindStatus),

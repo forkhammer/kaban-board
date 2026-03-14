@@ -15,6 +15,7 @@ func (s *IssueBindingHistoryService) AddHistory(binding *domain.IssueBinding) (*
 	history := &domain.IssueBindingHistory{
 		IssueBindingId: binding.Id,
 		IssueId:        binding.Issue.Id,
+		SprintId:       binding.Sprint.Id,
 		EstimateDev:    binding.EstimateDev,
 		EstimateQA:     binding.EstimateQA,
 		BindStatus:     binding.BindStatus,
@@ -30,6 +31,7 @@ func (s *IssueBindingHistoryService) AddDeleteHistory(binding *domain.IssueBindi
 	history := &domain.IssueBindingHistory{
 		IssueBindingId: binding.Id,
 		IssueId:        binding.Issue.Id,
+		SprintId:       binding.Sprint.Id,
 		EstimateDev:    binding.EstimateDev,
 		EstimateQA:     binding.EstimateQA,
 		BindStatus:     binding.BindStatus,

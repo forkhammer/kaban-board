@@ -12,6 +12,7 @@ type IssueBindingHistory struct {
 	IssueBinding   IssueBinding `gorm:"foreignKey:IssueBindingId;not null"`
 	IssueId        uint         `gorm:"issue_id;not null;index"`
 	Issue          Issue        `gorm:"foreignKey:IssueId;not null"`
+	SprintId       uint         `gorm:"sprint_id;not null;index"`
 	EstimateDev    *uint        `gorm:"estimate_dev"`
 	EstimateQA     *uint        `gorm:"estimate_qa"`
 	BindStatus     string       `gorm:"bind_status;not null"`

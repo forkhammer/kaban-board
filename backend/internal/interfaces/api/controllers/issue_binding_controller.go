@@ -111,6 +111,7 @@ func (c *IssueBindingController) saveBinding(ctx *gin.Context) {
 
 	binding, err := c.bindingUC.SaveBinding(usecases.SaveIssueBindingRequest{
 		Id:          uint(id),
+		Title:       request.Title,
 		EstimateDev: request.EstimateDev,
 		EstimateQA:  request.EstimateQA,
 		BindStatus:  (*domain.IssueBindingStatus)(request.BindStatus),

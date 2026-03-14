@@ -3,8 +3,6 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { IssueBindingService } from '../../services/issue-binding.service';
 import { ProjectService } from '../../services/project.service';
-import { KanbanIssue } from '../../models/kanban-issue';
-import { User } from '../../models/user';
 import { IssueBindingModalData } from '../../services/issue-binding-modal.service';
 import { catchError, finalize } from 'rxjs/operators';
 import { of } from 'rxjs';
@@ -29,6 +27,7 @@ export class IssueBindingModalComponent {
 
   constructor() {
     this.form = this.fb.group({
+      id: [null],
       title: ['', [Validators.required]],
       project: [null, [Validators.required]],
       assignee: [null],
@@ -41,8 +40,11 @@ export class IssueBindingModalComponent {
    */
   init(data: IssueBindingModalData): void {
     this.form.patchValue({
+      id: data.id,
+      title: data.title,
       assignee: data.assigneeId,
-      sprint: data.sprintId
+      sprint: data.sprintId,
+      project: data.projectId
     })
   }
 
@@ -66,31 +68,54 @@ export class IssueBindingModalComponent {
     this.errors = [];
 
     const data = {
+      id: this.form.value.id,
       title: this.form.value.title,
       project: this.form.value.project,
       assignee: this.form.value.assignee,
       sprint: this.form.value.sprint,
     };
 
-    this.issueBindingService.create(data)
-      .pipe(
-        finalize(() => this.isLoading = false),
-        catchError((error) => {
-          if (error.error?.message) {
-            this.errors = [error.error.message];
-          } else if (error.error?.errors) {
-            this.errors = Object.values(error.error.errors).flat() as string[];
-          } else {
-            this.errors = ['An error occurred while creating the issue binding'];
+    if (data.id) {
+      this.issueBindingService.save(data)
+        .pipe(
+          finalize(() => this.isLoading = false),
+          catchError((error) => {
+            if (error.error?.message) {
+              this.errors = [error.error.message];
+            } else if (error.error?.errors) {
+              this.errors = Object.values(error.error.errors).flat() as string[];
+            } else {
+              this.errors = ['An error occurred while creating the issue binding'];
+            }
+            return of(null);
+          })
+        )
+        .subscribe((result) => {
+          if (result) {
+            this.modal.close(result);
           }
-          return of(null);
-        })
-      )
-      .subscribe((result) => {
-        if (result) {
-          this.modal.close(result);
-        }
-      });
+        });
+    } else {
+      this.issueBindingService.create(data)
+        .pipe(
+          finalize(() => this.isLoading = false),
+          catchError((error) => {
+            if (error.error?.message) {
+              this.errors = [error.error.message];
+            } else if (error.error?.errors) {
+              this.errors = Object.values(error.error.errors).flat() as string[];
+            } else {
+              this.errors = ['An error occurred while creating the issue binding'];
+            }
+            return of(null);
+          })
+        )
+        .subscribe((result) => {
+          if (result) {
+            this.modal.close(result);
+          }
+        });
+    }
   }
 
   /**

@@ -24,6 +24,7 @@ type BindIssueRequest struct {
 }
 
 type SaveIssueBindingRequest struct {
+	Title       *string `json:"title"`
 	EstimateDev *uint   `json:"estimateDev"`
 	EstimateQA  *uint   `json:"estimateQA"`
 	BindStatus  *string `json:"bindStatus"`

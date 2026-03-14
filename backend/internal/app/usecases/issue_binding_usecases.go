@@ -20,6 +20,7 @@ type IssueBindingPage struct {
 
 type SaveIssueBindingRequest struct {
 	Id          uint
+	Title       *string
 	EstimateDev *uint
 	EstimateQA  *uint
 	BindStatus  *domain.IssueBindingStatus
@@ -173,6 +174,20 @@ func (uc *IssueBindingUseCases) SaveBinding(request SaveIssueBindingRequest, acc
 			}
 		}
 		binding.Assignee = nil
+	}
+
+	if request.Title != nil && binding.CanManage(account) && !binding.Issue.IsExternal() {
+		issue := binding.Issue
+		issue.Title = *request.Title
+
+		if err := issue.Validate(); err != nil {
+			return nil, err
+		}
+
+		issue, err := uc.issueRepo.Update(issue)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	if err = binding.Validate(); err != nil {

@@ -42,9 +42,11 @@ export class IssueTableRowComponent implements OnInit, AfterViewChecked {
   readonly faGripVertical = faGripVertical
 
   @ViewChild('commentEl') commentEl?: ElementRef<HTMLElement>
+  @ViewChild('titleEl') titleEl?: ElementRef<HTMLElement>
 
   private _issue!: KanbanIssue
   private _commentPending = false
+  private _titlePending = false
   form: FormGroup
   @Output() unbind = new EventEmitter<number>()
   assigneeFilter: Record<string, any> = {}
@@ -56,6 +58,7 @@ export class IssueTableRowComponent implements OnInit, AfterViewChecked {
     this._issue = value
     this.form.patchValue(this.getSaveData(value), {emitEvent: false})
     this._commentPending = true
+    this._titlePending = true
   }
 
   get issue(): KanbanIssue {
@@ -72,6 +75,7 @@ export class IssueTableRowComponent implements OnInit, AfterViewChecked {
 
   constructor() {
     this.form = this.fb.group({
+      title: [null],
       estimateDev: [null],
       estimateQA: [null],
       bindStatus: [null],
@@ -125,11 +129,20 @@ export class IssueTableRowComponent implements OnInit, AfterViewChecked {
       this.commentEl.nativeElement.innerText = this._issue.comment ?? ''
       this._commentPending = false
     }
+    if (this._titlePending && this.titleEl) {
+      this.titleEl.nativeElement.innerText = this._issue.title ?? ''
+      this._titlePending = false
+    }
   }
 
   onCommentInput(event: Event) {
     const text = (event.target as HTMLElement).innerText
     this.form.get('comment')?.setValue(text, {emitEvent: true})
+  }
+
+  onTitleInput(event: Event) {
+    const text = (event.target as HTMLElement).innerText
+    this.form.get('title')?.setValue(text, {emitEvent: true})
   }
 
   unbindIssue() {
@@ -145,6 +158,7 @@ export class IssueTableRowComponent implements OnInit, AfterViewChecked {
 
   private getSaveData(issue: KanbanIssue) {
     return {
+      title: issue.title,
       estimateDev: issue.estimateDev,
       estimateQA: issue.estimateQA,
       bindStatus: issue.bindStatus,

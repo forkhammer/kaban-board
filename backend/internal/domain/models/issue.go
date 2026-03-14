@@ -98,3 +98,7 @@ func (i *Issue) GetAssignee() *User {
 	}
 	return nil
 }
+
+func (i *Issue) IsExternal() bool {
+	return i.WebUrl != ""
+}

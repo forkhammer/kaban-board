@@ -11,7 +11,11 @@
         {{issue.projectName}}#{{issue.iid}}
       </a>
     </div>
-    {{issue.title}}
+    <span *ngIf="!canManage() || issue.webUrl">{{issue.title}}</span>
+    <div #titleEl contenteditable="true" class="title-edit"
+      *ngIf="canManage() && !issue.webUrl"
+      (input)="onTitleInput($event)"
+      (keydown.enter)="$event.preventDefault()"></div>
   </td>
   <td class="column">
     <div class="assignee" *ngIf="!canManage()">

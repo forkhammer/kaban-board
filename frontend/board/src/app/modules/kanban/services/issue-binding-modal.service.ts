@@ -2,11 +2,13 @@ import { Injectable, inject } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { IssueBindingModalComponent } from '../components/issue-binding-modal/issue-binding-modal.component';
 import { KanbanIssue } from '../models/kanban-issue';
-import { User } from '../models/user';
 
 export interface IssueBindingModalData {
-  assigneeId: number | null;
-  sprintId: number| null;
+  id?: number
+  title?: string
+  assigneeId: number | null
+  sprintId: number| null
+  projectId?: number
 }
 
 @Injectable({

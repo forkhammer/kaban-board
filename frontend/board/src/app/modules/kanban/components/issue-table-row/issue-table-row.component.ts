@@ -15,6 +15,7 @@ import { Team } from '../../models/team';
 import { Sprint } from '../../models/sprint';
 import { IssueBindingService } from '../../services/issue-binding.service';
 import { CopyToSprintModalService } from '../../services/copy-to-sprint-modal.service';
+import { MoveToSprintModalService } from '../../services/move-to-sprint-modal.service';
 import { faEllipsisVertical, faArrowUpRightFromSquare, faGripVertical } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
@@ -29,6 +30,7 @@ export class IssueTableRowComponent implements OnInit, AfterViewChecked {
   issueService = inject(IssueService)
   issueBindingService = inject(IssueBindingService)
   copyToSprintModalService = inject(CopyToSprintModalService)
+  moveToSprintModalService = inject(MoveToSprintModalService)
   toast = inject(ToastService)
   userService = inject(UserService)
   releaseService = inject(ReleaseService)
@@ -151,6 +153,15 @@ export class IssueTableRowComponent implements OnInit, AfterViewChecked {
     const sprint = this.sprint$.value
     if (!this._issue.bindingId || !sprint) return
     this.copyToSprintModalService.show(this._issue.bindingId, sprint.team_id, sprint.id)
+  }
+
+  async moveIssue() {
+    const sprint = this.sprint$.value
+    if (!this._issue.bindingId || !sprint) return
+    const result = await this.moveToSprintModalService.show(this._issue.bindingId, sprint.team_id, sprint.id)
+    if (result) {
+      this.unbind.emit(this._issue.bindingId)
+    }
   }
 
   unbindIssue() {

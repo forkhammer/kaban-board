@@ -46,6 +46,16 @@ type CreateIssueBindingRequest struct {
 	AssigneeId *uint
 }
 
+type MoveIssueBindingRequest struct {
+	Id       uint
+	SprintId uint
+}
+
+type CopyIssueBindingRequest struct {
+	Id       uint
+	SprintId uint
+}
+
 type IssueBindingUseCases struct {
 	commonQuery       queries.CommonQuery                      `di.inject:"CommonQuery"`
 	issueBindingQuery queries.IssueBindingQuery                `di.inject:"IssueBindingQuery"`
@@ -185,7 +195,7 @@ func (uc *IssueBindingUseCases) SaveBinding(request SaveIssueBindingRequest, acc
 			return nil, err
 		}
 
-		issue, err := uc.issueRepo.Update(issue)
+		_, err := uc.issueRepo.Update(issue)
 		if err != nil {
 			return nil, err
 		}
@@ -220,11 +230,6 @@ func (uc *IssueBindingUseCases) SaveOrdering(ordering IssueBindingOrderingSet) e
 		}
 	}
 	return nil
-}
-
-type CopyIssueBindingRequest struct {
-	Id       uint
-	SprintId uint
 }
 
 func (uc *IssueBindingUseCases) CopyBinding(request CopyIssueBindingRequest, account *domain.Account) (*domain.IssueBinding, error) {
@@ -275,6 +280,48 @@ func (uc *IssueBindingUseCases) CopyBinding(request CopyIssueBindingRequest, acc
 	}
 
 	return newBinding, nil
+}
+
+func (uc *IssueBindingUseCases) MoveBinding(request MoveIssueBindingRequest, account *domain.Account) (*domain.IssueBinding, error) {
+	if account == nil {
+		return nil, domain_pkg.NewValidationError("нельзя переместить анонимным пользователем")
+	}
+
+	binding, err := uc.issueBindingRepo.Get(domain.IssueBindingId(request.Id))
+	if err != nil {
+		return nil, err
+	}
+
+	if !binding.CanManage(account) {
+		return nil, domain_pkg.NewValidationError("нельзя переместить этим пользователем")
+	}
+
+	sprint, err := uc.sprintRepo.Get(domain.SprintId(request.SprintId))
+	if err != nil {
+		return nil, err
+	}
+
+	if _, err = uc.historyService.AddDeleteHistory(binding, time.Now()); err != nil {
+		return nil, err
+	}
+
+	binding.Sprint = sprint
+
+	if err = binding.Validate(); err != nil {
+		return nil, err
+	}
+
+	binding, err = uc.issueBindingRepo.Update(binding)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = uc.historyService.AddHistory(binding)
+	if err != nil {
+		return nil, err
+	}
+
+	return binding, nil
 }
 
 func (uc *IssueBindingUseCases) CreateIssueAndBinding(request CreateIssueBindingRequest) (*domain.IssueBinding, error) {

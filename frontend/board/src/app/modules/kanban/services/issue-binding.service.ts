@@ -36,6 +36,12 @@ export class IssueBindingService extends BaseService<KanbanIssue>{
     );
   }
 
+  move(bindingId: number, sprintId: number): Observable<KanbanIssue> {
+    return this.http.post(`${this.apiUrl}/${bindingId}/move`, { sprint_id: sprintId }).pipe(
+      map(res => res as KanbanIssue)
+    );
+  }
+
   copy(bindingId: number, sprintId: number): Observable<KanbanIssue> {
     return this.http.post(`${this.apiUrl}/${bindingId}/copy`, { sprint_id: sprintId }).pipe(
       map(res => res as KanbanIssue)

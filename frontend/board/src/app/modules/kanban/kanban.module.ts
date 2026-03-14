@@ -50,6 +50,7 @@ import { BindIssueModalComponent } from './components/bind-issue-modal/bind-issu
 import { BindingStatusSelectComponent } from './components/binding-status-select/binding-status-select.component';
 import { IssueBindingModalComponent } from './components/issue-binding-modal/issue-binding-modal.component';
 import { CopyToSprintModalComponent } from './components/copy-to-sprint-modal/copy-to-sprint-modal.component';
+import { MoveToSprintModalComponent } from './components/move-to-sprint-modal/move-to-sprint-modal.component';
 
 
 @NgModule({
@@ -98,6 +99,7 @@ import { CopyToSprintModalComponent } from './components/copy-to-sprint-modal/co
     BindingStatusSelectComponent,
     IssueBindingModalComponent,
     CopyToSprintModalComponent,
+    MoveToSprintModalComponent,
   ],
   exports: [
     UserBoardComponent,

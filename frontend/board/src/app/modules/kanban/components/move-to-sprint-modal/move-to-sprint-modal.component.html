@@ -1,0 +1,31 @@
+<div class="modal-header">
+  <h5 class="modal-title">Переместить в спринт</h5>
+  <button type="button" class="btn-close" aria-label="Закрыть" (click)="close()"></button>
+</div>
+
+<div class="modal-body">
+  <div class="text-center text-muted py-4" *ngIf="isLoading">
+    <div class="spinner-border spinner-border-sm me-2"></div>
+    Загрузка...
+  </div>
+
+  <div *ngIf="!isLoading && sprints.length === 0" class="text-center text-muted py-4">
+    Нет доступных спринтов
+  </div>
+
+  <div class="sprint-list" *ngIf="!isLoading && sprints.length > 0">
+    <div
+      class="sprint-item"
+      *ngFor="let sprint of sprints"
+      (click)="selectSprint(sprint)"
+    >
+      <div class="sprint-status" [ngSwitch]="sprint.status">
+        <fa-icon *ngSwitchCase="'running'" [icon]="faPlay" class="text-success"></fa-icon>
+        <fa-icon *ngSwitchCase="'completed'" [icon]="faStop" class="text-secondary"></fa-icon>
+        <fa-icon *ngSwitchDefault [icon]="faClock" class="text-body"></fa-icon>
+      </div>
+      <div class="sprint-title">{{ sprint.represent }}</div>
+      <div class="sprint-meta">{{ sprint.start_date | formatDate: 'short' }} – {{ sprint.end_date | formatDate: 'short' }}</div>
+    </div>
+  </div>
+</div>

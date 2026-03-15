@@ -60,12 +60,12 @@
     <app-priority-select class="flat" formControlName="priority" *ngIf="canUpdate()" [useClear]="true"></app-priority-select>
   </td>
   <td class="column">
-    <span *ngIf="issue.estimateDev && !canUpdate()">{{issue.estimateDev}} ч.</span>
+    <span *ngIf="issue.estimateDev && !canUpdate()" class="estimate val-{{issue.estimateDev}}">{{issue.estimateDev}}</span>
 
     <app-select-estimate class="flat" formControlName="estimateDev" *ngIf="canUpdate()"></app-select-estimate>
   </td>
   <td class="column">
-    <span *ngIf="issue.estimateQA && !canUpdate()">{{issue.estimateQA}} ч.</span>
+    <span *ngIf="issue.estimateQA && !canUpdate()" class="estimate val-{{issue.estimateDev}}">{{issue.estimateQA}}</span>
 
     <app-select-estimate class="flat" formControlName="estimateQA" *ngIf="canUpdate()"></app-select-estimate>
   </td>

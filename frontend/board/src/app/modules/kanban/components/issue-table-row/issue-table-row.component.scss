@@ -134,3 +134,48 @@ td {
     display: none;
   }
 }
+
+.estimate {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 4px;
+  border-radius: $pt2;
+  transition-duration: .2s;
+
+  @for $i from 1 through 8 {
+    &.val-#{$i} {
+      background-color: $estimate-low-color;
+      color: darken($color: $estimate-low-color, $amount: 50);
+
+      :host-context([data-bs-theme="dark"]) & {
+        background-color: $estimate-low-color;
+      }
+    }
+  }
+
+  @for $i from 12 through 24 {
+    &.val-#{$i} {
+      background-color: $estimate-mid-color;
+      color: darken($color: $estimate-mid-color, $amount: 50);
+
+      :host-context([data-bs-theme="dark"]) & {
+        background-color: $estimate-mid-color;
+      }
+    }
+  }
+
+  @for $i from 25 through 40 {
+    &.val-#{$i} {
+      background-color: $estimate-hard-color;
+      color: darken($color: $estimate-hard-color, $amount: 50);
+
+      :host-context([data-bs-theme="dark"]) & {
+        background-color: $estimate-hard-color;
+      }
+    }
+  }
+}

@@ -138,6 +138,7 @@ func (r *AccountRepository) toDomainAccount(account *models.Account) *domain.Acc
 		AuthProvider: domain.AuthProvider(account.AuthProvider),
 		AvatarURL:    account.AvatarURL,
 		Role:         domain.AccountRole(account.Role),
+		JwtSalt:      account.JwtSalt,
 	}
 }
 
@@ -158,5 +159,6 @@ func (r *AccountRepository) toAccount(account *domain.Account) *models.Account {
 		AuthProvider: string(account.AuthProvider),
 		AvatarURL:    account.AvatarURL,
 		Role:         string(account.Role),
+		JwtSalt:      account.JwtSalt,
 	}
 }

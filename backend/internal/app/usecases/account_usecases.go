@@ -14,10 +14,6 @@ type AccountUseCases struct {
 }
 
 func (uc *AccountUseCases) GetActiveUser(token string) (*domain.Account, error) {
-	err := uc.jwtService.ValidateToken(token)
-	if err != nil {
-		return nil, err
-	}
 	accountId, err := uc.jwtService.GetAccountId(token)
 	if err != nil {
 		return nil, err
@@ -27,6 +23,11 @@ func (uc *AccountUseCases) GetActiveUser(token string) (*domain.Account, error) 
 	if err != nil {
 		return nil, err
 	}
+
+	if err := uc.jwtService.ValidateToken(token, account.JwtSalt); err != nil {
+		return nil, err
+	}
+
 	return account, nil
 }
 
@@ -64,7 +65,11 @@ func (uc *AccountUseCases) Register(username, password string) (*domain.Account,
 	}
 
 	passwordHash, err := uc.passwordService.HashPassword(password)
+	if err != nil {
+		return nil, err
+	}
 
+	salt, err := uc.passwordService.GenerateSalt()
 	if err != nil {
 		return nil, err
 	}
@@ -74,6 +79,7 @@ func (uc *AccountUseCases) Register(username, password string) (*domain.Account,
 		Username: username,
 		Password: passwordHash,
 		IsActive: false,
+		JwtSalt:  salt,
 	}
 	account, err = uc.accountRepo.Create(account)
 

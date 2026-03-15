@@ -19,4 +19,5 @@ type Account struct {
 	AuthProvider string         `gorm:"auth_provider;not null;default:password"`
 	AvatarURL    string         `gorm:"avatar_url"`
 	Role         string         `gorm:"role;not null;default:viewer"`
+	JwtSalt      string         `gorm:"jwt_salt;not null;default:''"`
 }

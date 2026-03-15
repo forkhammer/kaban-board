@@ -14,10 +14,11 @@ import (
 )
 
 type GitLabAuthService struct {
-	config          *config.Config       `di.inject:"config"`
-	accountRepo     repo.AccountRepo     `di.inject:"AccountRepository"`
-	gitlabTokenRepo repo.GitlabTokenRepo `di.inject:"GitlabTokenRepository"`
-	gitlabClient    *gitlab.GitlabClient `di.inject:"gitlab"`
+	config          *config.Config                    `di.inject:"config"`
+	accountRepo     repo.AccountRepo                  `di.inject:"AccountRepository"`
+	gitlabTokenRepo repo.GitlabTokenRepo              `di.inject:"GitlabTokenRepository"`
+	passwordService interfaces.PasswordServiceInterface `di.inject:"PasswordService"`
+	gitlabClient    *gitlab.GitlabClient              `di.inject:"gitlab"`
 }
 
 func (s *GitLabAuthService) IsEnabled() bool {
@@ -71,6 +72,11 @@ func (s *GitLabAuthService) findOrCreateAccount(userInfo *interfaces.GitLabUserI
 		return s.accountRepo.Update(account)
 	}
 
+	salt, err := s.passwordService.GenerateSalt()
+	if err != nil {
+		return nil, fmt.Errorf("failed to generate jwt salt: %w", err)
+	}
+
 	gitlabId := domain.UserId(userInfo.ID)
 	account = &domain.Account{
 		Username:     userInfo.Username,
@@ -79,6 +85,7 @@ func (s *GitLabAuthService) findOrCreateAccount(userInfo *interfaces.GitLabUserI
 		AuthProvider: domain.AuthProviderGitLab,
 		AvatarURL:    userInfo.AvatarURL,
 		IsActive:     true,
+		JwtSalt:      salt,
 	}
 
 	return s.accountRepo.Create(account)

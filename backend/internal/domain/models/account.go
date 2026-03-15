@@ -27,4 +27,5 @@ type Account struct {
 	AuthProvider AuthProvider
 	AvatarURL    string
 	Role         AccountRole
+	JwtSalt      string
 }

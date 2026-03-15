@@ -21,12 +21,11 @@ func (s *JWTService) GenerateToken(account *domain.Account) (string, error) {
 	claims["id"] = account.Id
 	claims["exp"] = time.Now().Add(time.Hour * time.Duration(tokenLifespan)).Unix()
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString([]byte(config.Settings.ApiSecret))
+	return token.SignedString([]byte(config.Settings.ApiSecret + account.JwtSalt))
 }
 
-func (s *JWTService) ValidateToken(token string) error {
-	parsedToken, err := s.parseToken(token)
-
+func (s *JWTService) ValidateToken(token string, salt string) error {
+	parsedToken, err := s.parseToken(token, salt)
 	if err != nil {
 		return err
 	}
@@ -40,25 +39,28 @@ func (s *JWTService) ValidateToken(token string) error {
 }
 
 func (s *JWTService) GetAccountId(token string) (domain.AccountId, error) {
-	parsedToken, err := s.parseToken(token)
-
+	parser := jwt.NewParser()
+	parsedToken, _, err := parser.ParseUnverified(token, jwt.MapClaims{})
 	if err != nil {
-		return domain.AccountId(0), err
+		return domain.AccountId(0), fmt.Errorf("Error parsing token: %w", err)
 	}
 
-	claims, _ := parsedToken.Claims.(jwt.MapClaims)
-	userId := uint(claims["id"].(float64))
+	claims, ok := parsedToken.Claims.(jwt.MapClaims)
+	if !ok {
+		return domain.AccountId(0), errors.New("Invalid token claims")
+	}
 
+	userId := uint(claims["id"].(float64))
 	return domain.AccountId(userId), nil
 }
 
-func (s *JWTService) parseToken(token string) (*jwt.Token, error) {
+func (s *JWTService) parseToken(token, salt string) (*jwt.Token, error) {
 	parsedToken, err := jwt.Parse(token, func(token *jwt.Token) (any, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
 
-		return []byte(config.Settings.ApiSecret), nil
+		return []byte(config.Settings.ApiSecret + salt), nil
 	})
 
 	if err != nil {

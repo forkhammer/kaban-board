@@ -16,4 +16,5 @@ var ALL_MODELS []any = []any{
 	&IssueBindingHistory{},
 	&Epic{},
 	&KVElement{},
+	&GitlabToken{},
 }

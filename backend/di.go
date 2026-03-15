@@ -90,6 +90,7 @@ func registerRepositories() {
 	mustRegisterBean("IssueBindingRepository", reflect.TypeFor[*repo.IssueBindingRepository]())
 	mustRegisterBean("IssueBindingHistoryRepository", reflect.TypeFor[*repo.IssueBindingHistoryRepository]())
 	mustRegisterBean("EpicRepository", reflect.TypeFor[*repo.EpicRepository]())
+	mustRegisterBean("GitlabTokenRepository", reflect.TypeFor[*repo.GitlabTokenRepository]())
 }
 
 func registerReportRepository(dbType interfaces.DbType) {

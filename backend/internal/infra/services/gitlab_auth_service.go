@@ -2,17 +2,22 @@ package services
 
 import (
 	"fmt"
+	"log"
 	"main/config"
 	"main/internal/app/interfaces"
 	domain "main/internal/domain/models"
 	"main/internal/domain/repo"
 	"main/internal/infra/gitlab"
+	"time"
+
+	"github.com/getsentry/sentry-go"
 )
 
 type GitLabAuthService struct {
-	config       *config.Config       `di.inject:"config"`
-	accountRepo  repo.AccountRepo     `di.inject:"AccountRepository"`
-	gitlabClient *gitlab.GitlabClient `di.inject:"gitlab"`
+	config          *config.Config       `di.inject:"config"`
+	accountRepo     repo.AccountRepo     `di.inject:"AccountRepository"`
+	gitlabTokenRepo repo.GitlabTokenRepo `di.inject:"GitlabTokenRepository"`
+	gitlabClient    *gitlab.GitlabClient `di.inject:"gitlab"`
 }
 
 func (s *GitLabAuthService) IsEnabled() bool {
@@ -43,6 +48,17 @@ func (s *GitLabAuthService) HandleCallback(code string) (*domain.Account, error)
 	account, err := s.findOrCreateAccount(userInfo)
 	if err != nil {
 		return nil, fmt.Errorf("failed to find or create account: %w", err)
+	}
+
+	expiresAt := time.Unix(int64(token.CreatedAt), 0).Add(time.Duration(token.ExpiresIn) * time.Second)
+	if _, err := s.gitlabTokenRepo.Upsert(&domain.GitlabToken{
+		AccountId:    account.Id,
+		AccessToken:  token.AccessToken,
+		RefreshToken: token.RefreshToken,
+		ExpiresAt:    expiresAt,
+	}); err != nil {
+		sentry.CaptureException(err)
+		log.Printf("failed to save gitlab token for account %d: %v", account.Id, err)
 	}
 
 	return account, nil

@@ -130,6 +130,7 @@ func (r *UserRepository) toDomainUser(user *models.User, accounts map[uint]*doma
 	domainUser := &domain.User{
 		Id:        domain.UserId(user.Id),
 		IsVisible: user.IsVisible,
+		IsActive:  user.IsActive,
 		Name:      user.Name,
 		Username:  user.Username,
 		AvatarUrl: user.AvatarUrl,
@@ -153,6 +154,7 @@ func (r *UserRepository) toUser(user *domain.User) *models.User {
 	return &models.User{
 		Id:        uint(user.Id),
 		IsVisible: user.IsVisible,
+		IsActive:  user.IsActive,
 		Name:      user.Name,
 		Username:  user.Username,
 		AvatarUrl: user.AvatarUrl,

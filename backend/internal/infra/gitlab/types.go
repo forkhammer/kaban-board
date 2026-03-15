@@ -14,6 +14,7 @@ type GitlabUser struct {
 	Name      string `json:"name"`
 	Username  string `json:"username"`
 	AvatarUrl string `json:"avatarUrl"`
+	State     string `json:"state"`
 }
 
 type GitlabAssignee struct {

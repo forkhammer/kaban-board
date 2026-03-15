@@ -347,6 +347,7 @@ func (client *GitlabClient) getUsersQuery(pageSize int, startCursor string) stri
 					name
 					username
 					avatarUrl
+					state
 				}
 				pageInfo {
 					startCursor
@@ -506,6 +507,7 @@ func (client *GitlabClient) toDomainUser(user *GitlabUser) (*domain.User, error)
 		Username:  user.Username,
 		AvatarUrl: client.cleanUserAvatar(user.AvatarUrl),
 		IsVisible: true,
+		IsActive:  user.State == "active",
 	}, nil
 }
 

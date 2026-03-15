@@ -10,12 +10,14 @@ import (
 )
 
 type SyncUseCases struct {
-	gitlab      interfaces.TaskTracker `di.inject:"gitlab"`
-	userRepo    repo.UserRepo          `di.inject:"UserRepository"`
-	projectRepo repo.ProjectRepo       `di.inject:"ProjectRepository"`
-	issueRepo   repo.IssueRepo         `di.inject:"IssueRepository"`
-	labelRepo   repo.LabelRepo         `di.inject:"LabelRepository"`
-	releaseRepo repo.ReleaseRepo       `di.inject:"ReleaseRepository"`
+	gitlab          interfaces.TaskTracker              `di.inject:"gitlab"`
+	userRepo        repo.UserRepo                       `di.inject:"UserRepository"`
+	accountRepo     repo.AccountRepo                    `di.inject:"AccountRepository"`
+	passwordService interfaces.PasswordServiceInterface `di.inject:"PasswordService"`
+	projectRepo     repo.ProjectRepo                    `di.inject:"ProjectRepository"`
+	issueRepo       repo.IssueRepo                      `di.inject:"IssueRepository"`
+	labelRepo       repo.LabelRepo                      `di.inject:"LabelRepository"`
+	releaseRepo     repo.ReleaseRepo                    `di.inject:"ReleaseRepository"`
 }
 
 func (uc *SyncUseCases) Sync() error {
@@ -122,6 +124,7 @@ func (uc *SyncUseCases) SyncUsers() error {
 			existUser.Name = user.Name
 			existUser.Username = user.Username
 			existUser.AvatarUrl = user.AvatarUrl
+			existUser.IsActive = user.IsActive
 
 			if err := existUser.Validate(); err != nil {
 				return err
@@ -137,9 +140,38 @@ func (uc *SyncUseCases) SyncUsers() error {
 				return err
 			}
 		}
+
+		if err := uc.syncAccountActivity(user); err != nil {
+			return err
+		}
 	}
 
 	return nil
+}
+
+func (uc *SyncUseCases) syncAccountActivity(user domain.User) error {
+	account, err := uc.accountRepo.GetByGitlabID(uint(user.Id))
+	if err != nil {
+		return nil
+	}
+
+	if account.IsActive == user.IsActive {
+		return nil
+	}
+
+	wasActive := account.IsActive
+	account.IsActive = user.IsActive
+
+	if wasActive && !user.IsActive {
+		newSalt, err := uc.passwordService.GenerateSalt()
+		if err != nil {
+			return fmt.Errorf("failed to generate jwt salt: %w", err)
+		}
+		account.JwtSalt = newSalt
+	}
+
+	_, err = uc.accountRepo.Update(account)
+	return err
 }
 
 func (uc *SyncUseCases) SyncIssues() error {

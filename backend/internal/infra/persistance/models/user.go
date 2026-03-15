@@ -6,5 +6,6 @@ type User struct {
 	Username  string   `gorm:"username"`
 	AvatarUrl string   `gorm:"avatar_url"`
 	IsVisible bool     `gorm:"is_visible;default:true;not null"`
+	IsActive  bool     `gorm:"is_active;default:true;not null"`
 	Groups    []*Group `gorm:"many2many:user_groups"`
 }

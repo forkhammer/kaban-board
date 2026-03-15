@@ -4,6 +4,7 @@ type UserId uint
 
 type User struct {
 	IsVisible bool
+	IsActive  bool
 	Id        UserId
 	Name      string
 	Username  string

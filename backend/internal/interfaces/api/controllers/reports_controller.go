@@ -43,6 +43,7 @@ func (c *ReportsController) getWipReport(ctx *gin.Context) {
 	params := usecases.WipReportParams{
 		StartDate: startDate,
 		EndDate:   endDate,
+		Interval:  request.Interval,
 		TeamId:    request.TeamId,
 		UserId:    request.UserId,
 	}

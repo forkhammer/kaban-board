@@ -183,22 +183,37 @@ type WipRow struct {
 	WipCount int    `gorm:"column:wip_count"`
 }
 
-func (r *ReportRepository) GetWipData(startDate, endDate time.Time, teamId *uint, userId *uint) ([]domain.WipDataPoint, error) {
+func wipBucketExprSQLite(interval string) string {
+	switch interval {
+	case "week":
+		return "strftime('%Y-%W', date)"
+	case "2weeks":
+		return "CAST((julianday(date) - julianday('2000-01-03')) / 14 AS INTEGER)"
+	case "month":
+		return "strftime('%Y-%m', date)"
+	default: // day
+		return "date"
+	}
+}
+
+func (r *ReportRepository) GetWipData(startDate, endDate time.Time, interval string, teamId *uint, userId *uint) ([]domain.WipDataPoint, error) {
 	var rows []WipRow
 
 	var joinClause string
 	var args []interface{}
 	args = append(args, startDate.Format("2006-01-02"), endDate.Format("2006-01-02"))
 
-	joinClause = "JOIN issue_binding_histories h ON date(h.created_at) <= dr.date"
+	joinClause = "LEFT JOIN issue_binding_histories h ON date(h.created_at) <= dr.date"
 	if teamId != nil {
-		joinClause += " JOIN sprints s ON h.sprint_id = s.id AND s.team_id = ?"
+		joinClause += " LEFT JOIN sprints s ON h.sprint_id = s.id AND s.team_id = ?"
 		args = append(args, *teamId)
 	}
 	if userId != nil {
 		joinClause += " AND h.assignee_id = ?"
 		args = append(args, *userId)
 	}
+
+	bucket := wipBucketExprSQLite(interval)
 
 	query := strings.Join([]string{
 		`WITH RECURSIVE date_range AS (`,
@@ -215,13 +230,19 @@ func (r *ReportRepository) GetWipData(startDate, endDate time.Time, teamId *uint
 		`        ) AS rn`,
 		`    FROM date_range dr`,
 		joinClause,
+		`),`,
+		`daily_wip AS (`,
+		`    SELECT lh.date,`,
+		`        COALESCE(COUNT(CASE WHEN lh.bind_status = 'in_progress'`,
+		`                    AND (lh.removed_at IS NULL OR date(lh.removed_at) > lh.date)`,
+		`              THEN 1 END), 0) AS wip_count`,
+		`    FROM latest_history lh WHERE lh.rn = 1`,
+		`    GROUP BY lh.date`,
 		`)`,
-		`SELECT lh.date,`,
-		`    COALESCE(COUNT(CASE WHEN lh.bind_status = 'in_progress'`,
-		`                AND (lh.removed_at IS NULL OR date(lh.removed_at) > lh.date)`,
-		`          THEN 1 END), 0) AS wip_count`,
-		`FROM latest_history lh WHERE lh.rn = 1`,
-		`GROUP BY lh.date ORDER BY lh.date`,
+		`SELECT MIN(date) AS date, CAST(ROUND(AVG(wip_count)) AS INTEGER) AS wip_count`,
+		`FROM daily_wip`,
+		`GROUP BY ` + bucket,
+		`ORDER BY MIN(date)`,
 	}, "\n")
 
 	if err := r.conn.GetEngine().Raw(query, args...).Scan(&rows).Error; err != nil {

@@ -29,7 +29,7 @@ export interface BurnupReport {
 }
 
 export interface WipDataPoint {
-  date: string;
+  label: string;
   wip_count: number;
 }
 

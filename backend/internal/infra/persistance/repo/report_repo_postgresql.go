@@ -156,22 +156,37 @@ func (r *ReportRepositoryPostgresql) GetBurnupData(sprintId uint) ([]domain.Burn
 	return result, nil
 }
 
-func (r *ReportRepositoryPostgresql) GetWipData(startDate, endDate time.Time, teamId *uint, userId *uint) ([]domain.WipDataPoint, error) {
+func wipBucketExprPostgresql(interval string) string {
+	switch interval {
+	case "week":
+		return "DATE_TRUNC('week', date::date)::text"
+	case "2weeks":
+		return "FLOOR(EXTRACT(epoch FROM date::date - '2000-01-03'::date) / (14 * 86400))::bigint"
+	case "month":
+		return "DATE_TRUNC('month', date::date)::text"
+	default: // day
+		return "date::text"
+	}
+}
+
+func (r *ReportRepositoryPostgresql) GetWipData(startDate, endDate time.Time, interval string, teamId *uint, userId *uint) ([]domain.WipDataPoint, error) {
 	var rows []WipRow
 
 	var joinClause string
 	var args []interface{}
 	args = append(args, startDate.Format("2006-01-02"), endDate.Format("2006-01-02"))
 
-	joinClause = "JOIN issue_binding_histories h ON h.created_at::date <= dr.date"
+	joinClause = "LEFT JOIN issue_binding_histories h ON h.created_at::date <= dr.date"
 	if teamId != nil {
-		joinClause += " JOIN sprints s ON h.sprint_id = s.id AND s.team_id = ?"
+		joinClause += " LEFT JOIN sprints s ON h.sprint_id = s.id AND s.team_id = ?"
 		args = append(args, *teamId)
 	}
 	if userId != nil {
 		joinClause += " AND h.assignee_id = ?"
 		args = append(args, *userId)
 	}
+
+	bucket := wipBucketExprPostgresql(interval)
 
 	query := strings.Join([]string{
 		`WITH date_range AS (`,
@@ -186,13 +201,19 @@ func (r *ReportRepositoryPostgresql) GetWipData(startDate, endDate time.Time, te
 		`        ) AS rn`,
 		`    FROM date_range dr`,
 		joinClause,
+		`),`,
+		`daily_wip AS (`,
+		`    SELECT lh.date::text AS date,`,
+		`        COALESCE(COUNT(CASE WHEN lh.bind_status = 'in_progress'`,
+		`                    AND (lh.removed_at IS NULL OR lh.removed_at::date > lh.date)`,
+		`              THEN 1 END), 0) AS wip_count`,
+		`    FROM latest_history lh WHERE lh.rn = 1`,
+		`    GROUP BY lh.date`,
 		`)`,
-		`SELECT lh.date::text AS date,`,
-		`    COALESCE(COUNT(CASE WHEN lh.bind_status = 'in_progress'`,
-		`                AND (lh.removed_at IS NULL OR lh.removed_at::date > lh.date)`,
-		`          THEN 1 END), 0) AS wip_count`,
-		`FROM latest_history lh WHERE lh.rn = 1`,
-		`GROUP BY lh.date ORDER BY lh.date`,
+		`SELECT MIN(date)::text AS date, ROUND(AVG(wip_count))::int AS wip_count`,
+		`FROM daily_wip`,
+		`GROUP BY ` + bucket,
+		`ORDER BY MIN(date)`,
 	}, "\n")
 
 	if err := r.conn.GetEngine().Raw(query, args...).Scan(&rows).Error; err != nil {

@@ -37,14 +37,36 @@ func (uc *ReportUseCases) GetBurndownReport(sprintId uint) (*domain.BurndownRepo
 type WipReportParams struct {
 	StartDate time.Time
 	EndDate   time.Time
+	Interval  string
 	TeamId    *uint
 	UserId    *uint
 }
 
+var ruMonths = [12]string{"Янв", "Фев", "Мар", "Апр", "Май", "Июн", "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"}
+
+func wipLabel(date time.Time, interval string) string {
+	switch interval {
+	case "week":
+		_, week := date.ISOWeek()
+		return fmt.Sprintf("Нед. %d", week)
+	case "2weeks":
+		_, week := date.ISOWeek()
+		return fmt.Sprintf("%d-%d", week, week+1)
+	case "month":
+		return fmt.Sprintf("%s %d", ruMonths[date.Month()-1], date.Year())
+	default: // day
+		return date.Format("02.01.2006")
+	}
+}
+
 func (uc *ReportUseCases) GetWipReport(params WipReportParams) (*domain.WipReport, error) {
-	dataPoints, err := uc.reportRepo.GetWipData(params.StartDate, params.EndDate, params.TeamId, params.UserId)
+	dataPoints, err := uc.reportRepo.GetWipData(params.StartDate, params.EndDate, params.Interval, params.TeamId, params.UserId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get wip data: %w", err)
+	}
+
+	for i := range dataPoints {
+		dataPoints[i].Label = wipLabel(dataPoints[i].Date, params.Interval)
 	}
 
 	return &domain.WipReport{DataPoints: dataPoints}, nil

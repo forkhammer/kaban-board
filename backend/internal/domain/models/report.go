@@ -34,6 +34,7 @@ type BurnupReport struct {
 
 type WipDataPoint struct {
 	Date     time.Time
+	Label    string
 	WipCount int
 }
 

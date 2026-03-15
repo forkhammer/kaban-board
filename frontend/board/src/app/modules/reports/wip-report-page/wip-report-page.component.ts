@@ -23,10 +23,8 @@ import { isEqual } from 'lodash';
 
 PlotlyModule.plotlyjs = PlotlyJS;
 
-type Interval = 'day' | 'week' | '2weeks' | 'month';
-
 interface IntervalOption {
-  value: Interval;
+  value: string;
   label: string;
 }
 
@@ -83,7 +81,7 @@ export class WipReportPageComponent {
       user: [null],
     });
 
-    // Restore state from URL query params (once on init)
+    // Restore state from URL query params
     const queryParams = this.route.snapshot.queryParams;
     const patch: Record<string, any> = {};
     if (queryParams['interval']) patch['interval'] = queryParams['interval'];
@@ -103,19 +101,17 @@ export class WipReportPageComponent {
       this.router.navigate([], { queryParams: data, queryParamsHandling: 'merge' });
     });
 
-    // When backend params change -> load data
-    const backendParams$ = this.form.valueChanges.pipe(
-      map(v => ({ start_date: v.start_date, end_date: v.end_date, team: v.team, user: v.user })),
+    // All form params -> load from backend (interval included)
+    this.form.valueChanges.pipe(
       distinctUntilChanged(isEqual),
-      filter(v => !!v.start_date && !!v.end_date)
-    );
-
-    backendParams$.pipe(
+      map(v => ({ interval: v.interval, start_date: v.start_date, end_date: v.end_date, team: v.team, user: v.user })),
+      filter(v => !!v.start_date && !!v.end_date && !!v.interval),
       switchMap(v => {
         this.loading = true;
         return this.reportService.getWipReport({
           start_date: v.start_date,
           end_date: v.end_date,
+          interval: v.interval,
           team_id: v.team ? Number(v.team) : undefined,
           user_id: v.user ? Number(v.user) : undefined,
         }).pipe(catchErrorMessages(this.toast));
@@ -125,16 +121,8 @@ export class WipReportPageComponent {
       this.loading = false;
       if (report) {
         this.report = report;
-        this.rebuildChart();
+        this.rebuildChart(report);
       }
-    });
-
-    // When interval changes and report is already loaded -> re-render
-    this.form.get('interval')!.valueChanges.pipe(
-      distinctUntilChanged(),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe(() => {
-      if (this.report) this.rebuildChart();
     });
 
     // Theme changes -> update layout
@@ -146,11 +134,12 @@ export class WipReportPageComponent {
 
     // Initial load
     const v = this.form.value;
-    if (v.start_date && v.end_date) {
+    if (v.start_date && v.end_date && v.interval) {
       this.loading = true;
       this.reportService.getWipReport({
         start_date: v.start_date,
         end_date: v.end_date,
+        interval: v.interval,
         team_id: v.team ? Number(v.team) : undefined,
         user_id: v.user ? Number(v.user) : undefined,
       }).pipe(
@@ -160,24 +149,21 @@ export class WipReportPageComponent {
         this.loading = false;
         if (report) {
           this.report = report;
-          this.rebuildChart();
+          this.rebuildChart(report);
         }
       });
     }
   }
 
-  private rebuildChart(): void {
-    if (!this.report) return;
-    const interval: Interval = this.form.value.interval || 'week';
+  private rebuildChart(report: WipReport): void {
     const theme = this.themeService.theme$.value;
-    const grouped = this.groupByInterval(this.report.data_points, interval);
 
     this.graph = {
       ...this.graph,
       data: [
         {
-          x: grouped.map(p => p.date),
-          y: grouped.map(p => p.wip_count),
+          x: report.data_points.map(p => p.label),
+          y: report.data_points.map(p => p.wip_count),
           type: 'scatter',
           mode: 'lines+markers',
           name: 'WIP',
@@ -187,52 +173,6 @@ export class WipReportPageComponent {
       ],
       layout: this.buildLayout(theme)
     };
-  }
-
-  private groupByInterval(dataPoints: WipReport['data_points'], interval: Interval): { date: string; wip_count: number }[] {
-    if (interval === 'day') {
-      return dataPoints.map(p => ({ date: p.date, wip_count: p.wip_count }));
-    }
-
-    const buckets = new Map<string, number[]>();
-    for (const point of dataPoints) {
-      const key = this.getBucketKey(point.date, interval);
-      if (!buckets.has(key)) buckets.set(key, []);
-      buckets.get(key)!.push(point.wip_count);
-    }
-
-    return Array.from(buckets.entries())
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([date, values]) => ({
-        date,
-        wip_count: Math.round(values.reduce((s, v) => s + v, 0) / values.length)
-      }));
-  }
-
-  private getBucketKey(dateStr: string, interval: Interval): string {
-    const d = new Date(dateStr + 'T00:00:00');
-    if (interval === 'week') {
-      return this.formatDate(this.getMonday(d));
-    }
-    if (interval === '2weeks') {
-      const monday = this.getMonday(d);
-      const epoch = new Date('2000-01-03'); // первый понедельник эпохи
-      const weeksSinceEpoch = Math.floor((monday.getTime() - epoch.getTime()) / (7 * 24 * 60 * 60 * 1000));
-      const biWeekStart = new Date(epoch.getTime() + Math.floor(weeksSinceEpoch / 2) * 14 * 24 * 60 * 60 * 1000);
-      return this.formatDate(biWeekStart);
-    }
-    if (interval === 'month') {
-      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-01`;
-    }
-    return dateStr;
-  }
-
-  private getMonday(date: Date): Date {
-    const d = new Date(date);
-    const day = d.getDay();
-    const diff = d.getDate() - day + (day === 0 ? -6 : 1);
-    d.setDate(diff);
-    return d;
   }
 
   private formatDate(date: Date): string {
@@ -251,7 +191,7 @@ export class WipReportPageComponent {
       title: { text: 'WIP — задачи в работе', font: { size: 20, color: textColor } },
       xaxis: {
         title: { text: 'Дата', font: { color: textColor } },
-        showgrid: true, gridcolor: gridColor, tickfont: { color: textColor }
+        showgrid: true, gridcolor: gridColor, tickfont: { color: textColor }, type: 'category'
       },
       yaxis: {
         title: { text: 'Количество задач', font: { color: textColor } },
@@ -270,11 +210,12 @@ export class WipReportPageComponent {
 
   reload(): void {
     const v = this.form.value;
-    if (!v.start_date || !v.end_date) return;
+    if (!v.start_date || !v.end_date || !v.interval) return;
     this.loading = true;
     this.reportService.getWipReport({
       start_date: v.start_date,
       end_date: v.end_date,
+      interval: v.interval,
       team_id: v.team ? Number(v.team) : undefined,
       user_id: v.user ? Number(v.user) : undefined,
     }).pipe(
@@ -284,7 +225,7 @@ export class WipReportPageComponent {
       this.loading = false;
       if (report) {
         this.report = report;
-        this.rebuildChart();
+        this.rebuildChart(report);
       }
     });
   }

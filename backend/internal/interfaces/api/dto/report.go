@@ -69,12 +69,13 @@ type BurnupReportDto struct {
 type WipReportRequest struct {
 	StartDate string `form:"start_date" binding:"required"`
 	EndDate   string `form:"end_date" binding:"required"`
+	Interval  string `form:"interval" binding:"required,oneof=day week 2weeks month"`
 	TeamId    *uint  `form:"team_id"`
 	UserId    *uint  `form:"user_id"`
 }
 
 type WipDataPointDto struct {
-	Date     string `json:"date"`
+	Label    string `json:"label"`
 	WipCount int    `json:"wip_count"`
 }
 
@@ -86,7 +87,7 @@ func SerializeWipReport(report *domain.WipReport) WipReportDto {
 	dataPoints := make([]WipDataPointDto, len(report.DataPoints))
 	for i, dp := range report.DataPoints {
 		dataPoints[i] = WipDataPointDto{
-			Date:     dp.Date.Format("2006-01-02"),
+			Label:    dp.Label,
 			WipCount: dp.WipCount,
 		}
 	}

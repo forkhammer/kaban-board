@@ -23,10 +23,11 @@ export class ReportService {
     });
   }
 
-  getWipReport(params: { start_date: string; end_date: string; team_id?: number; user_id?: number }): Observable<WipReport> {
+  getWipReport(params: { start_date: string; end_date: string; interval: string; team_id?: number; user_id?: number }): Observable<WipReport> {
     const httpParams: Record<string, string> = {
       start_date: params.start_date,
-      end_date: params.end_date
+      end_date: params.end_date,
+      interval: params.interval,
     };
     if (params.team_id != null) httpParams['team_id'] = params.team_id.toString();
     if (params.user_id != null) httpParams['user_id'] = params.user_id.toString();

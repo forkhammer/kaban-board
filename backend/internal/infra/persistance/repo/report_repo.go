@@ -200,7 +200,7 @@ func (r *ReportRepository) GetWipData(startDate, endDate time.Time, interval str
 	var rows []WipRow
 
 	var joinClause string
-	var args []interface{}
+	var args []any
 	args = append(args, startDate.Format("2006-01-02"), endDate.Format("2006-01-02"))
 
 	joinClause = "JOIN issue_binding_histories h ON date(h.created_at) <= dr.date"

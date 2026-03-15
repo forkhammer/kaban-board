@@ -15,7 +15,7 @@ type MemoryCache struct {
 }
 
 type MemoryCacheItem struct {
-	Value      interface{}
+	Value      any
 	Created    time.Time
 	Expiration int64
 }
@@ -35,7 +35,7 @@ func NewMemoryCache(defaultExpiration, cleanupInterval time.Duration) *MemoryCac
 	return &cache
 }
 
-func (c *MemoryCache) Set(key string, value interface{}, duration time.Duration) {
+func (c *MemoryCache) Set(key string, value any, duration time.Duration) {
 	var expiration int64
 
 	if duration == 0 {
@@ -57,7 +57,7 @@ func (c *MemoryCache) Set(key string, value interface{}, duration time.Duration)
 	}
 }
 
-func (c *MemoryCache) Get(key string) (interface{}, bool) {
+func (c *MemoryCache) Get(key string) (any, bool) {
 	c.RLock()
 	defer c.RUnlock()
 

@@ -1,6 +1,6 @@
 package utils
 
-func Unique[T interface{}, K int | string | uint](slice []T, keyFunc func(T) K) []T {
+func Unique[T any, K int | string | uint](slice []T, keyFunc func(T) K) []T {
 	result := make([]T, 0)
 
 	for _, el := range slice {
@@ -16,7 +16,7 @@ func Unique[T interface{}, K int | string | uint](slice []T, keyFunc func(T) K) 
 	return result
 }
 
-func IndexOf[T interface{}](slice []T, predicate func(T) bool) int {
+func IndexOf[T any](slice []T, predicate func(T) bool) int {
 	for i, el := range slice {
 		if predicate(el) {
 			return i
@@ -26,7 +26,7 @@ func IndexOf[T interface{}](slice []T, predicate func(T) bool) int {
 	return -1
 }
 
-func Filter[T interface{}](slice []T, predicate func(T) bool) []T {
+func Filter[T any](slice []T, predicate func(T) bool) []T {
 	result := make([]T, 0)
 
 	for _, el := range slice {
@@ -38,7 +38,7 @@ func Filter[T interface{}](slice []T, predicate func(T) bool) []T {
 	return result
 }
 
-func Map[T interface{}, K interface{}](slice []T, mapFunc func(T) K) []K {
+func Map[T any, K any](slice []T, mapFunc func(T) K) []K {
 	result := make([]K, 0)
 
 	for i := range slice {
@@ -49,7 +49,7 @@ func Map[T interface{}, K interface{}](slice []T, mapFunc func(T) K) []K {
 	return result
 }
 
-func Find[T interface{}](slice []T, predicate func(T) bool) *T {
+func Find[T any](slice []T, predicate func(T) bool) *T {
 	for _, el := range slice {
 		if predicate(el) {
 			return &el

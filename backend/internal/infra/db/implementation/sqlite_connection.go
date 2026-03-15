@@ -62,6 +62,6 @@ func (c *SqliteConnection) GetEngine() *gorm.DB {
 	return c.db
 }
 
-func (c *SqliteConnection) Migrate(models ...interface{}) error {
+func (c *SqliteConnection) Migrate(models ...any) error {
 	return c.db.AutoMigrate(models...)
 }

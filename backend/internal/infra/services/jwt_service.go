@@ -53,7 +53,7 @@ func (s *JWTService) GetAccountId(token string) (domain.AccountId, error) {
 }
 
 func (s *JWTService) parseToken(token string) (*jwt.Token, error) {
-	parsedToken, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
+	parsedToken, err := jwt.Parse(token, func(token *jwt.Token) (any, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}

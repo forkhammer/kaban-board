@@ -173,7 +173,7 @@ func (r *ReportRepositoryPostgresql) GetWipData(startDate, endDate time.Time, in
 	var rows []WipRow
 
 	var joinClause string
-	var args []interface{}
+	var args []any
 	args = append(args, startDate.Format("2006-01-02"), endDate.Format("2006-01-02"))
 
 	joinClause = "INNER JOIN issue_binding_histories h ON h.created_at::date <= dr.date"

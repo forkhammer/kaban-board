@@ -9,6 +9,7 @@ import { faArrowsRotate } from '@fortawesome/free-solid-svg-icons';
 
 import { UiModule } from '../../ui/ui.module';
 import { KanbanModule } from '../../kanban/kanban.module';
+import { SelectValue } from '../../ui/models/select-value';
 import { TeamService } from '../../kanban/services/team.service';
 import { UserService } from '../../kanban/services/user.service';
 import { ToastService } from '../../core/services/toast.service';
@@ -22,11 +23,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { isEqual } from 'lodash';
 
 PlotlyModule.plotlyjs = PlotlyJS;
-
-interface IntervalOption {
-  value: string;
-  label: string;
-}
 
 @Component({
   selector: 'app-wip-report-page',
@@ -55,11 +51,11 @@ export class WipReportPageComponent {
   loading = false;
   faArrowsRotate = faArrowsRotate;
 
-  intervalOptions: IntervalOption[] = [
-    { value: 'day', label: 'День' },
-    { value: 'week', label: 'Неделя' },
-    { value: '2weeks', label: '2 недели' },
-    { value: 'month', label: 'Месяц' },
+  intervalOptions: SelectValue[] = [
+    { id: 'day', title: 'День' },
+    { id: 'week', title: 'Неделя' },
+    { id: '2weeks', title: '2 недели' },
+    { id: 'month', title: 'Месяц' },
   ];
 
   public graph: { data: any[]; layout: any; config: any } = {

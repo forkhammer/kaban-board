@@ -5,6 +5,15 @@
   margin: 0 auto;
 }
 
+h1 {
+  @include fs-lead-l();
+  margin-top: $pt3;
+
+  :host-context([data-bs-theme="dark"]) & {
+    color: $white;
+  }
+}
+
 .report-card {
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -58,7 +67,7 @@
 :host-context([data-bs-theme="dark"]) {
   .report-card {
     background-color: var(--bs-dark);
-    border-color: var(--bs-border-color-dark);
+    border-color: transparent;
 
     &:hover {
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);

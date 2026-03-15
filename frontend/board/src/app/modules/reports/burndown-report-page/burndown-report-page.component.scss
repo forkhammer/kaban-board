@@ -9,7 +9,11 @@
 }
 
 h2 {
-  margin-bottom: 0.5rem;
+  margin-bottom: $pt;
+
+  :host-context([data-bs-theme="dark"]) & {
+    color: $white;
+  }
 }
 
 .chart-card {

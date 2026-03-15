@@ -37,6 +37,7 @@ type Config struct {
 
 	JwtTokenLifespanHour uint   `env:"JWT_TOKEN_LIFESPAN_HOUR" envDefault:"24"`
 	ApiSecret            string `env:"API_SECRET" json:"-"`
+	EncryptionKey        string `env:"ENCRYPTION_KEY" json:"-"`
 
 	GitlabSyncEnabled      bool `env:"GITLAB_SYNC_ENABLED" envDefault:"true"`
 	GitlabSyncPeriodMin    int  `env:"GITLAB_SYNC_PERIOD_MIN" envDefault:"10"`

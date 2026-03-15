@@ -130,6 +130,7 @@ func registerIssueQuery(dbType interfaces.DbType) {
 }
 
 func registerServices() {
+	mustRegisterBean("CryptoService", reflect.TypeFor[*services.CryptoService]())
 	mustRegisterBean("JWTService", reflect.TypeFor[*services.JWTService]())
 	mustRegisterBean("PasswordService", reflect.TypeFor[*services.PasswordService]())
 	mustRegisterBean("LabelService", reflect.TypeFor[*app_services.LabelService]())

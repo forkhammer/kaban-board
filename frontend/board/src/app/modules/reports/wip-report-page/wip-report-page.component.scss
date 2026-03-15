@@ -39,6 +39,11 @@ h2 {
   z-index: 10;
 }
 
+.assignee-select,
+.team-select {
+  min-width: 200px;
+}
+
 :host-context([data-bs-theme="dark"]) {
   .chart-card {
     background: var(--bs-card-bg, #212529);

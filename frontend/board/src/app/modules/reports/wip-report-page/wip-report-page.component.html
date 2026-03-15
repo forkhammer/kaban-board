@@ -23,11 +23,11 @@
             <input type="date" class="form-control form-control-sm" formControlName="end_date" style="width: auto">
           </div>
 
-          <app-select-model [service]="teamService" formControlName="team" [useClear]="true"
+          <app-select-model class="team-select" [service]="teamService" formControlName="team" [useClear]="true"
             title="Команда">
           </app-select-model>
 
-          <app-assignee-select formControlName="user" [useClear]="true" [useSearch]="true"
+          <app-assignee-select class="assignee-select" formControlName="user" [useClear]="true" [useSearch]="true"
             title="Сотрудник">
           </app-assignee-select>
 

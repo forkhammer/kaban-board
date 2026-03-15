@@ -14,6 +14,9 @@
         <div class="empty-avatar">
           <fa-icon [icon]="faUser"></fa-icon>
         </div>
+        <div class="name">
+          {{title}}
+        </div>
       </ng-container>
     </div>
     <button class="clear" *ngIf='useClear && valueModel$.value' (click)='clear($event)'>

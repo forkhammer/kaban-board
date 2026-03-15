@@ -71,6 +71,10 @@
   }
 }
 
+.name {
+  @include fs-paragraph-xs();
+}
+
 .empty-avatar {
   width: $pt3;
   height: $pt3;

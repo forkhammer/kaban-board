@@ -2,7 +2,7 @@ import { Component, DestroyRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { distinctUntilChanged, filter, map, switchMap } from 'rxjs';
+import { BehaviorSubject, combineLatestWith, distinctUntilChanged, filter, map, switchMap } from 'rxjs';
 import * as PlotlyJS from 'plotly.js-dist-min';
 import { PlotlyModule } from 'angular-plotly.js';
 import { faArrowsRotate } from '@fortawesome/free-solid-svg-icons';
@@ -49,6 +49,8 @@ export class WipReportPageComponent {
   userService = inject(UserService);
 
   form: FormGroup;
+  reload$ = new BehaviorSubject<null>(null);
+
   report: WipReport | null = null;
   loading = false;
   faArrowsRotate = faArrowsRotate;
@@ -81,19 +83,27 @@ export class WipReportPageComponent {
       user: [null],
     });
 
-    // Restore state from URL query params
-    const queryParams = this.route.snapshot.queryParams;
-    const patch: Record<string, any> = {};
-    if (queryParams['interval']) patch['interval'] = queryParams['interval'];
-    if (queryParams['start_date']) patch['start_date'] = queryParams['start_date'];
-    if (queryParams['end_date']) patch['end_date'] = queryParams['end_date'];
-    if (queryParams['team']) patch['team'] = queryParams['team'];
-    if (queryParams['user']) patch['user'] = queryParams['user'];
-    if (Object.keys(patch).length > 0) {
-      this.form.patchValue(patch, { emitEvent: false });
-    }
+    const interval$ = this.route.queryParams.pipe(map(p => p['interval']), distinctUntilChanged());
+    const startDate$ = this.route.queryParams.pipe(map(p => p['start_date']), distinctUntilChanged());
+    const endDate$ = this.route.queryParams.pipe(map(p => p['end_date']), distinctUntilChanged());
+    const team$ = this.route.queryParams.pipe(map(p => p['team']), distinctUntilChanged());
+    const user$ = this.route.queryParams.pipe(map(p => p['user']), distinctUntilChanged());
 
-    // Sync form -> query params
+    // Sync URL -> form
+    interval$.pipe(
+      combineLatestWith(startDate$, endDate$, team$, user$),
+      takeUntilDestroyed()
+    ).subscribe(([interval, startDate, endDate, team, user]) => {
+      this.form.patchValue({
+        interval: interval ?? this.form.value.interval,
+        start_date: startDate ?? this.form.value.start_date,
+        end_date: endDate ?? this.form.value.end_date,
+        team: team ?? null,
+        user: user ?? null,
+      }, { emitEvent: false });
+    });
+
+    // Sync form -> URL
     this.form.valueChanges.pipe(
       distinctUntilChanged(isEqual),
       takeUntilDestroyed()
@@ -101,19 +111,21 @@ export class WipReportPageComponent {
       this.router.navigate([], { queryParams: data, queryParamsHandling: 'merge' });
     });
 
-    // All form params -> load from backend (interval included)
-    this.form.valueChanges.pipe(
+    // Load data when any param changes
+    interval$.pipe(
+      combineLatestWith(startDate$, endDate$, team$, user$, this.reload$),
+      map(([interval, startDate, endDate, team, user]) => ({ interval, startDate, endDate, team, user })),
       distinctUntilChanged(isEqual),
-      map(v => ({ interval: v.interval, start_date: v.start_date, end_date: v.end_date, team: v.team, user: v.user })),
-      filter(v => !!v.start_date && !!v.end_date && !!v.interval),
-      switchMap(v => {
+      filter(p => !!(p.interval ?? this.form.value.interval) && !!(p.startDate ?? this.form.value.start_date) && !!(p.endDate ?? this.form.value.end_date)),
+      switchMap(p => {
         this.loading = true;
+        const v = this.form.value;
         return this.reportService.getWipReport({
-          start_date: v.start_date,
-          end_date: v.end_date,
-          interval: v.interval,
-          team_id: v.team ? Number(v.team) : undefined,
-          user_id: v.user ? Number(v.user) : undefined,
+          interval: p.interval ?? v.interval,
+          start_date: p.startDate ?? v.start_date,
+          end_date: p.endDate ?? v.end_date,
+          team_id: (p.team ?? v.team) ? Number(p.team ?? v.team) : undefined,
+          user_id: (p.user ?? v.user) ? Number(p.user ?? v.user) : undefined,
         }).pipe(catchErrorMessages(this.toast));
       }),
       takeUntilDestroyed(this.destroyRef)
@@ -125,34 +137,22 @@ export class WipReportPageComponent {
       }
     });
 
+    // When params cleared -> clear chart
+    interval$.pipe(
+      combineLatestWith(startDate$, endDate$),
+      filter(([interval, startDate, endDate]) => !interval && !startDate && !endDate),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(() => {
+      this.report = null;
+      this.graph = { ...this.graph, data: [] };
+    });
+
     // Theme changes -> update layout
     this.themeService.theme$.pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(theme => {
       this.graph.layout = this.buildLayout(theme);
     });
-
-    // Initial load
-    const v = this.form.value;
-    if (v.start_date && v.end_date && v.interval) {
-      this.loading = true;
-      this.reportService.getWipReport({
-        start_date: v.start_date,
-        end_date: v.end_date,
-        interval: v.interval,
-        team_id: v.team ? Number(v.team) : undefined,
-        user_id: v.user ? Number(v.user) : undefined,
-      }).pipe(
-        catchErrorMessages(this.toast),
-        takeUntilDestroyed(this.destroyRef)
-      ).subscribe(report => {
-        this.loading = false;
-        if (report) {
-          this.report = report;
-          this.rebuildChart(report);
-        }
-      });
-    }
   }
 
   private rebuildChart(report: WipReport): void {
@@ -209,24 +209,6 @@ export class WipReportPageComponent {
   }
 
   reload(): void {
-    const v = this.form.value;
-    if (!v.start_date || !v.end_date || !v.interval) return;
-    this.loading = true;
-    this.reportService.getWipReport({
-      start_date: v.start_date,
-      end_date: v.end_date,
-      interval: v.interval,
-      team_id: v.team ? Number(v.team) : undefined,
-      user_id: v.user ? Number(v.user) : undefined,
-    }).pipe(
-      catchErrorMessages(this.toast),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe(report => {
-      this.loading = false;
-      if (report) {
-        this.report = report;
-        this.rebuildChart(report);
-      }
-    });
+    this.reload$.next(null);
   }
 }

@@ -161,7 +161,7 @@ func wipBucketExprPostgresql(interval string) string {
 	case "week":
 		return "DATE_TRUNC('week', date::date)::text"
 	case "2weeks":
-		return "FLOOR(EXTRACT(epoch FROM date::date - '2000-01-03'::date) / (14 * 86400))::bigint"
+		return "FLOOR((date::date - '2000-01-03'::date) / (14 * 86400))::bigint"
 	case "month":
 		return "DATE_TRUNC('month', date::date)::text"
 	default: // day

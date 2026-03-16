@@ -1,6 +1,9 @@
 package models
 
+import "gorm.io/gorm"
+
 type IssueBinding struct {
+	gorm.Model
 	Id          uint     `gorm:"id;primaryKey"`
 	SprintId    uint     `gorm:"sprint_id;not null"`
 	Sprint      *Sprint  `gorm:"foreignKey:sprint_id;not null"`

@@ -38,7 +38,7 @@ export class UserBoardComponent {
   faPlus = faPlus
   faArrowLeft = faArrowLeft
   faArrowRight = faArrowRight
-  COLUMN_WIDTH = 340
+  COLUMN_WIDTH = 310
 
   @ViewChild('UserBoardInner') userBoardInner: ElementRef | null = null
   public slidePosition = 0

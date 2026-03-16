@@ -208,6 +208,7 @@ bean := di.GetInstance("BeanName").(*YourType)
 - The application supports dark/light theme switching
 - Built-in admin panel for configuration management
 - Fast loading optimized with memory caching (configurable TTL)
+- Use `any` instead `interface{}` in backend
 
 ## Dark Theme Support
 

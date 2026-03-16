@@ -37,6 +37,7 @@ type IssueBinding struct {
 	Release     *Release
 	Epic        *Epic
 	Order       string
+	Version     uint
 }
 
 func (ib *IssueBinding) Validate() error {

@@ -1,24 +1,28 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+	"gorm.io/plugin/optimisticlock"
+)
 
 type IssueBinding struct {
 	gorm.Model
-	Id          uint     `gorm:"id;primaryKey"`
-	SprintId    uint     `gorm:"sprint_id;not null"`
-	Sprint      *Sprint  `gorm:"foreignKey:sprint_id;not null"`
-	IssueId     uint     `gorm:"issue_id;not null"`
-	Issue       *Issue   `gorm:"foreignKey:issue_id;not null"`
-	EstimateDev *uint    `gorm:"estimate_dev"`
-	EstimateQA  *uint    `gorm:"estimate_qa"`
-	BindStatus  string   `gorm:"bind_status;not null"`
-	Priority    *string  `gorm:"priority"`
-	AssigneeId  *uint    `gorm:"assignee_id"`
-	Assignee    *User    `gorm:"foreignKey:assignee_id"`
-	Comment     *string  `gorm:"comment"`
-	ReleaseId   *uint    `gorm:"release_id"`
-	Release     *Release `gorm:"foreignKey:ReleaseId"`
-	EpicId      *uint    `gorm:"epic_id"`
-	Epic        *Epic    `gorm:"foreignKey:EpicId"`
-	Order       string   `gorm:"order;default:''"`
+	Id          uint                   `gorm:"id;primaryKey"`
+	SprintId    uint                   `gorm:"sprint_id;not null"`
+	Sprint      *Sprint                `gorm:"foreignKey:sprint_id;not null"`
+	IssueId     uint                   `gorm:"issue_id;not null"`
+	Issue       *Issue                 `gorm:"foreignKey:issue_id;not null"`
+	EstimateDev *uint                  `gorm:"estimate_dev"`
+	EstimateQA  *uint                  `gorm:"estimate_qa"`
+	BindStatus  string                 `gorm:"bind_status;not null"`
+	Priority    *string                `gorm:"priority"`
+	AssigneeId  *uint                  `gorm:"assignee_id"`
+	Assignee    *User                  `gorm:"foreignKey:assignee_id"`
+	Comment     *string                `gorm:"comment"`
+	ReleaseId   *uint                  `gorm:"release_id"`
+	Release     *Release               `gorm:"foreignKey:ReleaseId"`
+	EpicId      *uint                  `gorm:"epic_id"`
+	Epic        *Epic                  `gorm:"foreignKey:EpicId"`
+	Order       string                 `gorm:"order;default:''"`
+	Version     optimisticlock.Version `gorm:"version;default:1"`
 }

@@ -11,6 +11,7 @@ import (
 	"main/internal/infra/persistance/models"
 
 	"gorm.io/gorm"
+	"gorm.io/plugin/optimisticlock"
 )
 
 type IssueBindingRepository struct {
@@ -102,8 +103,17 @@ func (r *IssueBindingRepository) Update(binding *domain.IssueBinding) (*domain.I
 	if err != nil {
 		return nil, err
 	}
-	if err := r.conn.GetEngine().Save(model).Error; err != nil {
-		return nil, err
+	result := r.conn.GetEngine().Select("*").Updates(model)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	// Check for optimistic lock conflict (no rows updated)
+	if result.RowsAffected == 0 {
+		currentBinding, getErr := r.Get(binding.Id)
+		if getErr != nil {
+			return nil, getErr
+		}
+		return nil, domain_pkg.NewConflictError("IssueBinding", currentBinding, errors.New("resource was modified by another user"))
 	}
 
 	return r.Get(domain.IssueBindingId(model.Id))
@@ -158,6 +168,7 @@ func (r *IssueBindingRepository) toDomainIssueBinding(binding *models.IssueBindi
 		Release:     release,
 		Epic:        epic,
 		Order:       binding.Order,
+		Version:     uint(binding.Version.Int64),
 	}
 
 	return domainBinding, domainBinding.Validate()
@@ -194,6 +205,9 @@ func (r *IssueBindingRepository) toIssueBinding(binding *domain.IssueBinding) (*
 				return &val
 			}
 			return nil
+		}(),
+		Version: func() optimisticlock.Version {
+			return optimisticlock.Version{Int64: int64(binding.Version), Valid: true}
 		}(),
 	}, nil
 }

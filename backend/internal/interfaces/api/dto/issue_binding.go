@@ -30,6 +30,7 @@ type IssueBindingDto struct {
 	CanUpdate   bool        `json:"can_update"`
 	CanManage   bool        `json:"can_manage"`
 	Order       string      `json:"order"`
+	Version     uint        `json:"version"`
 }
 
 type SetIssueBindingOrder struct {
@@ -98,6 +99,7 @@ func SerializeIssueBinding(binding *domain.IssueBinding, account *domain.Account
 		CanUpdate:   binding.CanUpdate(account),
 		CanManage:   binding.CanManage(account),
 		Order:       binding.Order,
+		Version:     binding.Version,
 	}
 
 	if binding.Priority != nil {

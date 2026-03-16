@@ -25,6 +25,14 @@ func HandleException(ctx *gin.Context, err error) bool {
 		return true
 	}
 
+	if conflictErr, ok := errors.AsType[*domain.ConflictError](err); ok {
+		ctx.JSON(http.StatusConflict, dto.ConflictResponse{
+			Error: "Resource was modified by another user",
+			Data:  conflictErr.Data,
+		})
+		return true
+	}
+
 	sentry.CaptureException(err)
 	ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{Error: err.Error()})
 	return true

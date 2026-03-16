@@ -69,4 +69,5 @@ export type KanbanIssue = {
   can_update?: boolean
   can_manage?: boolean
   order?: string
+  version?: number
 }

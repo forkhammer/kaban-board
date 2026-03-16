@@ -59,3 +59,28 @@ func NewNotFoundError(entity string, id string, err error) *NotFoundError {
 		Err:    err,
 	}
 }
+
+type ConflictError struct {
+	Entity string
+	Data   any
+	Err    error
+}
+
+func (e *ConflictError) Error() string {
+	if e.Err != nil {
+		return fmt.Sprintf("%s conflict: %v", e.Entity, e.Err)
+	}
+	return fmt.Sprintf("%s conflict", e.Entity)
+}
+
+func (e *ConflictError) Unwrap() error {
+	return e.Err
+}
+
+func NewConflictError(entity string, data any, err error) *ConflictError {
+	return &ConflictError{
+		Entity: entity,
+		Data:   data,
+		Err:    err,
+	}
+}

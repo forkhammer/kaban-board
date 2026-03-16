@@ -122,6 +122,7 @@ func (c *IssueBindingController) saveBinding(ctx *gin.Context) {
 		Priority:    (*domain.IssueBindingPriority)(request.Priority),
 		ReleaseId:   request.Release,
 		EpicId:      request.Epic,
+		Version:     request.Version,
 	}, currentAccount)
 	if apiutils.HandleException(ctx, err) {
 		return

@@ -30,6 +30,7 @@ type SaveIssueBindingRequest struct {
 	Priority    *domain.IssueBindingPriority
 	ReleaseId   *uint
 	EpicId      *uint
+	Version     uint
 }
 
 type IssueBindingOrdering struct {
@@ -146,6 +147,7 @@ func (uc *IssueBindingUseCases) SaveBinding(request SaveIssueBindingRequest, acc
 	}
 	binding.Comment = request.Comment
 	binding.Priority = request.Priority
+	binding.Version = request.Version
 
 	if request.ReleaseId != nil {
 		release, err := uc.releaseRepo.Get(domain.ReleaseId(*request.ReleaseId))

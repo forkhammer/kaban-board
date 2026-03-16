@@ -7,3 +7,8 @@ type ErrorResponse struct {
 type ErrorsResponse struct {
 	Errors []string `json:"errors"`
 }
+
+type ConflictResponse struct {
+	Error string `json:"error"`
+	Data  any    `json:"data"`
+}

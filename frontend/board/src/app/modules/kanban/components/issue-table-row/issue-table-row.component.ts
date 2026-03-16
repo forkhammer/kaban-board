@@ -109,6 +109,7 @@ export class IssueTableRowComponent implements OnInit, AfterViewChecked {
         const query = Object.assign({
           id: this._issue.id,
           bindingId: this._issue.bindingId,
+          version: this._issue.version,
         }, this.getSaveData(this._issue), data)
         return this.issueBindingService.save(query).pipe(
           catchErrorMessages(this.toast)

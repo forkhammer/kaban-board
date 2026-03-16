@@ -208,3 +208,75 @@ bean := di.GetInstance("BeanName").(*YourType)
 - The application supports dark/light theme switching
 - Built-in admin panel for configuration management
 - Fast loading optimized with memory caching (configurable TTL)
+- Use `any` instead `interface{}` in backend
+
+## Dark Theme Support
+
+The app uses Bootstrap's `data-bs-theme` attribute for dark mode. Theme state is managed by `ThemeServiceService` which stores preference in localStorage (`dark-mode` key).
+
+### Adding Dark Theme to a Component
+
+**SCSS (preferred approach):**
+```scss
+// Use :host-context([data-bs-theme="dark"]) at top level or with & for nested elements
+:host {
+  display: block;
+
+  :host-context([data-bs-theme="dark"]) {
+    background: $gray-900;
+  }
+}
+
+// For nested elements, use & properly
+.form {
+  background: $gray-100;
+
+  :host-context([data-bs-theme="dark"]) & {
+    background: $gray-850;
+  }
+}
+```
+
+**Common mistakes to avoid:**
+- ❌ Do NOT nest `:host-context` inside a selector that tries to reference itself:
+  ```scss
+  // WRONG - causes infinite nesting or incorrect CSS
+  .form {
+    :host-context([data-bs-theme="dark"]) {
+      .form { background: $gray-850; } // don't do this
+    }
+  }
+  ```
+- ✅ DO use `&` to reference the parent selector:
+  ```scss
+  // CORRECT
+  .form {
+    :host-context([data-bs-theme="dark"]) & {
+      background: $gray-850;
+    }
+  }
+  ```
+
+**Template approach (use sparingly):**
+Only use template bindings when you need runtime reactivity beyond CSS. Inject `ThemeServiceService` and subscribe to `theme$`:
+```typescript
+themeService = inject(ThemeServiceService);
+theme: string = 'light';
+
+constructor() {
+  this.themeService.theme$.subscribe(theme => {
+    this.theme = theme;
+  });
+}
+```
+
+In template, prefer `[ngClass]` over multiple `[class.*]` bindings:
+```html
+<!-- Good -->
+<div [ngClass]="{'bg-dark text-light': theme === 'dark'}"></div>
+
+<!-- Avoid - redundant -->
+<div [class.bg-dark]="theme === 'dark'" [ngClass]="{'bg-dark': theme === 'dark'}"></div>
+```
+
+For most cases, SCSS alone is sufficient - use the template approach only when dynamic values depend on component state.

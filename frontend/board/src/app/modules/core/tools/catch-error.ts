@@ -31,12 +31,11 @@ export function catchErrorMessages<T>(toast: ToastService, callback?: catchError
   return (source: Observable<T>) =>
     source.pipe(
       catchError(err => {
-        console.log(err)
-        if (isValidationError(err)) {
+        if (isConflictError(err)) {
+          toast.showMessages(['Данные были изменены другим пользователем. Обновите страницу и попробуйте снова.'], 'error');
+        } else if (isValidationError(err)) {
           toast.showMessages(getValidationErrors(err), 'error');
-        }
-
-        if (isValidationFormError(err)) {
+        } else if (isValidationFormError(err)) {
           toast.showMessages(getValidationFormErrors(err), 'error');
         }
 
@@ -62,4 +61,8 @@ export function isValidationFormError(err: any): boolean {
 
 export function getValidationFormErrors(err: any): string[] {
    return Object.keys(err.error).map(key => err.error[key].toString());
+}
+
+export function isConflictError(err: any): boolean {
+  return err.error && Object.prototype.toString.call(err.error) === '[object Object]';
 }

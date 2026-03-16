@@ -17,6 +17,9 @@ export class KanbanIssueComponent {
   faBug = faBug
 
   get assignee() {
+    if (this.issue?.assignee) {
+      return this.issue.assignee
+    }
     return this.issue?.assignees.length ? this.issue?.assignees[0] : null
   }
 }

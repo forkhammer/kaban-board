@@ -11,7 +11,7 @@
         {{issue.projectName}}#{{issue.iid}}
       </a>
     </div>
-    <span *ngIf="!canManage() || issue.webUrl">{{issue.title}}</span>
+    <span *ngIf="!canManage() || issue.webUrl" class="title">{{issue.title}}</span>
     <div #titleEl contenteditable="true" class="title-edit"
       *ngIf="canManage() && !issue.webUrl"
       (input)="onTitleInput($event)"

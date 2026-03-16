@@ -39,6 +39,10 @@ td {
   }
 }
 
+.title {
+  @include fs-paragraph-s();
+}
+
 .project {
   display: block;
   @include fs-paragraph-xxs();
@@ -120,7 +124,7 @@ td {
 }
 
 .title-edit {
-  @include fs-paragraph-xs();
+  @include fs-paragraph-s();
 }
 
 .btn-row-actions {

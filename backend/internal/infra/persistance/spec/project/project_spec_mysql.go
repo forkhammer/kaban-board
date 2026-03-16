@@ -9,12 +9,12 @@ import (
 	"gorm.io/gorm"
 )
 
-type ProjectFilterSpec struct {
+type ProjectFilterSpecMysql struct {
 	repo.QuerySpec
 	Filter queries.ProjectFilter
 }
 
-func (s *ProjectFilterSpec) Apply(conn any) (any, error) {
+func (s *ProjectFilterSpecMysql) Apply(conn any) (any, error) {
 	query := conn.(*gorm.DB)
 
 	if s.Filter.TeamID != nil {
@@ -23,16 +23,16 @@ func (s *ProjectFilterSpec) Apply(conn any) (any, error) {
 
 	if s.Filter.Search != nil {
 		searchText := strings.ToLower(*s.Filter.Search)
-		query = query.Where("lower_unicode(name) like ?", fmt.Sprintf("%%%s%%", searchText))
+		query = query.Where("lower(name) like ?", fmt.Sprintf("%%%s%%", searchText))
 	}
 
 	return query, nil
 }
 
-type ProjectQueryImpl struct {
+type ProjectQueryImplMysql struct {
 	queries.ProjectQuery
 }
 
-func (b *ProjectQueryImpl) GetSpec(filter queries.ProjectFilter) repo.QuerySpec {
-	return &ProjectFilterSpec{Filter: filter}
+func (b *ProjectQueryImplMysql) GetSpec(filter queries.ProjectFilter) repo.QuerySpec {
+	return &ProjectFilterSpecMysql{Filter: filter}
 }

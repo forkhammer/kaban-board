@@ -9,26 +9,17 @@ import (
 	"gorm.io/gorm"
 )
 
-type OnlyVisibleUserSpec struct {
-	repo.QuerySpec
-}
-
-func (s *OnlyVisibleUserSpec) Apply(conn any) (any, error) {
-	query := conn.(*gorm.DB)
-	return query.Where("is_visible = ?", true), nil
-}
-
-type UserFilterSpec struct {
+type UserFilterSpecMysql struct {
 	repo.QuerySpec
 	Filter queries.UserFilter
 }
 
-func (s *UserFilterSpec) Apply(conn any) (any, error) {
+func (s *UserFilterSpecMysql) Apply(conn any) (any, error) {
 	query := conn.(*gorm.DB)
 
 	if s.Filter.Search != nil {
 		searchText := fmt.Sprintf("%%%s%%", strings.ToLower(*s.Filter.Search))
-		query = query.Where("(lower_unicode(users.name) like ?) or (lower_unicode(users.username) like ?)", searchText, searchText)
+		query = query.Where("(lower(users.name) like ?) or (lower(users.username) like ?)", searchText, searchText)
 	}
 
 	if s.Filter.TeamId != nil {
@@ -49,14 +40,14 @@ func (s *UserFilterSpec) Apply(conn any) (any, error) {
 	return query, nil
 }
 
-type UserQueryImpl struct {
+type UserQueryImplMysql struct {
 	queries.UserQuery
 }
 
-func (q *UserQueryImpl) OnlyVisible() repo.QuerySpec {
+func (q *UserQueryImplMysql) OnlyVisible() repo.QuerySpec {
 	return &OnlyVisibleUserSpec{}
 }
 
-func (q *UserQueryImpl) GetSpec(filter queries.UserFilter) repo.QuerySpec {
-	return &UserFilterSpec{Filter: filter}
+func (q *UserQueryImplMysql) GetSpec(filter queries.UserFilter) repo.QuerySpec {
+	return &UserFilterSpecMysql{Filter: filter}
 }

@@ -106,10 +106,10 @@ func registerQueries(dbType interfaces.DbType) {
 	mustRegisterBean("LabelQuery", reflect.TypeFor[*label_spec.LabelQueryImpl]())
 	mustRegisterBean("ColumnQuery", reflect.TypeFor[*column_spec.ColumnQueryImpl]())
 	mustRegisterBean("GroupQuery", reflect.TypeFor[*group_spec.GroupQueryImpl]())
-	mustRegisterBean("UserQuery", reflect.TypeFor[*user_spec.UserQueryImpl]())
+	registerUserQuery(dbType)
 	mustRegisterBean("AccountQuery", reflect.TypeFor[*account_spec.AccountQueryImpl]())
 	mustRegisterBean("SprintQuery", reflect.TypeFor[*sprint_spec.SprintQueryImpl]())
-	mustRegisterBean("ProjectQuery", reflect.TypeFor[*project_spec.ProjectQueryImpl]())
+	registerProjectQuery(dbType)
 	mustRegisterBean("IssueBindingQuery", reflect.TypeFor[*issuebinding_spec.IssueBindingQueryImpl]())
 	mustRegisterBean("ReleaseQuery", reflect.TypeFor[*release_spec.ReleaseQueryImpl]())
 	mustRegisterBean("EpicQuery", reflect.TypeFor[*epic_spec.EpicQueryImpl]())
@@ -126,6 +126,28 @@ func registerIssueQuery(dbType interfaces.DbType) {
 		mustRegisterBean("IssueQuery", reflect.TypeFor[*issue_spec.IssueQueryImplMysql]())
 	default:
 		mustRegisterBean("IssueQuery", reflect.TypeFor[*issue_spec.IssueQueryImpl]())
+	}
+}
+
+func registerUserQuery(dbType interfaces.DbType) {
+	switch dbType {
+	case interfaces.Postgresql:
+		mustRegisterBean("UserQuery", reflect.TypeFor[*user_spec.UserQueryImplPostgresql]())
+	case interfaces.Mysql:
+		mustRegisterBean("UserQuery", reflect.TypeFor[*user_spec.UserQueryImplMysql]())
+	default:
+		mustRegisterBean("UserQuery", reflect.TypeFor[*user_spec.UserQueryImpl]())
+	}
+}
+
+func registerProjectQuery(dbType interfaces.DbType) {
+	switch dbType {
+	case interfaces.Postgresql:
+		mustRegisterBean("ProjectQuery", reflect.TypeFor[*project_spec.ProjectQueryImplPostgresql]())
+	case interfaces.Mysql:
+		mustRegisterBean("ProjectQuery", reflect.TypeFor[*project_spec.ProjectQueryImplMysql]())
+	default:
+		mustRegisterBean("ProjectQuery", reflect.TypeFor[*project_spec.ProjectQueryImpl]())
 	}
 }
 

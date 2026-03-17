@@ -16,6 +16,7 @@
   </thead>
   <tbody cdkDropList (cdkDropListDropped)="dropIssue($event)">
     <tr app-issue-table-row *ngFor="let issue of issues; trackBy: trackByIssue"
+      [class.row-updated]="issue.bindingId != null && highlightedIds.has(issue.bindingId)"
       [issue]="issue"
       [team]="team$.value"
       [sprint]="sprint$.value"

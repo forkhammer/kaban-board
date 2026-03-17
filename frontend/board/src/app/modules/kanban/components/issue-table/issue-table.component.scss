@@ -141,6 +141,17 @@
   background: transparent;
 }
 
+// --- Highlight on update ---
+
+@keyframes row-highlight-fade {
+  from { background-color: rgba(144, 238, 144, 0.25); }
+  to   { background-color: transparent; }
+}
+
+tbody tr.row-updated {
+  animation: row-highlight-fade 1s ease-out forwards;
+}
+
 // --- Drag & Drop ---
 
 // Строка, захваченная и перетаскиваемая (preview)

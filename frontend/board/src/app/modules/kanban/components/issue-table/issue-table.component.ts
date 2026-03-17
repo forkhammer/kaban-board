@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, Input } from '@angular/core';
+import { Component, DestroyRef, inject, Input, NgZone } from '@angular/core';
 import { BehaviorSubject, combineLatestWith, debounceTime, distinctUntilChanged, filter, merge, of, Subject, switchMap, timer } from 'rxjs';
 import { KanbanUser } from '../../models/kanban-user';
 import { Team } from '../../models/team';
@@ -34,6 +34,7 @@ export class IssueTableComponent {
   private destroyRef = inject(DestroyRef)
   private issueBindingModal = inject(IssueBindingModalService)
   private sprintWs = inject(SprintWebsocketService)
+  private zone = inject(NgZone)
 
   faPlus = faPlus
 
@@ -47,6 +48,8 @@ export class IssueTableComponent {
   public isLoading = false
   isPageMore$ = new BehaviorSubject<boolean>(false);
   isLoadMore$ = new BehaviorSubject<boolean>(false);
+  highlightedIds = new Set<number>()
+  highlightedTimeout = 1000
 
   @Input() set user(value : KanbanUser | undefined | null) {
     this.user$.next(value)
@@ -85,7 +88,7 @@ export class IssueTableComponent {
       switch (event.type) {
         case 'binding_updated':  this.onBindingUpdated(event.data as BindingUpdatedEventData); break
         case 'binding_deleted':  this.onBindingDeleted(event.data as BindingDeletedEventData); break
-        case 'binding_created':
+        case 'binding_created': this.onBindingCreated(event.data as BindingUpdatedEventData); break
         case 'binding_ordering': this.reloadIssues(); break
       }
     })
@@ -158,6 +161,7 @@ export class IssueTableComponent {
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(updated => {
       this.issues[idx] = updated
+      this.addHighlighted(data.id)
     })
   }
 
@@ -167,6 +171,11 @@ export class IssueTableComponent {
 
   private reloadIssues(): void {
     this.wsReload$.next(this.wsReload$.value + 1)
+  }
+
+  private onBindingCreated(data: BindingUpdatedEventData): void {
+    this.wsReload$.next(this.wsReload$.value + 1)
+    this.addHighlighted(data.id)
   }
 
   appendIssue() {
@@ -237,5 +246,10 @@ export class IssueTableComponent {
 
   onEnd(el: HTMLElement) {
     this.loadMore()
+  }
+
+  addHighlighted(id: number) {
+    this.highlightedIds.add(id)
+    setTimeout(() => this.zone.run(() => this.highlightedIds.delete(id)), this.highlightedTimeout)
   }
 }

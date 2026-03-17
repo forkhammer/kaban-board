@@ -3,6 +3,7 @@ package usecases
 import (
 	"errors"
 	"fmt"
+	"main/config"
 	"main/internal/app/interfaces"
 	domain_pkg "main/internal/domain"
 	domain "main/internal/domain/models"
@@ -11,6 +12,7 @@ import (
 
 type SyncUseCases struct {
 	gitlab          interfaces.TaskTracker              `di.inject:"gitlab"`
+	config          *config.Config                      `di.inject:"config"`
 	userRepo        repo.UserRepo                       `di.inject:"UserRepository"`
 	accountRepo     repo.AccountRepo                    `di.inject:"AccountRepository"`
 	passwordService interfaces.PasswordServiceInterface `di.inject:"PasswordService"`
@@ -18,6 +20,7 @@ type SyncUseCases struct {
 	issueRepo       repo.IssueRepo                      `di.inject:"IssueRepository"`
 	labelRepo       repo.LabelRepo                      `di.inject:"LabelRepository"`
 	releaseRepo     repo.ReleaseRepo                    `di.inject:"ReleaseRepository"`
+	epicRepo        repo.EpicRepo                       `di.inject:"EpicRepository"`
 }
 
 func (uc *SyncUseCases) Sync() error {
@@ -219,6 +222,48 @@ func (uc *SyncUseCases) SyncIssues() error {
 		}
 	}
 
+	return uc.syncEpicsFromIssues(issues)
+}
+
+func (uc *SyncUseCases) syncEpicsFromIssues(issues []domain.Issue) error {
+	epicLabelText := uc.config.GitlabEpicLabel
+	for _, issue := range issues {
+		isEpic := false
+		for _, label := range issue.Labels {
+			if label.Name == epicLabelText {
+				isEpic = true
+				break
+			}
+		}
+		if !isEpic {
+			continue
+		}
+
+		externalId := issue.ExternalId
+		existEpic, err := uc.epicRepo.GetByExternalId(externalId)
+		if err != nil {
+			if _, ok := errors.AsType[*domain_pkg.NotFoundError](err); !ok {
+				return err
+			}
+		}
+
+		if existEpic != nil {
+			existEpic.Title = issue.Title
+			existEpic.Project = issue.Project
+			if _, err := uc.epicRepo.Update(existEpic); err != nil {
+				return err
+			}
+		} else {
+			newEpic := &domain.Epic{
+				ExternalId: externalId,
+				Title:      issue.Title,
+				Project:    issue.Project,
+			}
+			if _, err := uc.epicRepo.Create(newEpic); err != nil {
+				return err
+			}
+		}
+	}
 	return nil
 }
 

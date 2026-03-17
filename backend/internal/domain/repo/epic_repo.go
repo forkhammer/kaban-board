@@ -6,4 +6,5 @@ import (
 
 type EpicRepo interface {
 	RWRepo[models.Epic, models.EpicId]
+	GetByExternalId(externalId models.IssueExternalId) (*models.Epic, error)
 }

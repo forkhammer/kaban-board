@@ -97,6 +97,18 @@ func (r *EpicRepository) Delete(id domain_models.EpicId) error {
 	return r.conn.GetEngine().Where("id = ?", id).Delete(&models.Epic{}).Error
 }
 
+func (r *EpicRepository) GetByExternalId(externalId domain_models.IssueExternalId) (*domain_models.Epic, error) {
+	epic := &models.Epic{}
+	if err := r.getQuery().Where("epics.external_id = ?", externalId).First(epic).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, domain.NewNotFoundError("Epic", string(externalId), err)
+
+		}
+		return nil, err
+	}
+	return r.toDomainEpic(epic)
+}
+
 func (r *EpicRepository) toDomainEpic(release *models.Epic) (*domain_models.Epic, error) {
 	project, err := r.projectRepo.toDomainProject(&release.Project)
 	if err != nil {
@@ -104,17 +116,19 @@ func (r *EpicRepository) toDomainEpic(release *models.Epic) (*domain_models.Epic
 	}
 
 	return &domain_models.Epic{
-		Id:      domain_models.EpicId(release.Id),
-		Title:   release.Title,
-		Project: *project,
+		Id:         domain_models.EpicId(release.Id),
+		ExternalId: domain_models.IssueExternalId(release.ExternalId),
+		Title:      release.Title,
+		Project:    *project,
 	}, nil
 }
 
 func (r *EpicRepository) toEpic(epic *domain_models.Epic) *models.Epic {
 	return &models.Epic{
-		Id:        uint(epic.Id),
-		Title:     epic.Title,
-		ProjectId: uint(epic.Project.Id),
+		Id:         uint(epic.Id),
+		ExternalId: string(epic.ExternalId),
+		Title:      epic.Title,
+		ProjectId:  uint(epic.Project.Id),
 	}
 }
 

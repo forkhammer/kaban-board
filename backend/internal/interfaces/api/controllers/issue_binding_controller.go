@@ -139,7 +139,7 @@ func (c *IssueBindingController) saveBinding(ctx *gin.Context) {
 	serialized := dto.SerializeIssueBinding(binding, currentAccount)
 	c.hub.Broadcast(binding.Sprint.Id, hub.WSEvent{
 		Type: hub.EventBindingUpdated,
-		Data: serialized,
+		Data: hub.BindingUpdatedEvent{ID: binding.Id},
 	})
 
 	ctx.JSON(http.StatusOK, serialized)
@@ -203,7 +203,7 @@ func (c *IssueBindingController) copyBinding(ctx *gin.Context) {
 	serialized := dto.SerializeIssueBinding(binding, currentAccount)
 	c.hub.Broadcast(binding.Sprint.Id, hub.WSEvent{
 		Type: hub.EventBindingCreated,
-		Data: serialized,
+		Data: hub.BindingCreatedEvent{ID: binding.Id},
 	})
 
 	ctx.JSON(http.StatusCreated, serialized)
@@ -247,7 +247,7 @@ func (c *IssueBindingController) moveBinding(ctx *gin.Context) {
 	serialized := dto.SerializeIssueBinding(binding, currentAccount)
 	c.hub.Broadcast(binding.Sprint.Id, hub.WSEvent{
 		Type: hub.EventBindingCreated,
-		Data: serialized,
+		Data: hub.BindingCreatedEvent{ID: binding.Id},
 	})
 
 	ctx.JSON(http.StatusOK, serialized)
@@ -276,7 +276,7 @@ func (c *IssueBindingController) createBinding(ctx *gin.Context) {
 	serialized := dto.SerializeIssueBinding(binding, currentAccount)
 	c.hub.Broadcast(binding.Sprint.Id, hub.WSEvent{
 		Type: hub.EventBindingCreated,
-		Data: serialized,
+		Data: hub.BindingCreatedEvent{ID: binding.Id},
 	})
 
 	ctx.JSON(http.StatusCreated, serialized)

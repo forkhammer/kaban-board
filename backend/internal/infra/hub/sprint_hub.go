@@ -17,6 +17,14 @@ const (
 	EventBindingOrdering WSEventType = "binding_ordering"
 )
 
+type BindingUpdatedEvent struct {
+	ID domain.IssueBindingId `json:"id"`
+}
+
+type BindingCreatedEvent struct {
+	ID domain.IssueBindingId `json:"id"`
+}
+
 type BindingDeletedEvent struct {
 	ID       uint             `json:"id"`
 	SprintID domain.SprintId  `json:"sprint_id"`

@@ -17,7 +17,7 @@ import { IssueBindingService } from '../../services/issue-binding.service';
 import { BindIssueModalService } from '../../services/bind-issue-modal.service';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { IssueBindingModalService } from '../../services/issue-binding-modal.service';
-import { BindingDeletedEventData, SprintWebsocketService } from '../../services/sprint-websocket.service';
+import { BindingDeletedEventData, BindingUpdatedEventData, SprintWebsocketService } from '../../services/sprint-websocket.service';
 
 @Component({
   selector: 'app-issue-table',
@@ -83,7 +83,7 @@ export class IssueTableComponent {
       takeUntilDestroyed()
     ).subscribe(event => {
       switch (event.type) {
-        case 'binding_updated':  this.onBindingUpdated(event.data as KanbanIssue); break
+        case 'binding_updated':  this.onBindingUpdated(event.data as BindingUpdatedEventData); break
         case 'binding_deleted':  this.onBindingDeleted(event.data as BindingDeletedEventData); break
         case 'binding_created':
         case 'binding_ordering': this.reloadIssues(); break
@@ -151,11 +151,14 @@ export class IssueTableComponent {
     })
   }
 
-  private onBindingUpdated(updated: KanbanIssue): void {
-    const idx = this.issues.findIndex(i => i.bindingId === updated.bindingId)
-    if (idx !== -1) {
+  private onBindingUpdated(data: BindingUpdatedEventData): void {
+    const idx = this.issues.findIndex(i => i.bindingId === data.id)
+    if (idx === -1) return
+    this.issueBindingService.get(data.id).pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(updated => {
       this.issues[idx] = updated
-    }
+    })
   }
 
   private onBindingDeleted(data: BindingDeletedEventData): void {

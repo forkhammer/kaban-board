@@ -115,10 +115,21 @@ func registerQueries(dbType interfaces.DbType) {
 	registerProjectQuery(dbType)
 	mustRegisterBean("IssueBindingQuery", reflect.TypeFor[*issuebinding_spec.IssueBindingQueryImpl]())
 	mustRegisterBean("ReleaseQuery", reflect.TypeFor[*release_spec.ReleaseQueryImpl]())
-	mustRegisterBean("EpicQuery", reflect.TypeFor[*epic_spec.EpicQueryImpl]())
+	registerEpicQuery(dbType)
 	mustRegisterBean("CommonQuery", reflect.TypeFor[*spec.CommonQueryImpl]())
 
 	registerIssueQuery(dbType)
+}
+
+func registerEpicQuery(dbType interfaces.DbType) {
+	switch dbType {
+	case interfaces.Postgresql:
+		mustRegisterBean("EpicQuery", reflect.TypeFor[*epic_spec.EpicQueryImplPostgresql]())
+	case interfaces.Mysql:
+		mustRegisterBean("EpicQuery", reflect.TypeFor[*epic_spec.EpicQueryImplMysql]())
+	default:
+		mustRegisterBean("EpicQuery", reflect.TypeFor[*epic_spec.EpicQueryImpl]())
+	}
 }
 
 func registerIssueQuery(dbType interfaces.DbType) {

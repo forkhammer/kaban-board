@@ -9,12 +9,12 @@ import (
 	"gorm.io/gorm"
 )
 
-type EpicFilterSpec struct {
+type EpicFilterSpecMysql struct {
 	repo.QuerySpec
 	Filter queries.EpicFilter
 }
 
-func (s *EpicFilterSpec) Apply(conn any) (any, error) {
+func (s *EpicFilterSpecMysql) Apply(conn any) (any, error) {
 	query := conn.(*gorm.DB)
 
 	if s.Filter.ProjectId != nil {
@@ -22,16 +22,16 @@ func (s *EpicFilterSpec) Apply(conn any) (any, error) {
 	}
 
 	if s.Filter.Search != nil {
-		query = query.Where("lower_unicode(epics.title) like ?", fmt.Sprintf("%%%s%%", strings.ToLower(*s.Filter.Search)))
+		query = query.Where("lower(epics.title) like ?", fmt.Sprintf("%%%s%%", strings.ToLower(*s.Filter.Search)))
 	}
 
 	return query, nil
 }
 
-type EpicQueryImpl struct {
+type EpicQueryImplMysql struct {
 	queries.EpicQuery
 }
 
-func (b *EpicQueryImpl) GetSpec(filter queries.EpicFilter) repo.QuerySpec {
-	return &EpicFilterSpec{Filter: filter}
+func (b *EpicQueryImplMysql) GetSpec(filter queries.EpicFilter) repo.QuerySpec {
+	return &EpicFilterSpecMysql{Filter: filter}
 }

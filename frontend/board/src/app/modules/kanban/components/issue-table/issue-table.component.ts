@@ -7,7 +7,7 @@ import { environment } from 'src/environments/environment';
 import { isEqual } from 'lodash';
 import { catchErrorMessages } from 'src/app/modules/core/tools/catch-error';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { KanbanIssue } from '../../models/kanban-issue';
+import { IssueGroup, KanbanIssue } from '../../models/kanban-issue';
 import { IssueService } from '../../services/issue.service';
 import { ToastService } from 'src/app/modules/core/services/toast.service';
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
@@ -44,6 +44,7 @@ export class IssueTableComponent {
   private timer$ = timer(0, environment.autoUpdateIssuesMin * 60 * 1000)
   private wsReload$ = new BehaviorSubject<number>(0)
   public issues: KanbanIssue[] = []
+  public groupedIssues: IssueGroup[] = []
   public issuePage: Pagination<KanbanIssue> | null = null
   public isLoading = false
   isPageMore$ = new BehaviorSubject<boolean>(false);
@@ -138,18 +139,18 @@ export class IssueTableComponent {
 
       if (isLoadingMore && this.issuePage) {
         this.issuePage = (data as Pagination<KanbanIssue>)
-        this.issues = this.issues.concat(this.issuePage.results)
+        this.setIssues(this.issues.concat(this.issuePage.results))
         this.isPageMore$.next(false)
       } else {
         this.issuePage = (data as Pagination<KanbanIssue>)
-        this.issues = [...this.issuePage.results].sort((a, b) => {
+        this.setIssues([...this.issuePage.results].sort((a, b) => {
           const oa = a.order ?? ''
           const ob = b.order ?? ''
           if (oa === '' && ob === '') return 0
           if (oa === '') return 1
           if (ob === '') return -1
           return oa.localeCompare(ob)
-        })
+        }))
       }
     })
   }
@@ -164,12 +165,13 @@ export class IssueTableComponent {
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(updated => {
       this.issues[idx] = updated
+      this.groupedIssues = this.getGroupedIssues()
       this.addHighlighted(data.id)
     })
   }
 
   private onBindingDeleted(data: BindingDeletedEventData): void {
-    this.issues = this.issues.filter(i => i.bindingId !== data.id)
+    this.setIssues(this.issues.filter(i => i.bindingId !== data.id))
   }
 
   private reloadIssues(): void {
@@ -191,6 +193,7 @@ export class IssueTableComponent {
           takeUntilDestroyed(this.destroyRef),
         ).subscribe(data => {
           this.issues.push(data)
+          this.groupedIssues = this.getGroupedIssues()
         })
       }
     }, () => {})
@@ -204,6 +207,7 @@ export class IssueTableComponent {
       (result) => {
         if (result) {
           this.issues.push(result)
+          this.groupedIssues = this.getGroupedIssues()
         }
       },
       (err) => {}
@@ -211,21 +215,23 @@ export class IssueTableComponent {
   }
 
   unbindIssue(bindingId: number) {
-    this.issues = this.issues.filter(issue => issue.bindingId !== bindingId)
+    this.setIssues(this.issues.filter(issue => issue.bindingId !== bindingId))
   }
 
-  dropIssue(event: CdkDragDrop<KanbanIssue[]>) {
-    moveItemInArray(this.issues, event.previousIndex, event.currentIndex)
-    this.recalculateOrder()
-    this.issueBindingService.saveOrdering(this.issues).pipe(
+  dropIssue(event: CdkDragDrop<KanbanIssue[]>): void {
+    const flat = this.groupedIssues.flatMap(g => g.issues)
+    moveItemInArray(flat, event.previousIndex, event.currentIndex)
+    this.recalculateOrder(flat)
+    this.setIssues(flat)
+    this.issueBindingService.saveOrdering(flat).pipe(
       catchErrorMessages(this.toast),
       takeUntilDestroyed(this.destroyRef),
     ).subscribe()
   }
 
-  private recalculateOrder() {
+  private recalculateOrder(issues: KanbanIssue[]): void {
     const grouped = new Map<number, KanbanIssue[]>()
-    for (const issue of this.issues) {
+    for (const issue of issues) {
       const groupId = issue.assignee?.id ?? 0
       if (!grouped.has(groupId)) {
         grouped.set(groupId, [])
@@ -237,6 +243,31 @@ export class IssueTableComponent {
         issue.order = `${groupId}${String(index).padStart(8, '0')}`
       })
     }
+  }
+
+  setIssues(issues: KanbanIssue[]): void {
+    this.issues = issues
+    this.groupedIssues = this.getGroupedIssues()
+  }
+
+  getGroupedIssues(): IssueGroup[] {
+    const map = new Map<number, IssueGroup>()
+    const NO_GROUP_ID = -1
+
+    for (const issue of this.issues) {
+      const group = issue.assignee?.groups?.[0]
+      const key = group?.id ?? NO_GROUP_ID
+      if (!map.has(key)) {
+        map.set(key, { groupId: key, groupTitle: group?.title ?? 'Без группы', issues: [] })
+      }
+      map.get(key)!.issues.push(issue)
+    }
+
+    return Array.from(map.values())
+  }
+
+  trackByGroup(_: number, group: IssueGroup) {
+    return group.groupId
   }
 
   trackByIssue(index: number, issue: KanbanIssue) {

@@ -112,6 +112,23 @@
   }
 }
 
+.group-header td {
+  padding: $pt $pt2;
+  @include fs-paragraph-xs();
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: $gray-600;
+  background: $gray-100;
+  border-bottom: 1px solid $gray-200;
+
+  :host-context([data-bs-theme="dark"]) & {
+    color: $gray-400;
+    background: $gray-850;
+    border-color: $gray-800;
+  }
+}
+
 .btn-append {
   display: block;
   width: 100%;

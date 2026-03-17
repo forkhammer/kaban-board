@@ -46,6 +46,12 @@ export const ISSUE_PRIORITY_VALUES: SelectValue[] = [
   {id: IssuePriority.CRITICAL, title: ISSUE_PRIORITY_LABELS[IssuePriority.CRITICAL]},
 ]
 
+export type IssueGroup = {
+  groupId: number
+  groupTitle: string
+  issues: KanbanIssue[]
+}
+
 export type KanbanIssue = {
   id: string
   iid: string

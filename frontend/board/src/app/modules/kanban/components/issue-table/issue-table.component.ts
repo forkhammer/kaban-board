@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, Input, NgZone } from '@angular/core';
+import { Component, DestroyRef, EventEmitter, inject, Input, NgZone, Output } from '@angular/core';
 import { BehaviorSubject, combineLatestWith, debounceTime, distinctUntilChanged, filter, merge, of, Subject, switchMap, timer } from 'rxjs';
 import { KanbanUser } from '../../models/kanban-user';
 import { Team } from '../../models/team';
@@ -37,6 +37,8 @@ export class IssueTableComponent {
   private zone = inject(NgZone)
 
   faPlus = faPlus
+
+  @Output() sprintStateChanged = new EventEmitter<void>()
 
   public user$ = new BehaviorSubject<KanbanUser | null | undefined>(null)
   public team$ = new BehaviorSubject<Team | null | undefined>(null)
@@ -156,6 +158,7 @@ export class IssueTableComponent {
   }
 
   private onBindingUpdated(data: BindingUpdatedEventData): void {
+    this.sprintStateChanged.emit()
     if (data.account_id === this.accountService.user$.value?.id) return
 
     const idx = this.issues.findIndex(i => i.bindingId === data.id)
@@ -172,6 +175,7 @@ export class IssueTableComponent {
 
   private onBindingDeleted(data: BindingDeletedEventData): void {
     this.setIssues(this.issues.filter(i => i.bindingId !== data.id))
+    this.sprintStateChanged.emit()
   }
 
   private reloadIssues(): void {
@@ -180,6 +184,7 @@ export class IssueTableComponent {
 
   private onBindingCreated(data: BindingUpdatedEventData): void {
     this.wsReload$.next(this.wsReload$.value + 1)
+    this.sprintStateChanged.emit()
     if (data.account_id !== this.accountService.user$.value?.id) {
       this.addHighlighted(data.id)
     }
@@ -194,6 +199,7 @@ export class IssueTableComponent {
         ).subscribe(data => {
           this.issues.push(data)
           this.groupedIssues = this.getGroupedIssues()
+          this.sprintStateChanged.emit()
         })
       }
     }, () => {})
@@ -208,6 +214,7 @@ export class IssueTableComponent {
         if (result) {
           this.issues.push(result)
           this.groupedIssues = this.getGroupedIssues()
+          this.sprintStateChanged.emit()
         }
       },
       (err) => {}
@@ -216,6 +223,7 @@ export class IssueTableComponent {
 
   unbindIssue(bindingId: number) {
     this.setIssues(this.issues.filter(issue => issue.bindingId !== bindingId))
+    this.sprintStateChanged.emit()
   }
 
   dropIssue(event: CdkDragDrop<KanbanIssue[]>): void {

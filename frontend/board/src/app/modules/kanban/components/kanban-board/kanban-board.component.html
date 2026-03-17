@@ -112,7 +112,8 @@
           <app-issue-table *ngSwitchCase="KanbanView.LIST"
             [user]="selectedUser"
             [team]="selectedTeam"
-            [sprint]="selectedSprint"></app-issue-table>
+            [sprint]="selectedSprint"
+            (sprintStateChanged)="statsRefreshTrigger$.next()"></app-issue-table>
         </ng-container>
       </div>
     </div>

@@ -10,6 +10,7 @@ import {
   finalize,
   Observable,
   of,
+  Subject,
   switchMap, timer
 } from "rxjs";
 import {KanbanUser} from "../../models/kanban-user";
@@ -90,6 +91,7 @@ export class KanbanBoardComponent implements OnInit, AfterViewInit {
   public view$: Observable<KanbanView | null>
   public selectedSprint: Sprint | null = null
   public sprintStats$: Observable<SprintStats | null> = of(null)
+  public statsRefreshTrigger$ = new BehaviorSubject<void>(undefined)
   @ViewChild('sprintSelect') sprintSelect!: SelectModelComponent
 
   public otherGroup: Group = {
@@ -217,7 +219,7 @@ export class KanbanBoardComponent implements OnInit, AfterViewInit {
       this.filterForm.patchValue({view: value})
     })
 
-    this.sprintStats$ = combineLatest([this.sprintId$, this.userId$]).pipe(
+    this.sprintStats$ = combineLatest([this.sprintId$, this.userId$, this.statsRefreshTrigger$]).pipe(
       switchMap(([sprintId, userId]) => {
         if (!sprintId) return of(null);
         return this.reportService.getSprintStats(sprintId, userId ?? undefined).pipe(

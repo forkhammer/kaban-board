@@ -8,6 +8,7 @@ export type WSEventType = 'binding_updated' | 'binding_created' | 'binding_delet
 
 export interface BindingUpdatedEventData {
   id: number
+  account_id: number
 }
 
 export interface BindingDeletedEventData {

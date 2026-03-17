@@ -155,8 +155,11 @@ export class IssueTableComponent {
   }
 
   private onBindingUpdated(data: BindingUpdatedEventData): void {
+    if (data.account_id === this.accountService.user$.value?.id) return
+
     const idx = this.issues.findIndex(i => i.bindingId === data.id)
     if (idx === -1) return
+
     this.issueBindingService.get(data.id).pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(updated => {
@@ -175,7 +178,9 @@ export class IssueTableComponent {
 
   private onBindingCreated(data: BindingUpdatedEventData): void {
     this.wsReload$.next(this.wsReload$.value + 1)
-    this.addHighlighted(data.id)
+    if (data.account_id !== this.accountService.user$.value?.id) {
+      this.addHighlighted(data.id)
+    }
   }
 
   appendIssue() {

@@ -18,11 +18,13 @@ const (
 )
 
 type BindingUpdatedEvent struct {
-	ID domain.IssueBindingId `json:"id"`
+	ID        domain.IssueBindingId `json:"id"`
+	AccountID domain.AccountId      `json:"account_id"`
 }
 
 type BindingCreatedEvent struct {
-	ID domain.IssueBindingId `json:"id"`
+	ID        domain.IssueBindingId `json:"id"`
+	AccountID domain.AccountId      `json:"account_id"`
 }
 
 type BindingDeletedEvent struct {

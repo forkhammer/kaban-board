@@ -69,6 +69,7 @@ func (app *ApiApplication) initRouter() error {
 		di.GetInstance("IssueBindingController").(api.Controller),
 		di.GetInstance("ReleaseController").(api.Controller),
 		di.GetInstance("EpicController").(api.Controller),
+		di.GetInstance("SprintWSController").(api.Controller),
 	}
 	apiGroup := app.router.Group("/api")
 	for _, controller := range controllers {

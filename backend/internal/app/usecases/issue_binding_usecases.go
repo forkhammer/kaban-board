@@ -112,18 +112,20 @@ func (u *IssueBindingUseCases) GetBinding(id uint, account *domain.Account) (*do
 	return u.issueBindingRepo.Get(domain.IssueBindingId(id))
 }
 
-func (u *IssueBindingUseCases) DeleteBinding(id uint) error {
+func (u *IssueBindingUseCases) DeleteBinding(id uint) (domain.SprintId, error) {
 	binding, err := u.issueBindingRepo.Get(domain.IssueBindingId(id))
 	if err != nil {
-		return err
+		return 0, err
 	}
+
+	sprintId := binding.Sprint.Id
 
 	_, err = u.historyService.AddDeleteHistory(binding, time.Now())
 	if err != nil {
-		return err
+		return 0, err
 	}
 
-	return u.issueBindingRepo.Delete(domain.IssueBindingId(id))
+	return sprintId, u.issueBindingRepo.Delete(domain.IssueBindingId(id))
 }
 
 func (uc *IssueBindingUseCases) SaveBinding(request SaveIssueBindingRequest, account *domain.Account) (*domain.IssueBinding, error) {
@@ -220,18 +222,22 @@ func (uc *IssueBindingUseCases) SaveBinding(request SaveIssueBindingRequest, acc
 	return binding, nil
 }
 
-func (uc *IssueBindingUseCases) SaveOrdering(ordering IssueBindingOrderingSet) error {
+func (uc *IssueBindingUseCases) SaveOrdering(ordering IssueBindingOrderingSet) (domain.SprintId, error) {
+	var sprintId domain.SprintId
 	for _, o := range ordering {
 		binding, err := uc.issueBindingRepo.Get(domain.IssueBindingId(o.Id))
 		if err != nil {
-			return err
+			return 0, err
+		}
+		if sprintId == 0 {
+			sprintId = binding.Sprint.Id
 		}
 		binding.Order = o.Order
 		if _, err := uc.issueBindingRepo.Update(binding); err != nil {
-			return err
+			return 0, err
 		}
 	}
-	return nil
+	return sprintId, nil
 }
 
 func (uc *IssueBindingUseCases) CopyBinding(request CopyIssueBindingRequest, account *domain.Account) (*domain.IssueBinding, error) {
@@ -284,46 +290,48 @@ func (uc *IssueBindingUseCases) CopyBinding(request CopyIssueBindingRequest, acc
 	return newBinding, nil
 }
 
-func (uc *IssueBindingUseCases) MoveBinding(request MoveIssueBindingRequest, account *domain.Account) (*domain.IssueBinding, error) {
+func (uc *IssueBindingUseCases) MoveBinding(request MoveIssueBindingRequest, account *domain.Account) (*domain.IssueBinding, domain.SprintId, error) {
 	if account == nil {
-		return nil, domain_pkg.NewValidationError("нельзя переместить анонимным пользователем")
+		return nil, 0, domain_pkg.NewValidationError("нельзя переместить анонимным пользователем")
 	}
 
 	binding, err := uc.issueBindingRepo.Get(domain.IssueBindingId(request.Id))
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
 	if !binding.CanManage(account) {
-		return nil, domain_pkg.NewValidationError("нельзя переместить этим пользователем")
+		return nil, 0, domain_pkg.NewValidationError("нельзя переместить этим пользователем")
 	}
+
+	oldSprintId := binding.Sprint.Id
 
 	sprint, err := uc.sprintRepo.Get(domain.SprintId(request.SprintId))
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
 	if _, err = uc.historyService.AddDeleteHistory(binding, time.Now()); err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
 	binding.Sprint = sprint
 
 	if err = binding.Validate(); err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
 	binding, err = uc.issueBindingRepo.Update(binding)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
 	_, err = uc.historyService.AddHistory(binding)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
-	return binding, nil
+	return binding, oldSprintId, nil
 }
 
 func (uc *IssueBindingUseCases) CreateIssueAndBinding(request CreateIssueBindingRequest) (*domain.IssueBinding, error) {

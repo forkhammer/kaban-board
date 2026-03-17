@@ -1,5 +1,5 @@
 import { Component, DestroyRef, inject, Input } from '@angular/core';
-import { BehaviorSubject, combineLatestWith, debounceTime, distinctUntilChanged, filter, of, switchMap, timer } from 'rxjs';
+import { BehaviorSubject, combineLatestWith, debounceTime, distinctUntilChanged, filter, merge, of, Subject, switchMap, timer } from 'rxjs';
 import { KanbanUser } from '../../models/kanban-user';
 import { Team } from '../../models/team';
 import { Sprint } from '../../models/sprint';
@@ -17,6 +17,7 @@ import { IssueBindingService } from '../../services/issue-binding.service';
 import { BindIssueModalService } from '../../services/bind-issue-modal.service';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { IssueBindingModalService } from '../../services/issue-binding-modal.service';
+import { SprintWebsocketService } from '../../services/sprint-websocket.service';
 
 @Component({
   selector: 'app-issue-table',
@@ -32,6 +33,7 @@ export class IssueTableComponent {
   private bindIssueModal = inject(BindIssueModalService)
   private destroyRef = inject(DestroyRef)
   private issueBindingModal = inject(IssueBindingModalService)
+  private sprintWs = inject(SprintWebsocketService)
 
   faPlus = faPlus
 
@@ -39,6 +41,7 @@ export class IssueTableComponent {
   public team$ = new BehaviorSubject<Team | null | undefined>(null)
   public sprint$ = new BehaviorSubject<Sprint | null | undefined>(null)
   private timer$ = timer(0, environment.autoUpdateIssuesMin * 60 * 1000)
+  private wsReload$ = new BehaviorSubject<number>(0)
   public issues: KanbanIssue[] = []
   public issuePage: Pagination<KanbanIssue> | null = null
   public isLoading = false
@@ -65,7 +68,24 @@ export class IssueTableComponent {
       this.isLoadMore$.next(data)
     })
 
-    this.timer$.pipe(
+    this.sprint$.pipe(
+      distinctUntilChanged((a, b) => a?.id === b?.id),
+      takeUntilDestroyed()
+    ).subscribe(sprint => {
+      if (sprint) {
+        this.sprintWs.connect(sprint.id)
+      } else {
+        this.sprintWs.disconnect()
+      }
+    })
+
+    this.sprintWs.events$.pipe(
+      takeUntilDestroyed()
+    ).subscribe(() => this.wsReload$.next(this.wsReload$.value + 1))
+
+    this.destroyRef.onDestroy(() => this.sprintWs.disconnect())
+
+    merge(this.timer$, this.wsReload$).pipe(
       combineLatestWith(this.user$, this.team$, this.sprint$),
       debounceTime(100),
       filter(([_, user, team, sprint]) => {

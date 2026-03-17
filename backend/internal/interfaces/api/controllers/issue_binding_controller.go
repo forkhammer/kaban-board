@@ -4,6 +4,7 @@ import (
 	"main/internal/app/queries"
 	"main/internal/app/usecases"
 	domain "main/internal/domain/models"
+	"main/internal/infra/hub"
 	"main/internal/interfaces/api/dto"
 	"main/internal/interfaces/api/middleware"
 	apiutils "main/internal/interfaces/api/utils"
@@ -16,6 +17,7 @@ import (
 
 type IssueBindingController struct {
 	bindingUC *usecases.IssueBindingUseCases `di.inject:"IssueBindingUseCases"`
+	hub       *hub.SprintHub                 `di.inject:"SprintHub"`
 }
 
 func (c *IssueBindingController) RegisterRoutes(router gin.IRouter) error {
@@ -88,10 +90,16 @@ func (c *IssueBindingController) deleteBinding(ctx *gin.Context) {
 		return
 	}
 
-	err = c.bindingUC.DeleteBinding(uint(id))
+	sprintId, err := c.bindingUC.DeleteBinding(uint(id))
 	if apiutils.HandleException(ctx, err) {
 		return
 	}
+
+	c.hub.Broadcast(sprintId, hub.WSEvent{
+		Type: hub.EventBindingDeleted,
+		Data: hub.BindingDeletedEvent{ID: uint(id), SprintID: sprintId},
+	})
+
 	ctx.Status(http.StatusNoContent)
 }
 
@@ -127,7 +135,14 @@ func (c *IssueBindingController) saveBinding(ctx *gin.Context) {
 	if apiutils.HandleException(ctx, err) {
 		return
 	}
-	ctx.JSON(http.StatusOK, dto.SerializeIssueBinding(binding, currentAccount))
+
+	serialized := dto.SerializeIssueBinding(binding, currentAccount)
+	c.hub.Broadcast(binding.Sprint.Id, hub.WSEvent{
+		Type: hub.EventBindingUpdated,
+		Data: serialized,
+	})
+
+	ctx.JSON(http.StatusOK, serialized)
 }
 
 func (c *IssueBindingController) saveOrdering(ctx *gin.Context) {
@@ -141,8 +156,16 @@ func (c *IssueBindingController) saveOrdering(ctx *gin.Context) {
 		return usecases.IssueBindingOrdering{Id: o.Id, Order: o.Order}
 	})
 
-	if err := c.bindingUC.SaveOrdering(ordering); apiutils.HandleException(ctx, err) {
+	sprintId, err := c.bindingUC.SaveOrdering(ordering)
+	if apiutils.HandleException(ctx, err) {
 		return
+	}
+
+	if sprintId > 0 {
+		c.hub.Broadcast(sprintId, hub.WSEvent{
+			Type: hub.EventBindingOrdering,
+			Data: request,
+		})
 	}
 
 	ctx.Status(http.StatusNoContent)
@@ -172,7 +195,13 @@ func (c *IssueBindingController) copyBinding(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, dto.SerializeIssueBinding(binding, currentAccount))
+	serialized := dto.SerializeIssueBinding(binding, currentAccount)
+	c.hub.Broadcast(binding.Sprint.Id, hub.WSEvent{
+		Type: hub.EventBindingCreated,
+		Data: serialized,
+	})
+
+	ctx.JSON(http.StatusCreated, serialized)
 }
 
 func (c *IssueBindingController) moveBinding(ctx *gin.Context) {
@@ -191,7 +220,7 @@ func (c *IssueBindingController) moveBinding(ctx *gin.Context) {
 	account, _ := ctx.Get("account")
 	currentAccount := account.(*domain.Account)
 
-	binding, err := c.bindingUC.MoveBinding(usecases.MoveIssueBindingRequest{
+	binding, oldSprintId, err := c.bindingUC.MoveBinding(usecases.MoveIssueBindingRequest{
 		Id:       uint(id),
 		SprintId: request.SprintId,
 	}, currentAccount)
@@ -199,7 +228,19 @@ func (c *IssueBindingController) moveBinding(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, dto.SerializeIssueBinding(binding, currentAccount))
+	// уведомить старый спринт об удалении
+	c.hub.Broadcast(oldSprintId, hub.WSEvent{
+		Type: hub.EventBindingDeleted,
+		Data: hub.BindingDeletedEvent{ID: uint(id), SprintID: oldSprintId},
+	})
+	// уведомить новый спринт о создании
+	serialized := dto.SerializeIssueBinding(binding, currentAccount)
+	c.hub.Broadcast(binding.Sprint.Id, hub.WSEvent{
+		Type: hub.EventBindingCreated,
+		Data: serialized,
+	})
+
+	ctx.JSON(http.StatusOK, serialized)
 }
 
 func (c *IssueBindingController) createBinding(ctx *gin.Context) {
@@ -222,5 +263,11 @@ func (c *IssueBindingController) createBinding(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, dto.SerializeIssueBinding(binding, currentAccount))
+	serialized := dto.SerializeIssueBinding(binding, currentAccount)
+	c.hub.Broadcast(binding.Sprint.Id, hub.WSEvent{
+		Type: hub.EventBindingCreated,
+		Data: serialized,
+	})
+
+	ctx.JSON(http.StatusCreated, serialized)
 }

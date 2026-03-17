@@ -9,6 +9,7 @@ import (
 	"main/internal/infra/db/implementation"
 	"main/internal/infra/db/interfaces"
 	"main/internal/infra/gitlab"
+	"main/internal/infra/hub"
 	"main/internal/infra/persistance/repo"
 	"main/internal/infra/persistance/spec"
 	account_spec "main/internal/infra/persistance/spec/account"
@@ -61,6 +62,8 @@ func initDI() {
 	mustRegisterBeanFactory("gitlab", di.Singleton, func(ctx context.Context) (any, error) {
 		return gitlab.NewGitlabClient(config.Settings.GitlabUrl, config.Settings.GitlabToken), nil
 	})
+
+	mustRegisterBeanInstance("SprintHub", hub.NewSprintHub())
 
 	registerRepositories()
 	registerReportRepository(dbType)
@@ -198,4 +201,5 @@ func registerControllers() {
 	mustRegisterBean("IssueBindingController", reflect.TypeFor[*controllers.IssueBindingController]())
 	mustRegisterBean("ReleaseController", reflect.TypeFor[*controllers.ReleaseController]())
 	mustRegisterBean("EpicController", reflect.TypeFor[*controllers.EpicController]())
+	mustRegisterBean("SprintWSController", reflect.TypeFor[*controllers.SprintWSController]())
 }

@@ -172,6 +172,11 @@ func (c *IssueBindingController) saveOrdering(ctx *gin.Context) {
 }
 
 func (c *IssueBindingController) copyBinding(ctx *gin.Context) {
+	if !apiutils.IsAdminAccount(ctx) {
+		ctx.Status(http.StatusForbidden)
+		return
+	}
+
 	id, err := strconv.ParseUint(ctx.Param("id"), 10, 32)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
@@ -205,6 +210,11 @@ func (c *IssueBindingController) copyBinding(ctx *gin.Context) {
 }
 
 func (c *IssueBindingController) moveBinding(ctx *gin.Context) {
+	if !apiutils.IsAdminAccount(ctx) {
+		ctx.Status(http.StatusForbidden)
+		return
+	}
+
 	id, err := strconv.ParseUint(ctx.Param("id"), 10, 32)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})

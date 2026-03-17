@@ -17,7 +17,7 @@ import { IssueBindingService } from '../../services/issue-binding.service';
 import { BindIssueModalService } from '../../services/bind-issue-modal.service';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { IssueBindingModalService } from '../../services/issue-binding-modal.service';
-import { SprintWebsocketService } from '../../services/sprint-websocket.service';
+import { BindingDeletedEventData, SprintWebsocketService } from '../../services/sprint-websocket.service';
 
 @Component({
   selector: 'app-issue-table',
@@ -81,7 +81,14 @@ export class IssueTableComponent {
 
     this.sprintWs.events$.pipe(
       takeUntilDestroyed()
-    ).subscribe(() => this.wsReload$.next(this.wsReload$.value + 1))
+    ).subscribe(event => {
+      switch (event.type) {
+        case 'binding_updated':  this.onBindingUpdated(event.data as KanbanIssue); break
+        case 'binding_deleted':  this.onBindingDeleted(event.data as BindingDeletedEventData); break
+        case 'binding_created':
+        case 'binding_ordering': this.reloadIssues(); break
+      }
+    })
 
     this.destroyRef.onDestroy(() => this.sprintWs.disconnect())
 
@@ -142,6 +149,21 @@ export class IssueTableComponent {
         })
       }
     })
+  }
+
+  private onBindingUpdated(updated: KanbanIssue): void {
+    const idx = this.issues.findIndex(i => i.bindingId === updated.bindingId)
+    if (idx !== -1) {
+      this.issues[idx] = updated
+    }
+  }
+
+  private onBindingDeleted(data: BindingDeletedEventData): void {
+    this.issues = this.issues.filter(i => i.bindingId !== data.id)
+  }
+
+  private reloadIssues(): void {
+    this.wsReload$.next(this.wsReload$.value + 1)
   }
 
   appendIssue() {

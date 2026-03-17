@@ -6,6 +6,11 @@ import { CoreConfigService } from '../../core/config';
 
 export type WSEventType = 'binding_updated' | 'binding_created' | 'binding_deleted' | 'binding_ordering';
 
+export interface BindingDeletedEventData {
+  id: number
+  sprint_id: number
+}
+
 export interface BindingWSEvent {
   type: WSEventType;
   data: any;

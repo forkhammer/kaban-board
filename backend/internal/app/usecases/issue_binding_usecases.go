@@ -377,7 +377,7 @@ func (uc *IssueBindingUseCases) CreateIssueAndBinding(request CreateIssueBinding
 		return nil, err
 	}
 
-	binding, err = uc.issueBindingRepo.Update(binding)
+	binding, err = uc.issueBindingRepo.Create(binding)
 	if err != nil {
 		return nil, err
 	}

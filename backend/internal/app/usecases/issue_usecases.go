@@ -91,7 +91,7 @@ func (u *IssueUseCases) BindIssue(id uint, sprintId uint, assigneeId uint) (*dom
 	if err != nil {
 		return nil, err
 	}
-	binding, err = u.issueBindingRepo.Update(binding)
+	binding, err = u.issueBindingRepo.Create(binding)
 	if err != nil {
 		return nil, err
 	}

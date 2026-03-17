@@ -72,6 +72,31 @@ func (uc *ReportUseCases) GetWipReport(params WipReportParams) (*domain.WipRepor
 	return &domain.WipReport{DataPoints: dataPoints}, nil
 }
 
+func (uc *ReportUseCases) GetSprintStats(sprintId uint, assigneeId *uint) (*domain.SprintStats, error) {
+	sprint, err := uc.sprintRepo.Get(domain.SprintId(sprintId))
+	if err != nil {
+		return nil, fmt.Errorf("sprint not found: %w", err)
+	}
+
+	var userCount uint
+	if assigneeId != nil {
+		userCount = 1
+	} else {
+		userCount, err = uc.reportRepo.GetActiveUserCountByTeam(uint(sprint.Team.Id))
+		if err != nil {
+			return nil, fmt.Errorf("failed to count team members: %w", err)
+		}
+	}
+
+	stats, err := uc.reportRepo.GetSprintStats(sprintId, assigneeId)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get sprint stats: %w", err)
+	}
+
+	stats.Capacity = sprint.HoursPerUser * userCount
+	return stats, nil
+}
+
 func (uc *ReportUseCases) GetBurnupReport(sprintId uint) (*domain.BurnupReport, error) {
 	sprint, err := uc.sprintRepo.Get(domain.SprintId(sprintId))
 	if err != nil {

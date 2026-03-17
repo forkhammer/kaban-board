@@ -178,6 +178,54 @@ func (r *ReportRepository) GetBurnupData(sprintId uint) ([]domain.BurnupDataPoin
 	return result, nil
 }
 
+type SprintStatsRow struct {
+	PlannedDev  uint `gorm:"column:planned_dev"`
+	PlannedQA   uint `gorm:"column:planned_qa"`
+	VelocityDev uint `gorm:"column:velocity_dev"`
+	VelocityQA  uint `gorm:"column:velocity_qa"`
+}
+
+func (r *ReportRepository) GetSprintStats(sprintId uint, assigneeId *uint) (*domain.SprintStats, error) {
+	var row SprintStatsRow
+	query := `
+		SELECT
+			COALESCE(SUM(ib.estimate_dev), 0) AS planned_dev,
+			COALESCE(SUM(ib.estimate_qa), 0)  AS planned_qa,
+			COALESCE(SUM(CASE WHEN ib.bind_status = 'done' THEN ib.estimate_dev ELSE 0 END), 0) AS velocity_dev,
+			COALESCE(SUM(CASE WHEN ib.bind_status = 'done' THEN ib.estimate_qa  ELSE 0 END), 0) AS velocity_qa
+		FROM issue_bindings ib
+		WHERE ib.sprint_id = ?
+			AND ib.deleted_at IS NULL`
+	args := []any{sprintId}
+	if assigneeId != nil {
+		query += " AND ib.assignee_id = ?"
+		args = append(args, *assigneeId)
+	}
+	if err := r.conn.GetEngine().Raw(query, args...).Scan(&row).Error; err != nil {
+		return nil, err
+	}
+	return &domain.SprintStats{
+		PlannedDev:  row.PlannedDev,
+		PlannedQA:   row.PlannedQA,
+		VelocityDev: row.VelocityDev,
+		VelocityQA:  row.VelocityQA,
+	}, nil
+}
+
+func (r *ReportRepository) GetActiveUserCountByTeam(teamId uint) (uint, error) {
+	var count uint
+	query := `
+		SELECT COUNT(DISTINCT u.id)
+		FROM users u
+		JOIN user_groups ug ON u.id = ug.user_id
+		JOIN team_groups tg ON tg.group_id = ug.group_id
+		WHERE tg.team_id = ? AND u.is_active = true`
+	if err := r.conn.GetEngine().Raw(query, teamId).Scan(&count).Error; err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
 type WipRow struct {
 	Date     string `gorm:"column:date"`
 	WipCount int    `gorm:"column:wip_count"`

@@ -70,6 +70,23 @@
           <fa-icon [icon]="faPlus"></fa-icon>
         </button>
 
+        <ng-container *ngIf="sprintStats$ | async as stats">
+          <div class="sprint-stats ms-3 me-auto">
+            <div class="sprint-stats__item" ngbTooltip="Вместимость спринта">
+              <span class="sprint-stats__label">Вместимость</span>
+              <span class="sprint-stats__value">{{ stats.capacity }}</span>
+            </div>
+            <div class="sprint-stats__item" ngbTooltip="Запланировано Dev / QA">
+              <span class="sprint-stats__label">План</span>
+              <span class="sprint-stats__value">{{ stats.planned_dev }} / {{ stats.planned_qa }}</span>
+            </div>
+            <div class="sprint-stats__item" ngbTooltip="Выполнено Dev / QA">
+              <span class="sprint-stats__label">Выполнено</span>
+              <span class="sprint-stats__value">{{ stats.velocity_dev }} / {{ stats.velocity_qa }}</span>
+            </div>
+          </div>
+        </ng-container>
+
         <ng-container *ngIf="(sprintId$ | async)">
           <ng-container *ngIf="urls.getSprintBurndownUrl((sprintId$ | async)!) as nav">
             <a [routerLink]="nav.url" [queryParams]="nav.query" class="btn btn-outline-secondary ms-auto me-2" ngbTooltip="Burndown Chart">

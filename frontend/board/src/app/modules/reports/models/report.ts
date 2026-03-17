@@ -36,3 +36,11 @@ export interface WipDataPoint {
 export interface WipReport {
   data_points: WipDataPoint[];
 }
+
+export interface SprintStats {
+  capacity: number;
+  planned_dev: number;
+  planned_qa: number;
+  velocity_dev: number;
+  velocity_qa: number;
+}

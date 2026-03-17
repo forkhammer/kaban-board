@@ -2,11 +2,14 @@ import {AfterViewInit, Component, DestroyRef, inject, OnInit, ViewChild} from '@
 import {KanbanUserService} from "../../services/kanban-user.service";
 import {
   BehaviorSubject,
+  catchError,
+  combineLatest,
   combineLatestWith,
   distinctUntilChanged,
   filter,
   finalize,
   Observable,
+  of,
   switchMap, timer
 } from "rxjs";
 import {KanbanUser} from "../../models/kanban-user";
@@ -30,6 +33,8 @@ import { SelectModelComponent } from 'src/app/modules/ui/components/select-model
 import { AccountService } from 'src/app/modules/core/services/account.service';
 import { SprintModalServiceService } from '../../services/sprint-modal.service';
 import { UrlService } from '../../services/urls.service';
+import { ReportService } from 'src/app/modules/reports/services/report.service';
+import { SprintStats } from 'src/app/modules/reports/models/report';
 
 enum KanbanView {
   LIST = 'list',
@@ -57,6 +62,7 @@ export class KanbanBoardComponent implements OnInit, AfterViewInit {
   accountService = inject(AccountService)
   sprintModal = inject(SprintModalServiceService)
   urls = inject(UrlService)
+  private reportService = inject(ReportService)
 
   faXmark = faXmark
   faArrowLeft = faArrowLeft
@@ -83,6 +89,7 @@ export class KanbanBoardComponent implements OnInit, AfterViewInit {
   public selectedTeam: Team | null = null
   public view$: Observable<KanbanView | null>
   public selectedSprint: Sprint | null = null
+  public sprintStats$: Observable<SprintStats | null> = of(null)
   @ViewChild('sprintSelect') sprintSelect!: SelectModelComponent
 
   public otherGroup: Group = {
@@ -209,6 +216,16 @@ export class KanbanBoardComponent implements OnInit, AfterViewInit {
     ).subscribe(value => {
       this.filterForm.patchValue({view: value})
     })
+
+    this.sprintStats$ = combineLatest([this.sprintId$, this.userId$]).pipe(
+      switchMap(([sprintId, userId]) => {
+        if (!sprintId) return of(null);
+        return this.reportService.getSprintStats(sprintId, userId ?? undefined).pipe(
+          catchError(() => of(null))
+        );
+      }),
+      takeUntilDestroyed(this.destroyRef)
+    )
 
   }
 

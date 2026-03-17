@@ -94,6 +94,28 @@ func SerializeWipReport(report *domain.WipReport) WipReportDto {
 	return WipReportDto{DataPoints: dataPoints}
 }
 
+type SprintStatsRequest struct {
+	AssigneeId *uint `form:"assignee_id"`
+}
+
+type SprintStatsDto struct {
+	Capacity    uint `json:"capacity"`
+	PlannedDev  uint `json:"planned_dev"`
+	PlannedQA   uint `json:"planned_qa"`
+	VelocityDev uint `json:"velocity_dev"`
+	VelocityQA  uint `json:"velocity_qa"`
+}
+
+func SerializeSprintStats(stats *domain.SprintStats) SprintStatsDto {
+	return SprintStatsDto{
+		Capacity:    stats.Capacity,
+		PlannedDev:  stats.PlannedDev,
+		PlannedQA:   stats.PlannedQA,
+		VelocityDev: stats.VelocityDev,
+		VelocityQA:  stats.VelocityQA,
+	}
+}
+
 func SerializeBurnupReport(report *domain.BurnupReport) BurnupReportDto {
 	dataPoints := make([]BurnupDataPointDto, len(report.DataPoints))
 	for i, dp := range report.DataPoints {

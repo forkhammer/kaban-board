@@ -41,3 +41,11 @@ type WipDataPoint struct {
 type WipReport struct {
 	DataPoints []WipDataPoint
 }
+
+type SprintStats struct {
+	Capacity    uint
+	PlannedDev  uint
+	PlannedQA   uint
+	VelocityDev uint
+	VelocityQA  uint
+}

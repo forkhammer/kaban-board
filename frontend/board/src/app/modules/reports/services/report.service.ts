@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { CoreConfigService } from '../../core/config';
-import { BurndownReport, BurnupReport, WipReport } from '../models/report';
+import { BurndownReport, BurnupReport, SprintStats, WipReport } from '../models/report';
 
 @Injectable({
   providedIn: 'root'
@@ -21,6 +21,12 @@ export class ReportService {
     return this.http.get<BurnupReport>(`${this.config.apiUrl}/reports/burnup`, {
       params: { sprint_id: sprintId.toString() }
     });
+  }
+
+  getSprintStats(sprintId: number, assigneeId?: number): Observable<SprintStats> {
+    const params: Record<string, string> = {};
+    if (assigneeId != null) params['assignee_id'] = assigneeId.toString();
+    return this.http.get<SprintStats>(`${this.config.apiUrl}/reports/sprint/${sprintId}`, { params });
   }
 
   getWipReport(params: { start_date: string; end_date: string; interval: string; team_id?: number; user_id?: number }): Observable<WipReport> {

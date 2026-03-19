@@ -54,6 +54,10 @@
   }
 }
 
+.btn-outline-secondary {
+  @include button-loading($white, $gray-300, $gray-500);
+}
+
 .btn-ellipsis {
   &:after {
     display: none;

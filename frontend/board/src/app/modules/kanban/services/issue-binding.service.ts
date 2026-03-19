@@ -3,6 +3,14 @@ import {BaseService} from "../../core/services/base.service";
 import { KanbanIssue } from '../models/kanban-issue';
 import { map, Observable, tap } from 'rxjs';
 
+export interface CreateIssueBindingRequest {
+  title: string;
+  project: number;
+  assignee: number;
+  sprint: number;
+  createInTracker?: boolean;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -29,7 +37,7 @@ export class IssueBindingService extends BaseService<KanbanIssue>{
     );
   }
 
-  create(data: { title: string; project: number; assignee: number; sprint: number }): Observable<KanbanIssue> {
+  create(data: CreateIssueBindingRequest): Observable<KanbanIssue> {
     return this.http.post(this.apiUrl, data).pipe(
       map(res => res as KanbanIssue),
       tap(this.updateItemCache.bind(this)),

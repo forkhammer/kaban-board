@@ -49,13 +49,24 @@
       <app-input-error [errorData]="errors" code="title"></app-input-error>
     </div>
 
+    <!-- CreateInTracker -->
+    <div class="mb-3 form-check">
+      <input
+        type="checkbox"
+        id="createInTracker"
+        class="form-check-input"
+        formControlName="createInTracker">
+      <label class="form-check-label" for="createInTracker">Создать в Gitlab</label>
+    </div>
+
   </form>
 </div>
 
 <div class="modal-footer d-flex">
   <div class="btn-group flex-grow-1 d-flex">
-    <button type="button" class="btn btn-outline-secondary flex-grow-1 btn-create" (click)="submit()" [disabled]="isLoading">
-      <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+    <button type="button" class="btn btn-outline-secondary flex-grow-1 btn-create" (click)="submit()"
+      [disabled]="isLoading"
+      [class.loading]="isLoading">
       Создать
     </button>
     <button type="button" class="btn btn-outline-secondary flex-grow-1 btn-cancel" (click)="close()" [disabled]="isLoading">

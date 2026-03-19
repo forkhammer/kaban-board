@@ -1,12 +1,13 @@
 import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { IssueBindingService } from '../../services/issue-binding.service';
+import { CreateIssueBindingRequest, IssueBindingService } from '../../services/issue-binding.service';
 import { ProjectService } from '../../services/project.service';
 import { IssueBindingModalData } from '../../services/issue-binding-modal.service';
 import { catchError, finalize } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { UserService } from '../../services/user.service';
+import { ToastService } from 'src/app/modules/core/services/toast.service';
 
 @Component({
   selector: 'app-issue-binding-modal',
@@ -20,6 +21,7 @@ export class IssueBindingModalComponent {
   private issueBindingService = inject(IssueBindingService);
   protected projectService = inject(ProjectService);
   protected userService = inject(UserService)
+  protected toast = inject(ToastService)
 
   form: FormGroup;
   isLoading = false;
@@ -32,6 +34,7 @@ export class IssueBindingModalComponent {
       project: [null, [Validators.required]],
       assignee: [null],
       sprint: [null],
+      createInTracker: [false],
     });
   }
 
@@ -67,12 +70,13 @@ export class IssueBindingModalComponent {
     this.isLoading = true;
     this.errors = [];
 
-    const data = {
+    const data: CreateIssueBindingRequest & { id: number } = {
       id: this.form.value.id,
       title: this.form.value.title,
       project: this.form.value.project,
       assignee: this.form.value.assignee,
       sprint: this.form.value.sprint,
+      createInTracker: this.form.value.createInTracker,
     };
 
     if (data.id) {
@@ -102,11 +106,13 @@ export class IssueBindingModalComponent {
           catchError((error) => {
             if (error.error?.message) {
               this.errors = [error.error.message];
-            } else if (error.error?.errors) {
-              this.errors = Object.values(error.error.errors).flat() as string[];
+            } else if (error.error?.error) {
+              this.errors = [error.error.error];
             } else {
               this.errors = ['An error occurred while creating the issue binding'];
             }
+
+            this.toast.showMessages(this.errors, 'error')
             return of(null);
           })
         )

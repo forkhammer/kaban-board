@@ -1,5 +1,22 @@
 package gitlab
 
+type GitlabRestIssueAssignee struct {
+	Id        int    `json:"id"`
+	Name      string `json:"name"`
+	Username  string `json:"username"`
+	AvatarUrl string `json:"avatar_url"`
+}
+
+type GitlabRestIssue struct {
+	Id        int                       `json:"id"`
+	Iid       int                       `json:"iid"`
+	ProjectId int                       `json:"project_id"`
+	Title     string                    `json:"title"`
+	WebUrl    string                    `json:"web_url"`
+	IssueType string                    `json:"issue_type"`
+	Assignees []GitlabRestIssueAssignee `json:"assignees"`
+}
+
 type GitlabUsersResponse struct {
 	Data struct {
 		Users struct {

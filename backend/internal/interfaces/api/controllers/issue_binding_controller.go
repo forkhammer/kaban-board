@@ -264,10 +264,12 @@ func (c *IssueBindingController) createBinding(ctx *gin.Context) {
 	currentAccount := account.(*domain.Account)
 
 	binding, err := c.bindingUC.CreateIssueAndBinding(usecases.CreateIssueBindingRequest{
-		Title:      request.Title,
-		ProjectId:  request.ProjectId,
-		SprintId:   request.SprintId,
-		AssigneeId: request.AssigneeId,
+		Title:           request.Title,
+		ProjectId:       request.ProjectId,
+		SprintId:        request.SprintId,
+		AssigneeId:      request.AssigneeId,
+		CreateInTracker: request.CreateInTracker,
+		AccountId:       currentAccount.Id,
 	})
 	if apiutils.HandleException(ctx, err) {
 		return

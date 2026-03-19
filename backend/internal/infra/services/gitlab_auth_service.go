@@ -65,6 +65,32 @@ func (s *GitLabAuthService) HandleCallback(code string) (*domain.Account, error)
 	return account, nil
 }
 
+func (s *GitLabAuthService) GetValidToken(accountId domain.AccountId) (*domain.GitlabToken, error) {
+	token, err := s.gitlabTokenRepo.GetByAccountId(accountId)
+	if err != nil {
+		return nil, err
+	}
+
+	if token.ExpiresAt.Before(time.Now().Add(5 * time.Minute)) {
+		newToken, err := s.gitlabClient.RefreshToken(token.RefreshToken)
+		if err != nil {
+			return nil, fmt.Errorf("failed to refresh GitLab token: %w", err)
+		}
+		expiresAt := time.Unix(int64(newToken.CreatedAt), 0).Add(time.Duration(newToken.ExpiresIn) * time.Second)
+		token, err = s.gitlabTokenRepo.Upsert(&domain.GitlabToken{
+			AccountId:    accountId,
+			AccessToken:  newToken.AccessToken,
+			RefreshToken: newToken.RefreshToken,
+			ExpiresAt:    expiresAt,
+		})
+		if err != nil {
+			return nil, fmt.Errorf("failed to save refreshed token: %w", err)
+		}
+	}
+
+	return token, nil
+}
+
 func (s *GitLabAuthService) findOrCreateAccount(userInfo *interfaces.GitLabUserInfo) (*domain.Account, error) {
 	account, err := s.accountRepo.GetByGitlabID(userInfo.ID)
 	if err == nil && account != nil {

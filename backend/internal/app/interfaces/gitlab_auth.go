@@ -8,6 +8,7 @@ type GitLabAuthServiceInterface interface {
 	GetAuthorizationURL() string
 	HandleCallback(code string) (*domain.Account, error)
 	IsEnabled() bool
+	GetValidToken(accountId domain.AccountId) (*domain.GitlabToken, error)
 }
 
 type GitLabOAuthToken struct {

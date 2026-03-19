@@ -737,6 +737,44 @@ func (client *GitlabClient) ExchangeCodeForToken(code string) (*interfaces.GitLa
 	return &token, nil
 }
 
+func (client *GitlabClient) RefreshToken(refreshToken string) (*interfaces.GitLabOAuthToken, error) {
+	data := url.Values{}
+	data.Set("client_id", client.config.GitLabAuthClientID)
+	data.Set("client_secret", client.config.GitLabAuthClientSecret)
+	data.Set("refresh_token", refreshToken)
+	data.Set("grant_type", "refresh_token")
+	data.Set("redirect_uri", client.config.GitLabAuthRedirectURL)
+
+	tokenURL := fmt.Sprintf("%s/oauth/token", client.config.GitlabUrl)
+
+	req, err := http.NewRequest(http.MethodPost, tokenURL, strings.NewReader(data.Encode()))
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Set("Accept", "application/json")
+
+	httpClient := http.Client{Timeout: 30 * time.Second}
+	resp, err := httpClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to refresh token: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("failed to refresh token: status %d, body: %s", resp.StatusCode, string(body))
+	}
+
+	var token interfaces.GitLabOAuthToken
+	if err := json.NewDecoder(resp.Body).Decode(&token); err != nil {
+		return nil, fmt.Errorf("failed to decode token response: %w", err)
+	}
+
+	return &token, nil
+}
+
 func (client *GitlabClient) GetUserInfo(accessToken string) (*interfaces.GitLabUserInfo, error) {
 	userInfoURL := fmt.Sprintf("%s/api/v4/user", client.config.GitlabUrl)
 
@@ -766,4 +804,71 @@ func (client *GitlabClient) GetUserInfo(accessToken string) (*interfaces.GitLabU
 	}
 
 	return &userInfo, nil
+}
+
+func (client *GitlabClient) CreateIssue(userToken string, title string, projectId uint, assigneeId *uint) (*domain.Issue, error) {
+	endpoint, err := url.JoinPath(client.apiUrl, fmt.Sprintf("api/v4/projects/%d/issues", projectId))
+	if err != nil {
+		return nil, fmt.Errorf("failed to build issue endpoint: %w", err)
+	}
+
+	body := map[string]any{"title": title}
+	if assigneeId != nil {
+		body["assignee_ids"] = []uint{*assigneeId}
+	}
+
+	jsonData, err := json.Marshal(body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal issue request: %w", err)
+	}
+
+	req, err := http.NewRequest(http.MethodPost, endpoint, bytes.NewBuffer(jsonData))
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+	req.Header.Set("PRIVATE-TOKEN", userToken)
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Accept", "application/json")
+
+	httpClient := http.Client{Timeout: 30 * time.Second}
+	resp, err := httpClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create issue in GitLab: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusCreated {
+		body, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("GitLab returned status %d: %s", resp.StatusCode, string(body))
+	}
+
+	var restIssue GitlabRestIssue
+	if err := json.NewDecoder(resp.Body).Decode(&restIssue); err != nil {
+		return nil, fmt.Errorf("failed to decode GitLab issue response: %w", err)
+	}
+
+	project, err := client.projectRepo.Get(domain.ProjectId(projectId))
+	if err != nil {
+		return nil, fmt.Errorf("failed to get project: %w", err)
+	}
+
+	assignees := make([]domain.User, 0)
+	if assigneeId != nil {
+		user, err := client.userRepo.Get(domain.UserId(*assigneeId))
+		if err != nil {
+			return nil, fmt.Errorf("failed to get assignee: %w", err)
+		}
+		assignees = append(assignees, *user)
+	}
+
+	return &domain.Issue{
+		ExternalId: domain.IssueExternalId(fmt.Sprintf("gid://gitlab/Issue/%d", restIssue.Id)),
+		Iid:        domain.IssueIid(strconv.Itoa(restIssue.Iid)),
+		Title:      restIssue.Title,
+		IssueType:  domain.IssueTypeIssue,
+		WebUrl:     restIssue.WebUrl,
+		Project:    *project,
+		Assignees:  assignees,
+		Labels:     []domain.Label{},
+	}, nil
 }

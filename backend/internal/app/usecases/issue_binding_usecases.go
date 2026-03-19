@@ -2,6 +2,7 @@ package usecases
 
 import (
 	"fmt"
+	"main/internal/app/interfaces"
 	"main/internal/app/queries"
 	app_services "main/internal/app/services"
 	domain_pkg "main/internal/domain"
@@ -41,10 +42,12 @@ type IssueBindingOrdering struct {
 type IssueBindingOrderingSet = []IssueBindingOrdering
 
 type CreateIssueBindingRequest struct {
-	Title      string
-	ProjectId  uint
-	SprintId   uint
-	AssigneeId *uint
+	Title           string
+	ProjectId       uint
+	SprintId        uint
+	AssigneeId      *uint
+	CreateInTracker bool
+	AccountId       domain.AccountId
 }
 
 type MoveIssueBindingRequest struct {
@@ -68,6 +71,8 @@ type IssueBindingUseCases struct {
 	epicRepo          repo.EpicRepo                            `di.inject:"EpicRepository"`
 	userRepo          repo.UserRepo                            `di.inject:"UserRepository"`
 	historyService    *app_services.IssueBindingHistoryService `di.inject:"IssueBindingHistoryService"`
+	gitlab            interfaces.TaskTracker                   `di.inject:"gitlab"`
+	gitlabAuthService interfaces.GitLabAuthServiceInterface    `di.inject:"GitLabAuthService"`
 }
 
 func (u *IssueBindingUseCases) GetBindings(filter *queries.IssueBindingFilter, page int, limit int, account *domain.Account) (*IssueBindingPage, error) {
@@ -335,11 +340,6 @@ func (uc *IssueBindingUseCases) MoveBinding(request MoveIssueBindingRequest, acc
 }
 
 func (uc *IssueBindingUseCases) CreateIssueAndBinding(request CreateIssueBindingRequest) (*domain.IssueBinding, error) {
-	project, err := uc.projectRepo.Get(domain.ProjectId(request.ProjectId))
-	if err != nil {
-		return nil, err
-	}
-
 	sprint, err := uc.sprintRepo.Get(domain.SprintId(request.SprintId))
 	if err != nil {
 		return nil, err
@@ -353,23 +353,42 @@ func (uc *IssueBindingUseCases) CreateIssueAndBinding(request CreateIssueBinding
 		}
 	}
 
-	externalId := domain.IssueExternalId(uuid.Must(uuid.NewV7()).String())
+	var issue *domain.Issue
+	if request.CreateInTracker {
+		token, err := uc.gitlabAuthService.GetValidToken(request.AccountId)
+		if err != nil {
+			return nil, domain_pkg.NewValidationError("Нет авторизации в Gitlab", err)
+		}
+		issue, err = uc.gitlab.CreateIssue(token.AccessToken, request.Title, request.ProjectId, request.AssigneeId)
+		if err != nil {
+			return nil, err
+		}
+		issue, err = uc.issueRepo.Create(issue)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		project, err := uc.projectRepo.Get(domain.ProjectId(request.ProjectId))
+		if err != nil {
+			return nil, err
+		}
 
-	issue := &domain.Issue{
-		Id:         0,
-		ExternalId: externalId,
-		Iid:        "",
-		Title:      request.Title,
-		IssueType:  domain.IssueTypeIssue,
-		Project:    *project,
-		WebUrl:     "",
-		Assignees:  []domain.User{},
-		Labels:     []domain.Label{},
-	}
-
-	issue, err = uc.issueRepo.Create(issue)
-	if err != nil {
-		return nil, err
+		externalId := domain.IssueExternalId(uuid.Must(uuid.NewV7()).String())
+		issue = &domain.Issue{
+			Id:         0,
+			ExternalId: externalId,
+			Iid:        "",
+			Title:      request.Title,
+			IssueType:  domain.IssueTypeIssue,
+			Project:    *project,
+			WebUrl:     "",
+			Assignees:  []domain.User{},
+			Labels:     []domain.Label{},
+		}
+		issue, err = uc.issueRepo.Create(issue)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	binding, err := issue.BindToSprint(sprint, assignee)

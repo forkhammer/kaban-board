@@ -39,10 +39,11 @@ type SetIssueBindingOrder struct {
 }
 
 type CreateIssueBindingRequest struct {
-	Title      string `json:"title" binding:"required"`
-	ProjectId  uint   `json:"project" binding:"required"`
-	SprintId   uint   `json:"sprint" binding:"required"`
-	AssigneeId *uint  `json:"assignee"`
+	Title           string `json:"title" binding:"required"`
+	ProjectId       uint   `json:"project" binding:"required"`
+	SprintId        uint   `json:"sprint" binding:"required"`
+	AssigneeId      *uint  `json:"assignee"`
+	CreateInTracker bool   `json:"createInTracker"`
 }
 
 type CopyIssueBindingRequest struct {

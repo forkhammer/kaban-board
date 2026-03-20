@@ -3,6 +3,7 @@ package cache
 import (
 	"errors"
 	"main/config"
+	"strings"
 	"sync"
 	"time"
 )
@@ -88,6 +89,22 @@ func (c *MemoryCache) Delete(key string) error {
 	delete(c.items, key)
 
 	return nil
+}
+
+func (c *MemoryCache) GetByPrefix(prefix string) map[string]any {
+	c.RLock()
+	defer c.RUnlock()
+
+	result := make(map[string]any)
+	now := time.Now().UnixNano()
+	for k, item := range c.items {
+		if strings.HasPrefix(k, prefix) {
+			if item.Expiration == 0 || now <= item.Expiration {
+				result[k] = item.Value
+			}
+		}
+	}
+	return result
 }
 
 func (c *MemoryCache) StartGC() {

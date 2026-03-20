@@ -6,6 +6,7 @@ import (
 	"main/config"
 	app_services "main/internal/app/services"
 	"main/internal/app/usecases"
+	"main/internal/infra/cache"
 	"main/internal/infra/db/implementation"
 	"main/internal/infra/db/interfaces"
 	"main/internal/infra/gitlab"
@@ -59,6 +60,7 @@ func initDI() {
 	mustRegisterBeanInstance("connection", connection)
 	mustRegisterBeanInstance("config", config.Settings)
 	mustRegisterBeanInstance("db", connection)
+	mustRegisterBeanInstance("cache", cache.MemoryCacheInstance)
 	mustRegisterBeanFactory("gitlab", di.Singleton, func(ctx context.Context) (any, error) {
 		return gitlab.NewGitlabClient(config.Settings.GitlabUrl, config.Settings.GitlabToken), nil
 	})

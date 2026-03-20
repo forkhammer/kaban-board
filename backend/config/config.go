@@ -42,7 +42,8 @@ type Config struct {
 	GitlabSyncEnabled      bool   `env:"GITLAB_SYNC_ENABLED" envDefault:"true"`
 	GitlabSyncPeriodMin    int    `env:"GITLAB_SYNC_PERIOD_MIN" envDefault:"10"`
 	GitlabEpicLabel        string `env:"GITLAB_EPIC_LABEL" envDefault:"Type::Epic"`
-	MemoryCacheDurationMin int  `env:"MEMORY_CACHE_DURATION_MIN" envDefault:"15"`
+	MemoryCacheDurationMin int `env:"MEMORY_CACHE_DURATION_MIN" envDefault:"15"`
+	OnlineUserTTLMin       int `env:"ONLINE_USER_TTL_MIN" envDefault:"5"`
 
 	GitLabAuthEnabled      bool   `env:"GITLAB_AUTH_ENABLED" envDefault:"true"`
 	GitLabAuthClientID     string `env:"GITLAB_AUTH_CLIENT_ID"`

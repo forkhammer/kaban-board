@@ -13,9 +13,7 @@
           <a routerLink="/reports" class="menu-link" routerLinkActive="active">Отчеты</a>
         </div>
 
-        <div class="update-time me-3">
-          Синхронизация с Gitlab: {{syncService.updateTime$ | async | elapsedTime:now}}
-        </div>
+        <app-online-accounts class="me-3"></app-online-accounts>
 
         <div class="settings me-3">
           <div class="form-check form-switch mb-0">

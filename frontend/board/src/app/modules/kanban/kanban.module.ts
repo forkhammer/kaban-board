@@ -51,6 +51,8 @@ import { BindingStatusSelectComponent } from './components/binding-status-select
 import { IssueBindingModalComponent } from './components/issue-binding-modal/issue-binding-modal.component';
 import { CopyToSprintModalComponent } from './components/copy-to-sprint-modal/copy-to-sprint-modal.component';
 import { MoveToSprintModalComponent } from './components/move-to-sprint-modal/move-to-sprint-modal.component';
+import { OnlineAccountsComponent } from './components/online-accounts/online-accounts.component';
+import { HeaderComponent } from './components/header/header.component';
 
 
 @NgModule({
@@ -100,6 +102,8 @@ import { MoveToSprintModalComponent } from './components/move-to-sprint-modal/mo
     IssueBindingModalComponent,
     CopyToSprintModalComponent,
     MoveToSprintModalComponent,
+    OnlineAccountsComponent,
+    HeaderComponent
   ],
   exports: [
     UserBoardComponent,
@@ -112,6 +116,7 @@ import { MoveToSprintModalComponent } from './components/move-to-sprint-modal/mo
     SprintSelectComponent,
     PrioritySelectComponent,
     BindingStatusSelectComponent,
+    HeaderComponent,
   ],
   imports: [
     CommonModule,

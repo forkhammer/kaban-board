@@ -21,6 +21,12 @@ export interface AccountAuthResult {
   errors?: string[];
 }
 
+export interface OnlineAccount {
+  id: number;
+  name: string;
+  avatarUrl: string | null;
+}
+
 export interface RegistrationRequest {
   username: string;
   password: string;

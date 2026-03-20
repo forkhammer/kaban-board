@@ -2,15 +2,19 @@ package usecases
 
 import (
 	"main/internal/app/interfaces"
+	"main/internal/app/queries"
 	domain_pkg "main/internal/domain"
 	domain "main/internal/domain/models"
 	"main/internal/domain/repo"
+	"main/internal/infra/cache"
 )
 
 type AccountUseCases struct {
 	accountRepo     repo.AccountRepo                    `di.inject:"AccountRepository"`
+	accountQuery    queries.AccountQuery                `di.inject:"AccountQuery"`
 	jwtService      interfaces.JWTServiceInterface      `di.inject:"JWTService"`
 	passwordService interfaces.PasswordServiceInterface `di.inject:"PasswordService"`
+	cache           cache.Cache                         `di.inject:"cache"`
 }
 
 func (uc *AccountUseCases) GetActiveUser(token string) (*domain.Account, error) {
@@ -84,4 +88,18 @@ func (uc *AccountUseCases) Register(username, password string) (*domain.Account,
 	account, err = uc.accountRepo.Create(account)
 
 	return account, err
+}
+
+func (uc *AccountUseCases) GetOnlineAccounts() ([]domain.Account, error) {
+	items := uc.cache.GetByPrefix("online:user:")
+	ids := make([]domain.AccountId, 0, len(items))
+	for _, v := range items {
+		ids = append(ids, v.(domain.AccountId))
+	}
+
+	uintIds := make([]uint, len(ids))
+	for i, id := range ids {
+		uintIds[i] = uint(id)
+	}
+	return uc.accountRepo.List(uc.accountQuery.GetSpec(queries.AccountFilter{Ids: uintIds}))
 }

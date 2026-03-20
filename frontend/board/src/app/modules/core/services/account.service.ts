@@ -4,7 +4,8 @@ import {
   RegistrationResult,
   Account,
   AccountAuthResult,
-  AccountRole
+  AccountRole,
+  OnlineAccount,
 } from '../models/account';
 import { HttpErrorResponse } from '@angular/common/http';
 import { BehaviorSubject, EMPTY, Observable, of } from 'rxjs';
@@ -26,6 +27,7 @@ export class AccountService extends BaseService<Account> {
   userObservable: Observable<Account | null>;
   updateSignal$ = new Subject<any>();
   protected tokenUrl: string
+  protected onlineUrl: string
   protected loginGitlabUrl: string
   protected callbackGitlabUrl: string
   private jwt: JWTService
@@ -41,6 +43,7 @@ export class AccountService extends BaseService<Account> {
 
     this.apiUrl = this.config.apiUrl + '/account/user';
     this.tokenUrl = this.config.apiUrl + '/account/login';
+    this.onlineUrl = this.config.apiUrl + '/account/online';
     this.loginGitlabUrl = this.config.apiUrl + '/auth/gitlab';
     this.callbackGitlabUrl = this.config.apiUrl + '/auth/gitlab/callback';
 
@@ -154,6 +157,10 @@ export class AccountService extends BaseService<Account> {
     });
     this.update();
     this.router.navigate(['/auth']);
+  }
+
+  getOnlineAccounts(): Observable<OnlineAccount[]> {
+    return this.http.get<OnlineAccount[]>(this.onlineUrl);
   }
 
   getActive() {

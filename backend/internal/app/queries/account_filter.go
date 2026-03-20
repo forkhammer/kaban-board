@@ -4,6 +4,7 @@ import "main/internal/domain/repo"
 
 type AccountFilter struct {
 	GitlabIds []uint
+	Ids       []uint
 }
 
 type AccountQuery interface {

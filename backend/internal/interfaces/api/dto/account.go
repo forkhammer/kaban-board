@@ -46,6 +46,20 @@ func NewActiveUserResponse(account *domain.Account) ActiveUserResponse {
 	}
 }
 
+type OnlineAccountDto struct {
+	Id        uint   `json:"id"`
+	Name      string `json:"name"`
+	AvatarURL string `json:"avatarUrl,omitempty"`
+}
+
+func SerializeOnlineAccount(account *domain.Account) OnlineAccountDto {
+	return OnlineAccountDto{
+		Id:        uint(account.Id),
+		Name:      account.Name,
+		AvatarURL: account.AvatarURL,
+	}
+}
+
 func SerializeAccount(account *domain.Account) *AccountDto {
 	return &AccountDto{
 		Id:           uint(account.Id),

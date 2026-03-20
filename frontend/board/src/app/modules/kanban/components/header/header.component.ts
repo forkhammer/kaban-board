@@ -1,12 +1,12 @@
 import {Component, inject} from '@angular/core';
 import {GitlabSyncService} from "../../../kanban/services/gitlab-sync.service";
 import {distinctUntilChanged, interval} from "rxjs";
-import {ThemeServiceService} from "../../services/theme-service.service";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import { faXmark } from '@fortawesome/free-solid-svg-icons'
 import { ClientSettings } from 'src/app/modules/kanban/models/settings';
 import { KanbanSettingsService } from 'src/app/modules/kanban/services/kanban-settings.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ThemeServiceService } from 'src/app/modules/ui/services/theme-service.service';
 
 @Component({
     selector: 'app-header',

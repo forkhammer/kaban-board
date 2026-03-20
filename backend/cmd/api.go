@@ -27,6 +27,7 @@ func NewApiApplication() *ApiApplication {
 		router.Use(sentrygin.New(sentrygin.Options{Repanic: true}))
 	}
 	router.Use(middleware.JwtMiddleware())
+	router.Use(middleware.OnlineTrackingMiddleware())
 
 	app := ApiApplication{
 		router: router,

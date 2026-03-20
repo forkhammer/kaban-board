@@ -1,0 +1,25 @@
+<div class="online-accounts" *ngIf="accounts.length > 0">
+  <div class="avatar" *ngFor="let acc of visibleAccounts" [title]="acc.name" [ngbTooltip]="acc.name">
+    <img *ngIf="acc.avatarUrl; else initials" [src]="acc.avatarUrl" [alt]="acc.name">
+    <ng-template #initials>
+      <span class="initials">{{ acc.name[0] }}</span>
+    </ng-template>
+  </div>
+
+  <div ngbDropdown placement="bottom-end" *ngIf="hiddenCount > 0">
+    <div class="avatar avatar--more" ngbDropdownToggle>
+      <span>+{{ hiddenCount }}</span>
+    </div>
+    <div ngbDropdownMenu>
+      <div class="dropdown-user" *ngFor="let acc of accounts">
+        <div class="dropdown-user__avatar">
+          <img *ngIf="acc.avatarUrl; else dropInitials" [src]="acc.avatarUrl" [alt]="acc.name">
+          <ng-template #dropInitials>
+            <span class="initials">{{ acc.name[0] }}</span>
+          </ng-template>
+        </div>
+        <span class="dropdown-user__name">{{ acc.name }}</span>
+      </div>
+    </div>
+  </div>
+</div>

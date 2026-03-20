@@ -19,6 +19,10 @@ func (s *AccountFilterSpec) Apply(conn any) (any, error) {
 		query = query.Where("accounts.gitlab_id IN ?", s.Filter.GitlabIds)
 	}
 
+	if len(s.Filter.Ids) > 0 {
+		query = query.Where("accounts.id IN ?", s.Filter.Ids)
+	}
+
 	return query, nil
 }
 

@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HeaderComponent } from './components/header/header.component';
 import {SpinnerComponent} from "./components/spinner/spinner.component";
 import { HeaderAccountComponent } from './components/header-account/header-account.component';
 import {BootstrapUiModule} from "../bootstrap-ui/bootstrap-ui.module";
@@ -24,7 +23,6 @@ import { ObserveVisibilityDirective } from './directives/observe-visibility.dire
 
 @NgModule({
   declarations: [
-    HeaderComponent,
     SpinnerComponent,
     HeaderAccountComponent,
     InputAlertComponent,
@@ -41,7 +39,6 @@ import { ObserveVisibilityDirective } from './directives/observe-visibility.dire
     ObserveVisibilityDirective,
   ],
   exports: [
-    HeaderComponent,
     SpinnerComponent,
     InputAlertComponent,
     SelectComponent,
@@ -53,7 +50,8 @@ import { ObserveVisibilityDirective } from './directives/observe-visibility.dire
     ElapsedTimePipe,
     FormatDatePipe,
     InputErrorComponent,
-    ObserveVisibilityDirective
+    ObserveVisibilityDirective,
+    HeaderAccountComponent,
   ],
   imports: [
     CommonModule,

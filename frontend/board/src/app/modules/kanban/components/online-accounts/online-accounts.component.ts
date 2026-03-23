@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { timer } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { EMPTY, timer } from 'rxjs';
+import { catchError, switchMap } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AccountService } from '../../../core/services/account.service';
 import { OnlineAccount } from '../../../core/models/account';
@@ -24,8 +24,9 @@ export class OnlineAccountsComponent {
   }
 
   constructor(private accountService: AccountService) {
-    timer(0, 60 * 1000).pipe(
+    timer(0, 30 * 1000).pipe(
       switchMap(() => this.accountService.getOnlineAccounts()),
+      catchError(_ => EMPTY),
       takeUntilDestroyed(),
     ).subscribe(accounts => this.accounts = accounts);
   }

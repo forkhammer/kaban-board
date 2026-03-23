@@ -8,7 +8,7 @@
     <div class="cells">
       <button *ngFor="let val of ESTIMATE_VALUES" (click)="select(val)" class="cell val-{{val}}" ngbDropdownItem
         [class.active]="selectValue === val">
-        {{val}} час
+        {{val}} ч.
       </button>
     </div>
   </div>

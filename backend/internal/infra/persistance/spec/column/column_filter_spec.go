@@ -16,7 +16,7 @@ func (s *ColumnFilterSpec) Apply(conn any) (any, error) {
 	query := conn.(*gorm.DB)
 
 	if len(s.Filter.Ids) > 0 {
-		query = query.Where("id IN ?", s.Filter.Ids)
+		query = query.Where("columns.id IN ?", s.Filter.Ids)
 	}
 
 	return query, nil

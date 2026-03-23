@@ -46,7 +46,7 @@
     }
   }
 
-  @for $i from 12 through 24 {
+  @for $i from 9 through 24 {
     &.val-#{$i} {
       background-color: $estimate-mid-color;
       color: darken($color: $estimate-mid-color, $amount: 50);
@@ -117,7 +117,7 @@
     }
   }
 
-  @for $i from 12 through 24 {
+  @for $i from 9 through 24 {
     &.val-#{$i} {
       // background-color: $estimate-mid-color;
       color: darken($color: $estimate-mid-color, $amount: 40);

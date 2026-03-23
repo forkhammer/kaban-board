@@ -53,6 +53,7 @@ import { CopyToSprintModalComponent } from './components/copy-to-sprint-modal/co
 import { MoveToSprintModalComponent } from './components/move-to-sprint-modal/move-to-sprint-modal.component';
 import { OnlineAccountsComponent } from './components/online-accounts/online-accounts.component';
 import { HeaderComponent } from './components/header/header.component';
+import { StatusBadgeComponent } from './components/status-badge/status-badge.component';
 
 
 @NgModule({
@@ -103,7 +104,8 @@ import { HeaderComponent } from './components/header/header.component';
     CopyToSprintModalComponent,
     MoveToSprintModalComponent,
     OnlineAccountsComponent,
-    HeaderComponent
+    HeaderComponent,
+    StatusBadgeComponent,
   ],
   exports: [
     UserBoardComponent,

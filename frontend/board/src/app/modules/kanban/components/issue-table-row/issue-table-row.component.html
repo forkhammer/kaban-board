@@ -70,7 +70,7 @@
     <app-select-estimate class="flat" formControlName="estimateQA" *ngIf="canUpdate()"></app-select-estimate>
   </td>
   <td class="column">
-    <div class="status" *ngIf="issue.bindStatus && !canUpdate()">{{BIND_STATUS_LABELS[issue.bindStatus]}}</div>
+    <app-status-badge [status]="issue.bindStatus" *ngIf="issue.bindStatus && !canUpdate()"></app-status-badge>
 
     <app-binding-status-select class="flat" formControlName="bindStatus" *ngIf="canUpdate()"></app-binding-status-select>
   </td>

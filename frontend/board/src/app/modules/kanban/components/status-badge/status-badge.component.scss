@@ -1,0 +1,26 @@
+@import '../../../../../styles/imports';
+
+.status-badge {
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+}
+
+.status-dot {
+  width: 10px;
+  min-width: 10px;
+  height: 10px;
+  border-radius: 100%;
+  margin-right: 6px;
+  background-color: $gray-400;
+
+  &.backlog     { background-color: $gray-400; }
+  &.in_progress { background-color: #4A90D9; }
+  &.done        { background-color: #5CB85C; }
+}
+
+.status-label {
+  @include fs-paragraph-xs();
+  font-weight: 400;
+  line-height: 1rem;
+}

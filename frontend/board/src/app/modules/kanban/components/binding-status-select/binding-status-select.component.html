@@ -2,10 +2,7 @@
   <div class="btn-group dropdown-toggle-group">
     <div ngbDropdownToggle class="btn">
       <ng-container *ngIf="value !== null">
-        <div class="status-badge">
-          <span class="status-dot" [ngClass]="value"></span>
-          <span class="status-label">{{ BIND_STATUS_LABELS[value] }}</span>
-        </div>
+        <app-status-badge [status]="value"></app-status-badge>
       </ng-container>
 
       <ng-container *ngIf="value === null">
@@ -24,10 +21,7 @@
         *ngFor="let item of values"
         [class.active]="item.id === value"
         (click)="select($event, $any(item.id))">
-        <div class="status-badge">
-          <span class="status-dot" [ngClass]="item.id.toString()"></span>
-          <span class="status-label">{{ item.title }}</span>
-        </div>
+        <app-status-badge [status]="$any(item.id)"></app-status-badge>
       </div>
     </div>
   </div>

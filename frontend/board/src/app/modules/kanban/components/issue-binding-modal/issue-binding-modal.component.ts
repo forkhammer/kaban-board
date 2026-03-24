@@ -86,8 +86,8 @@ export class IssueBindingModalComponent {
           catchError((error) => {
             if (error.error?.message) {
               this.errors = [error.error.message];
-            } else if (error.error?.errors) {
-              this.errors = Object.values(error.error.errors).flat() as string[];
+            } else if (error.error?.error) {
+              this.errors = [error.error.error];
             } else {
               this.errors = ['An error occurred while creating the issue binding'];
             }

@@ -37,6 +37,8 @@ export function catchErrorMessages<T>(toast: ToastService, callback?: catchError
           toast.showMessages(getValidationErrors(err), 'error');
         } else if (isValidationFormError(err)) {
           toast.showMessages(getValidationFormErrors(err), 'error');
+        } else if (isUnknownError(err)) {
+          toast.showMessages([err.message], 'error')
         }
 
         if (callback) {
@@ -65,4 +67,8 @@ export function getValidationFormErrors(err: any): string[] {
 
 export function isConflictError(err: any): boolean {
   return err.error && Object.prototype.toString.call(err.error) === '[object Object]';
+}
+
+export function isUnknownError(err: any): boolean {
+  return err.status === 0 && err.message;
 }

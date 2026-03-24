@@ -1,5 +1,5 @@
 import { Component, DestroyRef, EventEmitter, inject, Input, NgZone, Output } from '@angular/core';
-import { BehaviorSubject, combineLatestWith, debounceTime, distinctUntilChanged, filter, merge, of, Subject, switchMap, timer } from 'rxjs';
+import { BehaviorSubject, catchError, combineLatestWith, debounceTime, distinctUntilChanged, EMPTY, filter, merge, of, Subject, switchMap, timer } from 'rxjs';
 import { KanbanUser } from '../../models/kanban-user';
 import { Team } from '../../models/team';
 import { Sprint } from '../../models/sprint';
@@ -194,6 +194,10 @@ export class IssueTableComponent {
     this.bindIssueModal.show().then(issue => {
       if (issue && this.sprint$.value) {
         this.issueService.bindToSprint((issue as KanbanIssue).id, this.sprint$.value.id, this.user$.value?.id ?? null).pipe(
+          // catchError(err => {
+          //   console.log(err)
+          //   return EMPTY
+          // }),
           catchErrorMessages(this.toast),
           takeUntilDestroyed(this.destroyRef),
         ).subscribe(data => {

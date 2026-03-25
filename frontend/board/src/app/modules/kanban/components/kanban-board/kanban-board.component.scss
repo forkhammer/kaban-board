@@ -203,7 +203,7 @@ $board-header-height: 100px;
   border: 1px solid $border-color;
   color: $body-color;
   @include fs-paragraph-xs();
-  background: $white;
+  background: transparent;
   padding: 0 $pt;
   line-height: 46px;
 
@@ -233,6 +233,19 @@ $board-header-height: 100px;
   &__caption {
     @include media-breakpoint-down(xl) {
       display: none;
+    }
+  }
+
+  :host-context([data-bs-theme="dark"]) & {
+    border-color: $gray-800;
+
+    &:hover {
+      color: $gray-100;
+    }
+
+    &.active {
+      border-color: $gray-400;
+      color: $gray-100;
     }
   }
 }

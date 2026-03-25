@@ -7,13 +7,15 @@ import (
 )
 
 type KanbanUseCases struct {
-	userRepo  repo.UserRepo     `di.inject:"UserRepository"`
-	issueRepo repo.IssueRepo    `di.inject:"IssueRepository"`
-	userQuery queries.UserQuery `di.inject:"UserQuery"`
+	userRepo    repo.UserRepo       `di.inject:"UserRepository"`
+	issueRepo   repo.IssueRepo      `di.inject:"IssueRepository"`
+	userQuery   queries.UserQuery   `di.inject:"UserQuery"`
+	commonQuery queries.CommonQuery `di.inject:"CommonQuery"`
 }
 
 func (uc *KanbanUseCases) GetBoard() (*models.Board, error) {
-	users, err := uc.userRepo.List(uc.userQuery.OnlyVisible())
+	spec := repo.And(uc.userQuery.OnlyVisible(), uc.commonQuery.OrderSpec("users.username"))
+	users, err := uc.userRepo.List(spec)
 	if err != nil {
 		return nil, err
 	}

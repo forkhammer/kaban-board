@@ -19,13 +19,15 @@ type CreateTeamRequest struct {
 }
 
 type TeamUseCases struct {
-	teamRepo   repo.TeamRepo      `di.inject:"TeamRepository"`
-	groupRepo  repo.GroupRepo     `di.inject:"GroupRepository"`
-	groupQuery queries.GroupQuery `di.inject:"GroupQuery"`
+	teamRepo    repo.TeamRepo       `di.inject:"TeamRepository"`
+	groupRepo   repo.GroupRepo      `di.inject:"GroupRepository"`
+	groupQuery  queries.GroupQuery  `di.inject:"GroupQuery"`
+	commonQuery queries.CommonQuery `di.inject:"CommonQuery"`
 }
 
 func (uc *TeamUseCases) GetTeams() ([]domain.Team, error) {
-	return uc.teamRepo.List(nil)
+	spec := uc.commonQuery.OrderSpec("teams.id")
+	return uc.teamRepo.List(spec)
 }
 
 func (uc *TeamUseCases) GetTeam(id uint) (*domain.Team, error) {

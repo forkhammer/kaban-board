@@ -17,6 +17,7 @@
   &.backlog     { background-color: $gray-400; }
   &.in_progress { background-color: #4A90D9; }
   &.done        { background-color: #5CB85C; }
+  &.blocked     { background-color: #D9534F; }
 }
 
 .status-label {

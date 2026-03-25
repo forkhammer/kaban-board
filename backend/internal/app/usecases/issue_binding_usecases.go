@@ -2,6 +2,7 @@ package usecases
 
 import (
 	"fmt"
+	"log"
 	"main/internal/app/interfaces"
 	"main/internal/app/queries"
 	app_services "main/internal/app/services"
@@ -10,6 +11,7 @@ import (
 	"main/internal/domain/repo"
 	"time"
 
+	"github.com/getsentry/sentry-go"
 	"github.com/google/uuid"
 )
 
@@ -147,6 +149,11 @@ func (uc *IssueBindingUseCases) SaveBinding(request SaveIssueBindingRequest, acc
 		return nil, fmt.Errorf("cannot be changed for this user")
 	}
 
+	var oldReleaseId domain.ReleaseId
+	if binding.Release != nil {
+		oldReleaseId = binding.Release.Id
+	}
+
 	binding.EstimateDev = request.EstimateDev
 	binding.EstimateQA = request.EstimateQA
 	if request.BindStatus != nil {
@@ -165,6 +172,12 @@ func (uc *IssueBindingUseCases) SaveBinding(request SaveIssueBindingRequest, acc
 	} else {
 		binding.Release = nil
 	}
+
+	var newReleaseId domain.ReleaseId
+	if binding.Release != nil {
+		newReleaseId = binding.Release.Id
+	}
+	releaseChanged := oldReleaseId != newReleaseId
 
 	if request.EpicId != nil {
 		epic, err := uc.epicRepo.Get(domain.EpicId(*request.EpicId))
@@ -219,12 +232,39 @@ func (uc *IssueBindingUseCases) SaveBinding(request SaveIssueBindingRequest, acc
 		return nil, err
 	}
 
+	if releaseChanged && binding.Issue.IsExternal() {
+		uc.saveMilestoneToTracker(binding, account)
+	}
+
 	_, err = uc.historyService.AddHistory(binding)
 	if err != nil {
 		return nil, err
 	}
 
 	return binding, nil
+}
+
+func (uc *IssueBindingUseCases) saveMilestoneToTracker(binding *domain.IssueBinding, account *domain.Account) {
+	token, err := uc.gitlabAuthService.GetValidToken(account.Id)
+	if err != nil {
+		sentry.CaptureException(err)
+		log.Printf("saveMilestoneToTracker: failed to get gitlab token for account %d: %v", account.Id, err)
+		return
+	}
+	var milestoneId *uint
+	if binding.Release != nil {
+		id := uint(binding.Release.Id)
+		milestoneId = &id
+	}
+	if err := uc.gitlab.UpdateIssueMilestone(
+		token.AccessToken,
+		uint(binding.Issue.Project.Id),
+		string(binding.Issue.Iid),
+		milestoneId,
+	); err != nil {
+		sentry.CaptureException(err)
+		log.Printf("saveMilestoneToTracker: failed to update milestone for issue %s: %v", binding.Issue.Iid, err)
+	}
 }
 
 func (uc *IssueBindingUseCases) SaveOrdering(ordering IssueBindingOrderingSet) (domain.SprintId, error) {

@@ -872,3 +872,44 @@ func (client *GitlabClient) CreateIssue(userToken string, title string, projectI
 		Labels:     []domain.Label{},
 	}, nil
 }
+
+func (client *GitlabClient) UpdateIssueMilestone(userToken string, projectId uint, issueIid string, milestoneId *uint) error {
+	endpoint, err := url.JoinPath(client.apiUrl, fmt.Sprintf("api/v4/projects/%d/issues/%s", projectId, issueIid))
+	if err != nil {
+		return fmt.Errorf("failed to build endpoint: %w", err)
+	}
+
+	var body map[string]any
+	if milestoneId != nil {
+		body = map[string]any{"milestone_id": *milestoneId}
+	} else {
+		body = map[string]any{"milestone_id": nil}
+	}
+
+	jsonData, err := json.Marshal(body)
+	if err != nil {
+		return fmt.Errorf("failed to marshal request: %w", err)
+	}
+
+	req, err := http.NewRequest(http.MethodPut, endpoint, bytes.NewBuffer(jsonData))
+	if err != nil {
+		return fmt.Errorf("failed to create request: %w", err)
+	}
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", userToken))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Accept", "application/json")
+
+	httpClient := http.Client{Timeout: 30 * time.Second}
+	resp, err := httpClient.Do(req)
+	if err != nil {
+		return fmt.Errorf("failed to update issue milestone in GitLab: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("GitLab returned status %d: %s", resp.StatusCode, string(body))
+	}
+
+	return nil
+}

@@ -2,6 +2,11 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Skills
+
+- **Backend development** (Go): use the `golang-pro` skill
+- **Frontend development** (Angular/TypeScript): use the `ts-pro` and `frontend-design` skills
+
 ## Project Overview
 
 This is a Kanban board application for self-hosted GitLab with real-time synchronization. The project consists of:

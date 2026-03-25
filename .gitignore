@@ -4,3 +4,4 @@ frontend/board/node_modules
 backend/__debug*
 .tmp
 .vscode/settings.json
+.claude

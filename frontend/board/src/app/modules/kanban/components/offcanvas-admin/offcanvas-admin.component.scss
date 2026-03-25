@@ -26,3 +26,16 @@
   min-height: calc(100vh - 190px);
   overflow-y: auto;
 }
+
+.btn-close {
+  position: absolute;
+  top: $pt2;
+  left: -$pt8;
+  background-color: $white;
+  border-radius: 100%;
+  border: 1px solid $gray-100;
+  box-shadow: 0 4px 20px rgba($black, 0.15);
+  width: 40px;
+  height: 40px;
+  opacity: 1;
+}

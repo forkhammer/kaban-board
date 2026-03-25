@@ -21,6 +21,7 @@
 
 .user-icon {
   margin-right: 4px;
+  font-size: 18px;
 
   :host-context([data-bs-theme="dark"]) & {
     color: $gray-400;

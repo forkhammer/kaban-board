@@ -1,6 +1,5 @@
 import { Component, inject } from '@angular/core';
 import {AccountService} from "../../../core/services/account.service";
-import { faGear, faCircleXmark } from '@fortawesome/free-solid-svg-icons';
 import { faCircleUser } from '@fortawesome/free-regular-svg-icons';
 import {SettingsService} from "../../services/settings.service";
 import { Account } from 'src/app/modules/core/models/account';
@@ -16,8 +15,6 @@ export class HeaderAccountComponent {
   public accountService = inject(AccountService)
   public settingsService = inject(SettingsService)
 
-  faGear = faGear
-  faXmark = faCircleXmark
   faUser = faCircleUser
 
   account: Account | null = null

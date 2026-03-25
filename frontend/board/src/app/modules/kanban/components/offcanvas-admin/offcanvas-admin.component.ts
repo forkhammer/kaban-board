@@ -9,4 +9,8 @@ import {SettingsService} from "../../../ui/services/settings.service";
 })
 export class OffcanvasAdminComponent {
   public settingsService = inject(SettingsService)
+
+  close() {
+    this.settingsService.close()
+  }
 }

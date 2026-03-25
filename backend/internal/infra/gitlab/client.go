@@ -436,7 +436,7 @@ func (client *GitlabClient) getProjectsQuery(pageSize int, startCursor string) s
 							}
 						}
 					}
-					milestones {
+					milestones(sort:CREATED_DESC) {
                         nodes {
                             id
                             iid

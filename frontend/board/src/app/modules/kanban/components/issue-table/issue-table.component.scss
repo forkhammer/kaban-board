@@ -9,6 +9,7 @@
   right: 0;
   bottom: 0;
   padding: $pt2;
+  overflow-x: auto;
 
   :host-context([data-bs-theme="dark"]) & {
     background: $gray-800;
@@ -19,6 +20,7 @@
   flex-flow: column;
   display: flex;
   width: 100%;
+  min-width: 1450px;
   flex-grow: 1;
   max-height: 100%;
   border-radius: $pt;
@@ -106,8 +108,8 @@
       max-width: 130px;
     }
     &:nth-child(10) {
-      width: 300px;
-      max-width: 300px;
+      width: 200px;
+      max-width: 200px;
     }
   }
 }

@@ -17,7 +17,7 @@ import {KanbanUser} from "../../models/kanban-user";
 import {map} from "rxjs/operators";
 import {ActivatedRoute, Router} from "@angular/router";
 import {FormBuilder, FormGroup} from "@angular/forms";
-import { faXmark, faArrowLeft, faArrowRight, faTableList, faTableColumns, faPlus, faArrowTrendDown, faArrowTrendUp } from '@fortawesome/free-solid-svg-icons';
+import { faXmark, faArrowLeft, faArrowRight, faTableList, faTableColumns, faPlus, faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
 import {TitleService} from "../../../core/services/title.service";
 import {TeamService} from "../../services/team.service";
 import {GitlabSyncService} from "../../services/gitlab-sync.service";
@@ -70,8 +70,7 @@ export class KanbanBoardComponent implements OnInit, AfterViewInit {
   faArrowRight = faArrowRight
   faTableList = faTableList
   faTableColumns = faTableColumns
-  faArrowTrendDown = faArrowTrendDown
-  faArrowTrendUp = faArrowTrendUp
+  faEllipsisVertical = faEllipsisVertical
   faPlus = faPlus
   COLUMN_WIDTH = 340
   KanbanView = KanbanView

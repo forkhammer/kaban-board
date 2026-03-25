@@ -49,16 +49,16 @@
 
     <div class="content">
       <div class="board-header" [formGroup]="filterForm">
-        <div class="btn-group me-3">
-          <button class="btn" (click)="viewBoard()"
-            [class.btn-primary]="view === KanbanView.BOARD">
+        <div class="group-view me-3">
+          <button class="btn-view" (click)="viewBoard()"
+            [class.active]="view === KanbanView.BOARD">
             <fa-icon [icon]="faTableColumns"></fa-icon>
-            Доска
+            <span class="btn-view__caption">Доска</span>
           </button>
-          <button class="btn" (click)="viewList()"
-            [class.btn-primary]="view === KanbanView.LIST">
+          <button class="btn-view" (click)="viewList()"
+            [class.active]="view === KanbanView.LIST">
             <fa-icon [icon]="faTableList"></fa-icon>
-            Список
+            <span class="btn-view__caption">Список</span>
           </button>
         </div>
 
@@ -87,19 +87,23 @@
           </div>
         </ng-container>
 
-        <ng-container *ngIf="(sprintId$ | async)">
-          <ng-container *ngIf="urls.getSprintBurndownUrl((sprintId$ | async)!) as nav">
-            <a [routerLink]="nav.url" [queryParams]="nav.query" class="btn btn-outline-secondary ms-auto me-2" ngbTooltip="Burndown Chart">
-              <fa-icon [icon]="faArrowTrendDown"></fa-icon>
-            </a>
-          </ng-container>
-
-          <ng-container *ngIf="urls.getSprintBurnupUrl((sprintId$ | async)!) as nav">
-            <a [routerLink]="nav.url" [queryParams]="nav.query" class="btn btn-outline-secondary me-2" ngbTooltip="Burnup Chart">
-              <fa-icon [icon]="faArrowTrendUp"></fa-icon>
-            </a>
-          </ng-container>
-        </ng-container>
+        <div ngbDropdown *ngIf="(sprintId$ | async)">
+          <button class="btn btn-actions" ngbDropdownToggle>
+            <fa-icon [icon]="faEllipsisVertical"></fa-icon>
+          </button>
+          <div ngbDropdownMenu>
+            <ng-container *ngIf="urls.getSprintBurndownUrl((sprintId$ | async)!) as nav">
+              <a [routerLink]="nav.url" [queryParams]="nav.query" ngbDropdownItem>
+                Burndown Chart
+              </a>
+            </ng-container>
+            <ng-container *ngIf="urls.getSprintBurnupUrl((sprintId$ | async)!) as nav">
+              <a [routerLink]="nav.url" [queryParams]="nav.query" ngbDropdownItem >
+                Burnup Chart
+              </a>
+            </ng-container>
+          </div>
+        </div>
       </div>
 
       <div class="position-relative flex-grow-1">

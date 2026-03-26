@@ -126,3 +126,9 @@ type MilestoneIndex struct {
 	Milestone *GitlabMilestone
 	Project   *GitlabProject
 }
+
+type GitlabIssueLinkItem struct {
+	IssueLinkId uint `json:"issue_link_id"`
+	ProjectId   uint `json:"project_id"`
+	Iid         uint `json:"iid"`
+}

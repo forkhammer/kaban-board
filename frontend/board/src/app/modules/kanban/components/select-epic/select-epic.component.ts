@@ -39,6 +39,7 @@ export class SelectEpicComponent implements ControlValueAccessor {
   epics: Epic[] = [];
   selectedEpic: Epic | null = null;
   searchForm: FormGroup
+  @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
 
   get selectValue(): number | null {
     return this.value$.value;
@@ -116,6 +117,9 @@ export class SelectEpicComponent implements ControlValueAccessor {
 
   onOpenChange(open: boolean) {
     this.opened$.next(open);
+    if (open && this.searchInput) {
+      setTimeout(() => this.searchInput.nativeElement.focus(), 0);
+    }
   }
 
   formatEpic(epic: Epic): string {

@@ -12,4 +12,6 @@ type TaskTracker interface {
 	GetReleases() ([]domain.Release, error)
 	CreateIssue(userToken string, title string, projectId uint, assigneeId *uint) (*domain.Issue, error)
 	UpdateIssueMilestone(userToken string, projectId uint, issueIid string, milestoneId *uint) error
+	AddIssueLink(userToken string, projectId uint, issueIid string, targetProjectId uint, targetIssueIid string) error
+	RemoveIssueLink(userToken string, projectId uint, issueIid string, targetProjectId uint, targetIssueIid string) error
 }

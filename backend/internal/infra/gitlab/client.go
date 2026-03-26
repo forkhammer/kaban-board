@@ -806,6 +806,30 @@ func (client *GitlabClient) GetUserInfo(accessToken string) (*interfaces.GitLabU
 	return &userInfo, nil
 }
 
+func (client *GitlabClient) doUserRequest(userToken, method, endpoint string, body any) (*http.Response, error) {
+	var reqBody io.Reader
+	if body != nil {
+		jsonData, err := json.Marshal(body)
+		if err != nil {
+			return nil, fmt.Errorf("failed to marshal request body: %w", err)
+		}
+		reqBody = bytes.NewBuffer(jsonData)
+	}
+
+	req, err := http.NewRequest(method, endpoint, reqBody)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", userToken))
+	req.Header.Set("Accept", "application/json")
+	if body != nil {
+		req.Header.Set("Content-Type", "application/json")
+	}
+
+	httpClient := http.Client{Timeout: 30 * time.Second}
+	return httpClient.Do(req)
+}
+
 func (client *GitlabClient) CreateIssue(userToken string, title string, projectId uint, assigneeId *uint) (*domain.Issue, error) {
 	endpoint, err := url.JoinPath(client.apiUrl, fmt.Sprintf("api/v4/projects/%d/issues", projectId))
 	if err != nil {
@@ -817,21 +841,7 @@ func (client *GitlabClient) CreateIssue(userToken string, title string, projectI
 		body["assignee_ids"] = []uint{*assigneeId}
 	}
 
-	jsonData, err := json.Marshal(body)
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal issue request: %w", err)
-	}
-
-	req, err := http.NewRequest(http.MethodPost, endpoint, bytes.NewBuffer(jsonData))
-	if err != nil {
-		return nil, fmt.Errorf("failed to create request: %w", err)
-	}
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", userToken))
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Accept", "application/json")
-
-	httpClient := http.Client{Timeout: 30 * time.Second}
-	resp, err := httpClient.Do(req)
+	resp, err := client.doUserRequest(userToken, http.MethodPost, endpoint, body)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create issue in GitLab: %w", err)
 	}
@@ -886,21 +896,7 @@ func (client *GitlabClient) UpdateIssueMilestone(userToken string, projectId uin
 		body = map[string]any{"milestone_id": nil}
 	}
 
-	jsonData, err := json.Marshal(body)
-	if err != nil {
-		return fmt.Errorf("failed to marshal request: %w", err)
-	}
-
-	req, err := http.NewRequest(http.MethodPut, endpoint, bytes.NewBuffer(jsonData))
-	if err != nil {
-		return fmt.Errorf("failed to create request: %w", err)
-	}
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", userToken))
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Accept", "application/json")
-
-	httpClient := http.Client{Timeout: 30 * time.Second}
-	resp, err := httpClient.Do(req)
+	resp, err := client.doUserRequest(userToken, http.MethodPut, endpoint, body)
 	if err != nil {
 		return fmt.Errorf("failed to update issue milestone in GitLab: %w", err)
 	}
@@ -909,6 +905,83 @@ func (client *GitlabClient) UpdateIssueMilestone(userToken string, projectId uin
 	if resp.StatusCode != http.StatusOK {
 		body, _ := io.ReadAll(resp.Body)
 		return fmt.Errorf("GitLab returned status %d: %s", resp.StatusCode, string(body))
+	}
+
+	return nil
+}
+
+func (client *GitlabClient) RemoveIssueLink(userToken string, projectId uint, issueIid string, targetProjectId uint, targetIssueIid string) error {
+	listEndpoint, err := url.JoinPath(client.apiUrl, fmt.Sprintf("api/v4/projects/%d/issues/%s/links", projectId, issueIid))
+	if err != nil {
+		return fmt.Errorf("failed to build endpoint: %w", err)
+	}
+
+	resp, err := client.doUserRequest(userToken, http.MethodGet, listEndpoint, nil)
+	if err != nil {
+		return fmt.Errorf("failed to get issue links from GitLab: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("GitLab returned status %d: %s", resp.StatusCode, string(body))
+	}
+
+	var links []GitlabIssueLinkItem
+	if err := json.NewDecoder(resp.Body).Decode(&links); err != nil {
+		return fmt.Errorf("failed to decode issue links response: %w", err)
+	}
+
+	var linkId uint
+	for _, link := range links {
+		if link.ProjectId == targetProjectId && fmt.Sprintf("%d", link.Iid) == targetIssueIid {
+			linkId = link.IssueLinkId
+			break
+		}
+	}
+	if linkId == 0 {
+		return nil
+	}
+
+	deleteEndpoint, err := url.JoinPath(client.apiUrl, fmt.Sprintf("api/v4/projects/%d/issues/%s/links/%d", projectId, issueIid, linkId))
+	if err != nil {
+		return fmt.Errorf("failed to build delete endpoint: %w", err)
+	}
+
+	delResp, err := client.doUserRequest(userToken, http.MethodDelete, deleteEndpoint, nil)
+	if err != nil {
+		return fmt.Errorf("failed to delete issue link in GitLab: %w", err)
+	}
+	defer delResp.Body.Close()
+
+	if delResp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(delResp.Body)
+		return fmt.Errorf("GitLab returned status %d: %s", delResp.StatusCode, string(body))
+	}
+
+	return nil
+}
+
+func (client *GitlabClient) AddIssueLink(userToken string, projectId uint, issueIid string, targetProjectId uint, targetIssueIid string) error {
+	endpoint, err := url.JoinPath(client.apiUrl, fmt.Sprintf("api/v4/projects/%d/issues/%s/links", projectId, issueIid))
+	if err != nil {
+		return fmt.Errorf("failed to build endpoint: %w", err)
+	}
+
+	body := map[string]any{
+		"target_project_id": targetProjectId,
+		"target_issue_iid":  targetIssueIid,
+	}
+
+	resp, err := client.doUserRequest(userToken, http.MethodPost, endpoint, body)
+	if err != nil {
+		return fmt.Errorf("failed to add issue link in GitLab: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusCreated {
+		respBody, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("GitLab returned status %d: %s", resp.StatusCode, string(respBody))
 	}
 
 	return nil

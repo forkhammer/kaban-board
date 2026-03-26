@@ -42,6 +42,10 @@
   }
 }
 
+.dropdown-menu {
+  min-width: 200px;
+}
+
 .caption {
   flex: 1;
   min-width: 0;
@@ -90,6 +94,7 @@
 .epic-project {
   flex-shrink: 0;
   font-size: 11px;
+  color: $gray-500;
 }
 
 .empty {

@@ -154,6 +154,13 @@ func (uc *IssueBindingUseCases) SaveBinding(request SaveIssueBindingRequest, acc
 		oldReleaseId = binding.Release.Id
 	}
 
+	var oldEpicId domain.EpicId
+	var oldEpic *domain.Epic
+	if binding.Epic != nil {
+		oldEpicId = binding.Epic.Id
+		oldEpic = binding.Epic
+	}
+
 	binding.EstimateDev = request.EstimateDev
 	binding.EstimateQA = request.EstimateQA
 	if request.BindStatus != nil {
@@ -236,6 +243,21 @@ func (uc *IssueBindingUseCases) SaveBinding(request SaveIssueBindingRequest, acc
 		uc.saveMilestoneToTracker(binding, account)
 	}
 
+	var newEpicId domain.EpicId
+	if binding.Epic != nil {
+		newEpicId = binding.Epic.Id
+	}
+	epicChanged := oldEpicId != newEpicId
+
+	if epicChanged && binding.Issue.IsExternal() {
+		if oldEpic != nil {
+			uc.removeEpicLinkFromTracker(binding, oldEpic, account)
+		}
+		if binding.Epic != nil {
+			uc.saveEpicLinkToTracker(binding, account)
+		}
+	}
+
 	_, err = uc.historyService.AddHistory(binding)
 	if err != nil {
 		return nil, err
@@ -264,6 +286,45 @@ func (uc *IssueBindingUseCases) saveMilestoneToTracker(binding *domain.IssueBind
 	); err != nil {
 		sentry.CaptureException(err)
 		log.Printf("saveMilestoneToTracker: failed to update milestone for issue %s: %v", binding.Issue.Iid, err)
+	}
+}
+
+func (uc *IssueBindingUseCases) removeEpicLinkFromTracker(binding *domain.IssueBinding, epic *domain.Epic, account *domain.Account) {
+	token, err := uc.gitlabAuthService.GetValidToken(account.Id)
+	if err != nil {
+		sentry.CaptureException(err)
+		log.Printf("removeEpicLinkFromTracker: failed to get gitlab token for account %d: %v", account.Id, err)
+		return
+	}
+	if err := uc.gitlab.RemoveIssueLink(
+		token.AccessToken,
+		uint(binding.Issue.Project.Id),
+		string(binding.Issue.Iid),
+		uint(epic.Project.Id),
+		string(epic.Iid),
+	); err != nil {
+		sentry.CaptureException(err)
+		log.Printf("removeEpicLinkFromTracker: failed to remove issue link for issue %s -> epic %s: %v", binding.Issue.Iid, epic.Iid, err)
+	}
+}
+
+func (uc *IssueBindingUseCases) saveEpicLinkToTracker(binding *domain.IssueBinding, account *domain.Account) {
+	token, err := uc.gitlabAuthService.GetValidToken(account.Id)
+	if err != nil {
+		sentry.CaptureException(err)
+		log.Printf("saveEpicLinkToTracker: failed to get gitlab token for account %d: %v", account.Id, err)
+		return
+	}
+	epic := binding.Epic
+	if err := uc.gitlab.AddIssueLink(
+		token.AccessToken,
+		uint(binding.Issue.Project.Id),
+		string(binding.Issue.Iid),
+		uint(epic.Project.Id),
+		string(epic.Iid),
+	); err != nil {
+		sentry.CaptureException(err)
+		log.Printf("saveEpicLinkToTracker: failed to add issue link for issue %s -> epic %s: %v", binding.Issue.Iid, epic.Iid, err)
 	}
 }
 

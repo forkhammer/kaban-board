@@ -1,9 +1,13 @@
 package queries
 
-import "main/internal/domain/repo"
+import (
+	"main/internal/domain/repo"
+	domain "main/internal/domain/models"
+)
 
 type LabelFilter struct {
-	Names []string
+	Names    []string
+	Priority *domain.IssueBindingPriority
 }
 
 type LabelQuery interface {

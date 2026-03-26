@@ -14,4 +14,6 @@ type TaskTracker interface {
 	UpdateIssueMilestone(userToken string, projectId uint, issueIid string, milestoneId *uint) error
 	AddIssueLink(userToken string, projectId uint, issueIid string, targetProjectId uint, targetIssueIid string) error
 	RemoveIssueLink(userToken string, projectId uint, issueIid string, targetProjectId uint, targetIssueIid string) error
+	AddIssueLabel(userToken string, projectId uint, issueIid string, labelName string) error
+	RemoveIssueLabel(userToken string, projectId uint, issueIid string, labelName string) error
 }

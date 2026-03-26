@@ -73,6 +73,8 @@ type IssueBindingUseCases struct {
 	epicRepo          repo.EpicRepo                            `di.inject:"EpicRepository"`
 	userRepo          repo.UserRepo                            `di.inject:"UserRepository"`
 	historyService    *app_services.IssueBindingHistoryService `di.inject:"IssueBindingHistoryService"`
+	labelRepo         repo.LabelRepo                           `di.inject:"LabelRepository"`
+	labelQuery        queries.LabelQuery                       `di.inject:"LabelQuery"`
 	gitlab            interfaces.TaskTracker                   `di.inject:"gitlab"`
 	gitlabAuthService interfaces.GitLabAuthServiceInterface    `di.inject:"GitLabAuthService"`
 }
@@ -160,6 +162,8 @@ func (uc *IssueBindingUseCases) SaveBinding(request SaveIssueBindingRequest, acc
 		oldEpicId = binding.Epic.Id
 		oldEpic = binding.Epic
 	}
+
+	oldPriority := binding.Priority
 
 	binding.EstimateDev = request.EstimateDev
 	binding.EstimateQA = request.EstimateQA
@@ -258,6 +262,11 @@ func (uc *IssueBindingUseCases) SaveBinding(request SaveIssueBindingRequest, acc
 		}
 	}
 
+	priorityChanged := oldPriority != binding.Priority
+	if priorityChanged && binding.Issue.IsExternal() {
+		uc.savePriorityToTracker(binding, oldPriority, account)
+	}
+
 	_, err = uc.historyService.AddHistory(binding)
 	if err != nil {
 		return nil, err
@@ -325,6 +334,48 @@ func (uc *IssueBindingUseCases) saveEpicLinkToTracker(binding *domain.IssueBindi
 	); err != nil {
 		sentry.CaptureException(err)
 		log.Printf("saveEpicLinkToTracker: failed to add issue link for issue %s -> epic %s: %v", binding.Issue.Iid, epic.Iid, err)
+	}
+}
+
+func (uc *IssueBindingUseCases) savePriorityToTracker(binding *domain.IssueBinding, oldPriority *domain.IssueBindingPriority, account *domain.Account) {
+	token, err := uc.gitlabAuthService.GetValidToken(account.Id)
+	if err != nil {
+		sentry.CaptureException(err)
+		log.Printf("savePriorityToTracker: failed to get gitlab token for account %d: %v", account.Id, err)
+		return
+	}
+
+	projectId := uint(binding.Issue.Project.Id)
+	issueIid := string(binding.Issue.Iid)
+
+	if oldPriority != nil {
+		spec := uc.labelQuery.GetSpec(queries.LabelFilter{Priority: oldPriority})
+		labels, err := uc.labelRepo.List(spec)
+		if err != nil {
+			sentry.CaptureException(err)
+			log.Printf("savePriorityToTracker: failed to find old priority label: %v", err)
+		} else if len(labels) > 0 {
+			if err := uc.gitlab.RemoveIssueLabel(token.AccessToken, projectId, issueIid, labels[0].Name); err != nil {
+				sentry.CaptureException(err)
+				log.Printf("savePriorityToTracker: failed to remove label %s: %v", labels[0].Name, err)
+			}
+		}
+	}
+
+	if binding.Priority != nil {
+		spec := uc.labelQuery.GetSpec(queries.LabelFilter{Priority: binding.Priority})
+		labels, err := uc.labelRepo.List(spec)
+		if err != nil {
+			sentry.CaptureException(err)
+			log.Printf("savePriorityToTracker: failed to find new priority label: %v", err)
+			return
+		}
+		if len(labels) > 0 {
+			if err := uc.gitlab.AddIssueLabel(token.AccessToken, projectId, issueIid, labels[0].Name); err != nil {
+				sentry.CaptureException(err)
+				log.Printf("savePriorityToTracker: failed to add label %s: %v", labels[0].Name, err)
+			}
+		}
 	}
 }
 

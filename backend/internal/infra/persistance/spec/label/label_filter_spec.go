@@ -19,6 +19,10 @@ func (s *LabelFilterSpec) Apply(conn any) (any, error) {
 		query = query.Where("name IN ?", s.Filter.Names)
 	}
 
+	if s.Filter.Priority != nil {
+		query = query.Where("priority = ?", string(*s.Filter.Priority))
+	}
+
 	return query, nil
 }
 

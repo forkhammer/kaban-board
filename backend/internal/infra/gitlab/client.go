@@ -986,3 +986,43 @@ func (client *GitlabClient) AddIssueLink(userToken string, projectId uint, issue
 
 	return nil
 }
+
+func (client *GitlabClient) AddIssueLabel(userToken string, projectId uint, issueIid string, labelName string) error {
+	endpoint, err := url.JoinPath(client.apiUrl, fmt.Sprintf("api/v4/projects/%d/issues/%s", projectId, issueIid))
+	if err != nil {
+		return fmt.Errorf("failed to build endpoint: %w", err)
+	}
+
+	resp, err := client.doUserRequest(userToken, http.MethodPut, endpoint, map[string]any{"add_labels": labelName})
+	if err != nil {
+		return fmt.Errorf("failed to add issue label in GitLab: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("GitLab returned status %d: %s", resp.StatusCode, string(body))
+	}
+
+	return nil
+}
+
+func (client *GitlabClient) RemoveIssueLabel(userToken string, projectId uint, issueIid string, labelName string) error {
+	endpoint, err := url.JoinPath(client.apiUrl, fmt.Sprintf("api/v4/projects/%d/issues/%s", projectId, issueIid))
+	if err != nil {
+		return fmt.Errorf("failed to build endpoint: %w", err)
+	}
+
+	resp, err := client.doUserRequest(userToken, http.MethodPut, endpoint, map[string]any{"remove_labels": labelName})
+	if err != nil {
+		return fmt.Errorf("failed to remove issue label in GitLab: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("GitLab returned status %d: %s", resp.StatusCode, string(body))
+	}
+
+	return nil
+}

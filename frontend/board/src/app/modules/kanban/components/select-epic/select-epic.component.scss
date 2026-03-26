@@ -80,6 +80,10 @@
   font-size: 12px;
   color: $primary;
   width: 40px;
+
+  :host-context([data-bs-theme="dark"]) & {
+    color: lighten($color: $primary, $amount: 20);
+  }
 }
 
 .epic-title {

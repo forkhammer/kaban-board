@@ -6,7 +6,7 @@
       </ng-container>
 
       <ng-container *ngIf="value === null">
-        <div class="empty-status">...</div>
+        <div class="empty-status">{{ title ? title : "..."}}</div>
       </ng-container>
     </div>
 

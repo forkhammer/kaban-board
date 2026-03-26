@@ -1,10 +1,14 @@
 <div class="label-card d-flex align-items-center pt-1 pb-1 p-1 ps-3 pe-3" [formGroup]="form">
   <div class="label-title flex-grow-1">{{label.name}}</div>
 
-  <div class="label-altname" *ngIf="!isEdit">{{label.altName}}</div>
+  <div class="label-altname me-3" *ngIf="!isEdit">{{label.altName}}</div>
+  <div class="label-binding-status me-3" *ngIf="!isEdit && label.bindingStatus">
+    <app-status-badge [status]="label.bindingStatus"></app-status-badge>
+  </div>
 
-  <div class="flex-grow-1" *ngIf="isEdit">
+  <div class="d-flex align-items-center gap-2 flex-grow-1" *ngIf="isEdit">
     <input type="text" class="form-control" formControlName="altName" placeholder="Псевдоним">
+    <app-binding-status-select formControlName="bindingStatus" title="Статус задачи" [useClear]="true" class="status"></app-binding-status-select>
   </div>
 
   <button class="btn btn-link" *ngIf="isEdit" (click)="save()">

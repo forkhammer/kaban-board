@@ -8,14 +8,16 @@ import (
 )
 
 type UpdateLabelRequest struct {
-	Title   string
-	AltName *string
+	Title         string
+	AltName       *string
+	BindingStatus *domain.IssueBindingStatus
 }
 
 type KanbanLabel struct {
-	Id      string
-	Name    string
-	AltName *string
+	Id            string
+	Name          string
+	AltName       *string
+	BindingStatus *domain.IssueBindingStatus
 }
 
 type LabelUseCases struct {
@@ -36,9 +38,10 @@ func (uc *LabelUseCases) GetLabels() ([]KanbanLabel, error) {
 		}),
 		func(l domain.Label) KanbanLabel {
 			return KanbanLabel{
-				Id:      l.Name,
-				Name:    l.Name,
-				AltName: l.AltName,
+				Id:            l.Name,
+				Name:          l.Name,
+				AltName:       l.AltName,
+				BindingStatus: l.BindingStatus,
 			}
 		},
 	)
@@ -57,6 +60,7 @@ func (uc *LabelUseCases) Update(request *UpdateLabelRequest) error {
 
 	for _, label := range labels {
 		label.AltName = request.AltName
+		label.BindingStatus = request.BindingStatus
 		if err := label.Validate(); err != nil {
 			return err
 		}

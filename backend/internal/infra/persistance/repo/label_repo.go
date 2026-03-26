@@ -94,20 +94,22 @@ func (r *LabelRepository) Delete(id domain.LabelId) error {
 
 func (r *LabelRepository) toDomainLabel(label *models.Label) *domain.Label {
 	return &domain.Label{
-		Id:        domain.LabelId(label.Id),
-		Name:      label.Name,
-		Color:     domain.Color(label.Color),
-		TextColor: domain.Color(label.TextColor),
-		AltName:   label.AltName,
+		Id:            domain.LabelId(label.Id),
+		Name:          label.Name,
+		Color:         domain.Color(label.Color),
+		TextColor:     domain.Color(label.TextColor),
+		AltName:       label.AltName,
+		BindingStatus: (*domain.IssueBindingStatus)(label.BindingStatus),
 	}
 }
 
 func (r *LabelRepository) toLabel(label *domain.Label) *models.Label {
 	return &models.Label{
-		Id:        string(label.Id),
-		Name:      label.Name,
-		Color:     string(label.Color),
-		TextColor: string(label.TextColor),
-		AltName:   label.AltName,
+		Id:            string(label.Id),
+		Name:          label.Name,
+		Color:         string(label.Color),
+		TextColor:     string(label.TextColor),
+		AltName:       label.AltName,
+		BindingStatus: (*string)(label.BindingStatus),
 	}
 }

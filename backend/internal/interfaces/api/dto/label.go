@@ -7,30 +7,34 @@ import (
 )
 
 type UpdateLabelRequest struct {
-	AltName *string `json:"altName"`
+	AltName       *string `json:"altName"`
+	BindingStatus *string `json:"bindingStatus"`
 }
 
 type LabelDto struct {
-	Id        string  `json:"id"`
-	Title     string  `json:"name"`
-	Color     string  `json:"color"`
-	TextColor string  `json:"textColor"`
-	AltName   *string `json:"altName"`
+	Id            string  `json:"id"`
+	Title         string  `json:"name"`
+	Color         string  `json:"color"`
+	TextColor     string  `json:"textColor"`
+	AltName       *string `json:"altName"`
+	BindingStatus *string `json:"bindingStatus"`
 }
 
 type KanbanLabelDto struct {
-	Id      string  `json:"id"`
-	Name    string  `json:"name"`
-	AltName *string `json:"altName"`
+	Id            string  `json:"id"`
+	Name          string  `json:"name"`
+	AltName       *string `json:"altName"`
+	BindingStatus *string `json:"bindingStatus"`
 }
 
 func SerializeLabel(label *domain.Label) *LabelDto {
 	return &LabelDto{
-		Id:        string(label.Id),
-		Title:     label.Name,
-		Color:     string(label.Color),
-		TextColor: string(label.TextColor),
-		AltName:   label.AltName,
+		Id:            string(label.Id),
+		Title:         label.Name,
+		Color:         string(label.Color),
+		TextColor:     string(label.TextColor),
+		AltName:       label.AltName,
+		BindingStatus: (*string)(label.BindingStatus),
 	}
 }
 
@@ -43,9 +47,10 @@ func SerializeLabels(labels []domain.Label) []LabelDto {
 
 func SerializeKanbanLabel(label *usecases.KanbanLabel) *KanbanLabelDto {
 	return &KanbanLabelDto{
-		Id:      label.Name,
-		Name:    label.Name,
-		AltName: label.AltName,
+		Id:            label.Name,
+		Name:          label.Name,
+		AltName:       label.AltName,
+		BindingStatus: (*string)(label.BindingStatus),
 	}
 }
 

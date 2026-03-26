@@ -6,8 +6,11 @@ export type KanbanLabel = {
   altName: string | null
 }
 
+import { BindStatus } from './kanban-issue'
+
 export type Label = {
   id: string
   name: string
   altName: string | null
+  bindingStatus: BindStatus | null
 }

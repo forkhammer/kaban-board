@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"main/internal/app/usecases"
+	domain "main/internal/domain/models"
 	"main/internal/interfaces/api/dto"
 	"main/internal/interfaces/api/middleware"
 	"main/internal/interfaces/api/utils"
@@ -44,8 +45,9 @@ func (c *LabelController) updateLabel(ctx *gin.Context) {
 	id := ctx.Param("id")
 
 	err := c.labelUC.Update(&usecases.UpdateLabelRequest{
-		Title:   string(id),
-		AltName: request.AltName,
+		Title:         string(id),
+		AltName:       request.AltName,
+		BindingStatus: (*domain.IssueBindingStatus)(request.BindingStatus),
 	})
 
 	if utils.HandleException(ctx, err) {

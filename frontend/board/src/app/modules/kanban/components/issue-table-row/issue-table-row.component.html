@@ -35,14 +35,13 @@
       *ngIf="canManage()"></app-assignee-select>
   </td>
   <td class="column">
-    <div class="epic" *ngIf="!canUpdate()">
-      {{issue.epic?.title}}
+    <div class="epic text-truncate" *ngIf="!canUpdate()" [ngbTooltip]="issue.epic?.title" placement="right">
+      <ng-container *ngIf="issue.epic">
+        #{{issue.epic.iid}} {{issue.epic.title}} ({{issue.epic.project}})
+      </ng-container>
     </div>
 
-    <app-select-model class="flat" formControlName="epic" [service]="epicService" [useSearch]="true" [useClear]="true"
-      [filter]="{project: issue.projectId}"
-      [valueModel]="issue.epic"
-      *ngIf="canUpdate()"></app-select-model>
+    <app-select-epic class="flat" formControlName="epic" *ngIf="canUpdate()"></app-select-epic>
   </td>
   <td class="column">
     <div class="release" *ngIf="!canUpdate()">

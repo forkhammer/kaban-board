@@ -248,6 +248,7 @@ func (uc *SyncUseCases) syncEpicsFromIssues(issues []domain.Issue) error {
 		}
 
 		if existEpic != nil {
+			existEpic.Iid = issue.Iid
 			existEpic.Title = issue.Title
 			existEpic.Project = issue.Project
 			if _, err := uc.epicRepo.Update(existEpic); err != nil {
@@ -256,6 +257,7 @@ func (uc *SyncUseCases) syncEpicsFromIssues(issues []domain.Issue) error {
 		} else {
 			newEpic := &domain.Epic{
 				ExternalId: externalId,
+				Iid:        issue.Iid,
 				Title:      issue.Title,
 				Project:    issue.Project,
 			}

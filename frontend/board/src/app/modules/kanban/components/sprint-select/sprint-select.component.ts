@@ -199,6 +199,7 @@ export class SprintSelectComponent implements ControlValueAccessor, OnInit {
   clear(e: MouseEvent) {
     this.selectValue = null;
     (this.dropdown as any).close();
+    e.stopPropagation();
     return false;
   }
 

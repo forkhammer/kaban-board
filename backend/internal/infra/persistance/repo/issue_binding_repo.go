@@ -225,5 +225,6 @@ func (r *IssueBindingRepository) getQuery() *gorm.DB {
 		Joins("Assignee").
 		Preload("Assignee.Groups").
 		Joins("Release").
-		Joins("Epic")
+		Joins("Epic").
+		Joins("Epic.Project")
 }

@@ -9,7 +9,6 @@ import { catchErrorMessages } from 'src/app/modules/core/tools/catch-error';
 import { ToastService } from 'src/app/modules/core/services/toast.service';
 import { UserService } from '../../services/user.service';
 import { ReleaseService } from '../../services/release.service';
-import { EpicService } from '../../services/epic.service';
 import {faUser} from '@fortawesome/free-regular-svg-icons';
 import { Team } from '../../models/team';
 import { Sprint } from '../../models/sprint';
@@ -34,7 +33,6 @@ export class IssueTableRowComponent implements OnInit, AfterViewChecked {
   toast = inject(ToastService)
   userService = inject(UserService)
   releaseService = inject(ReleaseService)
-  epicService = inject(EpicService)
 
   readonly BIND_STATUS_VALUES = BIND_STATUS_VALUES
   readonly BIND_STATUS_LABELS =  BIND_STATUS_LABELS

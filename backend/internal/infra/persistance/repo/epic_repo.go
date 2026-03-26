@@ -118,6 +118,7 @@ func (r *EpicRepository) toDomainEpic(release *models.Epic) (*domain_models.Epic
 	return &domain_models.Epic{
 		Id:         domain_models.EpicId(release.Id),
 		ExternalId: domain_models.IssueExternalId(release.ExternalId),
+		Iid:        domain_models.IssueIid(release.Iid),
 		Title:      release.Title,
 		Project:    *project,
 	}, nil
@@ -127,6 +128,7 @@ func (r *EpicRepository) toEpic(epic *domain_models.Epic) *models.Epic {
 	return &models.Epic{
 		Id:         uint(epic.Id),
 		ExternalId: string(epic.ExternalId),
+		Iid:        string(epic.Iid),
 		Title:      epic.Title,
 		ProjectId:  uint(epic.Project.Id),
 	}

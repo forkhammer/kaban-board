@@ -54,6 +54,8 @@ import { MoveToSprintModalComponent } from './components/move-to-sprint-modal/mo
 import { OnlineAccountsComponent } from './components/online-accounts/online-accounts.component';
 import { HeaderComponent } from './components/header/header.component';
 import { StatusBadgeComponent } from './components/status-badge/status-badge.component';
+import { SelectEpicComponent } from './components/select-epic/select-epic.component';
+import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 
 
 @NgModule({
@@ -106,6 +108,7 @@ import { StatusBadgeComponent } from './components/status-badge/status-badge.com
     OnlineAccountsComponent,
     HeaderComponent,
     StatusBadgeComponent,
+    SelectEpicComponent,
   ],
   exports: [
     UserBoardComponent,
@@ -118,6 +121,7 @@ import { StatusBadgeComponent } from './components/status-badge/status-badge.com
     SprintSelectComponent,
     PrioritySelectComponent,
     BindingStatusSelectComponent,
+    SelectEpicComponent,
     HeaderComponent,
   ],
   imports: [
@@ -129,6 +133,7 @@ import { StatusBadgeComponent } from './components/status-badge/status-badge.com
     FontAwesomeModule,
     RouterLink,
     DragDropModule,
+    NgbTooltip,
   ]
 })
 export class KanbanModule { }

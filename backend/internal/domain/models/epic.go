@@ -5,6 +5,7 @@ type EpicId uint
 type Epic struct {
 	Id         EpicId
 	ExternalId IssueExternalId
+	Iid        IssueIid
 	Title      string
 	Project    Project
 }

@@ -1,0 +1,38 @@
+<div ngbDropdown #dropdown='ngbDropdown' autoClose='outside' (openChange)="onOpenChange($event)">
+  <div class="btn-group dropdown-toggle-group" ngbDropdownToggle [ngbTooltip]="selectedEpic?.title" placement="right">
+    <span class="caption" *ngIf="!selectedEpic">
+      ...
+    </span>
+    <span class="caption text-truncate" *ngIf="selectedEpic">
+      #{{selectedEpic.iid}} {{selectedEpic.title}} ({{selectedEpic.project}})
+    </span>
+
+    <button class="clear" *ngIf='selectedEpic' (click)='clear($event)'>
+      <fa-icon [icon]="faTimes"></fa-icon>
+    </button>
+  </div>
+
+  <div ngbDropdownMenu class="shadow">
+    <div class='input-group filter-form' [formGroup]='searchForm'>
+      <input #searchInput type="text" class='form-control filter-form__input' formControlName='search'
+        placeholder='Найти...'>
+    </div>
+
+    <div class="scroll">
+      <button
+        *ngFor="let epic of epics"
+        class="epic-item"
+        ngbDropdownItem
+        (click)="select(epic)"
+        [class.active]="selectValue === epic.id">
+        <span class="epic-iid">#{{epic.iid}}</span>
+        <span class="epic-title text-truncate">{{epic.title}}</span>
+        <span class="epic-project">{{epic.project}}</span>
+      </button>
+
+      <div class="empty" *ngIf="epics.length === 0">
+        Ничего не найдено
+      </div>
+    </div>
+  </div>
+</div>

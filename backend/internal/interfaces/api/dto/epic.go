@@ -10,14 +10,18 @@ type GetEpicsRequest struct {
 }
 
 type EpicDto struct {
-	Id    uint   `json:"id"`
-	Title string `json:"title"`
+	Id      uint   `json:"id"`
+	Iid     string `json:"iid"`
+	Title   string `json:"title"`
+	Project string `json:"project"`
 }
 
 func SerializeEpic(release *domain.Epic) *EpicDto {
 	return &EpicDto{
-		Id:    uint(release.Id),
-		Title: release.Title,
+		Id:      uint(release.Id),
+		Iid:     string(release.Iid),
+		Title:   release.Title,
+		Project: release.Project.Name,
 	}
 }
 

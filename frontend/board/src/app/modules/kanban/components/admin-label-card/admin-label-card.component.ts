@@ -29,7 +29,8 @@ export class AdminLabelCardComponent implements OnInit {
   constructor() {
     this.form = this.fb.group({
       altName: [null],
-      bindingStatus: [null]
+      bindingStatus: [null],
+      priority: [null]
     })
   }
 

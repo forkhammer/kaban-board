@@ -10,6 +10,7 @@ type Label struct {
 	TextColor     Color
 	AltName       *string
 	BindingStatus *IssueBindingStatus
+	Priority      *IssueBindingPriority
 }
 
 func (l Label) Validate() error {

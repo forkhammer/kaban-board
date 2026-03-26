@@ -9,6 +9,7 @@ import (
 type UpdateLabelRequest struct {
 	AltName       *string `json:"altName"`
 	BindingStatus *string `json:"bindingStatus"`
+	Priority      *string `json:"priority"`
 }
 
 type LabelDto struct {
@@ -18,6 +19,7 @@ type LabelDto struct {
 	TextColor     string  `json:"textColor"`
 	AltName       *string `json:"altName"`
 	BindingStatus *string `json:"bindingStatus"`
+	Priority      *string `json:"priority"`
 }
 
 type KanbanLabelDto struct {
@@ -25,6 +27,7 @@ type KanbanLabelDto struct {
 	Name          string  `json:"name"`
 	AltName       *string `json:"altName"`
 	BindingStatus *string `json:"bindingStatus"`
+	Priority      *string `json:"priority"`
 }
 
 func SerializeLabel(label *domain.Label) *LabelDto {
@@ -35,6 +38,7 @@ func SerializeLabel(label *domain.Label) *LabelDto {
 		TextColor:     string(label.TextColor),
 		AltName:       label.AltName,
 		BindingStatus: (*string)(label.BindingStatus),
+		Priority:      (*string)(label.Priority),
 	}
 }
 
@@ -51,6 +55,7 @@ func SerializeKanbanLabel(label *usecases.KanbanLabel) *KanbanLabelDto {
 		Name:          label.Name,
 		AltName:       label.AltName,
 		BindingStatus: (*string)(label.BindingStatus),
+		Priority:      (*string)(label.Priority),
 	}
 }
 

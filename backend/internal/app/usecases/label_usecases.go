@@ -11,6 +11,7 @@ type UpdateLabelRequest struct {
 	Title         string
 	AltName       *string
 	BindingStatus *domain.IssueBindingStatus
+	Priority      *domain.IssueBindingPriority
 }
 
 type KanbanLabel struct {
@@ -18,6 +19,7 @@ type KanbanLabel struct {
 	Name          string
 	AltName       *string
 	BindingStatus *domain.IssueBindingStatus
+	Priority      *domain.IssueBindingPriority
 }
 
 type LabelUseCases struct {
@@ -42,6 +44,7 @@ func (uc *LabelUseCases) GetLabels() ([]KanbanLabel, error) {
 				Name:          l.Name,
 				AltName:       l.AltName,
 				BindingStatus: l.BindingStatus,
+				Priority:      l.Priority,
 			}
 		},
 	)
@@ -61,6 +64,7 @@ func (uc *LabelUseCases) Update(request *UpdateLabelRequest) error {
 	for _, label := range labels {
 		label.AltName = request.AltName
 		label.BindingStatus = request.BindingStatus
+		label.Priority = request.Priority
 		if err := label.Validate(); err != nil {
 			return err
 		}

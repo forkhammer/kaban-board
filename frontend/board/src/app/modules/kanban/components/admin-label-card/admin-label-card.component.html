@@ -5,10 +5,14 @@
   <div class="label-binding-status me-3" *ngIf="!isEdit && label.bindingStatus">
     <app-status-badge [status]="label.bindingStatus"></app-status-badge>
   </div>
+  <div class="label-priority me-3" *ngIf="!isEdit && label.priority">
+    <app-priority-badge [priority]="label.priority"></app-priority-badge>
+  </div>
 
   <div class="d-flex align-items-center gap-2 flex-grow-1" *ngIf="isEdit">
     <input type="text" class="form-control" formControlName="altName" placeholder="Псевдоним">
     <app-binding-status-select formControlName="bindingStatus" title="Статус задачи" [useClear]="true" class="status"></app-binding-status-select>
+    <app-priority-select formControlName="priority" title="Приоритет" [useClear]="true" class="priority"></app-priority-select>
   </div>
 
   <button class="btn btn-link" *ngIf="isEdit" (click)="save()">

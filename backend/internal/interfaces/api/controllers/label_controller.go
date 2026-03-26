@@ -48,6 +48,7 @@ func (c *LabelController) updateLabel(ctx *gin.Context) {
 		Title:         string(id),
 		AltName:       request.AltName,
 		BindingStatus: (*domain.IssueBindingStatus)(request.BindingStatus),
+		Priority:      (*domain.IssueBindingPriority)(request.Priority),
 	})
 
 	if utils.HandleException(ctx, err) {

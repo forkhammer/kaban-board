@@ -100,6 +100,7 @@ func (r *LabelRepository) toDomainLabel(label *models.Label) *domain.Label {
 		TextColor:     domain.Color(label.TextColor),
 		AltName:       label.AltName,
 		BindingStatus: (*domain.IssueBindingStatus)(label.BindingStatus),
+		Priority:      (*domain.IssueBindingPriority)(label.Priority),
 	}
 }
 
@@ -111,5 +112,6 @@ func (r *LabelRepository) toLabel(label *domain.Label) *models.Label {
 		TextColor:     string(label.TextColor),
 		AltName:       label.AltName,
 		BindingStatus: (*string)(label.BindingStatus),
+		Priority:      (*string)(label.Priority),
 	}
 }

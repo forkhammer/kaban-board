@@ -6,7 +6,7 @@
       </ng-container>
 
       <ng-container *ngIf="value === null">
-        <div class="empty-priority">...</div>
+        <div class="empty-priority">{{title ? title : "..."}}</div>
       </ng-container>
     </div>
 

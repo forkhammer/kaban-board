@@ -7,4 +7,5 @@ type Label struct {
 	TextColor     string  `gorm:"text_color"`
 	AltName       *string `gorm:"alt_name"`
 	BindingStatus *string `gorm:"binding_status"`
+	Priority      *string `gorm:"priority"`
 }

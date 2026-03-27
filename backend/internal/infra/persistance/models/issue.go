@@ -18,6 +18,8 @@ type Issue struct {
 	Release     *Release `gorm:"foreignKey:ReleaseId"`
 	TaskTypeId  *string  `gorm:"task_type_id"`
 	TaskType    *Label   `gorm:"foreignKey:TaskTypeId"`
+	EpicId      *uint    `gorm:"epic_id"`
+	Epic        *Epic    `gorm:"foreignKey:EpicId"`
 	EstimateDev *uint    `gorm:"estimate_dev"`
 	EstimateQA  *uint    `gorm:"estimate_qa"`
 }

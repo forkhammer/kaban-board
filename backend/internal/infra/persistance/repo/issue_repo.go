@@ -22,6 +22,7 @@ type IssueRepository struct {
 	projectRepo       *ProjectRepository                       `di.inject:"ProjectRepository"`
 	releaseRepo       *ReleaseRepository                       `di.inject:"ReleaseRepository"`
 	labelRepo         *LabelRepository                         `di.inject:"LabelRepository"`
+	epicRepo          *EpicRepository                          `di.inject:"EpicRepository"`
 	issueBindingRepo  *IssueBindingRepository                  `di.inject:"IssueBindingRepository"`
 	issueBindingQuery *issuebinding_spec.IssueBindingQueryImpl `di.inject:"IssueBindingQuery"`
 }
@@ -166,6 +167,14 @@ func (r *IssueRepository) toDomainIssue(issue *models.Issue) (*domain.Issue, err
 		}
 	}
 
+	var epic *domain.Epic
+	if issue.Epic != (*models.Epic)(nil) {
+		epic, err = r.epicRepo.toDomainEpic(issue.Epic)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	domainIssue := &domain.Issue{
 		Id:         domain.IssueId(issue.Id),
 		ExternalId: domain.IssueExternalId(issue.ExternalId),
@@ -187,6 +196,7 @@ func (r *IssueRepository) toDomainIssue(issue *models.Issue) (*domain.Issue, err
 			}
 			return nil
 		}(),
+		Epic:        epic,
 		EstimateDev: issue.EstimateDev,
 		EstimateQA:  issue.EstimateQA,
 	}
@@ -223,6 +233,13 @@ func (r *IssueRepository) toIssue(issue *domain.Issue) *models.Issue {
 			}
 			return nil
 		}(),
+		EpicId: func() *uint {
+			if issue.Epic != (*domain.Epic)(nil) {
+				val := uint(issue.Epic.Id)
+				return &val
+			}
+			return nil
+		}(),
 		EstimateDev: issue.EstimateDev,
 		EstimateQA:  issue.EstimateQA,
 	}
@@ -235,7 +252,9 @@ func (r *IssueRepository) getQuery() *gorm.DB {
 		Joins("Project").
 		Joins("Project.Team").
 		Joins("Release").
-		Joins("TaskType")
+		Joins("TaskType").
+		Joins("Epic").
+		Joins("Epic.Project")
 }
 
 func (r *IssueRepository) saveLabelHistory(domainIssue *domain.Issue) error {

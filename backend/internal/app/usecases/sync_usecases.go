@@ -334,6 +334,13 @@ func (uc *SyncUseCases) syncEpicBindings(epic *domain.Epic, epicIssue domain.Iss
 			return err
 		}
 
+		if !uc.equalEpics(linkedIssue.Epic, epic) {
+			linkedIssue.Epic = epic
+			if _, err := uc.issueRepo.Update(linkedIssue); err != nil {
+				return err
+			}
+		}
+
 		spec := uc.issueBindingQuery.GetSpec(queries.IssueBindingFilter{
 			Issues:         []uint{uint(linkedIssue.Id)},
 			SprintStatuses: []domain.SprintStatus{domain.SprintStatusRunning, domain.SprintStatusWaiting},

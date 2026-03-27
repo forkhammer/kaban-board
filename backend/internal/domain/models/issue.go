@@ -36,6 +36,7 @@ type Issue struct {
 	Project      Project
 	Release      *Release
 	TaskType     *Label
+	Epic         *Epic
 	EstimateDev  *uint
 	EstimateQA   *uint
 }
@@ -84,6 +85,7 @@ func (i *Issue) BindToSprint(sprint *Sprint, assignee *User) (*IssueBinding, err
 		Assignee:    assignee,
 		Priority:    &priority,
 		Release:     i.Release,
+		Epic:        i.Epic,
 	}
 
 	if err := binding.Validate(); err != nil {

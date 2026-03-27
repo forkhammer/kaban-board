@@ -22,7 +22,11 @@ func (s *EpicFilterSpec) Apply(conn any) (any, error) {
 	}
 
 	if s.Filter.Search != nil {
-		query = query.Where("lower_unicode(epics.title) like ?", fmt.Sprintf("%%%s%%", strings.ToLower(*s.Filter.Search)))
+		query = query.Where(
+			"(lower_unicode(epics.title) like ?) OR (epics.iid = ?)",
+			fmt.Sprintf("%%%s%%", strings.ToLower(*s.Filter.Search)),
+			*s.Filter.Search,
+		)
 	}
 
 	return query, nil

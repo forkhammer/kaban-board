@@ -21,7 +21,11 @@ func (s *EpicFilterSpecPostgresql) Apply(conn any) (any, error) {
 	}
 
 	if s.Filter.Search != nil {
-		query = query.Where("epics.title ILIKE ?", fmt.Sprintf("%%%s%%", *s.Filter.Search))
+		query = query.Where(
+			"(epics.title ILIKE ?) OR (epics.iid = ?)",
+			fmt.Sprintf("%%%s%%", *s.Filter.Search),
+			*s.Filter.Search,
+		)
 	}
 
 	return query, nil

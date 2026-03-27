@@ -20,6 +20,12 @@ func (s *IssueBindingFilterSpec) Apply(conn any) (any, error) {
 		query = query.Where("issue_bindings.issue_id IN ?", s.Filter.Issues)
 	}
 
+	if len(s.Filter.SprintStatuses) > 0 {
+		query = query.
+			Joins("JOIN sprints ON sprints.id = issue_bindings.sprint_id").
+			Where("sprints.status IN ?", s.Filter.SprintStatuses)
+	}
+
 	if s.Filter.SprintId != nil {
 		query = query.Where("issue_bindings.sprint_id = ?", s.Filter.SprintId)
 	}

@@ -1,15 +1,19 @@
 package queries
 
-import "main/internal/domain/repo"
+import (
+	"main/internal/domain/models"
+	"main/internal/domain/repo"
+)
 
 type IssueBindingFilter struct {
-	Issues     []uint
-	AssigneeId *uint
-	TeamId     *uint
-	GroupId    *uint
-	SprintId   *uint
-	ProjectId  *uint
-	Search     *string
+	Issues         []uint
+	SprintStatuses []models.SprintStatus
+	AssigneeId     *uint
+	TeamId         *uint
+	GroupId        *uint
+	SprintId       *uint
+	ProjectId      *uint
+	Search         *string
 }
 
 type IssueBindingQuery interface {

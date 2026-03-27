@@ -5,22 +5,27 @@ import (
 	"fmt"
 	"main/config"
 	"main/internal/app/interfaces"
+	"main/internal/app/queries"
 	domain_pkg "main/internal/domain"
 	domain "main/internal/domain/models"
 	"main/internal/domain/repo"
+	"main/internal/infra/hub"
 )
 
 type SyncUseCases struct {
-	gitlab          interfaces.TaskTracker              `di.inject:"gitlab"`
-	config          *config.Config                      `di.inject:"config"`
-	userRepo        repo.UserRepo                       `di.inject:"UserRepository"`
-	accountRepo     repo.AccountRepo                    `di.inject:"AccountRepository"`
-	passwordService interfaces.PasswordServiceInterface `di.inject:"PasswordService"`
-	projectRepo     repo.ProjectRepo                    `di.inject:"ProjectRepository"`
-	issueRepo       repo.IssueRepo                      `di.inject:"IssueRepository"`
-	labelRepo       repo.LabelRepo                      `di.inject:"LabelRepository"`
-	releaseRepo     repo.ReleaseRepo                    `di.inject:"ReleaseRepository"`
-	epicRepo        repo.EpicRepo                       `di.inject:"EpicRepository"`
+	gitlab            interfaces.TaskTracker              `di.inject:"gitlab"`
+	config            *config.Config                      `di.inject:"config"`
+	userRepo          repo.UserRepo                       `di.inject:"UserRepository"`
+	accountRepo       repo.AccountRepo                    `di.inject:"AccountRepository"`
+	passwordService   interfaces.PasswordServiceInterface `di.inject:"PasswordService"`
+	projectRepo       repo.ProjectRepo                    `di.inject:"ProjectRepository"`
+	issueRepo         repo.IssueRepo                      `di.inject:"IssueRepository"`
+	labelRepo         repo.LabelRepo                      `di.inject:"LabelRepository"`
+	releaseRepo       repo.ReleaseRepo                    `di.inject:"ReleaseRepository"`
+	epicRepo          repo.EpicRepo                       `di.inject:"EpicRepository"`
+	issueBindingRepo  repo.IssueBindingRepo               `di.inject:"IssueBindingRepository"`
+	issueBindingQuery queries.IssueBindingQuery           `di.inject:"IssueBindingQuery"`
+	sprintHub         *hub.SprintHub                      `di.inject:"SprintHub"`
 }
 
 func (uc *SyncUseCases) Sync() error {
@@ -214,6 +219,10 @@ func (uc *SyncUseCases) SyncIssues() error {
 			if err != nil {
 				return err
 			}
+
+			if err := uc.syncIssueBindingsRelease(existIssue); err != nil {
+				return err
+			}
 		} else {
 			_, err := uc.issueRepo.Create(&issue)
 			if err != nil {
@@ -223,6 +232,41 @@ func (uc *SyncUseCases) SyncIssues() error {
 	}
 
 	return uc.syncEpicsFromIssues(issues)
+}
+
+func (uc *SyncUseCases) syncIssueBindingsRelease(issue *domain.Issue) error {
+	spec := uc.issueBindingQuery.GetSpec(queries.IssueBindingFilter{
+		Issues:         []uint{uint(issue.Id)},
+		SprintStatuses: []domain.SprintStatus{domain.SprintStatusRunning, domain.SprintStatusWaiting},
+	})
+	bindings, err := uc.issueBindingRepo.List(spec)
+	if err != nil {
+		return err
+	}
+	for i := range bindings {
+		if !uc.equalReleases(bindings[i].Release, issue.Release) {
+			bindings[i].Release = issue.Release
+			updated, err := uc.issueBindingRepo.Update(&bindings[i])
+			if err != nil {
+				return err
+			}
+			uc.sprintHub.Broadcast(updated.Sprint.Id, hub.WSEvent{
+				Type: hub.EventBindingUpdated,
+				Data: hub.BindingUpdatedEvent{ID: updated.Id},
+			})
+		}
+	}
+	return nil
+}
+
+func (uc *SyncUseCases) equalReleases(a, b *domain.Release) bool {
+	if a == nil && b == nil {
+		return true
+	}
+	if a == nil || b == nil {
+		return false
+	}
+	return a.Id == b.Id
 }
 
 func (uc *SyncUseCases) syncEpicsFromIssues(issues []domain.Issue) error {

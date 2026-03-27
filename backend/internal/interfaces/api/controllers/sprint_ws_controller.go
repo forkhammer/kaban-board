@@ -1,9 +1,8 @@
 package controllers
 
 import (
-	"main/internal/app/usecases"
+	"main/internal/app/interfaces"
 	domain "main/internal/domain/models"
-	"main/internal/infra/hub"
 	"net/http"
 	"strconv"
 
@@ -16,8 +15,7 @@ var wsUpgrader = websocket.Upgrader{
 }
 
 type SprintWSController struct {
-	hub       *hub.SprintHub            `di.inject:"SprintHub"`
-	accountUC *usecases.AccountUseCases `di.inject:"AccountUseCases"`
+	hub interfaces.SprintHub `di.inject:"SprintHub"`
 }
 
 func (c *SprintWSController) RegisterRoutes(router gin.IRouter) error {
@@ -29,13 +27,6 @@ func (c *SprintWSController) handleWS(ctx *gin.Context) {
 	sprintId, err := strconv.ParseUint(ctx.Param("id"), 10, 32)
 	if err != nil {
 		ctx.Status(http.StatusBadRequest)
-		return
-	}
-
-	token := ctx.Query("token")
-	_, err = c.accountUC.GetActiveUser(token)
-	if err != nil {
-		ctx.Status(http.StatusUnauthorized)
 		return
 	}
 

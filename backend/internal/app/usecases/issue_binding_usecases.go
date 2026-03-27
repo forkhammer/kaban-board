@@ -77,6 +77,7 @@ type IssueBindingUseCases struct {
 	labelQuery        queries.LabelQuery                       `di.inject:"LabelQuery"`
 	gitlab            interfaces.TaskTracker                   `di.inject:"gitlab"`
 	gitlabAuthService interfaces.GitLabAuthServiceInterface    `di.inject:"GitLabAuthService"`
+	sprintHub         interfaces.SprintHub                     `di.inject:"SprintHub"`
 }
 
 func (u *IssueBindingUseCases) GetBindings(filter *queries.IssueBindingFilter, page int, limit int, account *domain.Account) (*IssueBindingPage, error) {
@@ -134,7 +135,14 @@ func (u *IssueBindingUseCases) DeleteBinding(id uint) (domain.SprintId, error) {
 		return 0, err
 	}
 
-	return sprintId, u.issueBindingRepo.Delete(domain.IssueBindingId(id))
+	if err := u.issueBindingRepo.Delete(domain.IssueBindingId(id)); err != nil {
+		return 0, err
+	}
+	u.sprintHub.Broadcast(sprintId, interfaces.WSEvent{
+		Type: interfaces.EventBindingDeleted,
+		Data: interfaces.BindingDeletedEvent{ID: uint(id), SprintID: sprintId},
+	})
+	return sprintId, nil
 }
 
 func (uc *IssueBindingUseCases) SaveBinding(request SaveIssueBindingRequest, account *domain.Account) (*domain.IssueBinding, error) {
@@ -272,6 +280,11 @@ func (uc *IssueBindingUseCases) SaveBinding(request SaveIssueBindingRequest, acc
 		return nil, err
 	}
 
+	uc.sprintHub.Broadcast(binding.Sprint.Id, interfaces.WSEvent{
+		Type: interfaces.EventBindingUpdated,
+		Data: interfaces.BindingUpdatedEvent{ID: binding.Id, AccountID: account.Id},
+	})
+
 	return binding, nil
 }
 
@@ -394,6 +407,12 @@ func (uc *IssueBindingUseCases) SaveOrdering(ordering IssueBindingOrderingSet) (
 			return 0, err
 		}
 	}
+	if sprintId > 0 {
+		uc.sprintHub.Broadcast(sprintId, interfaces.WSEvent{
+			Type: interfaces.EventBindingOrdering,
+			Data: ordering,
+		})
+	}
 	return sprintId, nil
 }
 
@@ -444,51 +463,65 @@ func (uc *IssueBindingUseCases) CopyBinding(request CopyIssueBindingRequest, acc
 		return nil, err
 	}
 
+	uc.sprintHub.Broadcast(newBinding.Sprint.Id, interfaces.WSEvent{
+		Type: interfaces.EventBindingCreated,
+		Data: interfaces.BindingCreatedEvent{ID: newBinding.Id, AccountID: account.Id},
+	})
+
 	return newBinding, nil
 }
 
-func (uc *IssueBindingUseCases) MoveBinding(request MoveIssueBindingRequest, account *domain.Account) (*domain.IssueBinding, domain.SprintId, error) {
+func (uc *IssueBindingUseCases) MoveBinding(request MoveIssueBindingRequest, account *domain.Account) (*domain.IssueBinding, error) {
 	if account == nil {
-		return nil, 0, domain_pkg.NewValidationError("нельзя переместить анонимным пользователем")
+		return nil, domain_pkg.NewValidationError("нельзя переместить анонимным пользователем")
 	}
 
 	binding, err := uc.issueBindingRepo.Get(domain.IssueBindingId(request.Id))
 	if err != nil {
-		return nil, 0, err
+		return nil, err
 	}
 
 	if !binding.CanManage(account) {
-		return nil, 0, domain_pkg.NewValidationError("нельзя переместить этим пользователем")
+		return nil, domain_pkg.NewValidationError("нельзя переместить этим пользователем")
 	}
 
 	oldSprintId := binding.Sprint.Id
 
 	sprint, err := uc.sprintRepo.Get(domain.SprintId(request.SprintId))
 	if err != nil {
-		return nil, 0, err
+		return nil, err
 	}
 
 	if _, err = uc.historyService.AddDeleteHistory(binding, time.Now()); err != nil {
-		return nil, 0, err
+		return nil, err
 	}
 
 	binding.Sprint = sprint
 
 	if err = binding.Validate(); err != nil {
-		return nil, 0, err
+		return nil, err
 	}
 
 	binding, err = uc.issueBindingRepo.Update(binding)
 	if err != nil {
-		return nil, 0, err
+		return nil, err
 	}
 
 	_, err = uc.historyService.AddHistory(binding)
 	if err != nil {
-		return nil, 0, err
+		return nil, err
 	}
 
-	return binding, oldSprintId, nil
+	uc.sprintHub.Broadcast(oldSprintId, interfaces.WSEvent{
+		Type: interfaces.EventBindingDeleted,
+		Data: interfaces.BindingDeletedEvent{ID: uint(request.Id), SprintID: oldSprintId},
+	})
+	uc.sprintHub.Broadcast(binding.Sprint.Id, interfaces.WSEvent{
+		Type: interfaces.EventBindingCreated,
+		Data: interfaces.BindingCreatedEvent{ID: binding.Id, AccountID: account.Id},
+	})
+
+	return binding, nil
 }
 
 func (uc *IssueBindingUseCases) CreateIssueAndBinding(request CreateIssueBindingRequest) (*domain.IssueBinding, error) {
@@ -557,6 +590,11 @@ func (uc *IssueBindingUseCases) CreateIssueAndBinding(request CreateIssueBinding
 	if err != nil {
 		return nil, err
 	}
+
+	uc.sprintHub.Broadcast(binding.Sprint.Id, interfaces.WSEvent{
+		Type: interfaces.EventBindingCreated,
+		Data: interfaces.BindingCreatedEvent{ID: binding.Id, AccountID: request.AccountId},
+	})
 
 	return binding, nil
 }

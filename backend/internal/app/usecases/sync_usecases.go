@@ -9,7 +9,6 @@ import (
 	domain_pkg "main/internal/domain"
 	domain "main/internal/domain/models"
 	"main/internal/domain/repo"
-	"main/internal/infra/hub"
 )
 
 type SyncUseCases struct {
@@ -25,7 +24,7 @@ type SyncUseCases struct {
 	epicRepo          repo.EpicRepo                       `di.inject:"EpicRepository"`
 	issueBindingRepo  repo.IssueBindingRepo               `di.inject:"IssueBindingRepository"`
 	issueBindingQuery queries.IssueBindingQuery           `di.inject:"IssueBindingQuery"`
-	sprintHub         *hub.SprintHub                      `di.inject:"SprintHub"`
+	sprintHub         interfaces.SprintHub                `di.inject:"SprintHub"`
 }
 
 func (uc *SyncUseCases) Sync() error {
@@ -250,9 +249,9 @@ func (uc *SyncUseCases) syncIssueBindingsRelease(issue *domain.Issue) error {
 			if err != nil {
 				return err
 			}
-			uc.sprintHub.Broadcast(updated.Sprint.Id, hub.WSEvent{
-				Type: hub.EventBindingUpdated,
-				Data: hub.BindingUpdatedEvent{ID: updated.Id},
+			uc.sprintHub.Broadcast(updated.Sprint.Id, interfaces.WSEvent{
+				Type: interfaces.EventBindingUpdated,
+				Data: interfaces.BindingUpdatedEvent{ID: updated.Id},
 			})
 		}
 	}

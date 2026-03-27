@@ -194,10 +194,6 @@ export class IssueTableComponent {
     this.bindIssueModal.show().then(issue => {
       if (issue && this.sprint$.value) {
         this.issueService.bindToSprint((issue as KanbanIssue).id, this.sprint$.value.id, this.user$.value?.id ?? null).pipe(
-          // catchError(err => {
-          //   console.log(err)
-          //   return EMPTY
-          // }),
           catchErrorMessages(this.toast),
           takeUntilDestroyed(this.destroyRef),
         ).subscribe(data => {

@@ -1007,6 +1007,59 @@ func (client *GitlabClient) AddIssueLabel(userToken string, projectId uint, issu
 	return nil
 }
 
+func (client *GitlabClient) doSystemRequest(method, endpoint string, body any) (*http.Response, error) {
+	var reqBody io.Reader
+	if body != nil {
+		jsonData, err := json.Marshal(body)
+		if err != nil {
+			return nil, fmt.Errorf("failed to marshal request body: %w", err)
+		}
+		reqBody = bytes.NewBuffer(jsonData)
+	}
+
+	req, err := http.NewRequest(method, endpoint, reqBody)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+	req.Header.Set("PRIVATE-TOKEN", client.token)
+	req.Header.Set("Accept", "application/json")
+	if body != nil {
+		req.Header.Set("Content-Type", "application/json")
+	}
+
+	httpClient := http.Client{Timeout: 30 * time.Second}
+	return httpClient.Do(req)
+}
+
+func (client *GitlabClient) GetLinkedIssues(projectId uint, issueIid string) ([]domain.IssueExternalId, error) {
+	endpoint, err := url.JoinPath(client.apiUrl, fmt.Sprintf("api/v4/projects/%d/issues/%s/links", projectId, issueIid))
+	if err != nil {
+		return nil, fmt.Errorf("failed to build endpoint: %w", err)
+	}
+
+	resp, err := client.doSystemRequest(http.MethodGet, endpoint, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get linked issues from GitLab: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("GitLab returned status %d: %s", resp.StatusCode, string(body))
+	}
+
+	var links []GitlabIssueLinkItem
+	if err := json.NewDecoder(resp.Body).Decode(&links); err != nil {
+		return nil, fmt.Errorf("failed to decode linked issues response: %w", err)
+	}
+
+	result := make([]domain.IssueExternalId, 0, len(links))
+	for _, link := range links {
+		result = append(result, domain.IssueExternalId(fmt.Sprintf("gid://gitlab/Issue/%d", link.Id)))
+	}
+	return result, nil
+}
+
 func (client *GitlabClient) RemoveIssueLabel(userToken string, projectId uint, issueIid string, labelName string) error {
 	endpoint, err := url.JoinPath(client.apiUrl, fmt.Sprintf("api/v4/projects/%d/issues/%s", projectId, issueIid))
 	if err != nil {

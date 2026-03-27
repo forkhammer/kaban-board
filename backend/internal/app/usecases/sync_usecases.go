@@ -290,11 +290,13 @@ func (uc *SyncUseCases) syncEpicsFromIssues(issues []domain.Issue) error {
 			}
 		}
 
+		var currentEpic *domain.Epic
 		if existEpic != nil {
 			existEpic.Iid = issue.Iid
 			existEpic.Title = issue.Title
 			existEpic.Project = issue.Project
-			if _, err := uc.epicRepo.Update(existEpic); err != nil {
+			currentEpic, err = uc.epicRepo.Update(existEpic)
+			if err != nil {
 				return err
 			}
 		} else {
@@ -304,12 +306,68 @@ func (uc *SyncUseCases) syncEpicsFromIssues(issues []domain.Issue) error {
 				Title:      issue.Title,
 				Project:    issue.Project,
 			}
-			if _, err := uc.epicRepo.Create(newEpic); err != nil {
+			currentEpic, err = uc.epicRepo.Create(newEpic)
+			if err != nil {
 				return err
+			}
+		}
+
+		if err := uc.syncEpicBindings(currentEpic, issue); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (uc *SyncUseCases) syncEpicBindings(epic *domain.Epic, epicIssue domain.Issue) error {
+	linkedIds, err := uc.gitlab.GetLinkedIssues(uint(epicIssue.Project.Id), string(epicIssue.Iid))
+	if err != nil {
+		return err
+	}
+
+	for _, externalId := range linkedIds {
+		linkedIssue, err := uc.issueRepo.GetByExternalId(externalId)
+		if err != nil {
+			if _, ok := errors.AsType[*domain_pkg.NotFoundError](err); ok {
+				continue
+			}
+			return err
+		}
+
+		spec := uc.issueBindingQuery.GetSpec(queries.IssueBindingFilter{
+			Issues:         []uint{uint(linkedIssue.Id)},
+			SprintStatuses: []domain.SprintStatus{domain.SprintStatusRunning, domain.SprintStatusWaiting},
+		})
+		bindings, err := uc.issueBindingRepo.List(spec)
+		if err != nil {
+			return err
+		}
+
+		for i := range bindings {
+			if !uc.equalEpics(bindings[i].Epic, epic) {
+				bindings[i].Epic = epic
+				updated, err := uc.issueBindingRepo.Update(&bindings[i])
+				if err != nil {
+					return err
+				}
+				uc.sprintHub.Broadcast(updated.Sprint.Id, interfaces.WSEvent{
+					Type: interfaces.EventBindingUpdated,
+					Data: interfaces.BindingUpdatedEvent{ID: updated.Id},
+				})
 			}
 		}
 	}
 	return nil
+}
+
+func (uc *SyncUseCases) equalEpics(a, b *domain.Epic) bool {
+	if a == nil && b == nil {
+		return true
+	}
+	if a == nil || b == nil {
+		return false
+	}
+	return a.Id == b.Id
 }
 
 func (uc *SyncUseCases) SyncLabels() error {

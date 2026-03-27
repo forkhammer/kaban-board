@@ -83,6 +83,7 @@ func (i *Issue) BindToSprint(sprint *Sprint, assignee *User) (*IssueBinding, err
 		BindStatus:  IssueBindStatusBacklog,
 		Assignee:    assignee,
 		Priority:    &priority,
+		Release:     i.Release,
 	}
 
 	if err := binding.Validate(); err != nil {

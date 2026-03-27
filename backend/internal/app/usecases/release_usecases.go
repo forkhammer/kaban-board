@@ -9,6 +9,7 @@ import (
 type ReleaseUseCases struct {
 	releaseRepo  repo.ReleaseRepo     `di.inject:"ReleaseRepository"`
 	releaseQuery queries.ReleaseQuery `di.inject:"ReleaseQuery"`
+	commonQuery  queries.CommonQuery  `di.inject:"CommonQuery"`
 }
 
 func (uc *ReleaseUseCases) GetReleases(filter *queries.ReleaseFilter) ([]domain.Release, error) {
@@ -16,7 +17,7 @@ func (uc *ReleaseUseCases) GetReleases(filter *queries.ReleaseFilter) ([]domain.
 	if filter != nil {
 		spec = uc.releaseQuery.GetSpec(*filter)
 	}
-
+	spec = repo.And(spec, uc.commonQuery.OrderSpec("releases.sort_index DESC NULLS LAST"))
 	return uc.releaseRepo.List(spec)
 }
 

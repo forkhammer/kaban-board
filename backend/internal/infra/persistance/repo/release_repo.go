@@ -3,14 +3,16 @@ package repo
 import (
 	"errors"
 	"strconv"
+	"strings"
+
+	"gorm.io/datatypes"
+	"gorm.io/gorm"
 
 	domain_pkg "main/internal/domain"
 	domain "main/internal/domain/models"
 	"main/internal/domain/repo"
 	"main/internal/infra/db/interfaces"
 	"main/internal/infra/persistance/models"
-
-	"gorm.io/gorm"
 )
 
 type ReleaseRepository struct {
@@ -120,9 +122,23 @@ func (r *ReleaseRepository) toRelease(release *domain.Release) *models.Release {
 		Title:     release.Title,
 		ProjectId: uint(release.Project.Id),
 		WebPath:   release.WebPath,
+		Index:     parseSemverIndex(release.Title),
 	}
 }
 
 func (r *ReleaseRepository) getQuery() *gorm.DB {
 	return r.conn.GetEngine().Model(&models.Release{}).Joins("Project")
+}
+
+func parseSemverIndex(title string) datatypes.JSONSlice[int64] {
+	parts := strings.Split(title, ".")
+	result := make([]int64, len(parts))
+	for i, part := range parts {
+		n, err := strconv.ParseInt(part, 10, 64)
+		if err != nil {
+			n = 0
+		}
+		result[i] = n
+	}
+	return datatypes.JSONSlice[int64](result)
 }

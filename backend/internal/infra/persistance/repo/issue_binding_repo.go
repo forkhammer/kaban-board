@@ -103,7 +103,7 @@ func (r *IssueBindingRepository) Update(binding *domain.IssueBinding) (*domain.I
 	if err != nil {
 		return nil, err
 	}
-	result := r.conn.GetEngine().Select("*").Updates(model)
+	result := r.conn.GetEngine().Select("*").Omit("CreatedAt").Updates(model)
 	if result.Error != nil {
 		return nil, result.Error
 	}

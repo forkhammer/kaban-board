@@ -304,7 +304,7 @@ export class IssueTableComponent {
   }
 
   trackByIssue(index: number, issue: KanbanIssue) {
-    return issue.id
+    return issue.bindingId
   }
 
   loadMore() {

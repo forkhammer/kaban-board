@@ -287,8 +287,10 @@ export class IssueTableComponent {
     const map = new Map<number, IssueGroup>()
     const NO_GROUP_ID = -1
 
+    const teamGroupIds = new Set((this.team$.value?.groups ?? []).map(g => g.id))
+
     for (const issue of this.issues) {
-      const group = issue.assignee?.groups?.[0]
+      const group = issue.assignee?.groups?.find(g => teamGroupIds.has(g.id))
       const key = group?.id ?? NO_GROUP_ID
       if (!map.has(key)) {
         map.set(key, { groupId: key, groupTitle: group?.title ?? 'Без группы', issues: [] })

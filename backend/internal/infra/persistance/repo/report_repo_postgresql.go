@@ -244,7 +244,8 @@ func (r *ReportRepositoryPostgresql) GetSprintStats(sprintId uint, assigneeId *u
 			COALESCE(SUM(CASE WHEN ib.bind_status = 'done' THEN ib.estimate_dev ELSE 0 END), 0) AS velocity_dev,
 			COALESCE(SUM(CASE WHEN ib.bind_status = 'done' THEN ib.estimate_qa  ELSE 0 END), 0) AS velocity_qa
 		FROM issue_bindings ib
-		WHERE ib.sprint_id = ?`
+		WHERE ib.sprint_id = ?
+			AND ib.deleted_at IS NULL`
 	args := []any{sprintId}
 	if assigneeId != nil {
 		query += " AND ib.assignee_id = ?"

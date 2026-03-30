@@ -25,6 +25,8 @@
         [team]="team$.value"
         [sprint]="sprint$.value"
         (unbind)="unbindIssue($event)"
+        (save)="onSaveIssue($event)"
+        (deleteIssue)="onDeleteIssue($event)"
         cdkDrag
         [cdkDragDisabled]="!(accountService.isAdmin$ | async) || !(sprint$ | async)">
         <div *cdkDragPlaceholder colspan="11" class="drag-placeholder-cell"></div>

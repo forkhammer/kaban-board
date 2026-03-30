@@ -159,15 +159,10 @@ func (uc *IssueBindingUseCases) SaveBinding(request SaveIssueBindingRequest, acc
 		return nil, fmt.Errorf("cannot be changed for this user")
 	}
 
-	var oldReleaseId domain.ReleaseId
-	if binding.Release != nil {
-		oldReleaseId = binding.Release.Id
-	}
+	oldRelease := binding.Release
 
-	var oldEpicId domain.EpicId
 	var oldEpic *domain.Epic
 	if binding.Epic != nil {
-		oldEpicId = binding.Epic.Id
 		oldEpic = binding.Epic
 	}
 
@@ -192,11 +187,7 @@ func (uc *IssueBindingUseCases) SaveBinding(request SaveIssueBindingRequest, acc
 		binding.Release = nil
 	}
 
-	var newReleaseId domain.ReleaseId
-	if binding.Release != nil {
-		newReleaseId = binding.Release.Id
-	}
-	releaseChanged := oldReleaseId != newReleaseId
+	releaseChanged := !app_services.EqualReleases(oldRelease, binding.Release)
 
 	if request.EpicId != nil {
 		epic, err := uc.epicRepo.Get(domain.EpicId(*request.EpicId))
@@ -255,11 +246,7 @@ func (uc *IssueBindingUseCases) SaveBinding(request SaveIssueBindingRequest, acc
 		uc.saveMilestoneToTracker(binding, account)
 	}
 
-	var newEpicId domain.EpicId
-	if binding.Epic != nil {
-		newEpicId = binding.Epic.Id
-	}
-	epicChanged := oldEpicId != newEpicId
+	epicChanged := !app_services.EqualEpics(oldEpic, binding.Epic)
 
 	if epicChanged && binding.Issue.IsExternal() {
 		if oldEpic != nil {
@@ -270,7 +257,7 @@ func (uc *IssueBindingUseCases) SaveBinding(request SaveIssueBindingRequest, acc
 		}
 	}
 
-	priorityChanged := oldPriority != binding.Priority
+	priorityChanged := !app_services.EqualPriority(oldPriority, binding.Priority)
 	if priorityChanged && binding.Issue.IsExternal() {
 		uc.savePriorityToTracker(binding, oldPriority, account)
 	}

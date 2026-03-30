@@ -31,6 +31,7 @@ export function catchErrorMessages<T>(toast: ToastService, callback?: catchError
   return (source: Observable<T>) =>
     source.pipe(
       catchError(err => {
+        console.log(err)
         if (isConflictError(err)) {
           toast.showMessages(['Данные были изменены другим пользователем. Обновите страницу и попробуйте снова.'], 'error');
         } else if (isValidationError(err)) {

@@ -6,6 +6,7 @@ import (
 	"main/config"
 	"main/internal/app/interfaces"
 	"main/internal/app/queries"
+	app_services "main/internal/app/services"
 	domain_pkg "main/internal/domain"
 	domain "main/internal/domain/models"
 	"main/internal/domain/repo"
@@ -247,7 +248,7 @@ func (uc *SyncUseCases) syncIssueBindingsRelease(issue *domain.Issue) error {
 		return err
 	}
 	for i := range bindings {
-		if !uc.equalReleases(bindings[i].Release, issue.Release) {
+		if !app_services.EqualReleases(bindings[i].Release, issue.Release) {
 			bindings[i].Release = issue.Release
 			updated, err := uc.issueBindingRepo.Update(&bindings[i])
 			if err != nil {
@@ -286,16 +287,6 @@ func (uc *SyncUseCases) syncIssueBindingsPriority(issue *domain.Issue) error {
 		}
 	}
 	return nil
-}
-
-func (uc *SyncUseCases) equalReleases(a, b *domain.Release) bool {
-	if a == nil && b == nil {
-		return true
-	}
-	if a == nil || b == nil {
-		return false
-	}
-	return a.Id == b.Id
 }
 
 func (uc *SyncUseCases) syncEpicsFromIssues(issues []domain.Issue) error {
@@ -364,7 +355,7 @@ func (uc *SyncUseCases) syncEpicBindings(epic *domain.Epic, epicIssue domain.Iss
 			return err
 		}
 
-		if !uc.equalEpics(linkedIssue.Epic, epic) {
+		if !app_services.EqualEpics(linkedIssue.Epic, epic) {
 			linkedIssue.Epic = epic
 			if _, err := uc.issueRepo.Update(linkedIssue); err != nil {
 				return err
@@ -381,7 +372,7 @@ func (uc *SyncUseCases) syncEpicBindings(epic *domain.Epic, epicIssue domain.Iss
 		}
 
 		for i := range bindings {
-			if !uc.equalEpics(bindings[i].Epic, epic) {
+			if !app_services.EqualEpics(bindings[i].Epic, epic) {
 				bindings[i].Epic = epic
 				updated, err := uc.issueBindingRepo.Update(&bindings[i])
 				if err != nil {
@@ -395,16 +386,6 @@ func (uc *SyncUseCases) syncEpicBindings(epic *domain.Epic, epicIssue domain.Iss
 		}
 	}
 	return nil
-}
-
-func (uc *SyncUseCases) equalEpics(a, b *domain.Epic) bool {
-	if a == nil && b == nil {
-		return true
-	}
-	if a == nil || b == nil {
-		return false
-	}
-	return a.Id == b.Id
 }
 
 func (uc *SyncUseCases) SyncLabels() error {

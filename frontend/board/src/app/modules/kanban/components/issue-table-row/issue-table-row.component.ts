@@ -2,17 +2,14 @@ import { AfterViewChecked, Component, DestroyRef, ElementRef, EventEmitter, inje
 import { BIND_STATUS_LABELS, BIND_STATUS_VALUES, ISSUE_PRIORITY_LABELS, ISSUE_PRIORITY_VALUES, KanbanIssue } from '../../models/kanban-issue';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { BehaviorSubject, debounceTime, filter, switchMap } from 'rxjs';
+import { BehaviorSubject, debounceTime, filter } from 'rxjs';
 import { isEqual } from 'lodash';
 import { IssueService } from '../../services/issue.service';
-import { catchErrorMessages } from 'src/app/modules/core/tools/catch-error';
-import { ToastService } from 'src/app/modules/core/services/toast.service';
 import { UserService } from '../../services/user.service';
 import { ReleaseService } from '../../services/release.service';
 import {faUser} from '@fortawesome/free-regular-svg-icons';
 import { Team } from '../../models/team';
 import { Sprint } from '../../models/sprint';
-import { IssueBindingService } from '../../services/issue-binding.service';
 import { CopyToSprintModalService } from '../../services/copy-to-sprint-modal.service';
 import { MoveToSprintModalService } from '../../services/move-to-sprint-modal.service';
 import { faEllipsisVertical, faArrowUpRightFromSquare, faGripVertical } from '@fortawesome/free-solid-svg-icons';
@@ -27,10 +24,8 @@ export class IssueTableRowComponent implements OnInit, AfterViewChecked {
   fb = inject(FormBuilder)
   destroyRef = inject(DestroyRef)
   issueService = inject(IssueService)
-  issueBindingService = inject(IssueBindingService)
   copyToSprintModalService = inject(CopyToSprintModalService)
   moveToSprintModalService = inject(MoveToSprintModalService)
-  toast = inject(ToastService)
   userService = inject(UserService)
   releaseService = inject(ReleaseService)
 
@@ -51,6 +46,8 @@ export class IssueTableRowComponent implements OnInit, AfterViewChecked {
   private _titlePending = false
   form: FormGroup
   @Output() unbind = new EventEmitter<number>()
+  @Output() save = new EventEmitter<KanbanIssue>()
+  @Output() deleteIssue = new EventEmitter<KanbanIssue>()
   assigneeFilter: Record<string, any> = {}
   team$ = new BehaviorSubject<Team | null | undefined>(null)
   sprint$ = new BehaviorSubject<Sprint | null | undefined>(null)
@@ -100,22 +97,15 @@ export class IssueTableRowComponent implements OnInit, AfterViewChecked {
   ngOnInit(): void {
     this.form.valueChanges.pipe(
       debounceTime(500),
-      filter(data => {
-        return !isEqual(data, this.getSaveData(this._issue))
-      }),
-      switchMap(data => {
-        const query = Object.assign({
-          id: this._issue.id,
-          bindingId: this._issue.bindingId,
-          version: this._issue.version,
-        }, this.getSaveData(this._issue), data)
-        return this.issueBindingService.save(query).pipe(
-          catchErrorMessages(this.toast)
-        )
-      }),
+      filter(data => !isEqual(data, this.getSaveData(this._issue))),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(data => {
-      Object.assign(this._issue, data)
+      const query = Object.assign({
+        id: this._issue.id,
+        bindingId: this._issue.bindingId,
+        version: this._issue.version,
+      }, this.getSaveData(this._issue), data)
+      this.save.emit(query)
     })
   }
 
@@ -165,12 +155,7 @@ export class IssueTableRowComponent implements OnInit, AfterViewChecked {
 
   unbindIssue() {
     if (this._issue.bindingId && confirm('Удалить задачу из спринта?')) {
-      this.issueBindingService.delete(this._issue).pipe(
-        catchErrorMessages(this.toast),
-        takeUntilDestroyed(this.destroyRef)
-      ).subscribe(_ => {
-        this.unbind.emit(this._issue.bindingId!)
-      })
+      this.deleteIssue.emit(this._issue)
     }
   }
 

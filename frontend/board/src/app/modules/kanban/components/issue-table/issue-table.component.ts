@@ -159,6 +159,7 @@ export class IssueTableComponent {
 
   private onBindingUpdated(data: BindingUpdatedEventData): void {
     this.sprintStateChanged.emit()
+    this.groupedIssues = this.getGroupedIssues()
     if (data.account_id === this.accountService.user$.value?.id) return
 
     const idx = this.issues.findIndex(i => i.bindingId === data.id)
@@ -176,6 +177,7 @@ export class IssueTableComponent {
   private onBindingDeleted(data: BindingDeletedEventData): void {
     this.setIssues(this.issues.filter(i => i.bindingId !== data.id))
     this.sprintStateChanged.emit()
+    this.groupedIssues = this.getGroupedIssues()
   }
 
   private reloadIssues(): void {
@@ -185,6 +187,7 @@ export class IssueTableComponent {
   private onBindingCreated(data: BindingUpdatedEventData): void {
     this.wsReload$.next(this.wsReload$.value + 1)
     this.sprintStateChanged.emit()
+    this.groupedIssues = this.getGroupedIssues()
     if (data.account_id !== this.accountService.user$.value?.id) {
       this.addHighlighted(data.id)
     }
@@ -224,6 +227,28 @@ export class IssueTableComponent {
   unbindIssue(bindingId: number) {
     this.setIssues(this.issues.filter(issue => issue.bindingId !== bindingId))
     this.sprintStateChanged.emit()
+  }
+
+  onSaveIssue(issue: KanbanIssue) {
+    this.issueBindingService.save(issue).pipe(
+      catchErrorMessages(this.toast),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(data => {
+      const idx = this.issues.findIndex(i => i.bindingId === issue.bindingId)
+      if (idx !== -1) {
+        Object.assign(this.issues[idx], data)
+      }
+      this.groupedIssues = this.getGroupedIssues()
+    })
+  }
+
+  onDeleteIssue(issue: KanbanIssue) {
+    this.issueBindingService.delete(issue).pipe(
+      catchErrorMessages(this.toast),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(() => {
+      this.unbindIssue(issue.bindingId!)
+    })
   }
 
   dropIssue(event: CdkDragDrop<KanbanIssue[]>): void {

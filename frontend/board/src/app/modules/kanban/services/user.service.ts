@@ -11,7 +11,6 @@ export class UserService extends BaseService<User>{
 
   constructor(protected override injector: Injector) {
     super(injector)
-    console.log('create user service')
     this.apiUrl = this.config.apiUrl + '/users'
   }
 

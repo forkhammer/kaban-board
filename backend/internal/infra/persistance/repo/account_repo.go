@@ -110,7 +110,7 @@ func (r *AccountRepository) Create(account *domain.Account) (*domain.Account, er
 
 func (r *AccountRepository) Update(account *domain.Account) (*domain.Account, error) {
 	model := r.toAccount(account)
-	err := r.conn.GetEngine().Save(model).Error
+	err := r.conn.GetEngine().Omit("CreatedAt").Save(model).Error
 	if err != nil {
 		return nil, err
 	}

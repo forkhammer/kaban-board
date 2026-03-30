@@ -5,12 +5,21 @@
     </span>
   </td>
   <td class="column">
-    <div class="project">
-      <a [href]="issue.webUrl" target="_blank" *ngIf="issue.webUrl">
-        <fa-icon [icon]="faArrowUpRightFromSquare"></fa-icon>
-        {{issue.projectName}}#{{issue.iid}}
-      </a>
+    <div class="d-flex align-items-center">
+      <div class="task-type fs-paragraph-xxs" *ngIf="issue.taskType">
+        <div class="task-type-icon" [style.backgroundColor]="issue.taskType.color"></div>
+        <span *ngIf="!issue.taskType.altName">{{issue.taskType.name}}</span>
+        <span *ngIf="issue.taskType.altName">{{issue.taskType.altName}}</span>
+      </div>
+
+      <div class="project">
+        <a [href]="issue.webUrl" target="_blank" *ngIf="issue.webUrl">
+          <fa-icon [icon]="faArrowUpRightFromSquare"></fa-icon>
+          {{issue.projectName}}#{{issue.iid}}
+        </a>
+      </div>
     </div>
+
     <span *ngIf="!canManage() || issue.webUrl" class="title">{{issue.title}}</span>
     <div #titleEl contenteditable="true" class="title-edit"
       *ngIf="canManage() && !issue.webUrl"

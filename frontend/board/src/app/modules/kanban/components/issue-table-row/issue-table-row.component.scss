@@ -43,6 +43,21 @@ td {
   @include fs-paragraph-s();
 }
 
+.task-type {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2px;
+  width: 100px;
+
+  &-icon {
+    width: $pt;
+    height: $pt;
+    border-radius: 50%;
+    background: $white;
+    margin-right: 4px;
+  }
+}
+
 .project {
   display: block;
   @include fs-paragraph-xxs();

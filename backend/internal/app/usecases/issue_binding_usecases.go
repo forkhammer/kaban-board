@@ -243,23 +243,23 @@ func (uc *IssueBindingUseCases) SaveBinding(request SaveIssueBindingRequest, acc
 	}
 
 	if releaseChanged && binding.Issue.IsExternal() {
-		uc.saveMilestoneToTracker(binding, account)
+		go uc.saveMilestoneToTracker(binding, account)
 	}
 
 	epicChanged := !app_services.EqualEpics(oldEpic, binding.Epic)
 
 	if epicChanged && binding.Issue.IsExternal() {
 		if oldEpic != nil {
-			uc.removeEpicLinkFromTracker(binding, oldEpic, account)
+			go uc.removeEpicLinkFromTracker(binding, oldEpic, account)
 		}
 		if binding.Epic != nil {
-			uc.saveEpicLinkToTracker(binding, account)
+			go uc.saveEpicLinkToTracker(binding, account)
 		}
 	}
 
 	priorityChanged := !app_services.EqualPriority(oldPriority, binding.Priority)
 	if priorityChanged && binding.Issue.IsExternal() {
-		uc.savePriorityToTracker(binding, oldPriority, account)
+		go uc.savePriorityToTracker(binding, oldPriority, account)
 	}
 
 	_, err = uc.historyService.AddHistory(binding)

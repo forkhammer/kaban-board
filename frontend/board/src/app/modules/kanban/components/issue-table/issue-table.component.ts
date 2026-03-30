@@ -296,7 +296,7 @@ export class IssueTableComponent {
       map.get(key)!.issues.push(issue)
     }
 
-    return Array.from(map.values())
+    return Array.from(map.values()).sort((a, b) => a.groupTitle > b.groupTitle ? 1 : -1)
   }
 
   trackByGroup(_: number, group: IssueGroup) {

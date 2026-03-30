@@ -73,8 +73,19 @@ func (i *Issue) GetAddedHistory() []LabelHistory {
 	return addedHistory
 }
 
-func (i *Issue) BindToSprint(sprint *Sprint, assignee *User) (*IssueBinding, error) {
+func (i *Issue) GetPriority() IssueBindingPriority {
 	priority := IssueBindingPriorityMedium
+	for _, label := range i.Labels {
+		if label.Priority != nil {
+			priority = *label.Priority
+		}
+	}
+	return priority
+}
+
+func (i *Issue) BindToSprint(sprint *Sprint, assignee *User) (*IssueBinding, error) {
+	priority := i.GetPriority()
+
 	binding := IssueBinding{
 		Id:          0,
 		Issue:       i,

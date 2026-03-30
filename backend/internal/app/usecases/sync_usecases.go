@@ -222,6 +222,10 @@ func (uc *SyncUseCases) SyncIssues() error {
 			if err := uc.syncIssueBindingsRelease(existIssue); err != nil {
 				return err
 			}
+
+			if err := uc.syncIssueBindingsPriority(existIssue); err != nil {
+				return err
+			}
 		} else {
 			_, err := uc.issueRepo.Create(&issue)
 			if err != nil {
@@ -245,6 +249,32 @@ func (uc *SyncUseCases) syncIssueBindingsRelease(issue *domain.Issue) error {
 	for i := range bindings {
 		if !uc.equalReleases(bindings[i].Release, issue.Release) {
 			bindings[i].Release = issue.Release
+			updated, err := uc.issueBindingRepo.Update(&bindings[i])
+			if err != nil {
+				return err
+			}
+			uc.sprintHub.Broadcast(updated.Sprint.Id, interfaces.WSEvent{
+				Type: interfaces.EventBindingUpdated,
+				Data: interfaces.BindingUpdatedEvent{ID: updated.Id},
+			})
+		}
+	}
+	return nil
+}
+
+func (uc *SyncUseCases) syncIssueBindingsPriority(issue *domain.Issue) error {
+	spec := uc.issueBindingQuery.GetSpec(queries.IssueBindingFilter{
+		Issues:         []uint{uint(issue.Id)},
+		SprintStatuses: []domain.SprintStatus{domain.SprintStatusRunning, domain.SprintStatusWaiting},
+	})
+	bindings, err := uc.issueBindingRepo.List(spec)
+	if err != nil {
+		return err
+	}
+	priority := issue.GetPriority()
+	for i := range bindings {
+		if bindings[i].Priority == nil || *bindings[i].Priority != priority {
+			bindings[i].Priority = &priority
 			updated, err := uc.issueBindingRepo.Update(&bindings[i])
 			if err != nil {
 				return err

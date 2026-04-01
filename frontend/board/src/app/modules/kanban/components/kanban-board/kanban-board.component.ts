@@ -10,11 +10,10 @@ import {
   finalize,
   Observable,
   of,
-  Subject,
   switchMap, timer
 } from "rxjs";
 import {KanbanUser} from "../../models/kanban-user";
-import {map} from "rxjs/operators";
+import {debounceTime, map} from "rxjs/operators";
 import {ActivatedRoute, Router} from "@angular/router";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import { faXmark, faArrowLeft, faArrowRight, faTableList, faTableColumns, faPlus, faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
@@ -81,10 +80,12 @@ export class KanbanBoardComponent implements OnInit, AfterViewInit {
 
   public isLoading = false
   public selectedUser: KanbanUser | undefined = undefined
+  public selectedGroup: Group | undefined = undefined
   public searchForm: FormGroup
   public filterForm: FormGroup
   public teamId$: Observable<number | null>
   public sprintId$: Observable<number | null>
+  public groupId$: Observable<number | null>
   public userId$: Observable<number | null>
   public selectedTeam: Team | null = null
   public view$: Observable<KanbanView | null>
@@ -110,6 +111,7 @@ export class KanbanBoardComponent implements OnInit, AfterViewInit {
       team: [null],
       sprint: [null],
       user: [null],
+      group: [null],
       view: [KanbanView.BOARD],
     })
     this.teamId$ = this.route.queryParams.pipe(
@@ -117,6 +119,9 @@ export class KanbanBoardComponent implements OnInit, AfterViewInit {
     );
     this.sprintId$ = this.route.queryParams.pipe(
       map(params => params['sprint'] ? Number(params['sprint']) : null)
+    );
+    this.groupId$ = this.route.queryParams.pipe(
+      map(params => params['group'] ? Number(params['group']) : null)
     );
     this.userId$ = this.route.queryParams.pipe(
       map(params => params['user'] ? Number(params['user']) : null)
@@ -212,16 +217,28 @@ export class KanbanBoardComponent implements OnInit, AfterViewInit {
       this.filterForm.patchValue({user: value})
     })
 
+    this.groupId$.pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(value => {
+      this.filterForm.patchValue({group: value})
+      if (value !== null && value !== undefined) {
+        this.selectedGroup = this.getGroupById(value)
+      } else {
+        this.selectedGroup = undefined
+      }
+    })
+
     this.view$.pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(value => {
       this.filterForm.patchValue({view: value})
     })
 
-    this.sprintStats$ = combineLatest([this.sprintId$, this.userId$, this.statsRefreshTrigger$]).pipe(
-      switchMap(([sprintId, userId]) => {
+    this.sprintStats$ = combineLatest([this.sprintId$, this.userId$, this.groupId$, this.statsRefreshTrigger$]).pipe(
+      debounceTime(1),
+      switchMap(([sprintId, userId, groupId]) => {
         if (!sprintId) return of(null);
-        return this.reportService.getSprintStats(sprintId, userId ?? undefined).pipe(
+        return this.reportService.getSprintStats(sprintId, userId ?? undefined, groupId ?? undefined).pipe(
           catchError(() => of(null))
         );
       }),
@@ -238,8 +255,11 @@ export class KanbanBoardComponent implements OnInit, AfterViewInit {
     })
   }
 
-  goToUserBoard(user: KanbanUser) {
-    this.router.navigate(['/'], {queryParams: {user: user.id}, queryParamsHandling: 'merge'})
+  goToUserBoard(e: MouseEvent, user: KanbanUser) {
+    this.router.navigate(['/'], {queryParams: {user: user.id, group: null}, queryParamsHandling: 'merge'})
+    e.stopPropagation()
+    e.preventDefault()
+    return false
   }
 
   selectUser(user: KanbanUser | undefined) {
@@ -273,11 +293,11 @@ export class KanbanBoardComponent implements OnInit, AfterViewInit {
   }
 
   selectTeam(team: Team) {
-    this.filterForm.patchValue({team: team.id, sprint: null, user: null})
+    this.filterForm.patchValue({team: team.id, sprint: null, user: null, group: null})
   }
 
   goToTeamBoard() {
-    this.router.navigate(['/'], {queryParams: {user: null}, queryParamsHandling: 'merge'})
+    this.router.navigate(['/'], {queryParams: {user: null, group: null}, queryParamsHandling: 'merge'})
   }
 
   addSprint() {
@@ -289,5 +309,21 @@ export class KanbanBoardComponent implements OnInit, AfterViewInit {
         }
       })
       .catch(() => {})
+  }
+
+  goToGroupBoard(e: MouseEvent, group: Group) {
+    this.router.navigate(['/'], {queryParams: {user: null, group: group.id}, queryParamsHandling: 'merge'})
+    e.stopPropagation()
+    e.preventDefault()
+    return false
+  }
+
+  selectGroup(group: Group | undefined) {
+    this.selectedGroup = group
+  }
+
+  getGroupById(id: number): Group | undefined {
+    if (id === this.otherGroup.id) return this.otherGroup
+    return this.selectedTeam?.groups?.find(g => g.id === id)
   }
 }

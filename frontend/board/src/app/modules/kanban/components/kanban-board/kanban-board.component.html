@@ -21,7 +21,7 @@
       </form> -->
 
       <button class="user-list__team-link" (click)="goToTeamBoard()"
-        [class.active]="!selectedUser">
+        [class.active]="!selectedUser && !selectedGroup">
         <span>Все задачи {{selectedTeam?.title}}</span>
         <fa-icon [icon]="faArrowRight"></fa-icon>
       </button>
@@ -111,12 +111,14 @@
           <app-user-board *ngSwitchCase="KanbanView.BOARD"
             [user]="selectedUser"
             [team]="selectedTeam"
+            [group]="selectedGroup"
             [sprint]="selectedSprint"></app-user-board>
 
           <app-issue-table *ngSwitchCase="KanbanView.LIST"
             [user]="selectedUser"
             [team]="selectedTeam"
             [sprint]="selectedSprint"
+            [group]="selectedGroup"
             (sprintStateChanged)="statsRefreshTrigger$.next()"></app-issue-table>
         </ng-container>
       </div>
@@ -129,10 +131,11 @@
 
 <ng-template let-users="users" let-group="group" let-open="open" #userGroupTpl>
   <ng-container *ngIf="users.length > 0">
-    <app-user-group-card [group]="group" [userCount]="users.length" [isOpen]="open">
+    <app-user-group-card [group]="group" [userCount]="users.length" [isOpen]="open" (click)="goToGroupBoard($event, group)"
+        [selected]="selectedGroup?.id === group?.id">
       <app-user-card [user]="user" *ngFor="let user of users; trackBy trackByUser"
-        (click)="goToUserBoard(user)"
-        [selected]="selectedUser === user"></app-user-card>
+        (click)="goToUserBoard($event, user)"
+        [selected]="selectedUser?.id === user?.id"></app-user-card>
     </app-user-group-card>
   </ng-container>
 </ng-template>

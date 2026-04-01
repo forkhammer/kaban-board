@@ -18,6 +18,7 @@ import { BindIssueModalService } from '../../services/bind-issue-modal.service';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { IssueBindingModalService } from '../../services/issue-binding-modal.service';
 import { BindingDeletedEventData, BindingUpdatedEventData, SprintWebsocketService } from '../../services/sprint-websocket.service';
+import { Group } from '../../models/group';
 
 @Component({
   selector: 'app-issue-table',
@@ -43,6 +44,7 @@ export class IssueTableComponent {
   public user$ = new BehaviorSubject<KanbanUser | null | undefined>(null)
   public team$ = new BehaviorSubject<Team | null | undefined>(null)
   public sprint$ = new BehaviorSubject<Sprint | null | undefined>(null)
+  public group$ = new BehaviorSubject<Group | null | undefined>(null)
   private timer$ = timer(0, environment.autoUpdateIssuesMin * 60 * 1000)
   private wsReload$ = new BehaviorSubject<number>(0)
   public issues: KanbanIssue[] = []
@@ -64,6 +66,10 @@ export class IssueTableComponent {
 
   @Input() set sprint(value: Sprint | undefined | null) {
     this.sprint$.next(value)
+  }
+
+  @Input() set group(value: Group | undefined | null) {
+    this.group$.next(value)
   }
 
   constructor() {
@@ -99,7 +105,7 @@ export class IssueTableComponent {
     this.destroyRef.onDestroy(() => this.sprintWs.disconnect())
 
     merge(this.timer$, this.wsReload$).pipe(
-      combineLatestWith(this.user$, this.team$, this.sprint$),
+      combineLatestWith(this.user$, this.team$, this.sprint$, this.group$),
       debounceTime(100),
       filter(([_, user, team, sprint]) => {
         return !!team
@@ -108,7 +114,7 @@ export class IssueTableComponent {
       debounceTime(1),
       combineLatestWith(this.isLoadMore$),
       switchMap(([data, isLoadingMore]) => {
-        const [_, user, team, sprint] = data as [any, KanbanUser, Team, Sprint]
+        const [_, user, team, sprint, group] = data as [any, KanbanUser, Team, Sprint, Group]
         const query: Record<string, any> = {
           'team': team!.id,
           'limit': sprint ? 10000 : 50,
@@ -119,6 +125,9 @@ export class IssueTableComponent {
         }
         if (sprint) {
           query['sprint'] = sprint.id
+        }
+        if (group) {
+          query['group'] = group.id
         }
         this.isLoading = true
 

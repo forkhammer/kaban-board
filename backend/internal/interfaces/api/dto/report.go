@@ -96,6 +96,7 @@ func SerializeWipReport(report *domain.WipReport) WipReportDto {
 
 type SprintStatsRequest struct {
 	AssigneeId *uint `form:"assignee_id"`
+	GroupId    *uint `form:"group_id"`
 }
 
 type SprintStatsDto struct {

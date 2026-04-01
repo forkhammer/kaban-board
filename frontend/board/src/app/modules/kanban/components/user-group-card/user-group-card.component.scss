@@ -10,6 +10,11 @@
       color: $white;
     }
   }
+
+  &.selected {
+    background: $primary;
+    color: $white;
+  }
 }
 
 .contents {

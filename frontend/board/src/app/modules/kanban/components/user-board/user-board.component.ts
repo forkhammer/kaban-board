@@ -18,6 +18,7 @@ import { Sprint } from '../../models/sprint';
 import { isEqual } from 'lodash';
 import { Pagination } from 'src/app/modules/core/models/base';
 import { IssueBindingService } from '../../services/issue-binding.service';
+import { Group } from '../../models/group';
 
 @Component({
     selector: 'app-user-board',
@@ -48,6 +49,7 @@ export class UserBoardComponent {
   public user$ = new BehaviorSubject<KanbanUser | null | undefined>(null)
   public team$ = new BehaviorSubject<Team | null | undefined>(null)
   public sprint$ = new BehaviorSubject<Sprint | null | undefined>(null)
+  public group$ = new BehaviorSubject<Group | null | undefined>(null)
   public issues: KanbanIssue[] = []
   private timer$ = timer(0, environment.autoUpdateIssuesMin * 60 * 1000)
 
@@ -63,6 +65,10 @@ export class UserBoardComponent {
     this.sprint$.next(value)
   }
 
+  @Input() set group(value: Group | undefined | null) {
+    this.group$.next(value)
+  }
+
   constructor() {
     this.updateColumnSignal$.pipe(
       switchMap(_ => this.kanbanColumnsService.list()),
@@ -72,13 +78,13 @@ export class UserBoardComponent {
     })
 
     this.timer$.pipe(
-      combineLatestWith(this.user$, this.team$, this.sprint$),
-      filter(([_, user, team, sprint]) => {
+      combineLatestWith(this.user$, this.team$, this.sprint$, this.group$),
+      filter(([_, user, team, sprint, group]) => {
         return !!team
       }),
       distinctUntilChanged(isEqual),
       debounceTime(1),
-      switchMap(([_, user, team, sprint]) => {
+      switchMap(([_, user, team, sprint, group]) => {
         const query: Record<string, any> = {
           'team': team!.id,
           'limit': 1000,
@@ -88,6 +94,9 @@ export class UserBoardComponent {
         }
         if (sprint) {
           query['sprint'] = sprint.id
+        }
+        if (group) {
+          query['group'] = group.id
         }
 
         if (sprint) {

@@ -36,7 +36,7 @@ func (c *ReportsController) getSprintStats(ctx *gin.Context) {
 		return
 	}
 
-	stats, err := c.reportUC.GetSprintStats(uint(sprintId), request.AssigneeId)
+	stats, err := c.reportUC.GetSprintStats(uint(sprintId), request.AssigneeId, request.GroupId)
 	if utils.HandleException(ctx, err) {
 		return
 	}

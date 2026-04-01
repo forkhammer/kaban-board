@@ -235,7 +235,7 @@ func (r *ReportRepositoryPostgresql) GetWipData(startDate, endDate time.Time, in
 	return result, nil
 }
 
-func (r *ReportRepositoryPostgresql) GetSprintStats(sprintId uint, assigneeId *uint) (*domain.SprintStats, error) {
+func (r *ReportRepositoryPostgresql) GetSprintStats(sprintId uint, assigneeId *uint, groupId *uint) (*domain.SprintStats, error) {
 	var row SprintStatsRow
 	query := `
 		SELECT
@@ -251,6 +251,10 @@ func (r *ReportRepositoryPostgresql) GetSprintStats(sprintId uint, assigneeId *u
 		query += " AND ib.assignee_id = ?"
 		args = append(args, *assigneeId)
 	}
+	if groupId != nil {
+		query += " AND ib.id IN (SELECT ib2.id FROM issue_bindings ib2 JOIN user_groups ug ON ug.user_id = ib2.assignee_id WHERE ug.group_id = ?)"
+		args = append(args, *groupId)
+	}
 	if err := r.conn.GetEngine().Raw(query, args...).Scan(&row).Error; err != nil {
 		return nil, err
 	}
@@ -262,7 +266,7 @@ func (r *ReportRepositoryPostgresql) GetSprintStats(sprintId uint, assigneeId *u
 	}, nil
 }
 
-func (r *ReportRepositoryPostgresql) GetActiveUserCountByTeam(teamId uint) (uint, error) {
+func (r *ReportRepositoryPostgresql) GetActiveUserCountByTeam(teamId uint, groupId *uint) (uint, error) {
 	var count uint
 	query := `
 		SELECT COUNT(DISTINCT u.id)
@@ -270,7 +274,12 @@ func (r *ReportRepositoryPostgresql) GetActiveUserCountByTeam(teamId uint) (uint
 		JOIN user_groups ug ON u.id = ug.user_id
 		JOIN team_groups tg ON tg.group_id = ug.group_id
 		WHERE tg.team_id = ? AND u.is_active = true`
-	if err := r.conn.GetEngine().Raw(query, teamId).Scan(&count).Error; err != nil {
+	args := []any{teamId}
+	if groupId != nil {
+		query += " AND ug.group_id = ?"
+		args = append(args, *groupId)
+	}
+	if err := r.conn.GetEngine().Raw(query, args...).Scan(&count).Error; err != nil {
 		return 0, err
 	}
 	return count, nil

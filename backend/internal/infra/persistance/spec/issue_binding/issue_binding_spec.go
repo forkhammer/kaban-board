@@ -39,7 +39,7 @@ func (s *IssueBindingFilterSpec) Apply(conn any) (any, error) {
 
 	if s.Filter.GroupId != nil {
 		query = query.
-			Joins("LEFT JOIN user_groups ON user_groups.user_id = issue_bindings.assignee_id OR (user_groups.user_id = assignees.user_id AND issue_bindings.assignee_id IS NULL)").
+			Joins("LEFT JOIN user_groups ON user_groups.user_id = issue_bindings.assignee_id").
 			Where("user_groups.group_id = ?", s.Filter.GroupId)
 	}
 

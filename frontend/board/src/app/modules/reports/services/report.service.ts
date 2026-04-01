@@ -23,9 +23,10 @@ export class ReportService {
     });
   }
 
-  getSprintStats(sprintId: number, assigneeId?: number): Observable<SprintStats> {
+  getSprintStats(sprintId: number, assigneeId?: number, groupId?: number): Observable<SprintStats> {
     const params: Record<string, string> = {};
     if (assigneeId != null) params['assignee_id'] = assigneeId.toString();
+    if (groupId != null) params['group_id'] = groupId.toString();
     return this.http.get<SprintStats>(`${this.config.apiUrl}/reports/sprint/${sprintId}`, { params });
   }
 

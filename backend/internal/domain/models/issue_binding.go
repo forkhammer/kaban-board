@@ -1,6 +1,8 @@
 package models
 
 import (
+	"time"
+
 	"github.com/go-playground/validator/v10"
 )
 
@@ -27,6 +29,7 @@ const (
 
 type IssueBinding struct {
 	Id          IssueBindingId
+	CreatedAt   time.Time
 	Sprint      *Sprint `validate:"required"`
 	Issue       *Issue  `validate:"required"`
 	EstimateDev *uint
@@ -78,4 +81,8 @@ func (ib *IssueBinding) CanManage(account *Account) bool {
 	}
 
 	return false
+}
+
+func (ib *IssueBinding) IsUnplanned() bool {
+	return ib.CreatedAt.After(ib.Sprint.StartDate)
 }

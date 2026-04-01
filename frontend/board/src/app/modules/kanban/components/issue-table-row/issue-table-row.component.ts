@@ -1,4 +1,4 @@
-import { AfterViewChecked, Component, DestroyRef, ElementRef, EventEmitter, inject, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewChecked, Component, DestroyRef, ElementRef, EventEmitter, HostBinding, inject, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { BIND_STATUS_LABELS, BIND_STATUS_VALUES, ISSUE_PRIORITY_LABELS, ISSUE_PRIORITY_VALUES, KanbanIssue } from '../../models/kanban-issue';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -62,6 +62,11 @@ export class IssueTableRowComponent implements OnInit, AfterViewChecked {
 
   get issue(): KanbanIssue {
     return this._issue
+  }
+
+  @HostBinding('class.unplanned')
+  get isUnplanned(): boolean {
+    return this._issue?.is_unplanned ?? false
   }
 
   @Input() set team(value: Team | undefined | null) {

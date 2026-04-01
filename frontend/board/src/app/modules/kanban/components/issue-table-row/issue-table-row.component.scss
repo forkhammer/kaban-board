@@ -1,5 +1,13 @@
 @import '../../../../../styles/imports';
 
+:host.unplanned td {
+  background-color: rgba(255, 220, 80, 0.12);
+
+  :host-context([data-bs-theme="dark"]) & {
+    background-color: rgba(255, 220, 80, 0.07);
+  }
+}
+
 .drag-handle {
   display: inline-flex;
   align-items: center;

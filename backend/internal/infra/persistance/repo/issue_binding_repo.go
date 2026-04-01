@@ -157,6 +157,7 @@ func (r *IssueBindingRepository) toDomainIssueBinding(binding *models.IssueBindi
 
 	domainBinding := &domain.IssueBinding{
 		Id:          domain.IssueBindingId(binding.Id),
+		CreatedAt:   binding.CreatedAt,
 		Issue:       issue,
 		Sprint:      sprint,
 		EstimateDev: binding.EstimateDev,

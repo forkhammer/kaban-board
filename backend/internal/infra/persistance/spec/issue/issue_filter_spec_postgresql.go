@@ -59,7 +59,12 @@ func (s *IssueFilterSpecPostgresql) Apply(conn any) (any, error) {
 		query = query.Where("issues.project_id = ?", s.Filter.ProjectId)
 	}
 	if s.Filter.Search != nil {
-		query = query.Where("(issues.title ILIKE ?) or (issues.iid::text = ?)", fmt.Sprintf("%%%s%%", *s.Filter.Search), *s.Filter.Search)
+		query = query.Where(
+			"(issues.title ILIKE ?) or (issues.iid::text = ?) OR (issues.web_url = ?)",
+			fmt.Sprintf("%%%s%%", *s.Filter.Search),
+			*s.Filter.Search,
+			*s.Filter.Search,
+		)
 	}
 
 	return query, nil

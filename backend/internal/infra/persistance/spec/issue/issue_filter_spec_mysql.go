@@ -61,7 +61,12 @@ func (s *IssueFilterSpecMysql) Apply(conn any) (any, error) {
 	}
 	if s.Filter.Search != nil {
 		searchText := strings.ToLower(*s.Filter.Search)
-		query = query.Where("(lower(issues.title) like ?) or (issues.iid = ?)", fmt.Sprintf("%%%s%%", searchText), searchText)
+		query = query.Where(
+			"(lower(issues.title) like ?) or (issues.iid = ?) OR (lower(issues.web_url) = ?))",
+			fmt.Sprintf("%%%s%%", searchText),
+			searchText,
+			searchText,
+		)
 	}
 
 	return query, nil

@@ -54,7 +54,12 @@ func (s *IssueBindingFilterSpec) Apply(conn any) (any, error) {
 		query = query.Where("issues.project_id = ?", s.Filter.ProjectId)
 	}
 	if s.Filter.Search != nil {
-		query = query.Where("(issues.title LIKE ?) OR (issues.iid = ?)", fmt.Sprintf("%%%s%%", *s.Filter.Search), *s.Filter.Search)
+		query = query.Where(
+			"(issues.title LIKE ?) OR (issues.iid = ?) OR (issues.web_url = ?)",
+			fmt.Sprintf("%%%s%%", *s.Filter.Search),
+			*s.Filter.Search,
+			*s.Filter.Search,
+		)
 	}
 
 	return query, nil

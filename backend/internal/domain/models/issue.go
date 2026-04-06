@@ -53,6 +53,7 @@ func (i *Issue) GetAddedHistory() []LabelHistory {
 	labelIds := utils.Map(i.Labels, func(l Label) LabelId {
 		return l.Id
 	})
+	slices.Sort(labelIds)
 
 	var lastLabelIds = make([]LabelId, 0)
 	if len(i.LabelHistory) > 0 {
@@ -60,6 +61,7 @@ func (i *Issue) GetAddedHistory() []LabelHistory {
 			return id
 		})
 	}
+	slices.Sort(lastLabelIds)
 
 	addedHistory := make([]LabelHistory, 0)
 

@@ -49,7 +49,7 @@ func (i *Issue) SetHistory(history []LabelHistory) {
 	i.LabelHistory = history
 }
 
-func (i *Issue) GetAddedHistory() []LabelHistory {
+func (i *Issue) GetPendingHistory() *LabelHistory {
 	labelIds := utils.Map(i.Labels, func(l Label) LabelId {
 		return l.Id
 	})
@@ -57,22 +57,20 @@ func (i *Issue) GetAddedHistory() []LabelHistory {
 
 	var lastLabelIds = make([]LabelId, 0)
 	if len(i.LabelHistory) > 0 {
-		lastLabelIds = utils.Map(i.LabelHistory[len(i.LabelHistory)-1].Labels, func(id LabelId) LabelId {
-			return id
-		})
+		lastLabelIds = slices.Clone(i.LabelHistory[len(i.LabelHistory)-1].Labels)
+		slices.Sort(lastLabelIds)
 	}
-	slices.Sort(lastLabelIds)
 
-	addedHistory := make([]LabelHistory, 0)
+	var pendingHistory *LabelHistory
 
 	if !slices.Equal(lastLabelIds, labelIds) {
-		addedHistory = append(addedHistory, LabelHistory{
+		pendingHistory = &LabelHistory{
 			Labels:    labelIds,
 			CreatedAt: time.Now(),
-		})
+		}
 	}
 
-	return addedHistory
+	return pendingHistory
 }
 
 func (i *Issue) GetPriority() IssueBindingPriority {

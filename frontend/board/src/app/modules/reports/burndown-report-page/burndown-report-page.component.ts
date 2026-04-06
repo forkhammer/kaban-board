@@ -334,7 +334,10 @@ export class BurndownReportPageComponent {
     const end = new Date(endDate);
 
     while (current <= end) {
-      dates.push(current.toLocaleDateString());
+      const d = current.getDate().toString().padStart(2, '0');
+      const m = (current.getMonth() + 1).toString().padStart(2, '0');
+      const y = current.getFullYear();
+      dates.push(`${d}.${m}.${y}`);
       current.setDate(current.getDate() + 1);
     }
 

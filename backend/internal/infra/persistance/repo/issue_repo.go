@@ -270,11 +270,11 @@ func (r *IssueRepository) saveLabelHistory(domainIssue *domain.Issue) error {
 	}
 
 	domainIssue.SetHistory(domainHistory)
-	addedHistory := domainIssue.GetAddedHistory()
-	for _, historyItem := range addedHistory {
+	pendingHistory := domainIssue.GetPendingHistory()
+	if pendingHistory != nil {
 		err := r.conn.GetEngine().Save(&models.LabelHistory{
 			IssueId: uint(domainIssue.Id),
-			Labels: datatypes.NewJSONSlice(utils.Map(historyItem.Labels, func(id domain.LabelId) string {
+			Labels: datatypes.NewJSONSlice(utils.Map(pendingHistory.Labels, func(id domain.LabelId) string {
 				return string(id)
 			})),
 		}).Error

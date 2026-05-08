@@ -29,6 +29,7 @@ export class BindIssueModalComponent implements AfterViewInit {
   issues: KanbanIssue[] = [];
   isLoading = false;
   activeIndex = -1;
+  selectedIssueIds = new Set<number>();
 
   private search$ = new Subject<void>();
 
@@ -60,6 +61,10 @@ export class BindIssueModalComponent implements AfterViewInit {
         this.issues = (result as Pagination<KanbanIssue>).results;
       } else {
         this.issues = [];
+      }
+
+      if (this.selectedIssueIds.size > 0) {
+        this.selectedIssueIds.clear()
       }
     });
   }
@@ -97,6 +102,25 @@ export class BindIssueModalComponent implements AfterViewInit {
   private scrollActiveIntoView() {
     const items = this.issueItems.toArray();
     items[this.activeIndex]?.nativeElement.scrollIntoView({ block: 'nearest' });
+  }
+
+  isSelected(issue: KanbanIssue): boolean {
+    return this.selectedIssueIds.has(+issue.id);
+  }
+
+  toggleSelection(issue: KanbanIssue, event: Event) {
+    event.stopPropagation();
+    const id = +issue.id;
+    if (this.selectedIssueIds.has(id)) {
+      this.selectedIssueIds.delete(id);
+    } else {
+      this.selectedIssueIds.add(id);
+    }
+  }
+
+  selectMultiple() {
+    const selected = this.issues.filter(issue => this.selectedIssueIds.has(+issue.id));
+    this.modal.close(selected);
   }
 
   select(issue: KanbanIssue) {

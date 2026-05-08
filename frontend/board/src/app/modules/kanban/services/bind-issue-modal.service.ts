@@ -12,11 +12,11 @@ export class BindIssueModalService {
   constructor(private modal: NgbModal) { }
 
   show() {
-    return new Promise((resolve, reject) => {
+    return new Promise<KanbanIssue | KanbanIssue[]>((resolve, reject) => {
       const ref = this.modal.open(BindIssueModalComponent, {container: 'app-root', centered: true, size: 'lg'});
       ref.componentInstance.selectedProjectId = this.lastProjectId;
       ref.result.then(
-        (result: KanbanIssue) => {
+        (result: KanbanIssue | KanbanIssue[]) => {
           resolve(result);
         },
         () => {

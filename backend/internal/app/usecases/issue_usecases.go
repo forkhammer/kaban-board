@@ -103,3 +103,14 @@ func (u *IssueUseCases) BindIssue(id uint, sprintId uint, assigneeId uint) (*dom
 
 	return binding, nil
 }
+
+func (u *IssueUseCases) BindIssues(ids []uint, sprintId uint, assigneeId uint) ([]domain.IssueBinding, error) {
+	var bindings []domain.IssueBinding
+	for _, id := range ids {
+		binding, err := u.BindIssue(id, sprintId, assigneeId)
+		if err == nil {
+			bindings = append(bindings, *binding)
+		}
+	}
+	return bindings, nil
+}

@@ -22,7 +22,7 @@ func (c *IssueController) RegisterRoutes(router gin.IRouter) error {
 	router.GET("/issue/:id", c.getIssue)
 	privateRoutes := router.Group("/")
 	privateRoutes.Use(middleware.AuthRequiredMiddleware())
-	privateRoutes.POST("/issue/:id/bind", c.bindIssue)
+	privateRoutes.POST("/issue/bind", c.bindIssue)
 	return nil
 }
 
@@ -63,12 +63,6 @@ func (c *IssueController) getIssue(ctx *gin.Context) {
 }
 
 func (c *IssueController) bindIssue(ctx *gin.Context) {
-	id, err := strconv.ParseUint(ctx.Param("id"), 10, 32)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
-		return
-	}
-
 	var request dto.BindIssueRequest
 	if err := ctx.ShouldBindJSON(&request); err != nil {
 		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
@@ -78,9 +72,9 @@ func (c *IssueController) bindIssue(ctx *gin.Context) {
 	account, _ := ctx.Get("account")
 	currentAccount := account.(*domain.Account)
 
-	binding, err := c.issueUC.BindIssue(uint(id), request.SprintId, request.AssigneeId)
+	bindings, err := c.issueUC.BindIssues(request.IssueIds, request.SprintId, request.AssigneeId)
 	if utils.HandleException(ctx, err) {
 		return
 	}
-	ctx.JSON(http.StatusOK, dto.SerializeIssueBinding(binding, currentAccount))
+	ctx.JSON(http.StatusOK, dto.SerializeIssueBindings(bindings, currentAccount))
 }

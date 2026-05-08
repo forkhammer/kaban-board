@@ -29,6 +29,8 @@
 }
 
 .issue-item {
+  display: flex;
+  align-items: center;
   padding: 10px 12px;
   border-radius: 6px;
   cursor: pointer;
@@ -46,4 +48,8 @@
 
 .issue-title {
   font-size: 0.9rem;
+}
+
+.checkbox-area {
+  padding: $pt2;
 }

@@ -43,10 +43,22 @@
           [class.active]="i === activeIndex"
           (click)="select(issue)"
           >
-          <div class="issue-id text-muted">{{issue.projectName}}#{{issue.iid}}</div>
-          <div class="issue-title">{{issue.title}}</div>
+          <div class="checkbox-area" (click)="toggleSelection(issue, $event)">
+            <input
+              type="checkbox"
+              class="form-check-input me-2"
+              [checked]="isSelected(issue)"
+            >
+          </div>
+          <div>
+            <div class="issue-id text-muted">{{issue.projectName}}#{{issue.iid}}</div>
+            <div class="issue-title">{{issue.title}}</div>
+          </div>
         </div>
       </div>
     </div>
+  </div>
+  <div class="mt-3 text-center" *ngIf="selectedIssueIds.size > 1">
+    <button class="btn btn-outline-primary w-100" (click)="selectMultiple()">Выбрать</button>
   </div>
 </div>

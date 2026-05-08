@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"main/internal/app/queries"
 	"main/internal/domain/repo"
+	"strings"
 
 	"gorm.io/gorm"
 )
@@ -59,12 +60,30 @@ func (s *IssueFilterSpecPostgresql) Apply(conn any) (any, error) {
 		query = query.Where("issues.project_id = ?", s.Filter.ProjectId)
 	}
 	if s.Filter.Search != nil {
-		query = query.Where(
-			"(issues.title ILIKE ?) or (issues.iid::text = ?) OR (issues.web_url = ?)",
-			fmt.Sprintf("%%%s%%", *s.Filter.Search),
-			*s.Filter.Search,
-			*s.Filter.Search,
-		)
+		rawSearch := strings.TrimSpace(*s.Filter.Search)
+		if strings.Contains(rawSearch, ",") {
+			parts := strings.Split(rawSearch, ",")
+			var iids []string
+			for _, p := range parts {
+				if trimmed := strings.TrimSpace(p); trimmed != "" {
+					iids = append(iids, trimmed)
+				}
+			}
+			if len(iids) > 0 {
+				query = query.Where(
+					"(issues.title ILIKE ?) OR (issues.iid IN ?)",
+					fmt.Sprintf("%%%s%%", rawSearch),
+					iids,
+				)
+			}
+		} else {
+			query = query.Where(
+				"(issues.title ILIKE ?) or (issues.iid::text = ?) OR (issues.web_url = ?)",
+				fmt.Sprintf("%%%s%%", rawSearch),
+				rawSearch,
+				rawSearch,
+			)
+		}
 	}
 
 	return query, nil

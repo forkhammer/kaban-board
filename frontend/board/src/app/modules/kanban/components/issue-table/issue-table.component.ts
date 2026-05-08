@@ -203,17 +203,22 @@ export class IssueTableComponent {
   }
 
   appendIssue() {
-    this.bindIssueModal.show().then(issue => {
-      if (issue && this.sprint$.value) {
-        this.issueService.bindToSprint((issue as KanbanIssue).id, this.sprint$.value.id, this.user$.value?.id ?? null).pipe(
-          catchErrorMessages(this.toast),
-          takeUntilDestroyed(this.destroyRef),
-        ).subscribe(data => {
-          this.issues.push(data)
-          this.groupedIssues = this.getGroupedIssues()
-          this.sprintStateChanged.emit()
-        })
+    this.bindIssueModal.show().then(result => {
+      if (!result || !this.sprint$.value) {
+        return
       }
+      const issues = Array.isArray(result) ? result : [result]
+      const ids = issues.map(i => +i.id)
+      this.issueService.bindToSprint(ids, this.sprint$.value.id, this.user$.value?.id ?? null).pipe(
+        catchErrorMessages(this.toast),
+        takeUntilDestroyed(this.destroyRef),
+      ).subscribe(data => {
+        for (const issue of data) {
+          this.issues.push(issue)
+        }
+        this.groupedIssues = this.getGroupedIssues()
+        this.sprintStateChanged.emit()
+      })
     }, () => {})
   }
 

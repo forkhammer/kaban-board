@@ -60,13 +60,31 @@ func (s *IssueFilterSpec) Apply(conn any) (any, error) {
 		query = query.Where("issues.project_id = ?", s.Filter.ProjectId)
 	}
 	if s.Filter.Search != nil {
-		searchText := strings.ToLower(*s.Filter.Search)
-		query = query.Where(
-			"(lower_unicode(issues.title) like ?) or (issues.iid = ?) OR (issues.web_url = ?)",
-			fmt.Sprintf("%%%s%%", searchText),
-			searchText,
-			searchText,
-		)
+		rawSearch := strings.TrimSpace(*s.Filter.Search)
+		if strings.Contains(rawSearch, ",") {
+			parts := strings.Split(rawSearch, ",")
+			var iids []string
+			for _, p := range parts {
+				if trimmed := strings.TrimSpace(p); trimmed != "" {
+					iids = append(iids, trimmed)
+				}
+			}
+			if len(iids) > 0 {
+				query = query.Where(
+					"(lower_unicode(issues.title) like ?) OR (issues.iid IN ?)",
+					fmt.Sprintf("%%%s%%", strings.ToLower(rawSearch)),
+					iids,
+				)
+			}
+		} else {
+			searchText := strings.ToLower(rawSearch)
+			query = query.Where(
+				"(lower_unicode(issues.title) like ?) or (issues.iid = ?) OR (issues.web_url = ?)",
+				fmt.Sprintf("%%%s%%", searchText),
+				searchText,
+				searchText,
+			)
+		}
 	}
 
 	return query, nil

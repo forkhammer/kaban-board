@@ -3,6 +3,8 @@ import { BindIssueModalComponent } from "../components/bind-issue-modal/bind-iss
 import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
 import { KanbanIssue } from "../models/kanban-issue";
 
+const STORAGE_KEY = 'bind-issue-modal:last-project-id';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -12,6 +14,9 @@ export class BindIssueModalService {
   constructor(private modal: NgbModal) { }
 
   show() {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    this.lastProjectId = stored ? Number(stored) : null;
+
     return new Promise<KanbanIssue | KanbanIssue[]>((resolve, reject) => {
       const ref = this.modal.open(BindIssueModalComponent, {container: 'app-root', centered: true, size: 'lg'});
       ref.componentInstance.selectedProjectId = this.lastProjectId;
@@ -28,5 +33,10 @@ export class BindIssueModalService {
 
   saveProjectId(projectId: number | null) {
     this.lastProjectId = projectId;
+    if (projectId) {
+      localStorage.setItem(STORAGE_KEY, String(projectId));
+    } else {
+      localStorage.removeItem(STORAGE_KEY);
+    }
   }
 }

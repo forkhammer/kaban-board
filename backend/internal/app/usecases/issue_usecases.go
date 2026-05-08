@@ -3,6 +3,7 @@ package usecases
 import (
 	"main/internal/app/queries"
 	app_services "main/internal/app/services"
+	domain_pkg "main/internal/domain"
 	domain "main/internal/domain/models"
 	"main/internal/domain/repo"
 )
@@ -20,6 +21,7 @@ type IssueUseCases struct {
 	issueQuery       queries.IssueQuery                       `di.inject:"IssueQuery"`
 	issueRepo        repo.IssueRepo                           `di.inject:"IssueRepository"`
 	issueBindingRepo repo.IssueBindingRepo                    `di.inject:"IssueBindingRepository"`
+	issueBindingQuery queries.IssueBindingQuery               `di.inject:"IssueBindingQuery"`
 	sprintRepo       repo.SprintRepo                          `di.inject:"SprintRepository"`
 	commonQuery      queries.CommonQuery                      `di.inject:"CommonQuery"`
 	userRepo         repo.UserRepo                            `di.inject:"UserRepository"`
@@ -84,6 +86,18 @@ func (u *IssueUseCases) BindIssue(id uint, sprintId uint, assigneeId uint) (*dom
 		assignee, err = u.userRepo.Get(domain.UserId(assigneeId))
 		if err != nil {
 			return nil, err
+		}
+
+		count, err := u.issueBindingRepo.Count(u.issueBindingQuery.GetSpec(queries.IssueBindingFilter{
+			Issues:     []uint{id},
+			SprintId:   &sprintId,
+			AssigneeId: &assigneeId,
+		}))
+		if err != nil {
+			return nil, err
+		}
+		if count > 0 {
+			return nil, domain_pkg.NewValidationError("Задача уже привязана к спринту с выбранным исполнителем")
 		}
 	}
 

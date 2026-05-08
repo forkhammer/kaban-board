@@ -50,8 +50,11 @@ func (s *JWTService) GetAccountId(token string) (domain.AccountId, error) {
 		return domain.AccountId(0), errors.New("Invalid token claims")
 	}
 
-	userId := uint(claims["id"].(float64))
-	return domain.AccountId(userId), nil
+	v, ok := claims["id"].(float64)
+	if !ok {
+		return domain.AccountId(0), fmt.Errorf("id claim is not a number, got %T", claims["id"])
+	}
+	return domain.AccountId(uint(v)), nil
 }
 
 func (s *JWTService) parseToken(token, salt string) (*jwt.Token, error) {

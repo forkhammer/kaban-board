@@ -41,6 +41,7 @@ type IssueBinding struct {
 	Release     *Release
 	Epic        *Epic
 	Order       string
+	Planned     *bool
 	Version     uint
 }
 
@@ -84,5 +85,8 @@ func (ib *IssueBinding) CanManage(account *Account) bool {
 }
 
 func (ib *IssueBinding) IsUnplanned() bool {
+	if ib.Planned != nil {
+		return !*ib.Planned
+	}
 	return ib.CreatedAt.After(ib.Sprint.StartDate)
 }

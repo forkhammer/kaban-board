@@ -33,8 +33,9 @@ type SaveIssueBindingRequest struct {
 	Comment     *string `json:"comment"`
 	Priority    *string `json:"priority"`
 	Release     *uint   `json:"release"`
-	Epic        *uint   `json:"epic"`
-	Version     uint    `json:"version"`
+	Epic        *uint  `json:"epic"`
+	Planned     *bool  `json:"planned"`
+	Version     uint   `json:"version"`
 }
 
 type IssueDto struct {

@@ -155,7 +155,7 @@ func (r *IssueBindingRepository) toDomainIssueBinding(binding *models.IssueBindi
 		}
 	}
 
-	domainBinding := &domain.IssueBinding{
+		domainBinding := &domain.IssueBinding{
 		Id:          domain.IssueBindingId(binding.Id),
 		CreatedAt:   binding.CreatedAt,
 		Issue:       issue,
@@ -169,6 +169,7 @@ func (r *IssueBindingRepository) toDomainIssueBinding(binding *models.IssueBindi
 		Release:     release,
 		Epic:        epic,
 		Order:       binding.Order,
+		Planned:     binding.Planned,
 		Version:     uint(binding.Version.Int64),
 	}
 
@@ -193,6 +194,7 @@ func (r *IssueBindingRepository) toIssueBinding(binding *domain.IssueBinding) (*
 		AssigneeId:  assigneeId,
 		Comment:     binding.Comment,
 		Order:       binding.Order,
+		Planned:     binding.Planned,
 		ReleaseId: func() *uint {
 			if binding.Release != (*domain.Release)(nil) {
 				val := uint(binding.Release.Id)

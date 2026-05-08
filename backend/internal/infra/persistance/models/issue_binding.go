@@ -24,5 +24,6 @@ type IssueBinding struct {
 	EpicId      *uint                  `gorm:"epic_id"`
 	Epic        *Epic                  `gorm:"foreignKey:EpicId"`
 	Order       string                 `gorm:"order;default:''"`
+	Planned     *bool                  `gorm:"planned"`
 	Version     optimisticlock.Version `gorm:"version;default:1"`
 }

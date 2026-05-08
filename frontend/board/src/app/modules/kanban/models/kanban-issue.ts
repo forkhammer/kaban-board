@@ -79,5 +79,6 @@ export type KanbanIssue = {
   can_manage?: boolean
   order?: string
   is_unplanned?: boolean
+  planned?: boolean
   version?: number
 }

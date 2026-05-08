@@ -31,6 +31,7 @@ type IssueBindingDto struct {
 	CanManage   bool        `json:"can_manage"`
 	Order       string      `json:"order"`
 	IsUnplanned bool        `json:"is_unplanned"`
+	Planned     *bool       `json:"planned"`
 	Version     uint        `json:"version"`
 }
 
@@ -102,6 +103,7 @@ func SerializeIssueBinding(binding *domain.IssueBinding, account *domain.Account
 		CanManage:   binding.CanManage(account),
 		Order:       binding.Order,
 		IsUnplanned: binding.IsUnplanned(),
+		Planned:     binding.Planned,
 		Version:     binding.Version,
 	}
 

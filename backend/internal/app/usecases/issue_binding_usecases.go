@@ -33,6 +33,7 @@ type SaveIssueBindingRequest struct {
 	Priority    *domain.IssueBindingPriority
 	ReleaseId   *uint
 	EpicId      *uint
+	Planned     *bool
 	Version     uint
 }
 
@@ -175,6 +176,7 @@ func (uc *IssueBindingUseCases) SaveBinding(request SaveIssueBindingRequest, acc
 	}
 	binding.Comment = request.Comment
 	binding.Priority = request.Priority
+	binding.Planned = request.Planned
 	binding.Version = request.Version
 
 	if request.ReleaseId != nil {
@@ -434,6 +436,7 @@ func (uc *IssueBindingUseCases) CopyBinding(request CopyIssueBindingRequest, acc
 		Comment:     original.Comment,
 		Release:     original.Release,
 		Epic:        original.Epic,
+		Planned:     original.Planned,
 	}
 
 	if err = newBinding.Validate(); err != nil {

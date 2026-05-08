@@ -96,6 +96,9 @@
         <fa-icon [icon]="faEllipsisVertical"></fa-icon>
       </button>
       <div ngbDropdownMenu>
+        <button ngbDropdownItem *ngIf="issue.is_unplanned" (click)="setPlanned(true)">Сделать плановой</button>
+        <button ngbDropdownItem *ngIf="!issue.is_unplanned" (click)="setPlanned(false)">Сделать внеплановой</button>
+        <div class="dropdown-divider"></div>
         <button ngbDropdownItem (click)="copyIssue()">Копировать</button>
         <button ngbDropdownItem (click)="moveIssue()">Переместить</button>
         <button ngbDropdownItem (click)="unbindIssue()">Удалить</button>

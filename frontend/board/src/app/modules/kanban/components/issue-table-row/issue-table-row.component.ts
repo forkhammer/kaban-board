@@ -164,6 +164,16 @@ export class IssueTableRowComponent implements OnInit, AfterViewChecked {
     }
   }
 
+  setPlanned(planned: boolean) {
+    this.save.emit({
+      ...this.getSaveData(this._issue),
+      id: this._issue.id,
+      bindingId: this._issue.bindingId,
+      version: this._issue.version,
+      planned: planned,
+    } as any)
+  }
+
   private getSaveData(issue: KanbanIssue) {
     return {
       title: issue.title,

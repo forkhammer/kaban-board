@@ -17,14 +17,14 @@ type MysqlConnection struct {
 	db     *gorm.DB
 }
 
-func NewMysqlConnection(host string, port int, dbName string, user string, pass string) (*MysqlConnection, error) {
+func NewMysqlConnection(cfg *config.Config) (*MysqlConnection, error) {
 	connection := &MysqlConnection{
 		config: RDBConnectionConfig{
-			host:   host,
-			port:   port,
-			dbName: dbName,
-			user:   user,
-			pass:   pass,
+			host:   cfg.MysqlHost,
+			port:   cfg.MysqlPort,
+			dbName: cfg.MysqlDb,
+			user:   cfg.MysqlUser,
+			pass:   cfg.MysqlPass,
 		},
 	}
 
@@ -32,7 +32,7 @@ func NewMysqlConnection(host string, port int, dbName string, user string, pass 
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
 		logger.Config{
 			SlowThreshold:             time.Second,              // Slow SQL threshold
-			LogLevel:                  config.Settings.LogLevel, // Log level
+			LogLevel:                  cfg.LogLevel, // Log level
 			IgnoreRecordNotFoundError: true,                     // Ignore ErrRecordNotFound error for logger
 			ParameterizedQueries:      true,                     // Don't include params in the SQL log
 			Colorful:                  false,                    // Disable color

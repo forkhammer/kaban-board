@@ -19,20 +19,21 @@ type Application struct {
 }
 
 func NewApplication() *Application {
+	cfg := config.GetConfig()
 	app := &Application{}
-	app.Init()
+	app.Init(cfg)
 	return app
 }
 
-func initSentry() {
-	dsn := config.Settings.SentryDSN
+func initSentry(cfg *config.Config) {
+	dsn := cfg.SentryDSN
 	if dsn == "" {
 		return
 	}
 	err := sentry.Init(sentry.ClientOptions{
 		Dsn:              dsn,
-		Environment:      config.Settings.SentryEnvironment,
-		TracesSampleRate: config.Settings.SentrySampleRate,
+		Environment:      cfg.SentryEnvironment,
+		TracesSampleRate: cfg.SentrySampleRate,
 	})
 	if err != nil {
 		fmt.Printf("Sentry init failed: %v\n", err)
@@ -41,8 +42,8 @@ func initSentry() {
 	fmt.Println("Sentry initialized")
 }
 
-func (app *Application) Init() {
-	initSentry()
+func (app *Application) Init(cfg *config.Config) {
+	initSentry(cfg)
 	initDI()
 }
 

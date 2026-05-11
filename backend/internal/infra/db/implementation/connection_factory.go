@@ -14,27 +14,24 @@ type RDBConnectionConfig struct {
 	pass   string
 }
 
-func GetConnectionByType(dbType interfaces.DbType, settings *config.Config) (interfaces.ConnectionInterface, error) {
+func GetConnectionByType(dbType interfaces.DbType, cfg *config.Config) (interfaces.ConnectionInterface, error) {
+	var conn interfaces.ConnectionInterface
+	var err error
+
 	switch dbType {
 	case interfaces.Postgresql:
-		return NewPostgresqlConnection(
-			settings.PostgresHost,
-			settings.PostgresPort,
-			settings.PostgresDb,
-			settings.PostgresUser,
-			settings.PostgresPass,
-		)
+		conn, err = NewPostgresqlConnection(cfg)
 	case interfaces.Mysql:
-		return NewMysqlConnection(
-			settings.MysqlHost,
-			settings.MysqlPort,
-			settings.MysqlDb,
-			settings.MysqlUser,
-			settings.MysqlPass,
-		)
+		conn, err = NewMysqlConnection(cfg)
 	case interfaces.Sqlite:
-		return NewSqliteConnection(settings.SqliteDbFile)
+		conn, err = NewSqliteConnection(cfg.SqliteDbFile, cfg)
+	default:
+		return nil, errors.New("Invalid repository type")
 	}
 
-	return nil, errors.New("Invalid respository type")
+	if err != nil {
+		return nil, err
+	}
+
+	return conn, nil
 }

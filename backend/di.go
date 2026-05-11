@@ -50,19 +50,21 @@ func mustRegisterBeanFactory(beanID string, scope di.Scope, beanFactory func(ctx
 }
 
 func initDI() {
-	dbType := interfaces.DbType(config.Settings.DbType)
+	cfg := config.GetConfig()
 
-	connection, err := implementation.GetConnectionByType(dbType, config.Settings)
+	dbType := interfaces.DbType(cfg.DbType)
+
+	connection, err := implementation.GetConnectionByType(dbType, cfg)
 	if err != nil {
 		panic(err)
 	}
 
 	mustRegisterBeanInstance("connection", connection)
-	mustRegisterBeanInstance("config", config.Settings)
+	mustRegisterBeanInstance("config", cfg)
 	mustRegisterBeanInstance("db", connection)
-	mustRegisterBeanInstance("cache", cache.MemoryCacheInstance)
+	mustRegisterBeanInstance("cache", cache.GetMemoryCacheInstance(cfg))
 	mustRegisterBeanFactory("gitlab", di.Singleton, func(ctx context.Context) (any, error) {
-		return gitlab.NewGitlabClient(config.Settings.GitlabUrl, config.Settings.GitlabToken), nil
+		return gitlab.NewGitlabClient(cfg.GitlabUrl, cfg.GitlabToken), nil
 	})
 
 	mustRegisterBeanInstance("SprintHub", hub.NewSprintHub())

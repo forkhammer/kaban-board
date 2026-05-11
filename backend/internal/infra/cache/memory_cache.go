@@ -149,7 +149,9 @@ func (c *MemoryCache) clearItems(keys []string) {
 	}
 }
 
-var MemoryCacheInstance = NewMemoryCache(
-	time.Duration(config.Settings.MemoryCacheDurationMin)*time.Minute,
-	time.Duration(config.Settings.MemoryCacheDurationMin+5)*time.Minute,
-)
+func GetMemoryCacheInstance(cfg *config.Config) *MemoryCache {
+	return NewMemoryCache(
+		time.Duration(cfg.MemoryCacheDurationMin)*time.Minute,
+		time.Duration(cfg.MemoryCacheDurationMin+5)*time.Minute,
+	)
+}

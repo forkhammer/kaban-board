@@ -12,24 +12,27 @@ import (
 )
 
 type ApiApplication struct {
+	config *config.Config
 	router *gin.Engine
 }
 
 func NewApiApplication() *ApiApplication {
-	config.Settings.Print()
+	cfg := di.GetInstance("config").(*config.Config)
+	cfg.Print()
 
 	router := gin.Default()
 	corsConfig := cors.DefaultConfig()
-	corsConfig.AllowOrigins = config.Settings.AllowOrigins
+	corsConfig.AllowOrigins = cfg.AllowOrigins
 	corsConfig.AllowHeaders = append(corsConfig.AllowHeaders, "Authorization")
 	router.Use(cors.New(corsConfig))
-	if config.Settings.SentryDSN != "" {
+	if cfg.SentryDSN != "" {
 		router.Use(sentrygin.New(sentrygin.Options{Repanic: true}))
 	}
 	router.Use(middleware.JwtMiddleware())
-	router.Use(middleware.OnlineTrackingMiddleware())
+	router.Use(middleware.OnlineTrackingMiddleware(cfg))
 
 	app := ApiApplication{
+		config: cfg,
 		router: router,
 	}
 	app.registerDeps()
@@ -45,7 +48,7 @@ func (app *ApiApplication) Run() {
 		panic(err)
 	}
 
-	err := app.router.Run(config.Settings.GetHostPort())
+	err := app.router.Run(app.config.GetHostPort())
 	if err != nil {
 		panic(err)
 	}

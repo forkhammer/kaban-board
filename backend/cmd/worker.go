@@ -32,7 +32,7 @@ func (app *WorkerApplication) Run(ctx context.Context) {
 func (app *WorkerApplication) startSync(ctx context.Context) {
 	go func() {
 		defer sentry.Recover()
-		ticker := time.NewTicker(time.Minute * time.Duration(config.Settings.GitlabSyncPeriodMin))
+		ticker := time.NewTicker(time.Minute * time.Duration(app.config.GitlabSyncPeriodMin))
 		defer ticker.Stop()
 
 		app.syncIteration()

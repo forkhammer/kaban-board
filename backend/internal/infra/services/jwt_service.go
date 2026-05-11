@@ -21,7 +21,7 @@ func (s *JWTService) GenerateToken(account *domain.Account) (string, error) {
 	claims["id"] = account.Id
 	claims["exp"] = time.Now().Add(time.Hour * time.Duration(tokenLifespan)).Unix()
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString([]byte(config.Settings.ApiSecret + account.JwtSalt))
+	return token.SignedString([]byte(s.config.ApiSecret + account.JwtSalt))
 }
 
 func (s *JWTService) ValidateToken(token string, salt string) error {
@@ -63,7 +63,7 @@ func (s *JWTService) parseToken(token, salt string) (*jwt.Token, error) {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
 
-		return []byte(config.Settings.ApiSecret + salt), nil
+		return []byte(s.config.ApiSecret + salt), nil
 	})
 
 	if err != nil {

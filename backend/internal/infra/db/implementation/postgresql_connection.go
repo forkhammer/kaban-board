@@ -17,14 +17,14 @@ type PostgresqlConnection struct {
 	db     *gorm.DB
 }
 
-func NewPostgresqlConnection(host string, port int, dbName string, user string, pass string) (*PostgresqlConnection, error) {
+func NewPostgresqlConnection(cfg *config.Config) (*PostgresqlConnection, error) {
 	connection := &PostgresqlConnection{
 		config: RDBConnectionConfig{
-			host:   host,
-			port:   port,
-			dbName: dbName,
-			user:   user,
-			pass:   pass,
+			host:   cfg.PostgresHost,
+			port:   cfg.PostgresPort,
+			dbName: cfg.PostgresDb,
+			user:   cfg.PostgresUser,
+			pass:   cfg.PostgresPass,
 		},
 	}
 
@@ -32,7 +32,7 @@ func NewPostgresqlConnection(host string, port int, dbName string, user string, 
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
 		logger.Config{
 			SlowThreshold:             time.Second,              // Slow SQL threshold
-			LogLevel:                  config.Settings.LogLevel, // Log level
+			LogLevel:                  cfg.LogLevel, // Log level
 			IgnoreRecordNotFoundError: true,                     // Ignore ErrRecordNotFound error for logger
 			ParameterizedQueries:      true,                     // Don't include params in the SQL log
 			Colorful:                  false,                    // Disable color

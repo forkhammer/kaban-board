@@ -21,8 +21,8 @@ type KanbanSettings struct {
 
 func (s *SettingsUseCases) GetClientSettings() *ClientSettings {
 	return &ClientSettings{
-		Logo:    config.Settings.Logo,
-		Caption: config.Settings.Caption,
+		Logo:    s.config.Logo,
+		Caption: s.config.Caption,
 	}
 }
 

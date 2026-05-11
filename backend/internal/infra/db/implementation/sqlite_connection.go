@@ -29,7 +29,7 @@ type SqliteConnection struct {
 	db     *gorm.DB
 }
 
-func NewSqliteConnection(dbfile string) (*SqliteConnection, error) {
+func NewSqliteConnection(dbfile string, cfg *config.Config) (*SqliteConnection, error) {
 	connection := &SqliteConnection{
 		dbfile: dbfile,
 	}
@@ -38,7 +38,7 @@ func NewSqliteConnection(dbfile string) (*SqliteConnection, error) {
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
 		logger.Config{
 			SlowThreshold:             time.Second,              // Slow SQL threshold
-			LogLevel:                  config.Settings.LogLevel, // Log level
+			LogLevel:                  cfg.LogLevel, // Log level
 			IgnoreRecordNotFoundError: true,                     // Ignore ErrRecordNotFound error for logger
 			ParameterizedQueries:      true,                     // Don't include params in the SQL log
 			Colorful:                  false,                    // Disable color

@@ -76,52 +76,52 @@ Copy `.env.example` to `.env` and configure:
 The backend follows a layered architecture with dependency injection using `goioc/di`:
 
 **Layers:**
-1. **`internal/interfaces/api`**: HTTP layer (Controllers, DTOs, Middleware)
+1. **`backend/internal/interfaces/api`**: HTTP layer (Controllers, DTOs, Middleware)
    - Controllers handle HTTP requests and call use cases
    - JWT middleware for authentication
    - CORS configuration
 
-2. **`internal/app`**: Application layer (Use Cases, Services)
+2. **`backend/internal/app`**: Application layer (Use Cases, Services)
    - Business logic orchestration
    - Use cases coordinate between domain and infrastructure
 
-3. **`internal/domain`**: Domain layer (Models, Business Rules)
+3. **`backend/internal/domain`**: Domain layer (Models, Business Rules)
    - Core domain entities and business logic
 
-4. **`internal/infra`**: Infrastructure layer
-   - `db/`: Database connection management (SQLite, PostgreSQL, MySQL)
-   - `persistance/`: Repositories and database models (GORM)
-   - `persistance/spec/`: Query specifications for complex queries
-   - `gitlab/`: GitLab API client integration
-   - `cache/`: In-memory caching layer
-   - `services/`: Infrastructure services (JWT, Password hashing)
+4. **`backend/internal/infra`**: Infrastructure layer
+   - `backend/internal/infra/db/`: Database connection management (SQLite, PostgreSQL, MySQL)
+   - `backend/internal/infra/persistance/`: Repositories and database models (GORM)
+   - `backend/internal/infra/persistance/spec/`: Query specifications for complex queries
+   - `backend/internal/infra/gitlab/`: GitLab API client integration
+   - `backend/internal/infra/cache/`: In-memory caching layer
+   - `backend/internal/infra/services/`: Infrastructure services (JWT, Password hashing)
 
-5. **`cmd/`**: Application entry points
-   - `api.go`: REST API server (Gin)
-   - `worker.go`: Background worker for GitLab synchronization
+5. **`backend/cmd/`**: Application entry points
+   - `backend/cmd/api.go`: REST API server (Gin)
+   - `backend/cmd/worker.go`: Background worker for GitLab synchronization
 
 **Key patterns:**
-- Dependency injection configured in `main.go`
+- Dependency injection configured in `backend/main.go`
 - Repository pattern for data access
-- Specification pattern for complex queries (see `internal/infra/persistance/spec/`)
+- Specification pattern for complex queries (see `backend/internal/infra/persistance/spec/`)
 - Use cases encapsulate business operations
 
 ### Frontend Architecture (Angular)
 
 **Module structure:**
-- **`modules/core`**: Core shared services and components
-  - `services/`: Base services (JWT, Authentication, HTTP base, Toast notifications)
-  - `interceptors/`: HTTP interceptors for auth headers
-  - `models/`: Core domain models
+- **`frontend/board/src/app/modules/core`**: Core shared services and components
+  - `frontend/board/src/app/modules/core/services/`: Base services (JWT, Authentication, HTTP base, Toast notifications)
+  - `frontend/board/src/app/modules/core/interceptors/`: HTTP interceptors for auth headers
+  - `frontend/board/src/app/modules/core/models/`: Core domain models
 
-- **`modules/kanban`**: Main kanban board feature module
-  - `components/`: 28+ kanban-specific components (cards, columns, modals, lists)
-  - `services/`: Domain services (Epic, Issue, Sprint, Team, User, Label, etc.)
-  - `pipes/`: Custom Angular pipes
-  - `models/`: Kanban domain models
+- **`frontend/board/src/app/modules/kanban`**: Main kanban board feature module
+  - `frontend/board/src/app/modules/kanban/components/`: 28+ kanban-specific components (cards, columns, modals, lists)
+  - `frontend/board/src/app/modules/kanban/services/`: Domain services (Epic, Issue, Sprint, Team, User, Label, etc.)
+  - `frontend/board/src/app/modules/kanban/pipes/`: Custom Angular pipes
+  - `frontend/board/src/app/modules/kanban/models/`: Kanban domain models
 
-- **`modules/ui`**: Reusable UI components (buttons, inputs, modals)
-- **`modules/bootstrap-ui`**: Bootstrap-based UI wrapper components
+- **`frontend/board/src/app/modules/ui`**: Reusable UI components (buttons, inputs, modals)
+- **`frontend/board/src/app/modules/bootstrap-ui`**: Bootstrap-based UI wrapper components
 
 **Key services:**
 - `BaseService`: Generic HTTP service with caching (`CollectionCache`)
@@ -137,7 +137,7 @@ The backend follows a layered architecture with dependency injection using `goio
 
 ### Data Synchronization
 
-The backend runs a background worker (`cmd/worker.go`) that:
+The backend runs a background worker (`backend/cmd/worker.go`) that:
 - Syncs with GitLab API on a configurable interval
 - Updates local database with GitLab issues, users, projects, labels, etc.
 - Operates independently from the API server
@@ -164,22 +164,22 @@ All models are in `backend/internal/infra/persistance/models/`
 
 ### Adding a New Backend Feature
 
-1. Define the domain model in `internal/domain/models/`
-2. Create database model in `internal/infra/persistance/models/`
-3. Create repository in `internal/infra/persistance/repo/`
-4. Add query specification in `internal/infra/persistance/spec/` if complex queries needed
-5. Create use case in `internal/app/usecases/`
-6. Create controller and DTOs in `internal/interfaces/api/`
-7. Register all beans in `main.go` (repositories, queries, use cases, controllers)
-8. Add controller to router initialization in `cmd/api.go`
+1. Define the domain model in `backend/internal/domain/models/`
+2. Create database model in `backend/internal/infra/persistance/models/`
+3. Create repository in `backend/internal/infra/persistance/repo/`
+4. Add query specification in `backend/internal/infra/persistance/spec/` if complex queries needed
+5. Create use case in `backend/internal/app/usecases/`
+6. Create controller and DTOs in `backend/internal/interfaces/api/`
+7. Register all beans in `backend/main.go` (repositories, queries, use cases, controllers)
+8. Add controller to router initialization in `backend/cmd/api.go`
 
 ### Adding a New Frontend Feature
 
-1. Create service in appropriate module's `services/` directory
-2. Create models in module's `models/` directory
+1. Create service in appropriate module's `services/` directory (e.g., `frontend/board/src/app/modules/<module>/services/`)
+2. Create models in module's `models/` directory (e.g., `frontend/board/src/app/modules/<module>/models/`)
 3. Create components using Angular CLI or manually
-4. Update module imports in the feature module file (e.g., `kanban.module.ts`)
-5. Add routes in `app-routing.module.ts` if needed
+4. Update module imports in the feature module file (e.g., `frontend/board/src/app/modules/kanban/kanban.module.ts`)
+5. Add routes in `frontend/board/src/app/app-routing.module.ts` if needed
 
 ### Dependency Injection
 

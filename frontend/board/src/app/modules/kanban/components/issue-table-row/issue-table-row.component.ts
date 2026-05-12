@@ -185,6 +185,7 @@ export class IssueTableRowComponent implements OnInit, AfterViewChecked {
       priority: issue.priority,
       release: issue.release ? issue.release.id : null,
       epic: issue.epic ? issue.epic.id : null,
+      planned: issue.planned,
     }
   }
 }

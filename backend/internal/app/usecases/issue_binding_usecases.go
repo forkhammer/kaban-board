@@ -176,7 +176,11 @@ func (uc *IssueBindingUseCases) SaveBinding(request SaveIssueBindingRequest, acc
 	}
 	binding.Comment = request.Comment
 	binding.Priority = request.Priority
-	binding.Planned = request.Planned
+
+	if request.Planned != nil {
+		binding.Planned = request.Planned
+	}
+
 	binding.Version = request.Version
 
 	if request.ReleaseId != nil {

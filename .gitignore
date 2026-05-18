@@ -5,3 +5,7 @@ backend/__debug*
 .tmp
 .vscode/settings.json
 .claude
+opencode.jsonc
+
+# repowise API keys (local)
+.repowise/

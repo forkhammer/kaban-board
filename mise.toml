@@ -2,3 +2,4 @@
 go = "1.26.0"
 golangci-lint = "v2.10.1"
 node = "22"
+python = "3.13.12"

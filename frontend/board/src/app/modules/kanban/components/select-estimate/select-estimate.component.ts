@@ -35,15 +35,17 @@ export class SelectEstimateComponent implements ControlValueAccessor {
     this.writeValue(item);
   }
 
+  private emitChange(value: number | null): void {
+    if (this.onChange) {
+      this.onChange(value);
+    }
+  }
+
   constructor() {
     this.value$.pipe(
       distinctUntilChanged(),
       takeUntilDestroyed()
-    ).subscribe(data => {
-      if (this.onChange) {
-        this.onChange(data);
-      }
-    })
+    ).subscribe()
   }
 
 
@@ -61,6 +63,7 @@ export class SelectEstimateComponent implements ControlValueAccessor {
 
   select(value: number | null) {
     this.value$.next(value);
+    this.emitChange(value);
     (this.dropdown as any).close();
   }
 }

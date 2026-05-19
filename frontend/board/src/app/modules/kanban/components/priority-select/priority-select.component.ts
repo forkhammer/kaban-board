@@ -28,11 +28,14 @@ export class PrioritySelectComponent implements ControlValueAccessor {
   value: IssuePriority | null = null;
   private onChange: any;
 
+  private emitChange(value: IssuePriority | null): void {
+    if (this.onChange) {
+      this.onChange(value);
+    }
+  }
+
   writeValue(value: IssuePriority | null) {
     this.value = value;
-    if (this.onChange) {
-      this.onChange(this.value);
-    }
   }
 
   registerOnChange(fn: any) {
@@ -43,6 +46,7 @@ export class PrioritySelectComponent implements ControlValueAccessor {
 
   select(e: MouseEvent, priority: IssuePriority) {
     this.writeValue(priority);
+    this.emitChange(priority);
     if (this.dropdown) {
       (this.dropdown as any).close();
     }
@@ -51,6 +55,7 @@ export class PrioritySelectComponent implements ControlValueAccessor {
 
   clear(e: MouseEvent) {
     this.writeValue(null);
+    this.emitChange(null);
     if (this.dropdown) {
       (this.dropdown as any).close();
     }

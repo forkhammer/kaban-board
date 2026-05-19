@@ -167,9 +167,10 @@ export class IssueTableComponent {
   }
 
   private onBindingUpdated(data: BindingUpdatedEventData): void {
+    if (data.account_id === this.accountService.user$.value?.id) return
+
     this.sprintStateChanged.emit()
     this.groupedIssues = this.getGroupedIssues()
-    if (data.account_id === this.accountService.user$.value?.id) return
 
     const idx = this.issues.findIndex(i => i.bindingId === data.id)
     if (idx === -1) return
@@ -250,7 +251,7 @@ export class IssueTableComponent {
     ).subscribe(data => {
       const idx = this.issues.findIndex(i => i.bindingId === issue.bindingId)
       if (idx !== -1) {
-        Object.assign(this.issues[idx], data)
+        this.issues[idx] = data
       }
       this.groupedIssues = this.getGroupedIssues()
     })

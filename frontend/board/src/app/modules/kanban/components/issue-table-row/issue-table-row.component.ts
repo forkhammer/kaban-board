@@ -88,6 +88,7 @@ export class IssueTableRowComponent implements OnInit, AfterViewChecked {
       priority: [null],
       release: [null],
       epic: [null],
+      planned: [null],
     })
 
     this.team$.pipe(takeUntilDestroyed()).subscribe(data => {

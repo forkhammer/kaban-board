@@ -91,9 +91,14 @@ export class SelectEpicComponent implements ControlValueAccessor {
     });
   }
 
+  private emitChange(value: number | null): void {
+    if (this.onChange) {
+      this.onChange(value);
+    }
+  }
+
   writeValue(value: number | null) {
     this.value$.next(value);
-    if (this.onChange) this.onChange(value);
   }
 
   registerOnChange(fn: any) {
@@ -105,6 +110,7 @@ export class SelectEpicComponent implements ControlValueAccessor {
   select(epic: Epic | null) {
     const id = epic?.id ?? null;
     this.selectValue = id;
+    this.emitChange(id);
     (this.dropdown as any).close();
   }
 
@@ -112,6 +118,7 @@ export class SelectEpicComponent implements ControlValueAccessor {
     e.preventDefault()
     e.stopPropagation()
     this.selectValue = null
+    this.emitChange(null)
     return false
   }
 

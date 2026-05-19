@@ -30,11 +30,14 @@ export class BindingStatusSelectComponent implements ControlValueAccessor {
   value: BindStatus | null = null;
   private onChange: any;
 
+  private emitChange(value: BindStatus | null): void {
+    if (this.onChange) {
+      this.onChange(value);
+    }
+  }
+
   writeValue(value: BindStatus | null) {
     this.value = value;
-    if (this.onChange) {
-      this.onChange(this.value);
-    }
   }
 
   registerOnChange(fn: any) {
@@ -45,6 +48,7 @@ export class BindingStatusSelectComponent implements ControlValueAccessor {
 
   select(e: MouseEvent, status: BindStatus) {
     this.writeValue(status);
+    this.emitChange(status);
     if (this.dropdown) {
       (this.dropdown as any).close();
     }
@@ -53,6 +57,7 @@ export class BindingStatusSelectComponent implements ControlValueAccessor {
 
   clear(e: MouseEvent) {
     this.writeValue(null);
+    this.emitChange(null);
     if (this.dropdown) {
       (this.dropdown as any).close();
     }

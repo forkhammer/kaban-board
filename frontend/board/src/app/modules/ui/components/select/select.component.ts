@@ -50,11 +50,14 @@ export class SelectComponent implements ControlValueAccessor {
   }
 
 
+  private emitChange(value: SelectValueIdentity | null): void {
+    if (this.onChange) {
+      this.onChange(value);
+    }
+  }
+
   writeValue(value: SelectValueIdentity | null) {
     this.value = value;
-    if (this.onChange) {
-      this.onChange(this.value);
-    }
   }
 
   registerOnChange(fn: any) {
@@ -79,6 +82,7 @@ export class SelectComponent implements ControlValueAccessor {
 
   select(e: MouseEvent, item: SelectValue) {
     this.selectValue = item;
+    this.emitChange(this.value);
     if (this.dropdown) {
       (this.dropdown as any).close();
     }
@@ -87,6 +91,7 @@ export class SelectComponent implements ControlValueAccessor {
 
   clear(e: MouseEvent) {
     this.selectValue = null;
+    this.emitChange(null);
     if (this.dropdown) {
       (this.dropdown as any).close();
     }

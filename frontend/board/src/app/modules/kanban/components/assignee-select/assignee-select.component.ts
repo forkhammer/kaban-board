@@ -164,11 +164,14 @@ export class AssigneeSelectComponent implements ControlValueAccessor, OnInit {
       });
   }
 
-  writeValue(value: number | null) {
-    this.value.next(value);
+  private emitChange(value: number | null): void {
     if (this.onChange) {
       this.onChange(value);
     }
+  }
+
+  writeValue(value: number | null) {
+    this.value.next(value);
   }
 
   registerOnChange(fn: any) {
@@ -193,12 +196,14 @@ export class AssigneeSelectComponent implements ControlValueAccessor, OnInit {
 
   select(e: MouseEvent, item: User) {
     this.selectValue = item;
+    this.emitChange(this.value.value);
     (this.dropdown as any).close();
     return false;
   }
 
   clear(e: MouseEvent) {
     this.selectValue = null;
+    this.emitChange(null);
     (this.dropdown as any).close();
     return false;
   }

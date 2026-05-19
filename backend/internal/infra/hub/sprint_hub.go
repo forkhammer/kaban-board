@@ -10,8 +10,9 @@ import (
 )
 
 type SprintHubImpl struct {
-	mu    sync.RWMutex
-	rooms map[domain.SprintId]map[*websocket.Conn]struct{}
+	mu          sync.RWMutex
+	broadcastMu sync.Mutex
+	rooms       map[domain.SprintId]map[*websocket.Conn]struct{}
 }
 
 func NewSprintHub() interfaces.SprintHub {
@@ -46,19 +47,6 @@ func (h *SprintHubImpl) Broadcast(sprintId domain.SprintId, event interfaces.WSE
 		return
 	}
 
-	conns := h.getRoomConns(sprintId)
-
-	var deads []*websocket.Conn
-	for _, conn := range conns {
-		if err := conn.WriteMessage(websocket.TextMessage, data); err != nil {
-			deads = append(deads, conn)
-		}
-	}
-
-	h.deleteDeadConns(sprintId, deads)
-}
-
-func (h *SprintHubImpl) getRoomConns(sprintId domain.SprintId) []*websocket.Conn {
 	h.mu.RLock()
 	room := h.rooms[sprintId]
 	conns := make([]*websocket.Conn, 0, len(room))
@@ -66,15 +54,24 @@ func (h *SprintHubImpl) getRoomConns(sprintId domain.SprintId) []*websocket.Conn
 		conns = append(conns, conn)
 	}
 	h.mu.RUnlock()
-	return conns
-}
 
-func (h *SprintHubImpl) deleteDeadConns(sprintId domain.SprintId, deads []*websocket.Conn) {
+	var deads []*websocket.Conn
+	h.broadcastMu.Lock()
+	for _, conn := range conns {
+		if err := conn.WriteMessage(websocket.TextMessage, data); err != nil {
+			deads = append(deads, conn)
+		}
+	}
+	h.broadcastMu.Unlock()
+
 	if len(deads) > 0 {
 		h.mu.Lock()
 		if room, ok := h.rooms[sprintId]; ok {
 			for _, conn := range deads {
 				delete(room, conn)
+			}
+			if len(room) == 0 {
+				delete(h.rooms, sprintId)
 			}
 		}
 		h.mu.Unlock()

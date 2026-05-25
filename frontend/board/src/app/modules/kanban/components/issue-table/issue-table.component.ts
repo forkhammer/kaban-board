@@ -76,6 +76,7 @@ export class IssueTableComponent {
   public groupedIssues: IssueGroup[] = [];
   public issuePage: Pagination<KanbanIssue> | null = null;
   public isLoading = false;
+  public search$ = new BehaviorSubject<string | null>(null);
   isPageMore$ = new BehaviorSubject<boolean>(false);
   isLoadMore$ = new BehaviorSubject<boolean>(false);
   highlightedIds = new Set<number>();
@@ -95,6 +96,10 @@ export class IssueTableComponent {
 
   @Input() set group(value: Group | undefined | null) {
     this.group$.next(value);
+  }
+
+  @Input() set search(value: string | undefined | null) {
+    this.search$.next(value ?? null);
   }
 
   constructor() {
@@ -138,27 +143,36 @@ export class IssueTableComponent {
 
     merge(this.timer$, this.wsReload$)
       .pipe(
-        combineLatestWith(this.user$, this.team$, this.sprint$, this.group$),
+        combineLatestWith(
+          this.user$,
+          this.team$,
+          this.sprint$,
+          this.group$,
+          this.search$,
+        ),
         debounceTime(100),
-        filter(([_, user, team, sprint]) => {
-          return !!team;
+        filter(([_, user, team, sprint, group, search]) => {
+          return !!team || !!search;
         }),
         distinctUntilChanged(isEqual),
         debounceTime(1),
         combineLatestWith(this.isLoadMore$),
         switchMap(([data, isLoadingMore]) => {
-          const [_, user, team, sprint, group] = data as [
+          const [_, user, team, sprint, group, search] = data as [
             any,
             KanbanUser,
             Team,
             Sprint,
             Group,
+            string,
           ];
           const query: Record<string, any> = {
-            team: team!.id,
             limit: sprint ? 10000 : 50,
             page: this.isPageMore$.value ? this.issuePage!.page + 1 : 1,
           };
+          if (team) {
+            query["team"] = team.id;
+          }
           if (user) {
             query["assignee"] = user.id;
           }
@@ -167,6 +181,9 @@ export class IssueTableComponent {
           }
           if (group) {
             query["group"] = group.id;
+          }
+          if (search) {
+            query["search"] = search;
           }
           this.isLoading = true;
 

@@ -54,6 +54,7 @@ import { MoveToSprintModalComponent } from './components/move-to-sprint-modal/mo
 import { IssueDetailModalComponent } from './components/issue-detail-modal/issue-detail-modal.component';
 import { OnlineAccountsComponent } from './components/online-accounts/online-accounts.component';
 import { HeaderComponent } from './components/header/header.component';
+import { HeaderSearchComponent } from './components/header-search/header-search.component';
 import { StatusBadgeComponent } from './components/status-badge/status-badge.component';
 import { SelectEpicComponent } from './components/select-epic/select-epic.component';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
@@ -109,6 +110,7 @@ import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
     IssueDetailModalComponent,
     OnlineAccountsComponent,
     HeaderComponent,
+    HeaderSearchComponent,
     StatusBadgeComponent,
     SelectEpicComponent,
   ],
@@ -125,6 +127,8 @@ import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
     BindingStatusSelectComponent,
     SelectEpicComponent,
     HeaderComponent,
+    HeaderSearchComponent,
+    IssueTableComponent,
   ],
   imports: [
     CommonModule,

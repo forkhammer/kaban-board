@@ -14,12 +14,12 @@
   width: 50px;
   height: 30px;
   position: relative;
-  background: url('/assets/logo.png') no-repeat center center;
+  background: url("/assets/logo.png") no-repeat center center;
   background-size: contain;
 
   :host-context([data-bs-theme="dark"]) {
     .logo {
-      background: url('/assets/logo-invert.png') no-repeat center center;
+      background: url("/assets/logo-invert.png") no-repeat center center;
       background-size: contain;
     }
   }
@@ -36,15 +36,14 @@
   }
 }
 
-
 .header-link {
   text-decoration: none;
   font-weight: 600;
-  color: $gray-700
+  color: $gray-700;
 }
 
 .caption {
-  width: 308px;
+  margin-right: $pt3;
 }
 
 .search {
@@ -54,7 +53,7 @@
 .search-input {
   width: 400px;
 
-  :host-context([data-bs-theme=dark]) {
+  :host-context([data-bs-theme="dark"]) {
     .search-input {
       border-color: rgba($white, 0.1);
     }
@@ -65,14 +64,20 @@
   display: flex;
   align-items: center;
   gap: $pt2;
-  flex-grow: 1;
+  margin-right: $pt3;
 
   &-link {
     text-decoration: underline;
     color: $body-color;
 
     &.active {
-      color: $primary
+      color: $primary;
     }
   }
+}
+
+app-header-search {
+  margin-left: $pt3;
+  margin-right: $pt3;
+  flex-grow: 1;
 }

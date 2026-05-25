@@ -25,6 +25,7 @@ import { AuthPageComponent } from './components/auth-page/auth-page.component';
 import { BootstrapUiModule } from './modules/bootstrap-ui/bootstrap-ui.module';
 import * as Hammer from 'hammerjs';
 import { SprintsPageComponent } from './components/sprints-page/sprints-page.component';
+import { SearchPageComponent } from './components/search-page/search-page.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { AuthGitlabCallbackPageComponent } from './components/auth-gitlab-callback-page/auth-gitlab-callback-page.component';
 
@@ -40,6 +41,7 @@ export class MyHammerConfig extends HammerGestureConfig {
     IndexPageComponent,
     AuthPageComponent,
     SprintsPageComponent,
+    SearchPageComponent,
     AuthGitlabCallbackPageComponent,
   ],
   bootstrap: [AppComponent],

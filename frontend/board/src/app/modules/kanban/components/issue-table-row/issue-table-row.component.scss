@@ -1,4 +1,12 @@
-@import '../../../../../styles/imports';
+@import "../../../../../styles/imports";
+
+:host {
+  &:hover {
+    .view-detail-btn {
+      visibility: visible;
+    }
+  }
+}
 
 :host.unplanned td {
   background-color: rgba(255, 220, 80, 0.12);
@@ -175,7 +183,7 @@ td {
   border: 1px solid transparent;
   padding: 4px;
   border-radius: $pt2;
-  transition-duration: .2s;
+  transition-duration: 0.2s;
 
   @for $i from 1 through 8 {
     &.val-#{$i} {
@@ -207,6 +215,25 @@ td {
       :host-context([data-bs-theme="dark"]) & {
         background-color: $estimate-hard-color;
       }
+    }
+  }
+}
+
+.view-detail-btn {
+  color: $gray-400;
+  text-decoration: none;
+  line-height: 1;
+  visibility: hidden;
+
+  &:hover {
+    color: $primary;
+  }
+
+  :host-context([data-bs-theme="dark"]) & {
+    color: $gray-400;
+
+    &:hover {
+      color: $primary;
     }
   }
 }

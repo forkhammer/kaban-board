@@ -10,6 +10,11 @@
       <span *ngIf="!issue?.taskType?.altName">{{issue?.taskType?.name}}</span>
       <span *ngIf="issue?.taskType?.altName">{{issue?.taskType?.altName}}</span>
     </div>
+
+    <button type="button" class="btn btn-link btn-sm p-0 ms-auto view-detail-btn" (click)="showDetail($event)"
+      ngbTooltip="Просмотр задачи">
+      <fa-icon [icon]="faEye"></fa-icon>
+    </button>
   </div>
 
   <div class="content pt-1 pb-1 pe-2 ps-2">

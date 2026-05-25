@@ -1,0 +1,41 @@
+@import "../../../../../styles/imports";
+
+.assignee-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+
+  .assignee-avatar {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+  }
+}
+
+.modal-body {
+  :host-context([data-bs-theme="dark"]) & {
+    a {
+      color: $primary;
+    }
+  }
+}
+
+.prop {
+  line-height: 1rem;
+
+  &-title {
+    font-weight: 500;
+    display: flex;
+    align-items: end;
+  }
+
+  &-separator {
+    flex-grow: 1;
+    border-bottom: 1px dashed $gray-300;
+  }
+
+  &-value {
+    display: flex;
+    align-items: end;
+  }
+}

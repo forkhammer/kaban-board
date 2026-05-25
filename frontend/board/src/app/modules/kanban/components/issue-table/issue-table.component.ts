@@ -221,7 +221,7 @@ export class IssueTableComponent {
       .get(data.id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((updated) => {
-        this.issues[idx] = updated;
+        Object.assign(this.issues[idx], updated);
         this.groupedIssues = this.getGroupedIssues();
         this.addHighlighted(data.id);
       });
@@ -310,7 +310,7 @@ export class IssueTableComponent {
           (i) => i.bindingId === issue.bindingId,
         );
         if (idx !== -1) {
-          this.issues[idx] = data;
+          Object.assign(this.issues[idx], data);
         }
         this.groupedIssues = this.getGroupedIssues();
       });

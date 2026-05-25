@@ -1,4 +1,4 @@
-@import '../../../../../styles/imports';
+@import "../../../../../styles/imports";
 
 .issue {
   border-radius: 1rem;
@@ -65,5 +65,23 @@
     border-radius: 50%;
     overflow: hidden;
     margin-right: $pt;
+  }
+}
+
+.view-detail-btn {
+  color: $gray-400;
+  text-decoration: none;
+  line-height: 1;
+
+  &:hover {
+    color: $primary;
+  }
+
+  :host-context([data-bs-theme="dark"]) & {
+    color: $gray-400;
+
+    &:hover {
+      color: $primary;
+    }
   }
 }

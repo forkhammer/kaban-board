@@ -1,0 +1,123 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{ issue?.title }}</h5>
+  <button type="button" class="btn-close" aria-label="Закрыть" (click)="close()"></button>
+</div>
+
+<div class="modal-body">
+  <div class="container-fluid">
+    <div class="row mb-2 prop g-0">
+      <div class="col-4 text-muted prop-title">
+        ID
+        <span class="prop-separator"></span>
+      </div>
+      <div class="col-8 prop-value">
+        <a [href]="issue?.webUrl" target="_blank">{{ issue?.projectName }}#{{ issue?.iid }}</a>
+      </div>
+    </div>
+
+    <div class="row mb-2 prop g-0">
+      <div class="col-4 text-muted prop-title">
+        Проект
+        <span class="prop-separator"></span>
+      </div>
+      <div class="col-8 prop-value">{{ issue?.projectName }}</div>
+    </div>
+
+    <div class="row mb-2 prop g-0">
+      <div class="col-4 text-muted prop-title">
+        Тип
+        <span class="prop-separator"></span>
+      </div>
+      <div class="col-8 prop-value">{{ issue?.type }}</div>
+    </div>
+
+    <div class="row mb-2 prop g-0" *ngIf="issue?.bindStatus">
+      <div class="col-4 text-muted prop-title">
+        Статус
+        <span class="prop-separator"></span>
+      </div>
+      <div class="col-8 prop-value">
+        <app-status-badge [status]="issue!.bindStatus!"></app-status-badge>
+      </div>
+    </div>
+
+    <div class="row mb-2 prop g-0" *ngIf="issue?.priority">
+      <div class="col-4 text-muted prop-title">
+        Приоритет
+        <span class="prop-separator"></span>
+      </div>
+      <div class="col-8 prop-value">
+        <app-priority-badge [priority]="issue!.priority!"></app-priority-badge>
+      </div>
+    </div>
+
+    <div class="row mb-2 prop g-0" *ngIf="issue?.assignees?.length">
+      <div class="col-4 text-muted prop-title">
+        Исполнители
+        <span class="prop-separator"></span>
+      </div>
+      <div class="col-8 prop-value">
+        <div class="d-flex flex-wrap gap-2">
+          <div class="assignee-item" *ngFor="let user of issue?.assignees">
+            <img [src]="user.avatar_url" class="assignee-avatar" [alt]="user.name">
+            <span>{{ user.name }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mb-2 prop g-0" *ngIf="issue?.labels?.length">
+      <div class="col-4 text-muted prop-title">
+        Метки
+        <span class="prop-separator"></span>
+      </div>
+      <div class="col-8 prop-value">
+        <div class="d-flex flex-wrap">
+          <app-kanban-label [label]="label" *ngFor="let label of issue?.labels"></app-kanban-label>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mb-2 prop g-0" *ngIf="issue?.epic">
+      <div class="col-4 text-muted prop-title">
+        Эпик
+        <span class="prop-separator"></span>
+      </div>
+      <div class="col-8 prop-value">{{ issue?.epic?.title }}</div>
+    </div>
+
+    <div class="row mb-2 prop g-0" *ngIf="issue?.release">
+      <div class="col-4 text-muted prop-title">
+        Релиз
+        <span class="prop-separator"></span>
+      </div>
+      <div class="col-8 prop-value">
+        <a [href]="issue?.release?.webPath" target="_blank">{{ issue?.release?.title }}</a>
+      </div>
+    </div>
+
+    <div class="row mb-2 prop g-0" *ngIf="issue?.estimateDev !== null && issue?.estimateDev !== undefined">
+      <div class="col-4 text-muted prop-title">
+        Оценка разработки
+        <span class="prop-separator"></span>
+      </div>
+      <div class="col-8 prop-value">{{ issue?.estimateDev }} ч.</div>
+    </div>
+
+    <div class="row mb-2 prop g-0" *ngIf="issue?.estimateQA !== null && issue?.estimateQA !== undefined">
+      <div class="col-4 text-muted prop-title">
+        Оценка тестирования
+        <span class="prop-separator"></span>
+      </div>
+      <div class="col-8 prop-value">{{ issue?.estimateQA }} ч.</div>
+    </div>
+
+    <div class="row mb-2 prop g-0" *ngIf="issue?.comment">
+      <div class="col-4 text-muted prop-title">
+        Комментарий
+        <span class="prop-separator"></span>
+      </div>
+      <div class="col-8 prop-value">{{ issue?.comment }}</div>
+    </div>
+  </div>
+</div>

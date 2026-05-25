@@ -1,0 +1,67 @@
+@import "../../../../../styles/imports.scss";
+
+:host {
+  display: flex;
+  align-items: center;
+}
+
+.header-search {
+  position: relative;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.search-input {
+  width: 500px;
+  background: $white;
+  border: 1px solid $gray-300;
+  border-radius: 50px;
+  padding: 4px $pt3;
+  @include fs-paragraph-s();
+  line-height: 2rem;
+
+  @include media-breakpoint-down(lg) {
+    width: 300px;
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 5px rgba($gray-400, 0.2);
+  }
+
+  :host-context([data-bs-theme="dark"]) & {
+    background: $gray-800;
+    border-color: $gray-700;
+    color: $gray-100;
+
+    &::placeholder {
+      color: $gray-500;
+    }
+
+    &:focus {
+      border-color: $primary;
+      box-shadow: 0 0 0 2px rgba($primary, 0.25);
+    }
+  }
+}
+
+.btn-clear {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  top: 9px;
+  right: 11px;
+  color: $gray-500;
+  font-size: 16px;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  border-radius: 100%;
+  line-height: 1rem;
+  transition-duration: 0.2s;
+
+  &:hover {
+    background-color: $gray-300;
+    color: $white;
+  }
+}

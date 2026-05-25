@@ -1,0 +1,13 @@
+<div class="header-search">
+  <input
+    type="text"
+    class="form-control search-input"
+    [(ngModel)]="searchValue"
+    (keydown)="onKeydown($event)"
+    placeholder="Поиск задач..."
+  />
+
+  <button class="btn-clear" (click)="clear()">
+    &times;
+  </button>
+</div>

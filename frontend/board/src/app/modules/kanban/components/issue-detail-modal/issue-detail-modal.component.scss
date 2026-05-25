@@ -43,3 +43,36 @@
     align-items: end;
   }
 }
+
+.sprint-table {
+  margin-bottom: 0;
+
+  th,
+  td {
+    vertical-align: middle;
+    padding: $pt;
+    @include fs-paragraph-xs();
+  }
+
+  th {
+    font-weight: 600;
+    text-transform: uppercase;
+    color: $gray-700;
+  }
+
+  :host-context([data-bs-theme="dark"]) & {
+    --bs-table-color: #{$gray-100};
+    --bs-table-bg: transparent;
+    --bs-table-border-color: #{$gray-700};
+    --bs-table-striped-color: #{$gray-100};
+    --bs-table-striped-bg: #{$gray-800};
+    --bs-table-hover-color: #{$gray-100};
+    --bs-table-hover-bg: #{$gray-800};
+  }
+}
+
+.tab-content {
+  :host-context([data-bs-theme="dark"]) & {
+    color: $gray-100;
+  }
+}

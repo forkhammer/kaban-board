@@ -7,6 +7,18 @@ import (
 	"main/pkg/utils"
 )
 
+type IssueBindingRequest struct {
+	Issue    *uint   `form:"issue"`
+	Assignee *uint   `form:"assignee"`
+	Team     *uint   `form:"team"`
+	Group    *uint   `form:"group"`
+	Sprint   *uint   `form:"sprint"`
+	Project  *uint   `form:"project"`
+	Search   *string `form:"search"`
+	Page     int     `form:"page,default=1"`
+	Limit    int     `form:"limit,default=0"`
+}
+
 type IssueBindingDto struct {
 	Id          string      `json:"id"`
 	Iid         string      `json:"iid"`
@@ -33,6 +45,7 @@ type IssueBindingDto struct {
 	IsUnplanned bool        `json:"is_unplanned"`
 	Planned     *bool       `json:"planned"`
 	Version     uint        `json:"version"`
+	Sprint      *SprintDto  `json:"sprint"`
 }
 
 type SetIssueBindingOrder struct {
@@ -124,6 +137,10 @@ func SerializeIssueBinding(binding *domain.IssueBinding, account *domain.Account
 
 	if binding.Epic != nil {
 		dto.Epic = SerializeEpic(binding.Epic)
+	}
+
+	if binding.Sprint != nil {
+		dto.Sprint = SerializeSprint(binding.Sprint)
 	}
 
 	if binding.Issue != nil {

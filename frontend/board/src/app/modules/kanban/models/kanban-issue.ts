@@ -2,6 +2,7 @@ import { SelectValue } from "../../ui/models/select-value";
 import { Epic } from "./epic";
 import {KanbanLabel} from "./kanban-label";
 import { Release } from "./release";
+import { Sprint } from "./sprint";
 import { User } from "./user";
 
 export enum BindStatus {
@@ -81,4 +82,5 @@ export type KanbanIssue = {
   is_unplanned?: boolean
   planned?: boolean
   version?: number
+  sprint?: Sprint
 }

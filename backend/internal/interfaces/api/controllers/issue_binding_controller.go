@@ -35,7 +35,7 @@ func (c *IssueBindingController) RegisterRoutes(router gin.IRouter) error {
 }
 
 func (c *IssueBindingController) getBindings(ctx *gin.Context) {
-	var request dto.IssuesRequest
+	var request dto.IssueBindingRequest
 	if err := ctx.ShouldBindQuery(&request); err != nil {
 		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
 		return
@@ -51,6 +51,9 @@ func (c *IssueBindingController) getBindings(ctx *gin.Context) {
 		GroupId:    request.Group,
 		ProjectId:  request.Project,
 		Search:     request.Search,
+	}
+	if request.Issue != nil {
+		issueFilter.Issues = []uint{*request.Issue}
 	}
 	bindingPage, err := c.bindingUC.GetBindings(&issueFilter, request.Page, request.Limit, currentAccount)
 	if apiutils.HandleException(ctx, err) {

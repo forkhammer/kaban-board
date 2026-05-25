@@ -1,10 +1,10 @@
-import { Injectable, inject } from '@angular/core';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { IssueDetailModalComponent } from '../components/issue-detail-modal/issue-detail-modal.component';
-import { KanbanIssue } from '../models/kanban-issue';
+import { Injectable, inject } from "@angular/core";
+import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
+import { IssueDetailModalComponent } from "../components/issue-detail-modal/issue-detail-modal.component";
+import { KanbanIssue } from "../models/kanban-issue";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class IssueDetailModalService {
   private modal = inject(NgbModal);
@@ -12,6 +12,7 @@ export class IssueDetailModalService {
   show(issue: KanbanIssue): void {
     const modalRef = this.modal.open(IssueDetailModalComponent, {
       centered: true,
+      size: "lg",
     });
     modalRef.componentInstance.init(issue);
   }

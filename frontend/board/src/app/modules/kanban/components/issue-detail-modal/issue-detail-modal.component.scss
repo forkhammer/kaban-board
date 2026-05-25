@@ -1,5 +1,9 @@
 @import "../../../../../styles/imports";
 
+.issue-title {
+  @include fs-paragraph-s();
+}
+
 .assignee-item {
   display: flex;
   align-items: center;

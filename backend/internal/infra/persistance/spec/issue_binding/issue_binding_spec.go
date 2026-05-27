@@ -53,6 +53,13 @@ func (s *IssueBindingFilterSpec) Apply(conn any) (any, error) {
 	if s.Filter.ProjectId != nil {
 		query = query.Where("issues.project_id = ?", s.Filter.ProjectId)
 	}
+
+	if len(s.Filter.AssigneeGroupIds) > 0 {
+		query = query.
+			Joins("LEFT JOIN user_groups AS ug_filter ON ug_filter.user_id = issue_bindings.assignee_id").
+			Where("ug_filter.group_id IN ?", s.Filter.AssigneeGroupIds)
+	}
+
 	if s.Filter.Search != nil {
 		query = query.Where(
 			"(issues.title LIKE ?) OR (issues.iid = ?) OR (issues.web_url = ?)",

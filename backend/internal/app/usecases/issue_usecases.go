@@ -99,6 +99,24 @@ func (u *IssueUseCases) BindIssue(id uint, sprintId uint, assigneeId uint) (*dom
 		if count > 0 {
 			return nil, domain_pkg.NewValidationError("Задача уже привязана к спринту с выбранным исполнителем")
 		}
+
+		if len(assignee.Groups) > 0 {
+			groupIds := make([]uint, len(assignee.Groups))
+			for i, g := range assignee.Groups {
+				groupIds[i] = uint(g.Id)
+			}
+			count, err = u.issueBindingRepo.Count(u.issueBindingQuery.GetSpec(queries.IssueBindingFilter{
+				Issues:           []uint{id},
+				SprintId:         &sprintId,
+				AssigneeGroupIds: groupIds,
+			}))
+			if err != nil {
+				return nil, err
+			}
+			if count > 0 {
+				return nil, domain_pkg.NewValidationError("Задача уже привязана к спринту с пользователем из той же группы")
+			}
+		}
 	}
 
 	binding, err := issue.BindToSprint(sprint, assignee)

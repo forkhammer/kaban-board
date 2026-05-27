@@ -6,14 +6,15 @@ import (
 )
 
 type IssueBindingFilter struct {
-	Issues         []uint
-	SprintStatuses []models.SprintStatus
-	AssigneeId     *uint
-	TeamId         *uint
-	GroupId        *uint
-	SprintId       *uint
-	ProjectId      *uint
-	Search         *string
+	Issues           []uint
+	SprintStatuses   []models.SprintStatus
+	AssigneeId       *uint
+	TeamId           *uint
+	GroupId          *uint
+	SprintId         *uint
+	ProjectId        *uint
+	Search           *string
+	AssigneeGroupIds []uint
 }
 
 type IssueBindingQuery interface {

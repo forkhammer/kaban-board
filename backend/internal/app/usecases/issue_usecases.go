@@ -17,15 +17,20 @@ type IssuePage struct {
 	Limit   int
 }
 
+type BindIssuesResult struct {
+	Bindings []domain.IssueBinding
+	Errors   []string
+}
+
 type IssueUseCases struct {
-	issueQuery       queries.IssueQuery                       `di.inject:"IssueQuery"`
-	issueRepo        repo.IssueRepo                           `di.inject:"IssueRepository"`
-	issueBindingRepo repo.IssueBindingRepo                    `di.inject:"IssueBindingRepository"`
-	issueBindingQuery queries.IssueBindingQuery               `di.inject:"IssueBindingQuery"`
-	sprintRepo       repo.SprintRepo                          `di.inject:"SprintRepository"`
-	commonQuery      queries.CommonQuery                      `di.inject:"CommonQuery"`
-	userRepo         repo.UserRepo                            `di.inject:"UserRepository"`
-	historyService   *app_services.IssueBindingHistoryService `di.inject:"IssueBindingHistoryService"`
+	issueQuery        queries.IssueQuery                       `di.inject:"IssueQuery"`
+	issueRepo         repo.IssueRepo                           `di.inject:"IssueRepository"`
+	issueBindingRepo  repo.IssueBindingRepo                    `di.inject:"IssueBindingRepository"`
+	issueBindingQuery queries.IssueBindingQuery                `di.inject:"IssueBindingQuery"`
+	sprintRepo        repo.SprintRepo                          `di.inject:"SprintRepository"`
+	commonQuery       queries.CommonQuery                      `di.inject:"CommonQuery"`
+	userRepo          repo.UserRepo                            `di.inject:"UserRepository"`
+	historyService    *app_services.IssueBindingHistoryService `di.inject:"IssueBindingHistoryService"`
 }
 
 func (u *IssueUseCases) GetIssues(filter *queries.IssueFilter, page int, limit int) (*IssuePage, error) {
@@ -136,13 +141,15 @@ func (u *IssueUseCases) BindIssue(id uint, sprintId uint, assigneeId uint) (*dom
 	return binding, nil
 }
 
-func (u *IssueUseCases) BindIssues(ids []uint, sprintId uint, assigneeId uint) ([]domain.IssueBinding, error) {
-	var bindings []domain.IssueBinding
+func (u *IssueUseCases) BindIssues(ids []uint, sprintId uint, assigneeId uint) (*BindIssuesResult, error) {
+	var result BindIssuesResult
 	for _, id := range ids {
 		binding, err := u.BindIssue(id, sprintId, assigneeId)
-		if err == nil {
-			bindings = append(bindings, *binding)
+		if err != nil {
+			result.Errors = append(result.Errors, err.Error())
+		} else {
+			result.Bindings = append(result.Bindings, *binding)
 		}
 	}
-	return bindings, nil
+	return &result, nil
 }

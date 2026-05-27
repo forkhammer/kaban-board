@@ -24,6 +24,11 @@ type BindIssueRequest struct {
 	AssigneeId uint   `json:"assignee_id"`
 }
 
+type BindIssueResponse struct {
+	Results []IssueBindingDto `json:"results"`
+	Errors  []string          `json:"errors"`
+}
+
 type SaveIssueBindingRequest struct {
 	Title       *string `json:"title"`
 	EstimateDev *uint   `json:"estimateDev"`

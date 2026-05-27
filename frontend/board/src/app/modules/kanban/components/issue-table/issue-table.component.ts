@@ -282,7 +282,10 @@ export class IssueTableComponent {
             takeUntilDestroyed(this.destroyRef),
           )
           .subscribe((data) => {
-            for (const issue of data) {
+            for (const error of data.errors) {
+              this.toast.show(this.toast.createErrorToast(error));
+            }
+            for (const issue of data.results) {
               this.issues.push(issue);
             }
             this.groupedIssues = this.getGroupedIssues();

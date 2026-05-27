@@ -72,9 +72,12 @@ func (c *IssueController) bindIssue(ctx *gin.Context) {
 	account, _ := ctx.Get("account")
 	currentAccount := account.(*domain.Account)
 
-	bindings, err := c.issueUC.BindIssues(request.IssueIds, request.SprintId, request.AssigneeId)
+	result, err := c.issueUC.BindIssues(request.IssueIds, request.SprintId, request.AssigneeId)
 	if utils.HandleException(ctx, err) {
 		return
 	}
-	ctx.JSON(http.StatusOK, dto.SerializeIssueBindings(bindings, currentAccount))
+	ctx.JSON(http.StatusOK, dto.BindIssueResponse{
+		Results: dto.SerializeIssueBindings(result.Bindings, currentAccount),
+		Errors:  result.Errors,
+	})
 }

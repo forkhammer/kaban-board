@@ -99,3 +99,8 @@ export type KanbanIssue = {
   version?: number;
   sprint?: Sprint;
 };
+
+export interface BindIssueResponse {
+  results: KanbanIssue[];
+  errors: string[];
+}

@@ -17,4 +17,5 @@ var ALL_MODELS []any = []any{
 	&Epic{},
 	&KVElement{},
 	&GitlabToken{},
+	&SprintUserSettings{},
 }

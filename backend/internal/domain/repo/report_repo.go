@@ -10,5 +10,5 @@ type ReportRepo interface {
 	GetBurnupData(sprintId uint) ([]domain.BurnupDataPoint, error)
 	GetWipData(startDate, endDate time.Time, interval string, teamId *uint, userId *uint) ([]domain.WipDataPoint, error)
 	GetSprintStats(sprintId uint, assigneeId *uint, groupId *uint) (*domain.SprintStats, error)
-	GetActiveUserCountByTeam(teamId uint, groupId *uint) (uint, error)
+	GetActiveUserIdsByTeam(teamId uint, groupId *uint) ([]uint, error)
 }

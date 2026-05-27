@@ -38,6 +38,7 @@ import { UserGroupCardComponent } from './components/user-group-card/user-group-
 import { FilterUsersByGroupPipe } from './pipes/filter-users-by-group.pipe';
 import { SprintListComponent } from './components/sprint-list/sprint-list.component';
 import { SprintCardComponent } from './components/sprint-card/sprint-card.component';
+import { SprintModalComponent } from './components/sprint-modal/sprint-modal.component';
 import { FilterSprintsByQuarterPipe } from './pipes/filter-sprints-by-quarter.pipe';
 import { IssueTableComponent } from './components/issue-table/issue-table.component';
 import { IssueTableRowComponent } from './components/issue-table-row/issue-table-row.component';
@@ -94,6 +95,7 @@ import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
     FilterUsersByGroupPipe,
     SprintListComponent,
     SprintCardComponent,
+    SprintModalComponent,
     FilterSprintsByQuarterPipe,
     IssueTableComponent,
     IssueTableRowComponent,

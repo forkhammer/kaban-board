@@ -3,39 +3,105 @@
   <button type="button" class="btn-close" aria-label="Закрыть" (click)="close()"></button>
 </div>
 
-<div class="modal-body"  [formGroup]='form'>
-  <div class="mb-3">
-    <label for="id_start_date" class="form-label">Старт спринта</label>
-    <input type="date" formControlName='start_date' id="id_start_date" class="form-control">
-    <app-input-error [errorData]="errors" code="start_date"></app-input-error>
-  </div>
+<div class="modal-body">
+  <ul class="nav-tabs" ngbNav #nav="ngbNav" [(activeId)]="activeTab">
+    <li [ngbNavItem]="1">
+      <button ngbNavLink>Основное</button>
+      <ng-template ngbNavContent>
+        <div [formGroup]='form'>
+          <div class="mb-3">
+            <label for="id_start_date" class="form-label">Старт спринта</label>
+            <input type="date" formControlName='start_date' id="id_start_date" class="form-control">
+            <app-input-error [errorData]="errors" code="start_date"></app-input-error>
+          </div>
 
-  <div class="mb-3">
-    <label for="id_end_date" class="form-label">Конец спринта</label>
-    <input type="date" formControlName='end_date' id="id_end_date" class="form-control">
-    <app-input-alert *ngIf='form.get("end_date")?.hasError("required") && form.get("end_date")?.dirty'>Это поле обязательно</app-input-alert>
-    <app-input-error [errorData]="errors" code="end_date"></app-input-error>
-  </div>
+          <div class="mb-3">
+            <label for="id_end_date" class="form-label">Конец спринта</label>
+            <input type="date" formControlName='end_date' id="id_end_date" class="form-control">
+            <app-input-alert *ngIf='form.get("end_date")?.hasError("required") && form.get("end_date")?.dirty'>Это поле обязательно</app-input-alert>
+            <app-input-error [errorData]="errors" code="end_date"></app-input-error>
+          </div>
 
-  <div class="mb-3">
-    <label for="">Команда</label>
-    <app-select-model [service]="teamService" formControlName="team_id" [useClear]="false" title="Команда"></app-select-model>
-    <app-input-error [errorData]="errors" code="team_id"></app-input-error>
-  </div>
+          <div class="mb-3">
+            <label for="">Команда</label>
+            <app-select-model [service]="teamService" formControlName="team_id" [useClear]="false" title="Команда"></app-select-model>
+            <app-input-error [errorData]="errors" code="team_id"></app-input-error>
+          </div>
 
-  <div class="mb-3">
-    <label for="id_hours_per_user" class="form-label">Количество часов на сотрудника</label>
-    <input type="number" formControlName='hours_per_user' id="id_hours_per_user" class="form-control">
-    <app-input-error [errorData]="errors" code="hours_per_user"></app-input-error>
-  </div>
+          <div class="mb-3">
+            <label for="id_hours_per_user" class="form-label">Количество часов на сотрудника</label>
+            <input type="number" formControlName='hours_per_user' id="id_hours_per_user" class="form-control">
+            <app-input-error [errorData]="errors" code="hours_per_user"></app-input-error>
+          </div>
 
-  <div class="mb-3">
-    <label for="id_title" class="form-label">Название (необязательно)</label>
-    <input type="text" formControlName='title' id="id_title" class="form-control">
-    <app-input-error [errorData]="errors" code="title"></app-input-error>
-  </div>
+          <div class="mb-3">
+            <label for="id_title" class="form-label">Название (необязательно)</label>
+            <input type="text" formControlName='title' id="id_title" class="form-control">
+            <app-input-error [errorData]="errors" code="title"></app-input-error>
+          </div>
 
-  <app-input-error [errorData]="errors" code="error"></app-input-error>
+          <app-input-error [errorData]="errors" code="error"></app-input-error>
+        </div>
+      </ng-template>
+    </li>
+
+    <li [ngbNavItem]="2" *ngIf="sprint">
+      <button ngbNavLink>Сотрудники</button>
+      <ng-template ngbNavContent>
+        <div class="user-settings-tab">
+          <table class="table settings-table" *ngIf="userSettings.length; else noSettings">
+            <thead>
+              <tr>
+                <th>Сотрудник</th>
+                <th>Часы</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let setting of userSettings">
+                <td>
+                  <div class="user-cell">
+                    <img [src]="setting.user.avatar_url" class="user-avatar" [alt]="setting.user.name">
+                    <span>{{ setting.user.name }}</span>
+                  </div>
+                </td>
+                <td class="hours-cell">
+                  <input type="number"
+                          class="form-control form-control-sm hours-input"
+                          [ngModel]="setting.hours_per_user"
+                          (blur)="onHoursChange(setting, $event)"
+                          (keydown.enter)="onHoursChange(setting, $event)">
+                </td>
+                <td class="actions-cell">
+                  <button class="btn btn-sm btn-link text-danger" (click)="removeUserSetting(setting.user_id)">
+                    <fa-icon [icon]="faTimes"></fa-icon>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <ng-template #noSettings>
+            <div class="text-muted p-3 text-center">Нет настроек пользователей</div>
+          </ng-template>
+
+          <div class="add-user-form d-flex gap-2 align-items-end mt-3">
+            <div class="flex-grow-1">
+              <app-assignee-select [(ngModel)]="selectedUserId"
+                                  [useSearch]="true"
+                                   [useClear]="true"
+                                   title="Выберите сотрудника"></app-assignee-select>
+            </div>
+            <button class="btn btn-primary btn-sm"
+                    [disabled]="!selectedUserId"
+                    (click)="addUserSetting()">Добавить</button>
+          </div>
+        </div>
+      </ng-template>
+    </li>
+  </ul>
+
+  <div [ngbNavOutlet]="nav" class="mt-2 tab-content"></div>
 </div>
 
 <div class="modal-footer">

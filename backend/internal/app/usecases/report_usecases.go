@@ -4,13 +4,16 @@ import (
 	"fmt"
 	"time"
 
+	"main/internal/app/queries"
 	domain "main/internal/domain/models"
 	"main/internal/domain/repo"
 )
 
 type ReportUseCases struct {
-	reportRepo repo.ReportRepo `di.inject:"ReportRepository"`
-	sprintRepo repo.SprintRepo `di.inject:"SprintRepository"`
+	reportRepo              repo.ReportRepo                 `di.inject:"ReportRepository"`
+	sprintRepo              repo.SprintRepo                 `di.inject:"SprintRepository"`
+	sprintUserSettingsRepo  repo.SprintUserSettingsRepo     `di.inject:"SprintUserSettingsRepository"`
+	sprintUserSettingsQuery queries.SprintUserSettingsQuery `di.inject:"SprintUserSettingsQuery"`
 }
 
 func (uc *ReportUseCases) GetBurndownReport(sprintId uint) (*domain.BurndownReport, error) {
@@ -78,22 +81,53 @@ func (uc *ReportUseCases) GetSprintStats(sprintId uint, assigneeId *uint, groupI
 		return nil, fmt.Errorf("sprint not found: %w", err)
 	}
 
-	var userCount uint
-	if assigneeId != nil {
-		userCount = 1
-	} else {
-		userCount, err = uc.reportRepo.GetActiveUserCountByTeam(uint(sprint.Team.Id), groupId)
-		if err != nil {
-			return nil, fmt.Errorf("failed to count team members: %w", err)
-		}
-	}
-
 	stats, err := uc.reportRepo.GetSprintStats(sprintId, assigneeId, groupId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get sprint stats: %w", err)
 	}
 
-	stats.Capacity = sprint.HoursPerUser * userCount
+	if assigneeId != nil {
+		settingsList, err := uc.sprintUserSettingsRepo.List(uc.sprintUserSettingsQuery.GetSpec(queries.SprintUserSettingsFilter{
+			SprintId: &sprintId,
+			UserId:   assigneeId,
+		}))
+		if err != nil {
+			return nil, fmt.Errorf("failed to get sprint user settings: %w", err)
+		}
+		if len(settingsList) > 0 {
+			stats.Capacity = settingsList[0].HoursPerUser
+		} else {
+			stats.Capacity = sprint.HoursPerUser
+		}
+	} else {
+		userIds, err := uc.reportRepo.GetActiveUserIdsByTeam(uint(sprint.Team.Id), groupId)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get team members: %w", err)
+		}
+
+		settingsList, err := uc.sprintUserSettingsRepo.List(uc.sprintUserSettingsQuery.GetSpec(queries.SprintUserSettingsFilter{
+			SprintId: &sprintId,
+		}))
+		if err != nil {
+			return nil, fmt.Errorf("failed to get sprint user settings: %w", err)
+		}
+
+		settingsMap := make(map[uint]uint, len(settingsList))
+		for _, s := range settingsList {
+			settingsMap[s.UserId] = s.HoursPerUser
+		}
+
+		var capacity uint
+		for _, userId := range userIds {
+			if hours, ok := settingsMap[userId]; ok {
+				capacity += hours
+			} else {
+				capacity += sprint.HoursPerUser
+			}
+		}
+		stats.Capacity = capacity
+	}
+
 	return stats, nil
 }
 

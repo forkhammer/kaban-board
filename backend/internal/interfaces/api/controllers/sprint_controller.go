@@ -13,7 +13,8 @@ import (
 )
 
 type SprintController struct {
-	sprintUC *usecases.SprintUseCases `di.inject:"SprintUseCases"`
+	sprintUC              *usecases.SprintUseCases              `di.inject:"SprintUseCases"`
+	sprintUserSettingsUC  *usecases.SprintUserSettingsUseCases   `di.inject:"SprintUserSettingsUseCases"`
 }
 
 func (c *SprintController) RegisterRoutes(router gin.IRouter) error {
@@ -28,6 +29,9 @@ func (c *SprintController) RegisterRoutes(router gin.IRouter) error {
 	privateRoutes.DELETE("/sprint/:id", c.DeleteSprint)
 	privateRoutes.POST("/sprint/:id/complete", c.CompleteSprint)
 	privateRoutes.POST("/sprint/:id/run", c.RunSprint)
+	privateRoutes.GET("/sprint/:id/user-settings", c.GetSprintUserSettings)
+	privateRoutes.POST("/sprint/:id/user-settings", c.CreateOrUpdateSprintUserSettings)
+	privateRoutes.DELETE("/sprint/:id/user-settings/:user_id", c.DeleteSprintUserSettings)
 	return nil
 }
 
@@ -168,4 +172,64 @@ func (c *SprintController) GetQuarters(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, dto.SerializeQuarters(quarters))
+}
+
+func (c *SprintController) GetSprintUserSettings(ctx *gin.Context) {
+	id, err := strconv.ParseUint(ctx.Param("id"), 10, 32)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	sprintId := uint(id)
+	settings, err := c.sprintUserSettingsUC.GetSprintUserSettings(&queries.SprintUserSettingsFilter{
+		SprintId: &sprintId,
+	})
+	if utils.HandleException(ctx, err) {
+		return
+	}
+	ctx.JSON(http.StatusOK, dto.SerializeSprintUserSettingsList(settings))
+}
+
+func (c *SprintController) CreateOrUpdateSprintUserSettings(ctx *gin.Context) {
+	id, err := strconv.ParseUint(ctx.Param("id"), 10, 32)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	var request dto.CreateSprintUserSettingsRequest
+	if err := ctx.ShouldBindJSON(&request); err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	settings, err := c.sprintUserSettingsUC.CreateOrUpdateSprintUserSettings(uint(id), &usecases.CreateSprintUserSettingsRequest{
+		UserId:       request.UserId,
+		HoursPerUser: request.HoursPerUser,
+	})
+	if utils.HandleException(ctx, err) {
+		return
+	}
+	ctx.JSON(http.StatusOK, dto.SerializeSprintUserSettings(settings))
+}
+
+func (c *SprintController) DeleteSprintUserSettings(ctx *gin.Context) {
+	id, err := strconv.ParseUint(ctx.Param("id"), 10, 32)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	userId, err := strconv.ParseUint(ctx.Param("user_id"), 10, 32)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	err = c.sprintUserSettingsUC.DeleteSprintUserSettings(uint(id), uint(userId))
+	if utils.HandleException(ctx, err) {
+		return
+	}
+	ctx.JSON(http.StatusNoContent, gin.H{})
 }

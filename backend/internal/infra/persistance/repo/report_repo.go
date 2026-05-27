@@ -216,10 +216,10 @@ func (r *ReportRepository) GetSprintStats(sprintId uint, assigneeId *uint, group
 	}, nil
 }
 
-func (r *ReportRepository) GetActiveUserCountByTeam(teamId uint, groupId *uint) (uint, error) {
-	var count uint
+func (r *ReportRepository) GetActiveUserIdsByTeam(teamId uint, groupId *uint) ([]uint, error) {
+	var ids []uint
 	query := `
-		SELECT COUNT(DISTINCT u.id)
+		SELECT DISTINCT u.id
 		FROM users u
 		JOIN user_groups ug ON u.id = ug.user_id
 		JOIN team_groups tg ON tg.group_id = ug.group_id
@@ -229,10 +229,10 @@ func (r *ReportRepository) GetActiveUserCountByTeam(teamId uint, groupId *uint) 
 		query += " AND ug.group_id = ?"
 		args = append(args, *groupId)
 	}
-	if err := r.conn.GetEngine().Raw(query, args...).Scan(&count).Error; err != nil {
-		return 0, err
+	if err := r.conn.GetEngine().Raw(query, args...).Scan(&ids).Error; err != nil {
+		return nil, err
 	}
-	return count, nil
+	return ids, nil
 }
 
 type WipRow struct {

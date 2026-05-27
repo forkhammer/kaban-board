@@ -23,6 +23,7 @@ import (
 	project_spec "main/internal/infra/persistance/spec/project"
 	release_spec "main/internal/infra/persistance/spec/release"
 	sprint_spec "main/internal/infra/persistance/spec/sprint"
+	sprint_user_settings_spec "main/internal/infra/persistance/spec/sprint_user_settings"
 	user_spec "main/internal/infra/persistance/spec/user"
 	"main/internal/infra/services"
 	"main/internal/interfaces/api/controllers"
@@ -94,6 +95,7 @@ func registerRepositories() {
 	mustRegisterBean("UserRepository", reflect.TypeFor[*repo.UserRepository]())
 	mustRegisterBean("SettingsRepository", reflect.TypeFor[*repo.SettingsRepository]())
 	mustRegisterBean("SprintRepository", reflect.TypeFor[*repo.SprintRepository]())
+	mustRegisterBean("SprintUserSettingsRepository", reflect.TypeFor[*repo.SprintUserSettingsRepository]())
 	mustRegisterBean("IssueBindingRepository", reflect.TypeFor[*repo.IssueBindingRepository]())
 	mustRegisterBean("IssueBindingHistoryRepository", reflect.TypeFor[*repo.IssueBindingHistoryRepository]())
 	mustRegisterBean("EpicRepository", reflect.TypeFor[*repo.EpicRepository]())
@@ -116,6 +118,7 @@ func registerQueries(dbType interfaces.DbType) {
 	registerUserQuery(dbType)
 	mustRegisterBean("AccountQuery", reflect.TypeFor[*account_spec.AccountQueryImpl]())
 	mustRegisterBean("SprintQuery", reflect.TypeFor[*sprint_spec.SprintQueryImpl]())
+	mustRegisterBean("SprintUserSettingsQuery", reflect.TypeFor[*sprint_user_settings_spec.SprintUserSettingsQueryImpl]())
 	registerProjectQuery(dbType)
 	mustRegisterBean("IssueBindingQuery", reflect.TypeFor[*issuebinding_spec.IssueBindingQueryImpl]())
 	mustRegisterBean("ReleaseQuery", reflect.TypeFor[*release_spec.ReleaseQueryImpl]())
@@ -191,6 +194,7 @@ func registerUseCases() {
 	mustRegisterBean("SyncUseCases", reflect.TypeFor[*usecases.SyncUseCases]())
 	mustRegisterBean("KanbanUseCases", reflect.TypeFor[*usecases.KanbanUseCases]())
 	mustRegisterBean("SprintUseCases", reflect.TypeFor[*usecases.SprintUseCases]())
+	mustRegisterBean("SprintUserSettingsUseCases", reflect.TypeFor[*usecases.SprintUserSettingsUseCases]())
 	mustRegisterBean("IssueUseCases", reflect.TypeFor[*usecases.IssueUseCases]())
 	mustRegisterBean("IssueBindingUseCases", reflect.TypeFor[*usecases.IssueBindingUseCases]())
 	mustRegisterBean("ReleaseUseCases", reflect.TypeFor[*usecases.ReleaseUseCases]())

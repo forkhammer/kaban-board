@@ -1,0 +1,48 @@
+@import "../../../../../styles/imports";
+
+.settings-table {
+  td {
+    vertical-align: middle;
+    @include fs-paragraph-xs();
+  }
+
+  th {
+    font-weight: 500;
+    @include fs-paragraph-xs();
+    text-transform: uppercase;
+    color: $gray-600;
+  }
+}
+
+.user-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  .user-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+}
+
+.hours-cell {
+  width: 120px;
+  position: relative;
+
+  .hours-input {
+    width: 100px;
+  }
+}
+
+.actions-cell {
+  width: 80px;
+  text-align: right;
+}
+
+.add-user-form {
+  .btn {
+    white-space: nowrap;
+  }
+}

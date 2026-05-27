@@ -142,7 +142,10 @@ func (u *IssueUseCases) BindIssue(id uint, sprintId uint, assigneeId uint) (*dom
 }
 
 func (u *IssueUseCases) BindIssues(ids []uint, sprintId uint, assigneeId uint) (*BindIssuesResult, error) {
-	var result BindIssuesResult
+	result := BindIssuesResult{
+		Bindings: make([]domain.IssueBinding, 0),
+		Errors:   make([]string, 0),
+	}
 	for _, id := range ids {
 		binding, err := u.BindIssue(id, sprintId, assigneeId)
 		if err != nil {

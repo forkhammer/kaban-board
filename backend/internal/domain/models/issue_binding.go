@@ -15,6 +15,7 @@ const (
 	IssueBindStatusInProgress IssueBindingStatus = "in_progress"
 	IssueBindStatusDone       IssueBindingStatus = "done"
 	IssueBindStatusBlocked    IssueBindingStatus = "blocked"
+	IssueBindStatusTesting    IssueBindingStatus = "testing"
 )
 
 type IssueBindingPriority string

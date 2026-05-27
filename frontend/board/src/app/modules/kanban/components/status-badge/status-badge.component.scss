@@ -1,4 +1,4 @@
-@import '../../../../../styles/imports';
+@import "../../../../../styles/imports";
 
 .status-badge {
   display: flex;
@@ -14,10 +14,21 @@
   margin-right: 6px;
   background-color: $gray-400;
 
-  &.backlog     { background-color: $gray-400; }
-  &.in_progress { background-color: #4A90D9; }
-  &.done        { background-color: #5CB85C; }
-  &.blocked     { background-color: #D9534F; }
+  &.backlog {
+    background-color: $gray-400;
+  }
+  &.in_progress {
+    background-color: #4a90d9;
+  }
+  &.done {
+    background-color: #5cb85c;
+  }
+  &.blocked {
+    background-color: #d9534f;
+  }
+  &.testing {
+    background-color: #9b59b6;
+  }
 }
 
 .status-label {

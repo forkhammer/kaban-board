@@ -215,6 +215,41 @@ func (uc *IssueBindingUseCases) SaveBinding(request SaveIssueBindingRequest, acc
 		if err != nil {
 			return nil, err
 		}
+
+		if binding.Assignee == nil || *request.Assignee != (uint)(binding.Assignee.Id) {
+			sprintIdVal := uint(binding.Sprint.Id)
+
+			count, err := uc.issueBindingRepo.Count(uc.issueBindingQuery.GetSpec(queries.IssueBindingFilter{
+				Issues:     []uint{uint(binding.Issue.Id)},
+				SprintId:   &sprintIdVal,
+				AssigneeId: request.Assignee,
+			}))
+			if err != nil {
+				return nil, err
+			}
+			if count > 0 {
+				return nil, domain_pkg.NewValidationError("Задача уже привязана к спринту с выбранным исполнителем")
+			}
+
+			if len(assignee.Groups) > 0 {
+				groupIds := make([]uint, len(assignee.Groups))
+				for i, g := range assignee.Groups {
+					groupIds[i] = uint(g.Id)
+				}
+				count, err = uc.issueBindingRepo.Count(uc.issueBindingQuery.GetSpec(queries.IssueBindingFilter{
+					Issues:           []uint{uint(binding.Issue.Id)},
+					SprintId:         &sprintIdVal,
+					AssigneeGroupIds: groupIds,
+				}))
+				if err != nil {
+					return nil, err
+				}
+				if count > 0 {
+					return nil, domain_pkg.NewValidationError("Задача уже привязана к спринту с пользователем из той же группы")
+				}
+			}
+		}
+
 		binding.Assignee = assignee
 	} else {
 		if binding.Assignee != nil {

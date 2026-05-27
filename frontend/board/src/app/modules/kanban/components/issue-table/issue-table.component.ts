@@ -322,17 +322,25 @@ export class IssueTableComponent {
   }
 
   onSaveIssue(issue: KanbanIssue) {
+    const idx = this.issues.findIndex((i) => i.bindingId === issue.bindingId);
+    const originalIssue = idx !== -1 ? { ...this.issues[idx] } : null;
+
     this.issueBindingService
       .save(issue)
-      .pipe(catchErrorMessages(this.toast), takeUntilDestroyed(this.destroyRef))
+      .pipe(
+        catchErrorMessages(this.toast, () => {
+          if (idx !== -1 && originalIssue) {
+            this.issues[idx] = originalIssue;
+            this.groupedIssues = this.getGroupedIssues();
+          }
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      )
       .subscribe((data) => {
-        const idx = this.issues.findIndex(
-          (i) => i.bindingId === issue.bindingId,
-        );
         if (idx !== -1) {
-          Object.assign(this.issues[idx], data);
+          this.issues[idx] = { ...this.issues[idx], ...data };
+          this.groupedIssues = this.getGroupedIssues();
         }
-        this.groupedIssues = this.getGroupedIssues();
       });
   }
 

@@ -1,7 +1,7 @@
-import { HttpErrorResponse } from '@angular/common/http';
-import { NotFoundService } from '../services/not-found.service';
-import { EMPTY, Observable } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { HttpErrorResponse } from "@angular/common/http";
+import { NotFoundService } from "../services/not-found.service";
+import { EMPTY, Observable } from "rxjs";
+import { catchError } from "rxjs/operators";
 import { ToastService } from "../services/toast.service";
 
 export type catchErrorCallback = (err: HttpErrorResponse) => void;
@@ -9,10 +9,13 @@ export type catchErrorCallback = (err: HttpErrorResponse) => void;
 /**
  * Функция pipe обработки ошибок и установки кода ошибки 404 в случае отсутствия объекта
  */
-export function catchErrorNotFound<T>(notFound: NotFoundService, callback?: catchErrorCallback) {
+export function catchErrorNotFound<T>(
+  notFound: NotFoundService,
+  callback?: catchErrorCallback,
+) {
   return (source: Observable<T>) =>
     source.pipe(
-      catchError(err => {
+      catchError((err) => {
         if (err.status === 404) {
           notFound.setNotFound();
         }
@@ -27,19 +30,21 @@ export function catchErrorNotFound<T>(notFound: NotFoundService, callback?: catc
 /**
  * Функция обработки ошибок с выводом сообщения
  */
-export function catchErrorMessages<T>(toast: ToastService, callback?: catchErrorCallback) {
+export function catchErrorMessages<T>(
+  toast: ToastService,
+  callback?: catchErrorCallback,
+) {
   return (source: Observable<T>) =>
     source.pipe(
-      catchError(err => {
-        console.log(err)
+      catchError((err) => {
         if (isConflictError(err)) {
-          toast.showMessages(['Данные были изменены другим пользователем. Обновите страницу и попробуйте снова.'], 'error');
+          toast.showMessages(getValidationFormErrors(err), "error");
         } else if (isValidationError(err)) {
-          toast.showMessages(getValidationErrors(err), 'error');
+          toast.showMessages(getValidationErrors(err), "error");
         } else if (isValidationFormError(err)) {
-          toast.showMessages(getValidationFormErrors(err), 'error');
+          toast.showMessages(getValidationFormErrors(err), "error");
         } else if (isUnknownError(err)) {
-          toast.showMessages([err.message], 'error')
+          toast.showMessages([err.message], "error");
         }
 
         if (callback) {
@@ -59,15 +64,19 @@ export function getValidationErrors(err: any): string[] {
 }
 
 export function isValidationFormError(err: any): boolean {
-  return err.error && Object.prototype.toString.call(err.error) === '[object Object]';
+  return (
+    err.error && Object.prototype.toString.call(err.error) === "[object Object]"
+  );
 }
 
 export function getValidationFormErrors(err: any): string[] {
-   return Object.keys(err.error).map(key => err.error[key].toString());
+  return Object.keys(err.error).map((key) => err.error[key].toString());
 }
 
 export function isConflictError(err: any): boolean {
-  return err.error && Object.prototype.toString.call(err.error) === '[object Object]';
+  return (
+    err.error && Object.prototype.toString.call(err.error) === "[object Object]"
+  );
 }
 
 export function isUnknownError(err: any): boolean {

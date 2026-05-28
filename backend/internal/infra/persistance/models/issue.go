@@ -5,7 +5,7 @@ import "gorm.io/gorm"
 type Issue struct {
 	gorm.Model
 	Id          uint     `gorm:"id;primarykey"`
-	ExternalId  string   `gorm:"external_id;unique"`
+	ExternalId  string   `gorm:"external_id;unique;size:255"`
 	Iid         string   `gorm:"iid"`
 	Title       string   `gorm:"title;not null"`
 	IssueType   string   `gorm:"issue_type;not null"`
@@ -16,7 +16,7 @@ type Issue struct {
 	Project     Project  `gorm:"foreignKey:ProjectId;not null"`
 	ReleaseId   *uint    `gorm:"release_id"`
 	Release     *Release `gorm:"foreignKey:ReleaseId"`
-	TaskTypeId  *string  `gorm:"task_type_id"`
+	TaskTypeId  *string  `gorm:"task_type_id;size:255"`
 	TaskType    *Label   `gorm:"foreignKey:TaskTypeId"`
 	EpicId      *uint    `gorm:"epic_id"`
 	Epic        *Epic    `gorm:"foreignKey:EpicId"`

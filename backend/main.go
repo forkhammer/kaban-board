@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"main/cmd"
 	"main/config"
+	"main/internal/bootstrap"
 	"main/internal/infra/db/interfaces"
 	"main/internal/infra/persistance/models"
 	"time"
@@ -44,7 +45,7 @@ func initSentry(cfg *config.Config) {
 
 func (app *Application) Init(cfg *config.Config) {
 	initSentry(cfg)
-	initDI()
+	bootstrap.InitDI()
 }
 
 func (app *Application) Run() {

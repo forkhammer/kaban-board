@@ -13,5 +13,5 @@ type Release struct {
 	ProjectId uint                    `gorm:"project_id;not null"`
 	Project   Project                 `gorm:"foreignKey:ProjectId;not null"`
 	WebPath   string                  `gorm:"web_path;not null;default:''"`
-	Index     datatypes.JSONSlice[int64] `gorm:"column:sort_index;index"`
+	Index     datatypes.JSONSlice[int64] `gorm:"column:sort_index"`
 }

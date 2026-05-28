@@ -1,4 +1,4 @@
-package main
+package bootstrap
 
 import (
 	"context"
@@ -50,7 +50,7 @@ func mustRegisterBeanFactory(beanID string, scope di.Scope, beanFactory func(ctx
 	}
 }
 
-func initDI() {
+func InitDI() {
 	cfg := config.GetConfig()
 
 	dbType := interfaces.DbType(cfg.DbType)

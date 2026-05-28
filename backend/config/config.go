@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/caarlos0/env"
 	"gorm.io/gorm/logger"
@@ -82,5 +83,28 @@ func (c *Config) Print() {
 }
 
 func GetConfig() *Config {
+	if os.Getenv("TEST_MODE") == "true" {
+		return NewTestConfig()
+	}
 	return NewConfig()
+}
+
+func NewTestConfig() *Config {
+	setEnvDefault("API_SECRET", "test-secret-key-for-integration-tests")
+	setEnvDefault("PORT", "0")
+	setEnvDefault("HOST", "127.0.0.1")
+	setEnvDefault("GITLAB_URL", "http://localhost")
+	setEnvDefault("GITLAB_TOKEN", "test-token")
+	setEnvDefault("GITLAB_SYNC_ENABLED", "false")
+	setEnvDefault("GITLAB_AUTH_ENABLED", "false")
+	setEnvDefault("LOG_LEVEL", "1")
+	setEnvDefault("ALLOW_ORIGINS", "*")
+	setEnvDefault("DB_TYPE", "sqlite")
+	return NewConfig()
+}
+
+func setEnvDefault(key, value string) {
+	if os.Getenv(key) == "" {
+		os.Setenv(key, value)
+	}
 }

@@ -5,7 +5,7 @@ import "gorm.io/gorm"
 type Epic struct {
 	gorm.Model
 	Id         uint    `gorm:"primaryKey"`
-	ExternalId string  `gorm:"column:external_id;uniqueIndex"`
+	ExternalId string  `gorm:"column:external_id;uniqueIndex;size:255"`
 	Iid        string  `gorm:"iid"`
 	Title      string  `gorm:"title;not null"`
 	ProjectId  uint    `gorm:"project_id;not null"`

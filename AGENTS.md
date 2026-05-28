@@ -197,9 +197,53 @@ bean := di.GetInstance("BeanName").(*YourType)
 
 ## Testing
 
-- Frontend tests use Jasmine/Karma framework
-- Run frontend tests: `cd frontend/board && npm test`
-- Backend has no test files currently - add `_test.go` files as needed
+### Backend Integration Tests
+
+Интеграционные тесты API находятся в `backend/tests/integration/` и поддерживают три базы данных:
+
+**Запуск тестов:**
+```bash
+# SQLite (in-memory, по умолчанию)
+cd backend && go test -v ./tests/integration
+
+# PostgreSQL (testcontainers)
+cd backend && DB_TYPE=postgresql go test -v ./tests/integration
+
+# MySQL (testcontainers)
+cd backend && DB_TYPE=mysql go test -v ./tests/integration
+
+# Через Makefile
+make test-integration-sqlite
+make test-integration-postgresql
+make test-integration-mysql
+```
+
+**Особенности:**
+- SQLite использует in-memory базу (`:memory:`) для скорости
+- PostgreSQL и MySQL запускаются через testcontainers-go (требуется Docker)
+- Каждый тест изолирован: `CleanupDatabase()` очищает все таблицы после каждого теста
+- Тесты используют реальный HTTP-сервер через `httptest.NewServer`
+- DI контейнер инициализируется через `bootstrap.InitDI()`
+
+**Добавление новых тестов:**
+1. Создайте файл `backend/tests/integration/your_test.go`
+2. Используйте хелперы из `testutil`: `DoJSON()`, `DoAuthJSON()`, `ParseBody()`
+3. Добавьте `t.Cleanup(func() { testutil.CleanupDatabase(t) })` в начало каждого подтеста
+4. Используйте глобальную переменную `suite.Server` для HTTP-запросов
+
+**Структура тестовой инфраструктуры:**
+- `backend/internal/testutil/suite.go` — инициализация TestSuite с БД и роутером
+- `backend/internal/testutil/containers.go` — testcontainers для PostgreSQL/MySQL
+- `backend/internal/testutil/helpers.go` — HTTP-хелперы и `CleanupDatabase()`
+- `backend/internal/bootstrap/router.go` — общая инициализация роутера
+- `backend/internal/bootstrap/di.go` — инициализация DI контейнера
+
+### Frontend Tests
+
+Frontend tests use Jasmine/Karma framework:
+```bash
+cd frontend/board && npm test
+```
 
 ## Notes
 

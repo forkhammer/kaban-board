@@ -2,8 +2,7 @@ package cmd
 
 import (
 	"main/config"
-	"main/internal/interfaces/api"
-	"main/internal/interfaces/api/middleware"
+	"main/internal/bootstrap"
 
 	sentrygin "github.com/getsentry/sentry-go/gin"
 	"github.com/gin-contrib/cors"
@@ -28,8 +27,6 @@ func NewApiApplication() *ApiApplication {
 	if cfg.SentryDSN != "" {
 		router.Use(sentrygin.New(sentrygin.Options{Repanic: true}))
 	}
-	router.Use(middleware.JwtMiddleware())
-	router.Use(middleware.OnlineTrackingMiddleware(cfg))
 
 	app := ApiApplication{
 		config: cfg,
@@ -44,7 +41,7 @@ func (a *ApiApplication) registerDeps() {
 }
 
 func (app *ApiApplication) Run() {
-	if err := app.initRouter(); err != nil {
+	if err := bootstrap.InitRouter(app.router); err != nil {
 		panic(err)
 	}
 
@@ -52,35 +49,4 @@ func (app *ApiApplication) Run() {
 	if err != nil {
 		panic(err)
 	}
-}
-
-func (app *ApiApplication) initRouter() error {
-	controllers := []api.Controller{
-		di.GetInstance("AccountController").(api.Controller),
-		di.GetInstance("GitLabAuthController").(api.Controller),
-		di.GetInstance("KanbanController").(api.Controller),
-		di.GetInstance("ReportsController").(api.Controller),
-		di.GetInstance("HealthController").(api.Controller),
-		di.GetInstance("ColumnController").(api.Controller),
-		di.GetInstance("TeamController").(api.Controller),
-		di.GetInstance("LabelController").(api.Controller),
-		di.GetInstance("UserController").(api.Controller),
-		di.GetInstance("GroupController").(api.Controller),
-		di.GetInstance("ProjectController").(api.Controller),
-		di.GetInstance("SettingsController").(api.Controller),
-		di.GetInstance("SprintController").(api.Controller),
-		di.GetInstance("IssueController").(api.Controller),
-		di.GetInstance("IssueBindingController").(api.Controller),
-		di.GetInstance("ReleaseController").(api.Controller),
-		di.GetInstance("EpicController").(api.Controller),
-		di.GetInstance("SprintWSController").(api.Controller),
-	}
-	apiGroup := app.router.Group("/api")
-	for _, controller := range controllers {
-		err := controller.RegisterRoutes(apiGroup)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
 }

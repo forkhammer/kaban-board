@@ -124,7 +124,7 @@ This is a Kanban board application for self-hosted GitLab with real-time synchro
 
 ```bash
 # Run backend in development mode
-./scripts/run_dev_backend.sh
+mise run dev-backend
 
 # Or manually from backend directory
 cd backend
@@ -139,7 +139,7 @@ go build -o board main.go
 
 ```bash
 # Run frontend in development mode
-./scripts/run_dev_frontend.sh
+mise run dev-frontend
 
 # Or manually from frontend/board directory
 cd frontend/board

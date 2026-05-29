@@ -59,7 +59,7 @@ func CleanupDatabase(t *testing.T) {
 	}
 }
 
-func DoJSON(t *testing.T, server *httptest.Server, method, path string, body any) *http.Response {
+func ReqJSON(t *testing.T, server *httptest.Server, method, path string, body any, token *string) *http.Response {
 	t.Helper()
 
 	var reqBody io.Reader
@@ -80,35 +80,9 @@ func DoJSON(t *testing.T, server *httptest.Server, method, path string, body any
 		req.Header.Set("Content-Type", "application/json")
 	}
 
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		t.Fatalf("failed to execute request: %v", err)
+	if token != nil {
+		req.Header.Set("Authorization", "Bearer "+*token)
 	}
-
-	return resp
-}
-
-func DoAuthJSON(t *testing.T, server *httptest.Server, method, path string, body any, token string) *http.Response {
-	t.Helper()
-
-	var reqBody io.Reader
-	if body != nil {
-		jsonBody, err := json.Marshal(body)
-		if err != nil {
-			t.Fatalf("failed to marshal request body: %v", err)
-		}
-		reqBody = bytes.NewBuffer(jsonBody)
-	}
-
-	req, err := http.NewRequest(method, server.URL+path, reqBody)
-	if err != nil {
-		t.Fatalf("failed to create request: %v", err)
-	}
-
-	if body != nil {
-		req.Header.Set("Content-Type", "application/json")
-	}
-	req.Header.Set("Authorization", "Bearer "+token)
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {

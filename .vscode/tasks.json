@@ -4,7 +4,7 @@
 		{
 			"label": "Run backend",
 			"type": "shell",
-			"command": "./scripts/run_dev_backend.sh",
+			"command": "mise run dev-backend",
 			"presentation": {
 				"echo": true,
 				"reveal": "always",
@@ -17,7 +17,7 @@
 		{
 			"label": "Run frontend",
 			"type": "shell",
-			"command": "./scripts/run_dev_frontend.sh",
+			"command": "mise run dev-frontend",
 			"presentation": {
 				"echo": true,
 				"reveal": "always",

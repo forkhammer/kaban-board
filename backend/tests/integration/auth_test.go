@@ -2,6 +2,7 @@ package integration
 
 import (
 	"main/internal/testutil"
+	"main/internal/testutil/factories"
 	"net/http"
 	"testing"
 )
@@ -9,13 +10,13 @@ import (
 func TestRegister(t *testing.T) {
 	t.Run("valid registration", func(t *testing.T) {
 		t.Cleanup(func() { testutil.CleanupDatabase(t) })
-		
+
 		body := map[string]string{
 			"username": "testuser",
 			"password": "testpass123",
 		}
 
-		resp := testutil.DoJSON(t, suite.Server, "POST", "/api/account/register", body)
+		resp := testutil.ReqJSON(t, suite.Server, "POST", "/api/account/register", body, nil)
 		defer resp.Body.Close()
 
 		if resp.StatusCode != http.StatusOK {
@@ -32,12 +33,12 @@ func TestRegister(t *testing.T) {
 
 	t.Run("missing username", func(t *testing.T) {
 		t.Cleanup(func() { testutil.CleanupDatabase(t) })
-		
+
 		body := map[string]string{
 			"password": "testpass123",
 		}
 
-		resp := testutil.DoJSON(t, suite.Server, "POST", "/api/account/register", body)
+		resp := testutil.ReqJSON(t, suite.Server, "POST", "/api/account/register", body, nil)
 		defer resp.Body.Close()
 
 		if resp.StatusCode != http.StatusBadRequest {
@@ -47,12 +48,12 @@ func TestRegister(t *testing.T) {
 
 	t.Run("missing password", func(t *testing.T) {
 		t.Cleanup(func() { testutil.CleanupDatabase(t) })
-		
+
 		body := map[string]string{
 			"username": "testuser2",
 		}
 
-		resp := testutil.DoJSON(t, suite.Server, "POST", "/api/account/register", body)
+		resp := testutil.ReqJSON(t, suite.Server, "POST", "/api/account/register", body, nil)
 		defer resp.Body.Close()
 
 		if resp.StatusCode != http.StatusBadRequest {
@@ -64,21 +65,18 @@ func TestRegister(t *testing.T) {
 func TestLogin(t *testing.T) {
 	t.Run("valid login", func(t *testing.T) {
 		t.Cleanup(func() { testutil.CleanupDatabase(t) })
-		
-		registerBody := map[string]string{
-			"username": "loginuser",
-			"password": "loginpass123",
-		}
-		resp := testutil.DoJSON(t, suite.Server, "POST", "/api/account/register", registerBody)
-		resp.Body.Close()
 
-		testutil.ActivateUser(t, "loginuser")
+		factory := factories.NewAccountFactory()
+		account, _ := factory.Create(map[string]any{
+			"password":  "loginpass123",
+			"is_active": true,
+		})
 
 		loginBody := map[string]string{
-			"username": "loginuser",
+			"username": account.Username,
 			"password": "loginpass123",
 		}
-		resp = testutil.DoJSON(t, suite.Server, "POST", "/api/account/login", loginBody)
+		resp := testutil.ReqJSON(t, suite.Server, "POST", "/api/account/login", loginBody, nil)
 		defer resp.Body.Close()
 
 		if resp.StatusCode != http.StatusOK {
@@ -95,19 +93,18 @@ func TestLogin(t *testing.T) {
 
 	t.Run("wrong password", func(t *testing.T) {
 		t.Cleanup(func() { testutil.CleanupDatabase(t) })
-		
-		registerBody := map[string]string{
-			"username": "wrongpassuser",
-			"password": "correctpass",
-		}
-		resp := testutil.DoJSON(t, suite.Server, "POST", "/api/account/register", registerBody)
-		resp.Body.Close()
+
+		factory := factories.NewAccountFactory()
+		account, _ := factory.Create(map[string]any{
+			"password":  "correctpass",
+			"is_active": true,
+		})
 
 		loginBody := map[string]string{
-			"username": "wrongpassuser",
+			"username": account.Username,
 			"password": "wrongpass",
 		}
-		resp = testutil.DoJSON(t, suite.Server, "POST", "/api/account/login", loginBody)
+		resp := testutil.ReqJSON(t, suite.Server, "POST", "/api/account/login", loginBody, nil)
 		defer resp.Body.Close()
 
 		if resp.StatusCode == http.StatusOK {
@@ -117,12 +114,12 @@ func TestLogin(t *testing.T) {
 
 	t.Run("nonexistent user", func(t *testing.T) {
 		t.Cleanup(func() { testutil.CleanupDatabase(t) })
-		
+
 		loginBody := map[string]string{
 			"username": "nonexistent",
 			"password": "somepass",
 		}
-		resp := testutil.DoJSON(t, suite.Server, "POST", "/api/account/login", loginBody)
+		resp := testutil.ReqJSON(t, suite.Server, "POST", "/api/account/login", loginBody, nil)
 		defer resp.Body.Close()
 
 		if resp.StatusCode == http.StatusOK {
@@ -134,28 +131,25 @@ func TestLogin(t *testing.T) {
 func TestGetActiveUser(t *testing.T) {
 	t.Run("with valid token", func(t *testing.T) {
 		t.Cleanup(func() { testutil.CleanupDatabase(t) })
-		
-		registerBody := map[string]string{
-			"username": "activeuser",
-			"password": "activepass123",
-		}
-		resp := testutil.DoJSON(t, suite.Server, "POST", "/api/account/register", registerBody)
-		resp.Body.Close()
 
-		testutil.ActivateUser(t, "activeuser")
+		factory := factories.NewAccountFactory()
+		account, _ := factory.Create(map[string]any{
+			"password":  "activepass123",
+			"is_active": true,
+		})
 
 		loginBody := map[string]string{
-			"username": "activeuser",
+			"username": account.Username,
 			"password": "activepass123",
 		}
-		resp = testutil.DoJSON(t, suite.Server, "POST", "/api/account/login", loginBody)
+		resp := testutil.ReqJSON(t, suite.Server, "POST", "/api/account/login", loginBody, nil)
 		var loginResult map[string]any
 		testutil.ParseBody(t, resp, &loginResult)
 		resp.Body.Close()
 
 		token := loginResult["token"].(string)
 
-		resp = testutil.DoAuthJSON(t, suite.Server, "GET", "/api/account/user", nil, token)
+		resp = testutil.ReqJSON(t, suite.Server, "GET", "/api/account/user", nil, &token)
 		defer resp.Body.Close()
 
 		if resp.StatusCode != http.StatusOK {
@@ -166,15 +160,15 @@ func TestGetActiveUser(t *testing.T) {
 		testutil.ParseBody(t, resp, &result)
 
 		user := result["user"].(map[string]any)
-		if user["username"] != "activeuser" {
-			t.Errorf("expected username 'activeuser', got %v", user["username"])
+		if user["username"] != account.Username {
+			t.Errorf("expected username %q, got %v", account.Username, user["username"])
 		}
 	})
 
 	t.Run("without token", func(t *testing.T) {
 		t.Cleanup(func() { testutil.CleanupDatabase(t) })
-		
-		resp := testutil.DoJSON(t, suite.Server, "GET", "/api/account/user", nil)
+
+		resp := testutil.ReqJSON(t, suite.Server, "GET", "/api/account/user", nil, nil)
 		defer resp.Body.Close()
 
 		if resp.StatusCode != http.StatusOK {
@@ -193,8 +187,8 @@ func TestGetActiveUser(t *testing.T) {
 func TestProtectedRoute(t *testing.T) {
 	t.Run("without auth returns 401", func(t *testing.T) {
 		t.Cleanup(func() { testutil.CleanupDatabase(t) })
-		
-		resp := testutil.DoJSON(t, suite.Server, "GET", "/api/account/online", nil)
+
+		resp := testutil.ReqJSON(t, suite.Server, "GET", "/api/account/online", nil, nil)
 		defer resp.Body.Close()
 
 		if resp.StatusCode != http.StatusUnauthorized {

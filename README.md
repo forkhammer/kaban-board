@@ -48,9 +48,9 @@ docker-compose -f docker-compose.mysql.yml up -d
 Running in local environment
 
 ```
-./scripts/run_dev_backend.sh
+mise run dev-backend
 
-./scripts/run_dev_frontend.sh
+mise run dev-frontend
 ```
 
 

@@ -3,3 +3,27 @@ go = "1.26.0"
 golangci-lint = "v2.10.1"
 node = "22"
 python = "3.13.12"
+
+[env]
+_.file = ".env"
+
+[tasks.dev-backend]
+run = """
+cd backend
+go run main.go
+"""
+
+[tasks.dev-frontend]
+run = """
+cd frontend/board
+npm run start
+"""
+
+[tasks.test-integration]
+run = "cd backend && DB_TYPE=sqlite LOG_LEVEL=1 go test -v -count=1 -timeout 300s ./tests/integration/..."
+
+[tasks.test-integration-postgresql]
+run = "cd backend && DB_TYPE=postgresql LOG_LEVEL=1 go test -v -count=1 -timeout 300s ./tests/integration/..."
+
+[tasks.test-integration-mysql]
+run = "cd backend && DB_TYPE=mysql LOG_LEVEL=1 go test -v -count=1 -timeout 300s ./tests/integration/..."

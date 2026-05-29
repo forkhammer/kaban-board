@@ -15,7 +15,7 @@ This is a Kanban board application for self-hosted GitLab with real-time synchro
 
 ```bash
 # Run backend in development mode
-./scripts/run_dev_backend.sh
+mise run dev-backend
 
 # Or manually from backend directory
 cd backend
@@ -30,7 +30,7 @@ go build -o board main.go
 
 ```bash
 # Run frontend in development mode
-./scripts/run_dev_frontend.sh
+mise run dev-frontend
 
 # Or manually from frontend/board directory
 cd frontend/board
@@ -212,10 +212,10 @@ cd backend && DB_TYPE=postgresql go test -v ./tests/integration
 # MySQL (testcontainers)
 cd backend && DB_TYPE=mysql go test -v ./tests/integration
 
-# Через Makefile
-make test-integration-sqlite
-make test-integration-postgresql
-make test-integration-mysql
+# Через mise
+mise run test-integration
+mise run test-integration-postgresql
+mise run test-integration-mysql
 ```
 
 **Особенности:**
@@ -227,7 +227,7 @@ make test-integration-mysql
 
 **Добавление новых тестов:**
 1. Создайте файл `backend/tests/integration/your_test.go`
-2. Используйте хелперы из `testutil`: `DoJSON()`, `DoAuthJSON()`, `ParseBody()`
+2. Используйте хелперы из `testutil`: `ReqJSON()`, `ParseBody()`
 3. Добавьте `t.Cleanup(func() { testutil.CleanupDatabase(t) })` в начало каждого подтеста
 4. Используйте глобальную переменную `suite.Server` для HTTP-запросов
 

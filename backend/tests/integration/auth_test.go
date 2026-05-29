@@ -11,16 +11,13 @@ import (
 )
 
 func TestRegister(t *testing.T) {
-	t.Run("valid registration", func(t *testing.T) {
-		t.Cleanup(func() { testutil.CleanupDatabase(t) })
-
+	testutil.Run(t, "valid registration", func(t *testing.T) {
 		body := map[string]string{
 			"username": "testuser",
 			"password": "testpass123",
 		}
 
 		resp := testutil.ReqJSON(t, suite.Server, "POST", "/api/account/register", body, nil)
-		defer resp.Body.Close()
 
 		require.Equal(t, http.StatusOK, resp.StatusCode)
 
@@ -30,37 +27,29 @@ func TestRegister(t *testing.T) {
 		assert.Equal(t, "testuser", result["username"])
 	})
 
-	t.Run("missing username", func(t *testing.T) {
-		t.Cleanup(func() { testutil.CleanupDatabase(t) })
-
+	testutil.Run(t, "missing username", func(t *testing.T) {
 		body := map[string]string{
 			"password": "testpass123",
 		}
 
 		resp := testutil.ReqJSON(t, suite.Server, "POST", "/api/account/register", body, nil)
-		defer resp.Body.Close()
 
 		require.Equal(t, http.StatusBadRequest, resp.StatusCode)
 	})
 
-	t.Run("missing password", func(t *testing.T) {
-		t.Cleanup(func() { testutil.CleanupDatabase(t) })
-
+	testutil.Run(t, "missing password", func(t *testing.T) {
 		body := map[string]string{
 			"username": "testuser2",
 		}
 
 		resp := testutil.ReqJSON(t, suite.Server, "POST", "/api/account/register", body, nil)
-		defer resp.Body.Close()
 
 		require.Equal(t, http.StatusBadRequest, resp.StatusCode)
 	})
 }
 
 func TestLogin(t *testing.T) {
-	t.Run("valid login", func(t *testing.T) {
-		t.Cleanup(func() { testutil.CleanupDatabase(t) })
-
+	testutil.Run(t, "valid login", func(t *testing.T) {
 		factory := factories.NewAccountFactory()
 		account, _ := factory.Create(map[string]any{
 			"password":  "loginpass123",
@@ -72,7 +61,6 @@ func TestLogin(t *testing.T) {
 			"password": "loginpass123",
 		}
 		resp := testutil.ReqJSON(t, suite.Server, "POST", "/api/account/login", loginBody, nil)
-		defer resp.Body.Close()
 
 		require.Equal(t, http.StatusOK, resp.StatusCode)
 
@@ -82,9 +70,7 @@ func TestLogin(t *testing.T) {
 		require.NotEmpty(t, result["token"])
 	})
 
-	t.Run("wrong password", func(t *testing.T) {
-		t.Cleanup(func() { testutil.CleanupDatabase(t) })
-
+	testutil.Run(t, "wrong password", func(t *testing.T) {
 		factory := factories.NewAccountFactory()
 		account, _ := factory.Create(map[string]any{
 			"password":  "correctpass",
@@ -96,29 +82,23 @@ func TestLogin(t *testing.T) {
 			"password": "wrongpass",
 		}
 		resp := testutil.ReqJSON(t, suite.Server, "POST", "/api/account/login", loginBody, nil)
-		defer resp.Body.Close()
 
 		require.NotEqual(t, http.StatusOK, resp.StatusCode)
 	})
 
-	t.Run("nonexistent user", func(t *testing.T) {
-		t.Cleanup(func() { testutil.CleanupDatabase(t) })
-
+	testutil.Run(t, "nonexistent user", func(t *testing.T) {
 		loginBody := map[string]string{
 			"username": "nonexistent",
 			"password": "somepass",
 		}
 		resp := testutil.ReqJSON(t, suite.Server, "POST", "/api/account/login", loginBody, nil)
-		defer resp.Body.Close()
 
 		require.NotEqual(t, http.StatusOK, resp.StatusCode)
 	})
 }
 
 func TestGetActiveUser(t *testing.T) {
-	t.Run("with valid token", func(t *testing.T) {
-		t.Cleanup(func() { testutil.CleanupDatabase(t) })
-
+	testutil.Run(t, "with valid token", func(t *testing.T) {
 		factory := factories.NewAccountFactory()
 		account, _ := factory.Create(map[string]any{
 			"password":  "activepass123",
@@ -132,12 +112,10 @@ func TestGetActiveUser(t *testing.T) {
 		resp := testutil.ReqJSON(t, suite.Server, "POST", "/api/account/login", loginBody, nil)
 		var loginResult map[string]any
 		testutil.ParseBody(t, resp, &loginResult)
-		resp.Body.Close()
 
 		token := loginResult["token"].(string)
 
 		resp = testutil.ReqJSON(t, suite.Server, "GET", "/api/account/user", nil, &token)
-		defer resp.Body.Close()
 
 		require.Equal(t, http.StatusOK, resp.StatusCode)
 
@@ -148,11 +126,8 @@ func TestGetActiveUser(t *testing.T) {
 		assert.Equal(t, account.Username, user["username"])
 	})
 
-	t.Run("without token", func(t *testing.T) {
-		t.Cleanup(func() { testutil.CleanupDatabase(t) })
-
+	testutil.Run(t, "without token", func(t *testing.T) {
 		resp := testutil.ReqJSON(t, suite.Server, "GET", "/api/account/user", nil, nil)
-		defer resp.Body.Close()
 
 		require.Equal(t, http.StatusOK, resp.StatusCode)
 
@@ -164,11 +139,8 @@ func TestGetActiveUser(t *testing.T) {
 }
 
 func TestProtectedRoute(t *testing.T) {
-	t.Run("without auth returns 401", func(t *testing.T) {
-		t.Cleanup(func() { testutil.CleanupDatabase(t) })
-
+	testutil.Run(t, "without auth returns 401", func(t *testing.T) {
 		resp := testutil.ReqJSON(t, suite.Server, "GET", "/api/account/online", nil, nil)
-		defer resp.Body.Close()
 
 		require.Equal(t, http.StatusUnauthorized, resp.StatusCode)
 	})

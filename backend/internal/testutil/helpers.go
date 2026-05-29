@@ -59,6 +59,14 @@ func CleanupDatabase(t *testing.T) {
 	}
 }
 
+func Run(t *testing.T, name string, fn func(t *testing.T)) bool {
+	t.Helper()
+	return t.Run(name, func(t *testing.T) {
+		t.Cleanup(func() { CleanupDatabase(t) })
+		fn(t)
+	})
+}
+
 func ReqJSON(t *testing.T, server *httptest.Server, method, path string, body any, token *string) *http.Response {
 	t.Helper()
 
@@ -89,13 +97,13 @@ func ReqJSON(t *testing.T, server *httptest.Server, method, path string, body an
 		t.Fatalf("failed to execute request: %v", err)
 	}
 
+	t.Cleanup(func() { resp.Body.Close() })
 	return resp
 }
 
 func ParseBody(t *testing.T, resp *http.Response, result any) {
 	t.Helper()
 
-	defer resp.Body.Close()
 	bodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		t.Fatalf("failed to read response body: %v", err)

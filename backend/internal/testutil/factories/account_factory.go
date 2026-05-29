@@ -63,6 +63,13 @@ func (f *AccountFactory) Build(data map[string]any) *models.Account {
 		account.AvatarURL = gofakeit.URL()
 	}
 
+	if val, ok := data["gitlab_id"].(*models.UserId); ok {
+		account.GitlabID = val
+	} else if val, ok := data["gitlab_id"].(uint); ok {
+		id := models.UserId(val)
+		account.GitlabID = &id
+	}
+
 	salt, _ := f.hasher.GenerateSalt()
 	account.JwtSalt = salt
 	account.AuthProvider = models.AuthProviderPassword

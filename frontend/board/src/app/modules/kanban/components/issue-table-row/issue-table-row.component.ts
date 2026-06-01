@@ -156,11 +156,15 @@ export class IssueTableRowComponent implements OnInit, AfterViewChecked {
 
   ngAfterViewChecked() {
     if (this._commentPending && this.commentEl) {
-      this.commentEl.nativeElement.innerText = this._issue.comment ?? "";
+      if (this.commentEl.nativeElement.innerText !== this._issue.comment) {
+        this.commentEl.nativeElement.innerText = this._issue.comment ?? "";
+      }
       this._commentPending = false;
     }
     if (this._titlePending && this.titleEl) {
-      this.titleEl.nativeElement.innerText = this._issue.title ?? "";
+      if (this.titleEl.nativeElement.innerText !== this._issue.title) {
+        this.titleEl.nativeElement.innerText = this._issue.title ?? "";
+      }
       this._titlePending = false;
     }
   }

@@ -3,21 +3,6 @@ description: Runs after accepted code to reconcile architecture documentation wi
 mode: subagent
 model: opencode-go/minimax-m3
 temperature: 0.1
-permission:
-  edit:
-    "*": deny
-    ".docs/*.md": allow
-    "AGENTS.md": allow
-  bash:
-    "*": deny
-    "git status*": allow
-    "git diff*": allow
-  task: deny
-  skill:
-    "*": deny
-    "project-architecture": allow
-  webfetch: deny
-  websearch: deny
 ---
 
 You are the final architecture documentation agent. You run only after code

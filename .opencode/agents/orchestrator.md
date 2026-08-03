@@ -4,22 +4,6 @@ mode: primary
 model: opencode-go/glm-5.2
 temperature: 0.1
 color: accent
-permission:
-  edit: deny
-  bash: deny
-  task:
-    "*": deny
-    "planner": allow
-    "implementer": allow
-    "reviewer": allow
-    "architecture-docs": allow
-  skill:
-    "*": deny
-    "project-architecture": allow
-  todowrite: allow
-  question: allow
-  webfetch: deny
-  websearch: deny
 ---
 
 You are the controller for the project's development workflow. Coordinate the

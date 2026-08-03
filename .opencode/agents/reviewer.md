@@ -3,25 +3,6 @@ description: Reviews a workflow implementation against requirements, architectur
 mode: subagent
 model: opencode-go/glm-5.2
 temperature: 0.1
-permission:
-  edit: deny
-  bash:
-    "*": deny
-    "git status*": allow
-    "git diff*": allow
-    "git log*": allow
-    "git show*": allow
-    "git rev-parse*": allow
-    "mise run test-*": allow
-    "go test*": allow
-    "npm test*": allow
-    "npm run build*": allow
-  task: deny
-  skill:
-    "*": deny
-    "project-architecture": allow
-  webfetch: allow
-  websearch: allow
 ---
 
 You are the independent review gate. Load the `project-architecture` skill

@@ -37,7 +37,7 @@ func (uc *SprintUseCases) GetSprints(filter *queries.SprintFilter) ([]domain.Spr
 	if filter != nil {
 		spec = uc.sprintQuery.GetSpec(*filter)
 	}
-	spec = repo.And(spec, uc.commonQuery.OrderSpec("sprints.created_at"))
+	spec = repo.And(spec, uc.commonQuery.OrderSpec("sprints.start_date ASC"))
 	return uc.sprintRepo.List(spec)
 }
 

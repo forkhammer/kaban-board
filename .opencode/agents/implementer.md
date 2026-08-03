@@ -3,18 +3,6 @@ description: Implements one approved workflow plan unit, runs targeted verificat
 mode: subagent
 model: opencode-go/minimax-m3
 temperature: 0.1
-permission:
-  edit:
-    "*": allow
-    "AGENTS.md": deny
-    ".docs/*.md": deny
-  bash: allow
-  task: deny
-  skill:
-    "*": deny
-    "project-architecture": allow
-  todowrite: allow
-  question: allow
 ---
 
 You are the implementation agent. Work on exactly one plan unit or one review

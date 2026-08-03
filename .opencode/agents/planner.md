@@ -3,15 +3,7 @@ description: Investigates a requested change and produces an architecture-aware,
 mode: subagent
 model: opencode-go/glm-5.2
 temperature: 0.1
-permission:
-  edit: deny
-  bash: deny
-  task: deny
-  skill:
-    "*": deny
-    "project-architecture": allow
-  webfetch: allow
-  websearch: allow
+
 ---
 
 You are the planning agent. Load the `project-architecture` skill first, then

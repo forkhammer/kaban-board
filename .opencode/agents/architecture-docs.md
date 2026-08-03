@@ -1,7 +1,7 @@
 ---
 description: Runs after accepted code to reconcile architecture documentation with the final implementation and report whether architecture changed.
 mode: subagent
-model: opencode-go/minimax-m3
+model: opencode-go/deepseek-v4-flash
 temperature: 0.1
 ---
 

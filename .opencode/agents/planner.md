@@ -1,7 +1,7 @@
 ---
 description: Investigates a requested change and produces an architecture-aware, testable implementation plan without editing files.
 mode: subagent
-model: opencode-go/glm-5.2
+model: opencode-go/deepseek-v4-pro
 temperature: 0.1
 
 ---

@@ -40,7 +40,7 @@
 
     <div class="scroll">
       <div ngbDropdownItem
-        *ngFor='let item of valuesModel; trackBy: trackByItem'
+        *ngFor='let item of activeSprints; trackBy: trackByItem'
         [class.active]='item.id === value.value'
         (click)='select($event, item)'>
         <div class="item">
@@ -62,6 +62,42 @@
           <div class="item-title">{{item.represent}}</div>
         </div>
       </div>
+
+      <div class="past-toggle"
+        *ngIf='pastSprints.length > 0'
+        (click)='togglePastSprints($event)'>
+        <span class="past-toggle-label">Прошедшие</span>
+        <span class="past-toggle-count">({{ pastSprints.length }})</span>
+        <span class="past-toggle-icon">
+          <fa-icon [icon]="showPastSprints ? faChevronUp : faChevronDown"></fa-icon>
+        </span>
+      </div>
+
+      <ng-container *ngIf='showPastSprints'>
+        <div ngbDropdownItem
+          *ngFor='let item of pastSprints; trackBy: trackByItem'
+          [class.active]='item.id === value.value'
+          (click)='select($event, item)'>
+          <div class="item">
+            <div class="item-icon">
+              <div [ngSwitch]="item.status">
+                <div *ngSwitchCase="SprintStatus.WAITING">
+                  <fa-icon [icon]="faClock" class="text-body"></fa-icon>
+                </div>
+
+                <div *ngSwitchCase="SprintStatus.RUNNING">
+                  <fa-icon [icon]="faPlay" class="text-success"></fa-icon>
+                </div>
+
+                <div *ngSwitchCase="SprintStatus.COMPLETED">
+                  <fa-icon [icon]="faStop" class="text-secondary"></fa-icon>
+                </div>
+              </div>
+            </div>
+            <div class="item-title">{{item.represent}}</div>
+          </div>
+        </div>
+      </ng-container>
     </div>
 
     <div class="empty" *ngIf='valuesModel?.length === 0 && !useClear'>

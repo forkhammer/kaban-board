@@ -4,13 +4,12 @@ import { BehaviorSubject, catchError, combineLatestWith, debounceTime, distinctU
 import { Sprint, SprintStatus } from '../../models/sprint';
 import { ToastService } from 'src/app/modules/core/services/toast.service';
 import { SprintService } from '../../services/sprint.service';
-import { faTimes, faRunning } from '@fortawesome/free-solid-svg-icons';
+import { faTimes, faRunning, faChevronDown, faChevronUp, faPlay, faStop } from '@fortawesome/free-solid-svg-icons';
 import { Pagination } from 'src/app/modules/core/models/base';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/module.d-CnjH8Dlt';
 import { catchErrorMessages } from 'src/app/modules/core/tools/catch-error';
 import {faClock} from '@fortawesome/free-regular-svg-icons';
-import {faPlay, faStop} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-sprint-select',
@@ -42,6 +41,8 @@ export class SprintSelectComponent implements ControlValueAccessor, OnInit {
   faClock = faClock
   faPlay = faPlay
   faStop = faStop
+  faChevronDown = faChevronDown
+  faChevronUp = faChevronUp
 
   value = new BehaviorSubject<number | null>(null);
   valueModel$ = new BehaviorSubject<Sprint | null>(null);
@@ -53,6 +54,38 @@ export class SprintSelectComponent implements ControlValueAccessor, OnInit {
   searchForm: FormGroup;
   protected errorValuesMessage: string | null = null;
   initialLoad$ = new BehaviorSubject<boolean>(false);
+  showPastSprints = false
+
+  private static readonly PAST_CUTOFF_MS = 30 * 24 * 60 * 60 * 1000
+
+  isPastSprint(sprint: Sprint): boolean {
+    if (!sprint || !sprint.end_date) {
+      return false
+    }
+
+    if (sprint.status === SprintStatus.RUNNING || sprint.status === SprintStatus.WAITING) {
+      return false
+    }
+
+    const endDate = new Date(sprint.end_date).getTime()
+    const cutoff = Date.now() - SprintSelectComponent.PAST_CUTOFF_MS
+    return endDate < cutoff
+  }
+
+  get activeSprints(): Sprint[] {
+    return this.valuesModel.filter(s => !this.isPastSprint(s))
+  }
+
+  get pastSprints(): Sprint[] {
+    return this.valuesModel.filter(s => this.isPastSprint(s))
+  }
+
+  togglePastSprints(e: MouseEvent) {
+    this.showPastSprints = !this.showPastSprints
+    e.stopPropagation()
+    e.preventDefault()
+    return false
+  }
 
   get selectValue(): Sprint | null {
     return null;

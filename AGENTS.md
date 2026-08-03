@@ -1,326 +1,37 @@
 # AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-
-## Project Overview
-
-This is a Kanban board application for self-hosted GitLab with real-time synchronization. The project consists of:
-- **Backend**: Go-based REST API (Gin framework) with background worker for GitLab sync
-- **Frontend**: Angular 19 single-page application
-- **Database**: Supports SQLite, PostgreSQL, or MySQL via GORM
-
-## Development Commands
-
-### Backend (Go)
-
-```bash
-# Run backend in development mode
-mise run dev-backend
-
-# Or manually from backend directory
-cd backend
-go run main.go
-
-# Build backend
-cd backend
-go build -o board main.go
-```
-
-### Frontend (Angular)
-
-```bash
-# Run frontend in development mode
-mise run dev-frontend
-
-# Or manually from frontend/board directory
-cd frontend/board
-npm install
-npm run start        # Dev server on http://localhost:4200
-npm run build        # Production build
-npm run watch        # Build with watch mode
-npm test            # Run Jasmine/Karma tests
-```
-
-### Docker
-
-```bash
-# Run with SQLite (default)
-docker-compose up -d
-
-# Run with PostgreSQL
-docker-compose -f docker-compose.postgresql.yml up -d
-
-# Run with MySQL
-docker-compose -f docker-compose.mysql.yml up -d
-```
-
-## Environment Configuration
-
-Copy `.env.example` to `.env` and configure:
-
-**Required settings:**
-- `GITLAB_URL`: Your GitLab instance URL (e.g., https://gitlab.yourdomain.com)
-- `GITLAB_TOKEN`: GitLab private token for API access
-- `API_SECRET`: Secret key for JWT token generation
-
-**Key optional settings:**
-- `DB_TYPE`: Database type (sqlite, postgresql, mysql)
-- `GITLAB_SYNC_ENABLED`: Enable/disable background sync (default: true)
-- `GITLAB_SYNC_PERIOD_MIN`: Sync interval in minutes (default: 10)
-- `ALLOW_ORIGINS`: CORS origins (comma-separated)
-
-## Architecture
-
-### Backend Architecture (Clean Architecture Pattern)
-
-The backend follows a layered architecture with dependency injection using `goioc/di`:
-
-**Layers:**
-1. **`backend/internal/interfaces/api`**: HTTP layer (Controllers, DTOs, Middleware)
-   - Controllers handle HTTP requests and call use cases
-   - JWT middleware for authentication
-   - CORS configuration
-
-2. **`backend/internal/app`**: Application layer (Use Cases, Services)
-   - Business logic orchestration
-   - Use cases coordinate between domain and infrastructure
-
-3. **`backend/internal/domain`**: Domain layer (Models, Business Rules)
-   - Core domain entities and business logic
-
-4. **`backend/internal/infra`**: Infrastructure layer
-   - `backend/internal/infra/db/`: Database connection management (SQLite, PostgreSQL, MySQL)
-   - `backend/internal/infra/persistance/`: Repositories and database models (GORM)
-   - `backend/internal/infra/persistance/spec/`: Query specifications for complex queries
-   - `backend/internal/infra/gitlab/`: GitLab API client integration
-   - `backend/internal/infra/cache/`: In-memory caching layer
-   - `backend/internal/infra/services/`: Infrastructure services (JWT, Password hashing)
-
-5. **`backend/cmd/`**: Application entry points
-   - `backend/cmd/api.go`: REST API server (Gin)
-   - `backend/cmd/worker.go`: Background worker for GitLab synchronization
-
-**Key patterns:**
-- Dependency injection configured in `backend/main.go`
-- Repository pattern for data access
-- Specification pattern for complex queries (see `backend/internal/infra/persistance/spec/`)
-- Use cases encapsulate business operations
-
-### Frontend Architecture (Angular)
-
-**Module structure:**
-- **`frontend/board/src/app/modules/core`**: Core shared services and components
-  - `frontend/board/src/app/modules/core/services/`: Base services (JWT, Authentication, HTTP base, Toast notifications)
-  - `frontend/board/src/app/modules/core/interceptors/`: HTTP interceptors for auth headers
-  - `frontend/board/src/app/modules/core/models/`: Core domain models
-
-- **`frontend/board/src/app/modules/kanban`**: Main kanban board feature module
-  - `frontend/board/src/app/modules/kanban/components/`: 28+ kanban-specific components (cards, columns, modals, lists)
-  - `frontend/board/src/app/modules/kanban/services/`: Domain services (Epic, Issue, Sprint, Team, User, Label, etc.)
-  - `frontend/board/src/app/modules/kanban/pipes/`: Custom Angular pipes
-  - `frontend/board/src/app/modules/kanban/models/`: Kanban domain models
-
-- **`frontend/board/src/app/modules/ui`**: Reusable UI components (buttons, inputs, modals)
-- **`frontend/board/src/app/modules/bootstrap-ui`**: Bootstrap-based UI wrapper components
-
-**Key services:**
-- `BaseService`: Generic HTTP service with caching (`CollectionCache`)
-- `AccountService`: Authentication and user session management
-- `JwtService`: JWT token handling and storage
-- Domain-specific services extend `BaseService` for CRUD operations
-
-**Routing:**
-- `/` - Main kanban board
-- `/auth` - Login page
-- `/sprints` - Sprint management
-- `/reports` - Reports view
-
-### Data Synchronization
-
-The backend runs a background worker (`backend/cmd/worker.go`) that:
-- Syncs with GitLab API on a configurable interval
-- Updates local database with GitLab issues, users, projects, labels, etc.
-- Operates independently from the API server
-- Uses `SyncUseCases` to orchestrate the sync process
-
-### Database Schema
-
-Key entities:
-- **Issue**: GitLab issues with kanban metadata
-- **Epic**: Issue epics for grouping
-- **Sprint**: Time-boxed iterations
-- **Column**: Kanban board columns
-- **Label**: GitLab labels
-- **User**: GitLab users
-- **Team**: User teams
-- **Project**: GitLab projects
-- **Group**: GitLab groups
-- **Release**: GitLab releases
-- **IssueBinding**: Relationships between issues and sprints/epics
-
-All models are in `backend/internal/infra/persistance/models/`
-
-## Making Changes
-
-### Adding a New Backend Feature
-
-1. Define the domain model in `backend/internal/domain/models/`
-2. Create database model in `backend/internal/infra/persistance/models/`
-3. Create repository in `backend/internal/infra/persistance/repo/`
-4. Add query specification in `backend/internal/infra/persistance/spec/` if complex queries needed
-5. Create use case in `backend/internal/app/usecases/`
-6. Create controller and DTOs in `backend/internal/interfaces/api/`
-7. Register all beans in `backend/main.go` (repositories, queries, use cases, controllers)
-8. Add controller to router initialization in `backend/cmd/api.go`
-
-### Adding a New Frontend Feature
-
-1. Create service in appropriate module's `services/` directory (e.g., `frontend/board/src/app/modules/<module>/services/`)
-2. Create models in module's `models/` directory (e.g., `frontend/board/src/app/modules/<module>/models/`)
-3. Create components using Angular CLI or manually
-4. Update module imports in the feature module file (e.g., `frontend/board/src/app/modules/kanban/kanban.module.ts`)
-5. Add routes in `frontend/board/src/app/app-routing.module.ts` if needed
-
-### Dependency Injection
-
-The backend uses `goioc/di`. Register beans in `main.go`:
-```go
-di.RegisterBean("BeanName", reflect.TypeOf((*YourType)(nil)))
-di.RegisterBeanInstance("instanceName", instance)
-di.RegisterBeanFactory("factoryName", di.Singleton, factoryFunc)
-```
-
-Access beans:
-```go
-bean := di.GetInstance("BeanName").(*YourType)
-```
-
-## Testing
-
-### Backend Integration Tests
-
-Интеграционные тесты API находятся в `backend/tests/integration/` и поддерживают три базы данных:
-
-**Запуск тестов:**
-```bash
-# SQLite (in-memory, по умолчанию)
-cd backend && go test -v ./tests/integration
-
-# PostgreSQL (testcontainers)
-cd backend && DB_TYPE=postgresql go test -v ./tests/integration
-
-# MySQL (testcontainers)
-cd backend && DB_TYPE=mysql go test -v ./tests/integration
-
-# Через mise
-mise run test-integration
-mise run test-integration-postgresql
-mise run test-integration-mysql
-```
-
-**Особенности:**
-- SQLite использует in-memory базу (`:memory:`) для скорости
-- PostgreSQL и MySQL запускаются через testcontainers-go (требуется Docker)
-- Каждый тест изолирован: `CleanupDatabase()` очищает все таблицы после каждого теста
-- Тесты используют реальный HTTP-сервер через `httptest.NewServer`
-- DI контейнер инициализируется через `bootstrap.InitDI()`
-
-**Добавление новых тестов:**
-1. Создайте файл `backend/tests/integration/your_test.go`
-2. Используйте хелперы из `testutil`: `ReqJSON()`, `ParseBody()`
-3. Добавьте `t.Cleanup(func() { testutil.CleanupDatabase(t) })` в начало каждого подтеста
-4. Используйте глобальную переменную `suite.Server` для HTTP-запросов
-
-**Структура тестовой инфраструктуры:**
-- `backend/internal/testutil/suite.go` — инициализация TestSuite с БД и роутером
-- `backend/internal/testutil/containers.go` — testcontainers для PostgreSQL/MySQL
-- `backend/internal/testutil/helpers.go` — HTTP-хелперы и `CleanupDatabase()`
-- `backend/internal/bootstrap/router.go` — общая инициализация роутера
-- `backend/internal/bootstrap/di.go` — инициализация DI контейнера
-
-### Frontend Tests
-
-Frontend tests use Jasmine/Karma framework:
-```bash
-cd frontend/board && npm test
-```
-
-## Notes
-
-- The backend uses GORM for ORM with auto-migration
-- Frontend environment configuration is injected at runtime via `window['env']`
-- The application supports dark/light theme switching
-- Built-in admin panel for configuration management
-- Fast loading optimized with memory caching (configurable TTL)
-- Use `any` instead `interface{}` in backend
-
-## Dark Theme Support
-
-The app uses Bootstrap's `data-bs-theme` attribute for dark mode. Theme state is managed by `ThemeServiceService` which stores preference in localStorage (`dark-mode` key).
-
-### Adding Dark Theme to a Component
-
-**SCSS (preferred approach):**
-```scss
-// Use :host-context([data-bs-theme="dark"]) at top level or with & for nested elements
-:host {
-  display: block;
-
-  :host-context([data-bs-theme="dark"]) {
-    background: $gray-900;
-  }
-}
-
-// For nested elements, use & properly
-.form {
-  background: $gray-100;
-
-  :host-context([data-bs-theme="dark"]) & {
-    background: $gray-850;
-  }
-}
-```
-
-**Common mistakes to avoid:**
-- ❌ Do NOT nest `:host-context` inside a selector that tries to reference itself:
-  ```scss
-  // WRONG - causes infinite nesting or incorrect CSS
-  .form {
-    :host-context([data-bs-theme="dark"]) {
-      .form { background: $gray-850; } // don't do this
-    }
-  }
-  ```
-- ✅ DO use `&` to reference the parent selector:
-  ```scss
-  // CORRECT
-  .form {
-    :host-context([data-bs-theme="dark"]) & {
-      background: $gray-850;
-    }
-  }
-  ```
-
-**Template approach (use sparingly):**
-Only use template bindings when you need runtime reactivity beyond CSS. Inject `ThemeServiceService` and subscribe to `theme$`:
-```typescript
-themeService = inject(ThemeServiceService);
-theme: string = 'light';
-
-constructor() {
-  this.themeService.theme$.subscribe(theme => {
-    this.theme = theme;
-  });
-}
-```
-
-In template, prefer `[ngClass]` over multiple `[class.*]` bindings:
-```html
-<!-- Good -->
-<div [ngClass]="{'bg-dark text-light': theme === 'dark'}"></div>
-
-<!-- Avoid - redundant -->
-<div [class.bg-dark]="theme === 'dark'" [ngClass]="{'bg-dark': theme === 'dark'}"></div>
-```
-
-For most cases, SCSS alone is sufficient - use the template approach only when dynamic values depend on component state.
+## Обязательные принципы
+
+- **Не сохраняйте обратную совместимость.** Удаляйте устаревшие пути вместо добавления слоёв совместимости, fallback-механизмов или миграций.
+- **Выбирайте самую простую реализацию**, которая полностью удовлетворяет текущим требованиям. Избегайте преждевременных абстракций, избыточной конфигурации и лишних уровней косвенности.
+- **Развивайте систему постепенно, слоями.** Сначала доводите минимальную версию до рабочего состояния от начала до конца, затем добавляйте возможности поверх неё. Не жертвуйте рабочим решением ради незавершённой сложности.
+- **Сохраняйте модульность компонентов** и чёткое разделение ответственности.
+- **Предпочитайте проверенные и хорошо поддерживаемые библиотеки**, если они уменьшают общую сложность или повышают надёжность. Не реализуйте распространённую функциональность заново без веской причины.
+- **Максимально используйте существующие зависимости** до написания собственной реализации или добавления пакета. Сначала проверяйте документацию и типы библиотеки.
+- **Принимайте архитектурные решения на долгий срок.** Не добавляйте заведомо временные решения, которые потребуется заменить.
+
+## Документация
+
+- [Архитектура системы](.docs/architecture.md)
+- [Архитектура backend](.docs/arch-backend.md)
+- [Архитектура frontend](.docs/arch-frontend.md)
+- [Правила кода и слоёв](.docs/rules.md)
+
+При изменении границ модулей, потоков данных, wiring, инфраструктуры или обязательных команд обновляйте соответствующий документ в том же изменении.
+
+## Рабочие команды
+
+- Версии инструментов задаёт `mise.toml`: Go 1.26, Node 22, `golangci-lint` 2.10.1.
+- Backend: `mise run dev-backend`; frontend: `mise run dev-frontend`. Эти задачи загружают корневой `.env` через mise.
+- Backend integration, SQLite: `mise run test-integration`.
+- Backend integration, PostgreSQL/MySQL: `mise run test-integration-postgresql` / `mise run test-integration-mysql`; обе команды требуют Docker для Testcontainers.
+- Один backend-тест: `cd backend && DB_TYPE=sqlite LOG_LEVEL=1 go test -v -count=1 -timeout 300s ./tests/integration/... -run '^TestGetUsers$'`.
+- Frontend: из `frontend/board` запускайте `npm ci`, `npm run build`, `npm test -- --watch=false --browsers=ChromeHeadless`.
+- Один frontend spec задаётся через `--include='src/path/file.spec.ts'`, но TypeScript всё равно компилирует все spec-файлы. На 2026-08-03 suite падает до запуска тестов из-за удалённого Angular API `async` в трёх spec-файлах `src/app/modules/ui/components/{select,select-model,select-model-multiple}/`.
+- В проекте нет настроенных frontend lint/e2e-команд. Не придумывайте их в отчётах о проверке.
+
+## Источники истины
+
+- Считайте `mise.toml`, `backend/go.mod`, `frontend/board/package-lock.json`, `frontend/board/angular.json` и исходный код актуальнее README и CI. GitHub workflows используют старые Go 1.21/Node 18 и не запускают реальные backend integration/frontend unit tests.
+- Backend сам не читает `.env`: переменные предоставляет mise, Docker Compose или окружение процесса.
+- Не коммитьте корневой `.env`, локальные `frontend/board/{node_modules,dist,.angular}`, backend debug binaries или данные `.tmp`/`.repowise`.

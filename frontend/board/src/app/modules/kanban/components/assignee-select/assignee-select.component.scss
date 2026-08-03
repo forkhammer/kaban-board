@@ -120,3 +120,43 @@
     background: $gray-100;
   }
 }
+
+.recent-header {
+  padding: $pt $pt2;
+  color: $gray-500;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 500;
+}
+
+.recent {
+  background-color: rgba(255, 220, 80, 0.12);
+
+  &:hover {
+    background: $primary-lighten;
+    filter: brightness(0.95);
+  }
+
+  &.active {
+    background: $primary;
+  }
+}
+
+:host-context([data-bs-theme="dark"]) {
+  .recent-header {
+    color: $gray-400;
+  }
+
+  .recent {
+    background: rgba($primary-light, 0.12);
+
+    &:hover {
+      background: rgba($primary-light, 0.2);
+    }
+
+    &.active {
+      background: $primary;
+    }
+  }
+}

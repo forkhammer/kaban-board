@@ -51,6 +51,9 @@ export class AssigneeSelectComponent implements ControlValueAccessor, OnInit {
   protected errorValuesMessage: string | null = null;
   initialLoad$ = new BehaviorSubject<boolean>(false);
 
+  private readonly RECENT_STORAGE_KEY = 'recent-assignee-ids';
+  recentAssigneeIds: number[] = [];
+
   get selectValue(): User | null {
     return null;
   }
@@ -164,6 +167,51 @@ export class AssigneeSelectComponent implements ControlValueAccessor, OnInit {
       });
   }
 
+  get recentUsers(): User[] {
+    const userMap = new Map(this.valuesModel.map(u => [u.id, u]));
+    return this.recentAssigneeIds
+      .map(id => userMap.get(id))
+      .filter((u): u is User => u !== undefined);
+  }
+
+  get nonRecentUsers(): User[] {
+    const recentSet = new Set(this.recentAssigneeIds);
+    return this.valuesModel.filter(u => !recentSet.has(u.id));
+  }
+
+  get displayUsers(): User[] {
+    return this.isSearchActive() ? this.valuesModel : this.nonRecentUsers;
+  }
+
+  isSearchActive(): boolean {
+    const searchControl = this.searchForm.get('search');
+    return !!(searchControl?.value && searchControl.value.trim());
+  }
+
+  private loadRecentAssignees(): void {
+    try {
+      const raw = localStorage.getItem(this.RECENT_STORAGE_KEY);
+      if (!raw) {
+        this.recentAssigneeIds = [];
+        return;
+      }
+      const parsed = JSON.parse(raw);
+      this.recentAssigneeIds = Array.isArray(parsed)
+        ? parsed.filter((x): x is number => typeof x === 'number')
+        : [];
+    } catch {
+      this.recentAssigneeIds = [];
+    }
+  }
+
+  private saveRecentAssignee(id: number): void {
+    this.recentAssigneeIds = [
+      id,
+      ...this.recentAssigneeIds.filter(x => x !== id),
+    ].slice(0, 3);
+    localStorage.setItem(this.RECENT_STORAGE_KEY, JSON.stringify(this.recentAssigneeIds));
+  }
+
   private emitChange(value: number | null): void {
     if (this.onChange) {
       this.onChange(value);
@@ -197,6 +245,7 @@ export class AssigneeSelectComponent implements ControlValueAccessor, OnInit {
   select(e: MouseEvent, item: User) {
     this.selectValue = item;
     this.emitChange(this.value.value);
+    this.saveRecentAssignee(item.id);
     (this.dropdown as any).close();
     return false;
   }
@@ -210,6 +259,7 @@ export class AssigneeSelectComponent implements ControlValueAccessor, OnInit {
 
   onOpenChange(open: boolean) {
     if (open) {
+      this.loadRecentAssignees();
       this.initialLoad$.next(true);
       if (this.useSearch && this.searchInput) {
         setTimeout(() => this.searchInput.nativeElement.focus(), 0);

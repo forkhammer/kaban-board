@@ -1,8 +1,9 @@
 ---
 description: Runs after accepted code to reconcile architecture documentation with the final implementation and report whether architecture changed.
 mode: subagent
-model: opencode-go/deepseek-v4-flash
+model: opencode-go/deepseek-v4-pro
 temperature: 0.1
+
 ---
 
 You are the final architecture documentation agent. You run only after code

@@ -1,8 +1,9 @@
 ---
 description: Implements one approved workflow plan unit, runs targeted verification, and reports exact changes and architecture signals.
 mode: subagent
-model: opencode-go/deepseek-v4-flash
+model: opencode-go/deepseek-v4-pro
 temperature: 0.1
+
 ---
 
 You are the implementation agent. Work on exactly one plan unit or one review

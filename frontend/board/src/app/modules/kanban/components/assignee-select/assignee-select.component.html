@@ -29,8 +29,25 @@
     </div>
 
     <div class="scroll">
+      <ng-container *ngIf="recentUsers.length > 0 && !isSearchActive()">
+        <div class="recent-header">Недавние</div>
+        <div ngbDropdownItem
+          *ngFor="let item of recentUsers; trackBy: trackByItem"
+          class="recent"
+          [class.active]="item.id === value.value"
+          (click)="select($event, item)">
+          <div class="item-avatar">
+            <img [src]="item.avatar_url">
+          </div>
+          <div class="item-name">
+            {{item.name}}
+          </div>
+        </div>
+        <div class="dropdown-divider"></div>
+      </ng-container>
+
       <div ngbDropdownItem
-        *ngFor='let item of valuesModel; trackBy: trackByItem'
+        *ngFor='let item of displayUsers; trackBy: trackByItem'
         [class.active]='item.id === value.value'
         (click)='select($event, item)'>
         <div class="item-avatar">

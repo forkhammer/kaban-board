@@ -95,4 +95,4 @@ DB_TYPE=sqlite LOG_LEVEL=1 go test -v -count=1 -timeout 300s ./tests/integration
 DB_TYPE=sqlite LOG_LEVEL=1 go test -v -count=1 -timeout 300s ./tests/integration/... -run '^TestGetUsers$/^returns_all_users$'
 ```
 
-Suite покрывает только часть HTTP API; GitLab sync/client, issues/bindings, reports, WebSocket, cache и worker требуют дополнительных targeted tests при изменении.
+Suite покрывает только часть HTTP API; GitLab sync/client, reports, WebSocket, cache и worker требуют дополнительных targeted tests при изменении.

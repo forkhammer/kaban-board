@@ -106,6 +106,7 @@
 
 <div class="modal-footer">
   <button class="btn btn-primary"
+          [disabled]="isLoading"
           [class.loading]='isLoading'
           (click)='submit()'>Сохранить</button>
 </div>

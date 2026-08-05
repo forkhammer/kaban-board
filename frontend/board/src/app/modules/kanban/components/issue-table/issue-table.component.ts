@@ -28,10 +28,20 @@ import { environment } from "src/environments/environment";
 import { isEqual } from "lodash";
 import { catchErrorMessages } from "src/app/modules/core/tools/catch-error";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { IssueGroup, KanbanIssue } from "../../models/kanban-issue";
+import {
+  BIND_STATUS_WEIGHT,
+  IssueGroup,
+  KanbanIssue,
+  PRIORITY_WEIGHT,
+} from "../../models/kanban-issue";
 import { IssueService } from "../../services/issue.service";
 import { ToastService } from "src/app/modules/core/services/toast.service";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import {
+  faPlus,
+  faSort,
+  faSortDown,
+  faSortUp,
+} from "@fortawesome/free-solid-svg-icons";
 import { Pagination } from "src/app/modules/core/models/base";
 import { AccountService } from "src/app/modules/core/services/account.service";
 import { IssueBindingService } from "../../services/issue-binding.service";
@@ -44,6 +54,16 @@ import {
   SprintWebsocketService,
 } from "../../services/sprint-websocket.service";
 import { Group } from "../../models/group";
+
+const SORTABLE_COLUMNS = [
+  "task",
+  "assignee",
+  "epic",
+  "release",
+  "priority",
+  "status",
+] as const;
+type SortableColumn = (typeof SORTABLE_COLUMNS)[number];
 
 @Component({
   selector: "app-issue-table",
@@ -81,6 +101,17 @@ export class IssueTableComponent {
   isLoadMore$ = new BehaviorSubject<boolean>(false);
   highlightedIds = new Set<number>();
   highlightedTimeout = 1000;
+
+  faSort = faSort;
+  faSortUp = faSortUp;
+  faSortDown = faSortDown;
+
+  readonly SORTABLE_COLUMNS = SORTABLE_COLUMNS;
+
+  private static readonly SORT_STORAGE_KEY = 'issue-table-sort';
+
+  sortColumn: SortableColumn | null = this.loadSortColumn();
+  sortDirection: "asc" | "desc" = this.loadSortDirection();
 
   @Input() set user(value: KanbanUser | undefined | null) {
     this.user$.next(value);
@@ -229,8 +260,6 @@ export class IssueTableComponent {
 
     if (data.account_id === this.accountService.user$.value?.id) return;
 
-    this.groupedIssues = this.getGroupedIssues();
-
     const idx = this.issues.findIndex((i) => i.bindingId === data.id);
     if (idx === -1) return;
 
@@ -321,6 +350,21 @@ export class IssueTableComponent {
     this.sprintStateChanged.emit();
   }
 
+  toggleSort(column: SortableColumn): void {
+    if (this.sortColumn === column) {
+      if (this.sortDirection === "asc") {
+        this.sortDirection = "desc";
+      } else {
+        this.sortColumn = "assignee";
+        this.sortDirection = "asc";
+      }
+    } else {
+      this.sortColumn = column;
+      this.sortDirection = "asc";
+    }
+    this.saveSortState();
+  }
+
   onSaveIssue(issue: KanbanIssue) {
     const idx = this.issues.findIndex((i) => i.bindingId === issue.bindingId);
     const originalIssue = idx !== -1 ? { ...this.issues[idx] } : null;
@@ -354,7 +398,7 @@ export class IssueTableComponent {
   }
 
   dropIssue(event: CdkDragDrop<KanbanIssue[]>): void {
-    const flat = this.groupedIssues.flatMap((g) => g.issues);
+    const flat = this.displayedIssueGroups.flatMap((g) => g.issues);
     moveItemInArray(flat, event.previousIndex, event.currentIndex);
     this.recalculateOrder(flat);
     this.setIssues(flat);
@@ -365,20 +409,104 @@ export class IssueTableComponent {
   }
 
   private recalculateOrder(issues: KanbanIssue[]): void {
-    const grouped = new Map<number, KanbanIssue[]>();
-    for (const issue of issues) {
-      const groupId = issue.assignee?.id ?? 0;
-      if (!grouped.has(groupId)) {
-        grouped.set(groupId, []);
+    issues.forEach((issue, index) => {
+      issue.order = String(index).padStart(8, "0");
+    });
+  }
+
+  private loadSortColumn(): SortableColumn | null {
+    try {
+      const raw = localStorage.getItem(IssueTableComponent.SORT_STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed.column && SORTABLE_COLUMNS.includes(parsed.column)) {
+          return parsed.column as SortableColumn;
+        }
       }
-      grouped.get(groupId)!.push(issue);
-    }
-    for (const [groupId, items] of grouped) {
-      items.forEach((issue, index) => {
-        issue.order = `${groupId}${String(index).padStart(8, "0")}`;
-      });
+    } catch { /* localStorage not available or corrupt */ }
+    return 'assignee';
+  }
+
+  private loadSortDirection(): "asc" | "desc" {
+    try {
+      const raw = localStorage.getItem(IssueTableComponent.SORT_STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed.direction === 'asc' || parsed.direction === 'desc') {
+          return parsed.direction;
+        }
+      }
+    } catch { /* localStorage not available or corrupt */ }
+    return 'asc';
+  }
+
+  private saveSortState(): void {
+    try {
+      localStorage.setItem(
+        IssueTableComponent.SORT_STORAGE_KEY,
+        JSON.stringify({ column: this.sortColumn, direction: this.sortDirection }),
+      );
+    } catch { /* localStorage not available */ }
+  }
+
+  private sortIssues(issues: KanbanIssue[]): KanbanIssue[] {
+    if (!this.sortColumn) return issues;
+
+    const sorted = [...issues].sort((a, b) => {
+      const cmp = this.compareByColumn(a, b, this.sortColumn!);
+      if (cmp !== 0) return this.sortDirection === "asc" ? cmp : -cmp;
+
+      const oa = a.order ?? "";
+      const ob = b.order ?? "";
+      if (oa === "" && ob === "") return 0;
+      if (oa === "") return 1;
+      if (ob === "") return -1;
+      return oa.localeCompare(ob);
+    });
+
+    return sorted;
+  }
+
+  private compareByColumn(
+    a: KanbanIssue,
+    b: KanbanIssue,
+    column: SortableColumn,
+  ): number {
+    switch (column) {
+      case "task":
+        return 0;
+      case "assignee": {
+        const an = a.assignee?.name?.toLowerCase() ?? "";
+        const bn = b.assignee?.name?.toLowerCase() ?? "";
+        return an.localeCompare(bn);
+      }
+      case "epic": {
+        const ae = a.epic?.title?.toLowerCase() ?? "";
+        const be = b.epic?.title?.toLowerCase() ?? "";
+        return ae.localeCompare(be);
+      }
+      case "release": {
+        const ar = a.release?.title?.toLowerCase() ?? "";
+        const br = b.release?.title?.toLowerCase() ?? "";
+        return ar.localeCompare(br);
+      }
+      case "priority": {
+        const pw = PRIORITY_WEIGHT;
+        const pa = a.priority ? (pw[a.priority] ?? 999) : 999;
+        const pb = b.priority ? (pw[b.priority] ?? 999) : 999;
+        return pa - pb;
+      }
+      case "status": {
+        const sw = BIND_STATUS_WEIGHT;
+        const sa = a.bindStatus ? (sw[a.bindStatus] ?? 999) : 999;
+        const sb = b.bindStatus ? (sw[b.bindStatus] ?? 999) : 999;
+        return sa - sb;
+      }
+      default:
+        return 0;
     }
   }
+
 
   setIssues(issues: KanbanIssue[]): void {
     this.issues = issues;
@@ -409,6 +537,14 @@ export class IssueTableComponent {
     return Array.from(map.values()).sort((a, b) =>
       a.groupTitle > b.groupTitle ? 1 : -1,
     );
+  }
+
+  get displayedIssueGroups(): IssueGroup[] {
+    if (this.sortColumn === null) return this.groupedIssues;
+    return this.groupedIssues.map((g) => ({
+      ...g,
+      issues: this.sortIssues(g.issues),
+    }));
   }
 
   trackByGroup(_: number, group: IssueGroup) {

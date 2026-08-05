@@ -1,7 +1,7 @@
 ---
 description: Execute a task through planning, implementation, review, and final architecture documentation.
 agent: orchestrator
-model: opencode-go/glm-5.2
+model: opencode-go/deepseek-v4-pro
 ---
 
 Run the complete orchestrated development workflow for this task:

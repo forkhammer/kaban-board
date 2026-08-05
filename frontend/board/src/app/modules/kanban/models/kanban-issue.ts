@@ -65,6 +65,22 @@ export const ISSUE_PRIORITY_VALUES: SelectValue[] = [
   },
 ];
 
+export const PRIORITY_WEIGHT: Record<IssuePriority, number> = {
+  [IssuePriority.CRITICAL]: 0,
+  [IssuePriority.HIGH]: 1,
+  [IssuePriority.MEDIUM]: 2,
+  [IssuePriority.LOW]: 3,
+  [IssuePriority.LOWEST]: 4,
+};
+
+export const BIND_STATUS_WEIGHT: Record<BindStatus, number> = {
+  [BindStatus.BACKLOG]: 0,
+  [BindStatus.IN_PROGRESS]: 1,
+  [BindStatus.TESTING]: 2,
+  [BindStatus.DONE]: 3,
+  [BindStatus.BLOCKED]: 4,
+};
+
 export type IssueGroup = {
   groupId: number;
   groupTitle: string;

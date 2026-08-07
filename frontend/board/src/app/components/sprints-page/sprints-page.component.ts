@@ -23,6 +23,8 @@ import { AccountService } from 'src/app/modules/core/services/account.service';
   styleUrl: './sprints-page.component.scss'
 })
 export class SprintsPageComponent {
+  private static readonly STORAGE_KEY = 'sprints-page-filters'
+
   teamService = inject(TeamService)
   fb = inject(FormBuilder)
   sprintService = inject(SprintService)
@@ -93,6 +95,18 @@ export class SprintsPageComponent {
       distinctUntilChanged(),
       takeUntilDestroyed()
     ).subscribe(data => {
+      const filters: Record<string, any> = {}
+      if (data.team != null) {
+        filters['team'] = data.team
+      }
+      if (data.quarter != null) {
+        filters['quarter'] = data.quarter
+      }
+      if (Object.keys(filters).length > 0) {
+        localStorage.setItem(SprintsPageComponent.STORAGE_KEY, JSON.stringify(filters))
+      } else {
+        localStorage.removeItem(SprintsPageComponent.STORAGE_KEY)
+      }
       this.router.navigate([], {queryParams: data, queryParamsHandling: 'merge'})
     })
 
@@ -100,6 +114,19 @@ export class SprintsPageComponent {
       distinctUntilChanged(),
       takeUntilDestroyed()
     ).subscribe(data => {
+      // If there are no query params, try to restore from localStorage
+      if (!data['team'] && !data['quarter']) {
+        try {
+          const stored = localStorage.getItem(SprintsPageComponent.STORAGE_KEY);
+          if (stored) {
+            const filters = JSON.parse(stored);
+            this.router.navigate([], {queryParams: filters, queryParamsHandling: 'merge', replaceUrl: true});
+            return; // skip patchValue — navigation will trigger a new queryParams emission with the restored params
+          }
+        } catch {
+          // Corrupt localStorage data — ignore and proceed without filters
+        }
+      }
       this.form.patchValue(data)
     })
 

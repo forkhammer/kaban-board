@@ -44,3 +44,13 @@ export interface SprintStats {
   velocity_dev: number;
   velocity_qa: number;
 }
+
+export interface UserWorkload {
+  user_id: number;
+  capacity: number;
+  planned: number;
+}
+
+export interface SprintUsersWorkload {
+  users: UserWorkload[];
+}

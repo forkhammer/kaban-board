@@ -20,6 +20,7 @@ func (c *ReportsController) RegisterRoutes(router gin.IRouter) error {
 	router.GET("/reports/burnup", c.getBurnupReport)
 	router.GET("/reports/wip", c.getWipReport)
 	router.GET("/reports/sprint/:id", c.getSprintStats)
+	router.GET("/reports/sprint/:id/users-workload", c.getSprintUsersWorkload)
 	return nil
 }
 
@@ -42,6 +43,21 @@ func (c *ReportsController) getSprintStats(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, dto.SerializeSprintStats(stats))
+}
+
+func (c *ReportsController) getSprintUsersWorkload(ctx *gin.Context) {
+	sprintId, err := strconv.ParseUint(ctx.Param("id"), 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: "invalid sprint id"})
+		return
+	}
+
+	workloads, err := c.reportUC.GetSprintUserWorkloads(uint(sprintId))
+	if utils.HandleException(ctx, err) {
+		return
+	}
+
+	ctx.JSON(http.StatusOK, dto.SerializeSprintUsersWorkload(workloads))
 }
 
 func (c *ReportsController) getWipReport(ctx *gin.Context) {

@@ -44,3 +44,58 @@
     color: $white;
   }
 }
+
+.workload {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  gap: 4px;
+
+  &__bar {
+    width: 48px;
+    height: 4px;
+    background: $gray-300;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  &__fill {
+    height: 100%;
+    transition: width .2s;
+
+    &.success {
+      background: $success;
+    }
+
+    &.warning {
+      background: $warning;
+    }
+
+    &.danger {
+      background: $danger;
+    }
+  }
+
+  &__value {
+    font-size: 11px;
+    line-height: 1;
+
+    &.success {
+      color: $success;
+    }
+
+    &.warning {
+      color: $warning;
+    }
+
+    &.danger {
+      color: $danger;
+    }
+  }
+}
+
+:host-context([data-bs-theme="dark"]) {
+  .workload__bar {
+    background: $gray-800;
+  }
+}

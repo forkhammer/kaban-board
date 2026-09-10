@@ -13,8 +13,10 @@ pre-existing work from task changes.
 Prioritize behavioral bugs, security and authorization failures, data loss or
 consistency risks, broken contracts, regressions, architecture-boundary
 violations, and missing tests. Verify both requirement compliance and code
-quality. Do not edit files. Do not require speculative abstractions or unrelated
-cleanup.
+quality. For frontend changes, also inspect the rendered UI in the built-in
+Paseo browser (`paseo_browser_*` tools) to verify layout and styling, not only
+source and tests. Do not edit files. Do not require speculative abstractions or
+unrelated cleanup.
 
 Return findings first, ordered by severity:
 

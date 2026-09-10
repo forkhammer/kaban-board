@@ -26,6 +26,10 @@ the final documentation agent owns them:
 
 Run formatting and the narrowest meaningful tests for changed behavior, then
 broaden verification when required by `AGENTS.md` and the architecture skill.
+For frontend changes that affect markup or styling, verify the rendered result
+in the built-in Paseo browser (`paseo_browser_*` tools) against the running dev
+frontend and backend, capture a screenshot and inspect the page snapshot, and
+report what was visually confirmed.
 Do not commit unless the user explicitly requested a commit.
 
 Return this contract:

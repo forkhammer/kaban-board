@@ -2,6 +2,7 @@ package usecases
 
 import (
 	"fmt"
+	"sort"
 	"time"
 
 	"main/internal/app/queries"
@@ -129,6 +130,44 @@ func (uc *ReportUseCases) GetSprintStats(sprintId uint, assigneeId *uint, groupI
 	}
 
 	return stats, nil
+}
+
+func (uc *ReportUseCases) GetSprintUserWorkloads(sprintId uint) ([]domain.UserWorkload, error) {
+	sprint, err := uc.sprintRepo.Get(domain.SprintId(sprintId))
+	if err != nil {
+		return nil, fmt.Errorf("sprint not found: %w", err)
+	}
+
+	plans, err := uc.reportRepo.GetSprintUserPlans(sprintId)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get sprint user plans: %w", err)
+	}
+
+	settingsList, err := uc.sprintUserSettingsRepo.List(uc.sprintUserSettingsQuery.GetSpec(queries.SprintUserSettingsFilter{
+		SprintId: &sprintId,
+	}))
+	if err != nil {
+		return nil, fmt.Errorf("failed to get sprint user settings: %w", err)
+	}
+
+	settingsMap := make(map[uint]uint, len(settingsList))
+	for _, s := range settingsList {
+		settingsMap[s.UserId] = s.HoursPerUser
+	}
+
+	for i := range plans {
+		if hours, ok := settingsMap[plans[i].UserId]; ok {
+			plans[i].Capacity = hours
+		} else {
+			plans[i].Capacity = sprint.HoursPerUser
+		}
+	}
+
+	sort.Slice(plans, func(i, j int) bool {
+		return plans[i].UserId < plans[j].UserId
+	})
+
+	return plans, nil
 }
 
 func (uc *ReportUseCases) GetBurnupReport(sprintId uint) (*domain.BurnupReport, error) {

@@ -34,7 +34,7 @@ import { AccountService } from 'src/app/modules/core/services/account.service';
 import { SprintModalServiceService } from '../../services/sprint-modal.service';
 import { UrlService } from '../../services/urls.service';
 import { ReportService } from 'src/app/modules/reports/services/report.service';
-import { SprintStats } from 'src/app/modules/reports/models/report';
+import { SprintStats, UserWorkload } from 'src/app/modules/reports/models/report';
 
 enum KanbanView {
   LIST = 'list',
@@ -92,6 +92,8 @@ export class KanbanBoardComponent implements OnInit, AfterViewInit {
   public selectedSprint: Sprint | null = null
   public sprintStats$: Observable<SprintStats | null> = of(null)
   public statsRefreshTrigger$ = new BehaviorSubject<void>(undefined)
+  public workloadMap = new Map<number, UserWorkload>();
+  private selectedSprintId: number | null = null;
   @ViewChild('sprintSelect') sprintSelect!: SelectModelComponent
 
   public otherGroup: Group = {
@@ -209,6 +211,7 @@ export class KanbanBoardComponent implements OnInit, AfterViewInit {
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(value => {
       this.filterForm.patchValue({sprint: value})
+      this.selectedSprintId = value ?? null;
     })
 
     this.userId$.pipe(
@@ -245,6 +248,18 @@ export class KanbanBoardComponent implements OnInit, AfterViewInit {
       takeUntilDestroyed(this.destroyRef)
     )
 
+    combineLatest([this.sprintId$, this.statsRefreshTrigger$]).pipe(
+      debounceTime(1),
+      switchMap(([sprintId]) => {
+        if (!sprintId) return of(new Map<number, UserWorkload>());
+        return this.reportService.getSprintUsersWorkload(sprintId).pipe(
+          map(res => new Map(res.users.map(u => [u.user_id, u] as [number, UserWorkload]))),
+          catchError(() => of(new Map<number, UserWorkload>()))
+        );
+      }),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(map => this.workloadMap = map);
+
   }
 
   ngAfterViewInit(): void {
@@ -272,6 +287,11 @@ export class KanbanBoardComponent implements OnInit, AfterViewInit {
 
   getUserById(id: number): KanbanUser | undefined {
     return this.users.find(user => user.id === id)
+  }
+
+  getUserWorkload(user: KanbanUser): UserWorkload | undefined {
+    if (this.selectedSprintId == null) return undefined;
+    return this.workloadMap.get(user.id) ?? { user_id: user.id, capacity: 0, planned: 0 };
   }
 
   clearSearch(e: MouseEvent) {

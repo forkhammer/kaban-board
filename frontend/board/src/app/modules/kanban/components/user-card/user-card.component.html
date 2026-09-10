@@ -1,4 +1,14 @@
-<div class="card p-3 pt-1 pb-1 d-flex align-items-center" [class.selected]="selected">
-  <div class="avatar"><img [src]="user.avatarUrl"></div>
-  <div class="username me-auto">{{user.name}}</div>
+<div class="card p-3 pt-1 pb-1" [class.selected]="selected">
+  <div class="d-flex align-items-center">
+    <div class="avatar"><img [src]="user.avatarUrl"></div>
+    <div class="username me-auto">{{user.name}}</div>
+  </div>
+  <div class="workload" *ngIf="workload">
+    <span class="workload__value" [ngClass]="loadColorClass">{{ loadPercent }}%</span>
+    <div class="workload__bar">
+      <div class="workload__fill"
+           [ngClass]="loadColorClass"
+           [style.width.%]="loadPercent! > 100 ? 100 : loadPercent!"></div>
+    </div>
+  </div>
 </div>

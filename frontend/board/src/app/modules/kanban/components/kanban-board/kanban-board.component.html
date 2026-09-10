@@ -135,7 +135,8 @@
         [selected]="selectedGroup?.id === group?.id">
       <app-user-card [user]="user" *ngFor="let user of users; trackBy trackByUser"
         (click)="goToUserBoard($event, user)"
-        [selected]="selectedUser?.id === user?.id"></app-user-card>
+        [selected]="selectedUser?.id === user?.id"
+        [workload]="getUserWorkload(user)"></app-user-card>
     </app-user-group-card>
   </ng-container>
 </ng-template>

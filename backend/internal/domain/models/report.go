@@ -49,3 +49,9 @@ type SprintStats struct {
 	VelocityDev uint
 	VelocityQA  uint
 }
+
+type UserWorkload struct {
+	UserId   uint
+	Capacity uint
+	Planned  uint
+}

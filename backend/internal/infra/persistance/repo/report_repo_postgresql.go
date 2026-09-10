@@ -266,6 +266,30 @@ func (r *ReportRepositoryPostgresql) GetSprintStats(sprintId uint, assigneeId *u
 	}, nil
 }
 
+func (r *ReportRepositoryPostgresql) GetSprintUserPlans(sprintId uint) ([]domain.UserWorkload, error) {
+	var rows []SprintUserPlanRow
+	query := `
+		SELECT ib.assignee_id AS user_id,
+		       COALESCE(SUM(ib.estimate_dev), 0) + COALESCE(SUM(ib.estimate_qa), 0) AS planned
+		FROM issue_bindings ib
+		WHERE ib.sprint_id = ? AND ib.deleted_at IS NULL AND ib.assignee_id IS NOT NULL
+		GROUP BY ib.assignee_id
+	`
+	if err := r.conn.GetEngine().Raw(query, sprintId).Scan(&rows).Error; err != nil {
+		return nil, err
+	}
+
+	result := make([]domain.UserWorkload, len(rows))
+	for i, row := range rows {
+		result[i] = domain.UserWorkload{
+			UserId:  row.UserId,
+			Planned: row.Planned,
+		}
+	}
+
+	return result, nil
+}
+
 func (r *ReportRepositoryPostgresql) GetActiveUserIdsByTeam(teamId uint, groupId *uint) ([]uint, error) {
 	var ids []uint
 	query := `

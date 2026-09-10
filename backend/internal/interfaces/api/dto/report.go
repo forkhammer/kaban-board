@@ -117,6 +117,28 @@ func SerializeSprintStats(stats *domain.SprintStats) SprintStatsDto {
 	}
 }
 
+type UserWorkloadDto struct {
+	UserId   uint `json:"user_id"`
+	Capacity uint `json:"capacity"`
+	Planned  uint `json:"planned"`
+}
+
+type SprintUsersWorkloadDto struct {
+	Users []UserWorkloadDto `json:"users"`
+}
+
+func SerializeSprintUsersWorkload(workloads []domain.UserWorkload) SprintUsersWorkloadDto {
+	users := make([]UserWorkloadDto, 0, len(workloads))
+	for _, w := range workloads {
+		users = append(users, UserWorkloadDto{
+			UserId:   w.UserId,
+			Capacity: w.Capacity,
+			Planned:  w.Planned,
+		})
+	}
+	return SprintUsersWorkloadDto{Users: users}
+}
+
 func SerializeBurnupReport(report *domain.BurnupReport) BurnupReportDto {
 	dataPoints := make([]BurnupDataPointDto, len(report.DataPoints))
 	for i, dp := range report.DataPoints {

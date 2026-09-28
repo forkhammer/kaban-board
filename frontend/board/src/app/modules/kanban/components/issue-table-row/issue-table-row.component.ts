@@ -79,10 +79,30 @@ export class IssueTableRowComponent implements OnInit, AfterViewChecked {
 
   @Input()
   set issue(value: KanbanIssue) {
+    const commentChanged =
+      (this._issue?.comment ?? "") !== (value.comment ?? "");
+    const titleChanged = (this._issue?.title ?? "") !== (value.title ?? "");
+    const commentBeingEdited = this.isElementBeingEdited(
+      this.commentEl,
+      this._issue?.comment,
+    );
+    const titleBeingEdited = this.isElementBeingEdited(
+      this.titleEl,
+      this._issue?.title,
+    );
+    const saveData = this.getSaveData(value);
+
+    if (commentBeingEdited && this.commentEl) {
+      saveData.comment = this.commentEl.nativeElement.innerText;
+    }
+    if (titleBeingEdited && this.titleEl) {
+      saveData.title = this.titleEl.nativeElement.innerText;
+    }
+
     this._issue = value;
-    this.form.patchValue(this.getSaveData(value), { emitEvent: false });
-    this._commentPending = true;
-    this._titlePending = true;
+    this.form.patchValue(saveData, { emitEvent: false });
+    this._commentPending = !commentBeingEdited && commentChanged;
+    this._titlePending = !titleBeingEdited && titleChanged;
   }
 
   get issue(): KanbanIssue {
@@ -156,14 +176,22 @@ export class IssueTableRowComponent implements OnInit, AfterViewChecked {
 
   ngAfterViewChecked() {
     if (this._commentPending && this.commentEl) {
-      if (this.commentEl.nativeElement.innerText !== this._issue.comment) {
-        this.commentEl.nativeElement.innerText = this._issue.comment ?? "";
+      const comment = this._issue.comment ?? "";
+      if (
+        !this.isElementBeingEdited(this.commentEl, this._issue.comment) &&
+        this.commentEl.nativeElement.innerText !== comment
+      ) {
+        this.commentEl.nativeElement.innerText = comment;
       }
       this._commentPending = false;
     }
     if (this._titlePending && this.titleEl) {
-      if (this.titleEl.nativeElement.innerText !== this._issue.title) {
-        this.titleEl.nativeElement.innerText = this._issue.title ?? "";
+      const title = this._issue.title ?? "";
+      if (
+        !this.isElementBeingEdited(this.titleEl, this._issue.title) &&
+        this.titleEl.nativeElement.innerText !== title
+      ) {
+        this.titleEl.nativeElement.innerText = title;
       }
       this._titlePending = false;
     }
@@ -172,6 +200,18 @@ export class IssueTableRowComponent implements OnInit, AfterViewChecked {
   onCommentInput(event: Event) {
     const text = (event.target as HTMLElement).innerText;
     this.form.get("comment")?.setValue(text, { emitEvent: true });
+  }
+
+  private isElementBeingEdited(
+    element: ElementRef<HTMLElement> | undefined,
+    value: string | null | undefined,
+  ): boolean {
+    const nativeElement = element?.nativeElement;
+    return (
+      !!nativeElement &&
+      nativeElement === nativeElement.ownerDocument.activeElement &&
+      nativeElement.innerText !== (value ?? "")
+    );
   }
 
   onTitleInput(event: Event) {

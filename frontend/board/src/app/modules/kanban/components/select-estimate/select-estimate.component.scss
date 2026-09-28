@@ -62,7 +62,7 @@
     }
   }
 
-  @for $i from 25 through 40 {
+  @for $i from 25 through 60 {
     &.val-#{$i} {
       background-color: $estimate-hard-color;
       color: darken($color: $estimate-hard-color, $amount: 50);
@@ -124,7 +124,7 @@
     }
   }
 
-  @for $i from 25 through 40 {
+  @for $i from 25 through 60 {
     &.val-#{$i} {
       // background-color: $estimate-hard-color;
       color: darken($color: $estimate-hard-color, $amount: 50);

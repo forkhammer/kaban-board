@@ -1,7 +1,7 @@
 ---
 description: Reviews a workflow implementation against requirements, architecture rules, correctness, and test evidence without editing files.
 mode: subagent
-model: opencode-go/deepseek-v4-pro
+model: opencode-go/glm-5.3-flash
 temperature: 0.1
 ---
 

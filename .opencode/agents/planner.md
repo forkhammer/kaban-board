@@ -1,7 +1,7 @@
 ---
 description: Investigates a requested change and produces an architecture-aware, testable implementation plan without editing files.
 mode: subagent
-model: opencode-go/deepseek-v4-pro
+model: opencode-go/deepseek-v4.1-flash
 temperature: 0.1
 
 ---

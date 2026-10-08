@@ -666,27 +666,25 @@ func (client *GitlabClient) toDomainRelease(milestone *GitlabMilestone, project 
 }
 
 func (client *GitlabClient) cleanReleaseWebUrl(webUrl string) string {
-	if !strings.HasPrefix(webUrl, "https://") {
-		result, err := url.JoinPath(client.config.GitlabUrl, webUrl)
-		if err == nil {
-			return result
-		} else {
-			return webUrl
-		}
-	}
-	return webUrl
+	return client.resolveUrl(webUrl)
 }
 
 func (client *GitlabClient) cleanUserAvatar(avatarUrl string) string {
-	if !strings.HasPrefix(avatarUrl, "https://") {
-		result, err := url.JoinPath(client.config.GitlabUrl, avatarUrl)
-		if err == nil {
-			return result
-		} else {
-			return avatarUrl
-		}
+	return client.resolveUrl(avatarUrl)
+}
+
+func (client *GitlabClient) resolveUrl(value string) string {
+	ref, err := url.Parse(value)
+	if err != nil || ref.IsAbs() {
+		return value
 	}
-	return avatarUrl
+
+	base, err := url.Parse(client.config.GitlabUrl)
+	if err != nil {
+		return value
+	}
+
+	return base.ResolveReference(ref).String()
 }
 
 func (client *GitlabClient) cleanReleaseId(gid string) (uint, error) {

@@ -1,7 +1,7 @@
 ---
 description: Coordinates an end-to-end task through planning, implementation, review, fixes, and final architecture documentation.
 mode: primary
-model: opencode-go/deepseek-v4-pro
+model: opencode-go/deepseek-v4.1-flash
 temperature: 0.1
 color: accent
 ---
